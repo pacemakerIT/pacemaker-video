@@ -4,6 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 export default async function Home() {
   const { userId } = await auth();
 
+  // Check if the user is signed in
   if (!userId) {
     return (
       <div className="flex h-[calc(100vh-5rem)] items-center justify-center p-4">
