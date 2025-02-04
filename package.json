@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky",
-    "typecheck": "tsc --noEmit"
+    "validate-branch-name": "npx validate-branch-name",
+    "typecheck": "tsc --noEmit --module esnext --incremental",
+    "lint-staged": "npx lint-staged",
+    "precommit-build": "npm run build",
+    "precommit-tasks": "npm run precommit-build && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.10.2",
