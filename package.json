@@ -2,34 +2,63 @@
   "name": "pacemaker-video",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.10.2",
-    "@wistia/wistia-player-react": "^1.0.0",
+    "@wistia/wistia-player-react": "^0.0.95",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.474.0",
-    "next": "14.0.4",
+    "next": "15.1.6",
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/eslintrc": "^3.2.0",
+    "@next/eslint-plugin-next": "^15.1.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
     "autoprefixer": "^10.0.1",
-    "eslint": "^9",
-    "eslint-config-next": "15.1.6",
+    "eslint": "^9.19.0",
+    "eslint-config-next": "^15.1.6",
+    "eslint-plugin-prettier": "^5.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "postcss": "^8",
+    "prettier": "^3.4.2",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "validate-branch-name": "^1.3.2"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write .",
+      "eslint --fix ."
+    ],
+    "*.ts": [
+      "tsc-files --noEmit",
+      "prettier --write .",
+      "eslint --fix ."
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write ."
+    ]
+  },
+  "validate-branch-name": {
+    "pattern": "^(main){1}$|^(chore|hotfix)\\/([\\/\\w\\-\\d]+)$|^(\\w+-\\d+)\\/([\\w\\-\\d]+)$",
+    "errorMsg": "Please follow standard branch name, rename branch using: git branch -m <oldname> <newname>"
   }
 }
