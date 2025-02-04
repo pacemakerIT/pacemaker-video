@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pacemaker Video
 
-## Getting Started
+This is a [Next.js](https://nextjs.org) project using the App Router and TypeScript.
 
-First, run the development server:
+## Tech Stack
+
+- [Next.js](https://nextjs.org) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Clerk](https://clerk.com/) - Authentication
+- [Wistia](https://wistia.com/) - Video player
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+
+## Development Setup
+
+### Prerequisites
+
+- [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
+- Node.js v20.16 (will be automatically set using nvm)
+- npm
+
+### Installation
+
+1. Set the correct Node.js version:
+
+```bash
+nvm install
+nvm use
+```
+
+2. Clone the repository
+
+3. Install dependencies:
+
+```bash
+npm install
+```
+
+4. Set up environment variables:
+
+```bash
+cp .env.local.example .env.local
+# Fill in the required environment variables
+```
+
+### Development
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Start development server
+- `npm run build` - Build production bundle
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run validate-branch-name` - Validate git branch name
+- `npm run precommit-tasks` - Run all pre-commit tasks
 
-## Learn More
+## Git Workflow
 
-To learn more about Next.js, take a look at the following resources:
+### Branch Naming Convention
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Branches must follow this naming pattern:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `main` - Main branch
+- `chore/[task-name]` - Chores and maintenance
+- `hotfix/[fix-name]` - Hot fixes
+- `[ticket-number]/[feature-name]` - Feature branches
 
-## Deploy on Vercel
+### Pre-commit Hooks
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project uses Husky for pre-commit hooks that run:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Build validation
+2. Branch name validation
+3. TypeScript type checking
+4. Lint-staged checks:
+   - ESLint for `.js`, `.jsx`, `.ts`, `.tsx` files
+   - Prettier for `.json`, `.md`, `.yaml`, `.yml` files
+
+## Code Style
+
+- ESLint for code linting
+- Prettier for code formatting
+- TypeScript for type safety
+
+### Prettier Configuration
+
+```json
+{
+  "semi": true,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "printWidth": 80
+}
+```
