@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Maintain dependencies for npm packages
+  - package-ecosystem: 'npm'
+    versioning-strategy: increase
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    labels:
+      - 'npm'
+      - 'dependencies'
+    open-pull-requests-limit: 100
+    pull-request-branch-name:
+      separator: '-'
+    ignore:
+      - dependency-name: '@headlessui/react' # 특정 패키지 무시
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major'] # 메이저 버전 업데이트 무시
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    pull-request-branch-name:
+      separator: '-'
+    labels:
+      - 'github-actions'
+      - 'dependencies'
