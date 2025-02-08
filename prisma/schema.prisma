@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 구독 관련 필드
+  isSubscribed  Boolean   @default(false)
+  subscriptionEndDate DateTime?
+  
+  // 학습 진행 관련 필드
+  lastLoginAt   DateTime?
+  watchedVideos WatchedVideo[]
+  progress      Progress[]
+  purchasedCourses PurchasedCourse[]
+}
+
+model WatchedVideo {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  watchedAt DateTime @default(now())
+  progress  Float    // 영상 시청 진행률 (0-100%)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String
+  completed Boolean  @default(false)
+  progress  Float    @default(0) // 코스 전체 진행률 (0-100%)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model PurchasedCourse {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String
+  purchasedAt DateTime  @default(now())
+  price       Float     // 구매 당시 가격
+  status      PurchaseStatus @default(COMPLETED)
+  expiresAt   DateTime? // 접근 권한 만료일 (없으면 평생 접근)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+enum Role {
+  USER
+  ADMIN
+  INSTRUCTOR
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  CANCELLED
+}
