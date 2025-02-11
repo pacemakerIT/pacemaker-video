@@ -63,12 +63,11 @@ export async function POST(req: Request) {
           name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
         }
       });
-      console.log(
-        `User ${userId} (Clerk ID: ${clerkId}) upserted successfully`
-      );
     } catch (dbError) {
-      console.error('Error upserting user:', dbError);
-      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Database error:', dbError },
+        { status: 500 }
+      );
     }
   }
 
