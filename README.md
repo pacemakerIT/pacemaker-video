@@ -62,6 +62,39 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `npm run validate-branch-name` - Validate git branch name
 - `npm run precommit-tasks` - Run all pre-commit tasks
 
+## Docker Compose Setup
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Configuration
+
+The project uses Docker Compose to set up a local PostgreSQL database for development.
+
+### Running the Database
+
+To start the database:
+
+```bash
+docker-compose up -d
+```
+
+To stop the database:
+
+```bash
+docker-compose down
+```
+
+### Database Migrations
+
+After starting the database, run Prisma migrations:
+
+```bash
+npx prisma migrate dev
+```
+
 ## Git Workflow
 
 ### Branch Naming Convention
