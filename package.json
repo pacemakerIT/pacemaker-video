@@ -15,7 +15,7 @@
     "precommit-tasks": "npm run precommit-build && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.11.1",
+    "@clerk/nextjs": "^6.11.2",
     "@prisma/client": "^6.3.1",
     "@wistia/wistia-player-react": "^0.0.96",
     "class-variance-authority": "^0.7.1",
