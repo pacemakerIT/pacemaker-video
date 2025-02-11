@@ -10,6 +10,7 @@ datasource db {
 
 model User {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerkId       String    @unique // Clerk user ID
   email         String    @unique
   name          String?
   image         String?
@@ -17,11 +18,11 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // 구독 관련 필드
+  // Subscription related fields
   isSubscribed  Boolean   @default(false)
   subscriptionEndDate DateTime?
   
-  // 학습 진행 관련 필드
+  // Learning progress related fields
   lastLoginAt   DateTime?
   watchedVideos WatchedVideo[]
   progress      Progress[]
@@ -30,10 +31,10 @@ model User {
 
 model WatchedVideo {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid // 타입 변경
+  userId    String   @db.Uuid // Application user ID (references User.id)
   videoId   String
   watchedAt DateTime @default(now())
-  progress  Float    // 영상 시청 진행률 (0-100%)
+  progress  Float    // Video watching progress (0-100%)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
@@ -41,10 +42,10 @@ model WatchedVideo {
 
 model Progress {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid // 타입 변경
+  userId    String   @db.Uuid // Application user ID (references User.id)
   courseId  String
   completed Boolean  @default(false)
-  progress  Float    @default(0) // 코스 전체 진행률 (0-100%)
+  progress  Float    @default(0) // Overall course progress (0-100%)
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -53,12 +54,12 @@ model Progress {
 
 model PurchasedCourse {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String   @db.Uuid // 타입 변경
+  userId      String   @db.Uuid // Application user ID (references User.id)
   courseId    String
   purchasedAt DateTime  @default(now())
-  price       Float     // 구매 당시 가격
+  price       Float     // Purchase price
   status      PurchaseStatus @default(COMPLETED)
-  expiresAt   DateTime? // 접근 권한 만료일 (없을 경우 평생 접근)
+  expiresAt   DateTime? // Access expiration date (lifetime access if null)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])

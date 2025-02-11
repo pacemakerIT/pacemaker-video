@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: Request) {
   const headerPayload = headers();
@@ -44,20 +45,31 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id, email_addresses, first_name, last_name } = evt.data;
+    const { id: clerkId, email_addresses, first_name, last_name } = evt.data; // Get Clerk ID
 
-    await prisma.user.upsert({
-      where: { id },
-      create: {
-        id,
-        email: email_addresses[0]?.email_address ?? '',
-        name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
-      },
-      update: {
-        email: email_addresses[0]?.email_address ?? '',
-        name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
-      }
-    });
+    const userId = uuidv4(); // Generate application UUID
+
+    try {
+      await prisma.user.upsert({
+        where: { clerkId: clerkId }, // Use Clerk ID for where clause
+        create: {
+          id: userId, // Use application UUID for ID
+          clerkId: clerkId, // Store Clerk ID
+          email: email_addresses[0]?.email_address ?? '',
+          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
+        },
+        update: {
+          email: email_addresses[0]?.email_address ?? '',
+          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
+        }
+      });
+      console.log(
+        `User ${userId} (Clerk ID: ${clerkId}) upserted successfully`
+      );
+    } catch (dbError) {
+      console.error('Error upserting user:', dbError);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    }
   }
 
   return NextResponse.json({}, { status: 200 });
