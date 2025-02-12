@@ -21,64 +21,50 @@ model User {
   // Subscription related fields
   isSubscribed  Boolean   @default(false)
   subscriptionEndDate DateTime?
-  
+
   // Learning progress related fields
   lastLoginAt   DateTime?
   watchedVideos WatchedVideo[]
-  progress      Progress[]
-  purchasedCourses PurchasedCourse[]
+  purchasedVideos PurchasedVideo[] // 구매한 비디오 목록
+}
+
+model Video {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  videoId   String   @unique // wistia video ID
+  title     String?
+  description String?
+  uploadDate DateTime @default(now())
+  price     Float?   // Added Price Column
+  watchedVideos WatchedVideo[]
+  purchasedVideos PurchasedVideo[]
 }
 
 model WatchedVideo {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @db.Uuid // Application user ID (references User.id)
-  videoId   String
+  videoId   String   @db.Uuid // Application video ID (references Video.id)
   watchedAt DateTime @default(now())
   progress  Float    // Video watching progress (0-100%)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video     Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
 }
 
-model Progress {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid // Application user ID (references User.id)
-  courseId  String
-  completed Boolean  @default(false)
-  progress  Float    @default(0) // Overall course progress (0-100%)
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, courseId])
-}
-
-model PurchasedCourse {
+model PurchasedVideo {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId      String   @db.Uuid // Application user ID (references User.id)
-  courseId    String
+  videoId     String   @db.Uuid // Application video ID (references Video.id)
   purchasedAt DateTime  @default(now())
   price       Float     // Purchase price
-  status      PurchaseStatus @default(COMPLETED)
-  expiresAt   DateTime? // Access expiration date (lifetime access if null)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video       Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, courseId])
-  @@index([courseId])
-}
-
-model Test {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  @@unique([userId, videoId])
 }
 
 enum Role {
   USER
   ADMIN
   INSTRUCTOR
-}
-
-enum PurchaseStatus {
-  PENDING
-  COMPLETED
-  REFUNDED
-  CANCELLED
 }
