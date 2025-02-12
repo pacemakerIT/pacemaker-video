@@ -66,6 +66,10 @@ model PurchasedCourse {
   @@index([courseId])
 }
 
+model Test {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
 enum Role {
   USER
   ADMIN
