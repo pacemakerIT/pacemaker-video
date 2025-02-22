@@ -9,33 +9,34 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clerkId       String    @unique // Clerk user ID
-  email         String    @unique
-  name          String?
-  image         String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clerkId   String   @unique // Clerk user ID
+  email     String   @unique
+  name      String?
+  image     String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Subscription related fields
-  isSubscribed  Boolean   @default(false)
+  isSubscribed        Boolean   @default(false)
   subscriptionEndDate DateTime?
 
   // Learning progress related fields
-  lastLoginAt   DateTime?
-  watchedVideos WatchedVideo[]
-  purchasedVideos PurchasedVideo[] // 구매한 비디오 목록
+  lastLoginAt        DateTime?
+  watchedVideos      WatchedVideo[]
+  purchasedVideos    PurchasedVideo[] // 구매한 비디오 목록
+  purchasedDocuments PurchasedDocument[]
 }
 
 model Video {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  videoId   String   @unique // wistia video ID
-  title     String?
-  description String?
-  uploadDate DateTime @default(now())
-  price     Float?   // Added Price Column
-  watchedVideos WatchedVideo[]
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  videoId         String           @unique // wistia video ID
+  title           String?
+  description     String?
+  uploadDate      DateTime         @default(now())
+  price           Float? // Added Price Column
+  watchedVideos   WatchedVideo[]
   purchasedVideos PurchasedVideo[]
 }
 
@@ -44,23 +45,45 @@ model WatchedVideo {
   userId    String   @db.Uuid // Application user ID (references User.id)
   videoId   String   @db.Uuid // Application video ID (references Video.id)
   watchedAt DateTime @default(now())
-  progress  Float    // Video watching progress (0-100%)
+  progress  Float // Video watching progress (0-100%)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video     Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
 }
 
 model PurchasedVideo {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId      String   @db.Uuid // Application user ID (references User.id)
   videoId     String   @db.Uuid // Application video ID (references Video.id)
-  purchasedAt DateTime  @default(now())
-  price       Float     // Purchase price
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video       Video     @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  purchasedAt DateTime @default(now())
+  price       Float // Purchase price
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
+}
+
+model PurchasedDocument {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @db.Uuid // Application user ID (references User.id)
+  documentId  String   @db.Uuid // Application document ID (references Document.id)
+  purchasedAt DateTime @default(now())
+  price       Float // Purchase price
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentId])
+}
+
+model Document {
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId         String              @unique // wistia document ID
+  title              String?
+  description        String?
+  uploadDate         DateTime            @default(now())
+  price              Float? // Added Price Column
+  purchasedDocuments PurchasedDocument[]
 }
 
 enum Role {
