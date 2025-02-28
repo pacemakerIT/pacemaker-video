@@ -8,8 +8,7 @@ export default function UploadVideo() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          videoId: '4e8wv1z7tl',
-          uploadDate: new Date().toISOString()
+          videoId: '4e8wv1z7tl'
         })
       });
 
@@ -21,7 +20,6 @@ export default function UploadVideo() {
       }
     } catch (error) {
       toast(`Server error: ${error}`);
-    } finally {
     }
   };
 

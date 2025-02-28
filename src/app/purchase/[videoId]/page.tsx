@@ -1,17 +1,18 @@
 import Link from 'next/link';
 import React from 'react';
+import PurchaseVideo from '@/components/PurchaseVideo';
 
 export default async function PurchaseLecture({
   params
 }: {
-  params: Promise<{ mediaId: string }>;
+  params: Promise<{ videoId: string }>;
 }) {
-  const mediaId = (await params).mediaId;
+  const videoId = (await params).videoId;
 
   return (
     <>
       <h1>Do you want to purchase this lecture?</h1>
-      <Link href={`/${mediaId}`}>Yes</Link>
+      <PurchaseVideo videoId={videoId} />
       <Link href="/"> No</Link>
     </>
   );
