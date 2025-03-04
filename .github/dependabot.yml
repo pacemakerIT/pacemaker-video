@@ -11,12 +11,11 @@ updates:
       - 'dependencies'
     open-pull-requests-limit: 100
     pull-request-branch-name:
-      prefix: 'chore/'
       separator: '-'
     ignore:
-      - dependency-name: '@headlessui/react' # 특정 패키지 무시
+      - dependency-name: '@headlessui/react'
       - dependency-name: '*'
-        update-types: ['version-update:semver-major'] # 메이저 버전 업데이트 무시
+        update-types: ['version-update:semver-major']
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: 'github-actions'
