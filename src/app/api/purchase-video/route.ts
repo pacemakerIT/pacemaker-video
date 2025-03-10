@@ -3,17 +3,61 @@ import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
   try {
-    const { userId, videoId, price } = await req.json();
+    const { clerkId, videoId, price } = await req.json();
 
-    if (!userId || !videoId || typeof price !== 'number') {
+    if (!clerkId || !videoId) {
       return NextResponse.json(
-        { error: 'Missing or invalid fields' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
+    // Validate price
+    if (typeof price !== 'number' || price <= 0) {
+      return NextResponse.json(
+        { error: 'Price must be a positive number' },
+        { status: 400 }
+      );
+    }
+
+    // Validate video ID format (should be a valid Wistia ID)
+    if (typeof videoId !== 'string' || !/^[a-zA-Z0-9]+$/.test(videoId)) {
+      return NextResponse.json(
+        { error: 'Invalid video ID format' },
+        { status: 400 }
+      );
+    }
+
+    const currentUser = await prisma.user.findFirst({
+      where: {
+        clerkId: clerkId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!currentUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const currentVideo = await prisma.video.findFirst({
+      where: {
+        videoId: videoId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!currentVideo) {
+      return NextResponse.json({ error: 'Video not found' }, { status: 404 });
+    }
+
     const existingPurchase = await prisma.purchasedVideo.findUnique({
-      where: { userId_videoId: { userId, videoId } }
+      where: {
+        userId_videoId: { userId: currentUser.id, videoId: currentVideo.id }
+      }
     });
 
     if (existingPurchase) {
@@ -24,11 +68,38 @@ export async function POST(req: Request) {
     }
 
     const purchase = await prisma.purchasedVideo.create({
-      data: { userId, videoId, price }
+      data: {
+        userId: currentUser.id,
+        videoId: currentVideo.id,
+        price
+      },
+      select: {
+        id: true,
+        video: {
+          select: {
+            videoId: true
+          }
+        }
+      }
     });
 
     return NextResponse.json(purchase, { status: 201 });
   } catch (error) {
+    // Handle known error cases
+    if (error instanceof Error) {
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { error: 'Video already purchased' },
+          { status: 409 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: `Purchase failed: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: `Internal Server Error: ${error}` },
       { status: 500 }

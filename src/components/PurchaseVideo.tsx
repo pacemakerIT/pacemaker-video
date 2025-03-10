@@ -1,9 +1,13 @@
 'use client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { usePurchase } from '@/app/context/PurchaseContext';
+import { useAuth } from '@clerk/nextjs';
 
 export default function PurchaseVideo({ videoId }: { videoId: string }) {
   const router = useRouter();
+  const { setIsPurchased } = usePurchase();
+  const { userId } = useAuth();
 
   const handlePurchaseVideo = async () => {
     try {
@@ -11,8 +15,8 @@ export default function PurchaseVideo({ videoId }: { videoId: string }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          videoId: '7102003a-8fd5-4191-87c9-a7f49406e996',
-          userId: 'bbaa62b4-e3de-4347-985f-39ca54ad3fdb',
+          videoId: videoId,
+          clerkId: userId,
           price: 22.33,
           purchasedAt: new Date().toISOString()
         })
@@ -21,6 +25,7 @@ export default function PurchaseVideo({ videoId }: { videoId: string }) {
       const data = await res.json();
       if (res.ok) {
         toast('Successfully purchased video');
+        setIsPurchased(true);
         router.push(`/${videoId}`);
       } else {
         toast(`Error: ${data.error}`);
