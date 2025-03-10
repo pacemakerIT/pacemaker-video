@@ -1,6 +1,5 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import { toast } from 'sonner';
 
 // Get all videos
 export async function GET() {
@@ -8,9 +7,8 @@ export async function GET() {
     const videos = await prisma.video.findMany();
     return NextResponse.json(videos, { status: 200 });
   } catch (error) {
-    toast(`GET /api/videos error: ${error}`);
     return NextResponse.json(
-      { message: 'Failed to fetch videos' },
+      { error: `Failed to fetch videos: ${error}` },
       { status: 500 }
     );
   }
@@ -28,7 +26,7 @@ export async function POST(req: Request) {
 
     if (existingVideo) {
       return NextResponse.json(
-        { message: 'This video is already registered.' },
+        { error: 'This video is already registered.' },
         { status: 400 }
       );
     }
@@ -40,7 +38,7 @@ export async function POST(req: Request) {
     return NextResponse.json(newVideo, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { message: `Failed to create video: ${error}` },
+      { error: `Failed to create video: ${error}` },
       { status: 500 }
     );
   }

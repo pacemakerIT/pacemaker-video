@@ -20,14 +20,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate video ID format (should be a valid Wistia ID)
-    if (typeof videoId !== 'string' || !/^[a-zA-Z0-9]+$/.test(videoId)) {
-      return NextResponse.json(
-        { error: 'Invalid video ID format' },
-        { status: 400 }
-      );
-    }
-
     const currentUser = await prisma.user.findFirst({
       where: {
         clerkId: clerkId
