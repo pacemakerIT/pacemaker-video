@@ -20,7 +20,7 @@ jobs:
           echo "Validating branch name: $BRANCH_NAME"
 
           # Add your regex here, same you use in validate-branch-name package
-          REGEX="^(main){1}$|^(chore|hotfix)\\/([\\/\\w\\-\\d]+)$|^(\\w+-\\d+)\\/([\\w\\-\\d]+)$"
+          REGEX="^(main){1}$|^(chore|hotfix)\\/([\w\-\d]+)$|^(\w+\-\d+)\/([\w\-\d]+)$|^(dependabot-npm_and_yarn-[\\w\\-\\d\\.]+)$"
           if ! [[ "$BRANCH_NAME" =~ $REGEX ]]; then
             echo "::error title=Invalid branch name::Branch name '$BRANCH_NAME' does not match the required pattern."
             exit 1
