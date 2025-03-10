@@ -25,7 +25,7 @@
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
-    "svix": "^1.61.1",
+    "svix": "^1.61.3",
     "tailwind-merge": "^2.6.0",
     "uuid": "^11.1.0"
   },
