@@ -83,6 +83,7 @@ model Document {
   description        String?
   uploadDate         DateTime            @default(now())
   price              Float? // Added Price Column
+  bucketUrl          String
   purchasedDocuments PurchasedDocument[]
 }
 
