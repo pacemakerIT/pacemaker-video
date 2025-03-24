@@ -34,7 +34,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/eslintrc": "^3.3.1",
     "@next/eslint-plugin-next": "^15.2.2",
     "@types/node": "^20",
     "@types/react": "^18",
