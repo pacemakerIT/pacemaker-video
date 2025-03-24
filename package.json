@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
-    "@clerk/nextjs": "^6.12.5",
+    "@clerk/nextjs": "^6.12.9",
     "@prisma/client": "^6.5.0",
     "@wistia/wistia-player-react": "^0.0.102",
     "class-variance-authority": "^0.7.1",
