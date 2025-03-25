@@ -1,11 +1,8 @@
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
-
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
@@ -14,29 +11,24 @@ import {
 // Menu items.
 const items = [
   {
-    title: 'Home',
-    url: '#',
-    icon: Home
+    title: '사이트 현황',
+    url: '#'
   },
   {
-    title: 'Inbox',
-    url: '#',
-    icon: Inbox
+    title: '메인비주얼 관리',
+    url: '#'
   },
   {
-    title: 'Calendar',
-    url: '#',
-    icon: Calendar
+    title: '온라인 강의 관리',
+    url: '/admin/video'
   },
   {
-    title: 'Search',
-    url: '#',
-    icon: Search
+    title: '전자책 관리',
+    url: '#'
   },
   {
-    title: 'Settings',
-    url: '#',
-    icon: Settings
+    title: '오프라인 워크샵 관리',
+    url: '#'
   }
 ];
 
@@ -45,14 +37,13 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
-                      <item.icon />
+                      {/* <item.icon /> */}
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
