@@ -1,8 +1,8 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { Header } from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
-import { PurchaseProvider } from './context/PurchaseContext';
-import './globals.css';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/ui/app-sidebar';
+import '@/app/globals.css';
 
 export default function RootLayout({
   children
@@ -11,15 +11,16 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <PurchaseProvider>
+      <SidebarProvider>
+        <AppSidebar />
         <html lang="en">
           <body>
-            <Header />
+            <SidebarTrigger />
             <main className="container">{children}</main>
             <Toaster />
           </body>
         </html>
-      </PurchaseProvider>
+      </SidebarProvider>
     </ClerkProvider>
   );
 }
