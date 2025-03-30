@@ -2,28 +2,16 @@ version: 2
 updates:
   # Maintain dependencies for npm packages
   - package-ecosystem: 'npm'
-    versioning-strategy: increase
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-    labels:
-      - 'npm'
-      - 'dependencies'
-    open-pull-requests-limit: 100
     pull-request-branch-name:
       separator: '-'
-    ignore:
-      - dependency-name: '@headlessui/react'
-      - dependency-name: '*'
-        update-types: ['version-update:semver-major']
+    directory: '/'
+    schedule:
+      interval: 'daily'
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: 'github-actions'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
     pull-request-branch-name:
       separator: '-'
-    labels:
-      - 'github-actions'
-      - 'dependencies'
+    directory: '/.github/workflows'
+    schedule:
+      interval: 'daily'
