@@ -30,7 +30,7 @@
     "react-pdf": "^9.2.1",
     "sonner": "^2.0.1",
     "svix": "^1.62.0",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.0.2",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
