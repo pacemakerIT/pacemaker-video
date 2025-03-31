@@ -15,7 +15,7 @@
     "precommit-tasks": "npm run precommit-build && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "^2.49.4",
     "@clerk/nextjs": "^6.12.12",
     "@prisma/client": "^6.5.0",
     "@wistia/wistia-player-react": "^0.0.103",
