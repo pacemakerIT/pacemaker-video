@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -49,12 +50,12 @@ export default function AdminVideo() {
 
       if (res.ok) {
         const data = await res.json();
-        console.log('Response:', data);
+        toast('Response:', data);
       } else {
-        console.error('Failed to submit form');
+        toast('Failed to submit form');
       }
     } catch (error) {
-      console.error('Submission error:', error);
+      toast(`Submission error: ${error}`);
     }
   }
 
