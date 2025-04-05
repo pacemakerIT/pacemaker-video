@@ -1,4 +1,3 @@
-import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from '@/components/ui/sonner';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/ui/app-sidebar';
@@ -10,17 +9,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <html lang="en">
-          <body>
-            <SidebarTrigger />
-            <main className="container">{children}</main>
-            <Toaster />
-          </body>
-        </html>
-      </SidebarProvider>
-    </ClerkProvider>
+    <SidebarProvider>
+      <AppSidebar />
+      <html lang="en">
+        <body>
+          <SidebarTrigger />
+          <main className="container">{children}</main>
+          <Toaster />
+        </body>
+      </html>
+    </SidebarProvider>
   );
 }
