@@ -1,8 +1,8 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { Header } from '@/components/Header';
 import { Toaster } from '@/components/ui/sonner';
-import './globals.css';
 import { PurchaseProvider } from './context/PurchaseContext';
+import './globals.css';
 
 export default function RootLayout({
   children
