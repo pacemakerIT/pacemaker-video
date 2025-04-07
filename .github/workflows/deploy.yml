@@ -20,15 +20,16 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Print DATABASE_URL for debugging
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: "echo 'DATABASE_URL is set: ${{ secrets.DATABASE_URL != '' }}'"
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Test database connection
-        run: npx prisma db push --skip-generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - name: Apply all pending migrations to the database
-        run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: npx prisma db push --skip-generate
+      - name: Apply all pending migrations to the database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: npx prisma migrate deploy
