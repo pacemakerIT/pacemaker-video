@@ -19,6 +19,10 @@ jobs:
           node-version: 20.16
       - name: Install dependencies
         run: npm install
+      - name: Print DATABASE_URL for debugging
+        run: "echo 'DATABASE_URL value is: [$DATABASE_URL]'"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Apply all pending migrations to the database
         run: npx prisma migrate deploy
         env:
