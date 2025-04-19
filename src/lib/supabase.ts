@@ -15,15 +15,15 @@ export const createClientSupabase = () => {
 };
 
 // 서버 사이드 Supabase 클라이언트 (서비스 롤 키로 더 많은 권한)
-export const createServerSupabase = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// export const createServerSupabase = () => {
+//   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+//   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error(
-      'Supabase URL or Anon Key is not defined in environment variables.'
-    );
-  }
+//   if (!supabaseUrl || !supabaseServiceKey) {
+//     throw new Error(
+//       'Supabase URL or Anon Key is not defined in environment variables.'
+//     );
+//   }
 
-  return createClient(supabaseUrl!, supabaseServiceKey!);
-};
+//   return createClient(supabaseUrl!, supabaseServiceKey!);
+// };
