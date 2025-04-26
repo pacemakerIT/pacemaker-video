@@ -23,10 +23,12 @@ export default {
           500: '#222222',
           700: '#333333'
         },
-        'pace-green': { 500: '#21734' },
         'pace-ivory': { 500: '#F9F6F3' },
         'pace-mint': { 500: '#3BC982' },
-        'pace-navy': { 500: '#37446C' },
+        'pace-navy': {
+          500: '#37446C',
+          700: '#021734'
+        },
         'pace-orange': {
           500: '#FF9631',
           600: '#FF8236',
@@ -64,33 +66,16 @@ export default {
         sans: ['Pretendard', 'sans-serif']
       },
 
+      // fontWeight는 Tailwind 기본 디자인 시스템 (font-normal, font-medium, font-bold 등) 사용
       fontSize: {
-        'pace-link-16-lh16-reg': ['16px', { lineHeight: '16px' }],
-        'pace-text-14-lh20-light': ['14px', { lineHeight: '20px' }],
-        'pace-button-18-lh100-med': ['18px', { lineHeight: '1.0' }],
-        'pace-button-18-lh18-med': ['18px', { lineHeight: '18px' }],
-        'pace-button-18-lh140-reg': ['18px', { lineHeight: '1.4' }],
-        'pace-button-16-lh16-reg': ['16px', { lineHeight: '16px' }],
-        'pace-caption-16-lh150-reg': ['16px', { lineHeight: '1.5' }],
-        'pace-heading-24-lh36-med': ['24px', { lineHeight: '36px' }],
-        'pace-card-16-lh24-reg': ['16px', { lineHeight: '24px' }],
-        'pace-footer-16-lh140-reg': ['16px', { lineHeight: '1.4' }],
-        'pace-footer-14-lh140-reg': ['14px', { lineHeight: '1.4' }],
-        'pace-heading-40-lh56-bold': ['40px', { lineHeight: '56px' }],
-        'pace-heading-48-lh72-bold': ['48px', { lineHeight: '72px' }],
-        'pace-heading-24-lh34-med': ['24px', { lineHeight: '34px' }],
-        'pace-text-24-lh150-med': ['24px', { lineHeight: '1.5' }],
-        'pace-heading-32-lh48-bold': ['32px', { lineHeight: '48px' }],
-        'pace-text-32-lh150-reg': ['32px', { lineHeight: '1.5' }],
-        'pace-label-18-lh140-med': ['18px', { lineHeight: '1.4' }],
-        'pace-label-18-lh27-reg': ['18px', { lineHeight: '27px' }],
-        'pace-label-14-lh140-reg': ['14px', { lineHeight: '1.4' }],
-        'pace-link-18-lh18-reg': ['18px', { lineHeight: '18px' }],
-        'pace-link-16-lh22-reg': ['16px', { lineHeight: '22px' }],
-        'pace-text-30-lh100-xb': ['30px', { lineHeight: '1.0' }],
-        'pace-logo-30-lh-auto-xb': ['30px', { lineHeight: 'auto' }],
-        'pace-label-18-lh-auto-med': ['18px', { lineHeight: 'auto' }],
-        'pace-tag-16-lh-auto-light': ['16px', { lineHeight: 'auto' }]
+        'pace-sm': ['14px', { lineHeight: '1.4' }], // small text
+        'pace-base': ['16px', { lineHeight: '1.5' }], // base text
+        'pace-lg': ['18px', { lineHeight: '1.4' }], // large text
+        'pace-xl': ['24px', { lineHeight: '1.5' }], // extra large text
+        'pace-2xl': ['30px', { lineHeight: '1.3' }], // 2x large
+        'pace-3xl': ['32px', { lineHeight: '1.5' }], // 3x large
+        'pace-4xl': ['40px', { lineHeight: '1.4' }], // 4x large
+        'pace-5xl': ['48px', { lineHeight: '1.5' }] // 5x large
       }
     }
   },
