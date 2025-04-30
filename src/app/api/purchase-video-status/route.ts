@@ -28,7 +28,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all purchased videos for this user with their actual video IDs
-    const purchases = await prisma.purchasedVideo.findMany({
+    const purchases: {
+      id: string;
+      video: {
+        videoId: string | null;
+      } | null;
+    }[] = await prisma.purchasedVideo.findMany({
       where: {
         userId: currentUser.id
       },
@@ -54,7 +59,7 @@ export async function GET(request: NextRequest) {
         return true;
       })
       .map((purchase) => {
-        return purchase.video.videoId;
+        return purchase.video?.videoId;
       });
 
     return NextResponse.json({ purchasedVideoIds }, { status: 200 });
