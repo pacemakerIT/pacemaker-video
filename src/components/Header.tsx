@@ -1,4 +1,10 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -39,16 +45,15 @@ export function Header() {
             </Link>
           </nav>
 
-          {/* 회원가입 */}
-          <Link
-            href="/signup"
-            className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
-          >
-            회원가입
-          </Link>
-
-          {/* 로그인 */}
           <SignedOut>
+            {/* 회원가입: 모달 */}
+            <SignUpButton mode="modal">
+              <button className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800">
+                회원가입
+              </button>
+            </SignUpButton>
+
+            {/* 로그인 */}
             <SignInButton mode="modal">
               <button className="flex items-center gap-2 text-pace-base font-normal text-pace-orange-800 hover:text-pace-orange-600">
                 <Image
@@ -63,7 +68,39 @@ export function Header() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UserButton />
+            <Link
+              href="/cart"
+              className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
+            >
+              <div className="relative">
+                {/* TODO: 장바구니 DB 연결 */}
+                <div className="w-5 h-5 bg-pace-orange-600 text-white text-[10px] rounded-full flex items-center justify-center leading-none">
+                  3
+                </div>
+              </div>
+              장바구니
+            </Link>
+
+            {/* 사용자 이름 + 프로필 버튼 */}
+            <div className="flex items-center gap-2">
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox:
+                      'w-6 h-6 rounded-full bg-white shadow-sm',
+                    userButtonTrigger: 'flex items-center'
+                  }
+                }}
+              />
+              {/* TODO: 이름 Clerk 연결 */}
+              <span className="text-pace-base text-pace-black-500 font-medium">
+                김연아
+              </span>
+              <span className="text-pace-base text-pace-black-500 font-normal">
+                {' '}
+                님
+              </span>
+            </div>
           </SignedIn>
         </div>
       </div>
