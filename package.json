@@ -37,7 +37,7 @@
     "react-hook-form": "^7.56.1",
     "react-pdf": "^9.2.1",
     "sonner": "^2.0.3",
-    "svix": "^1.63.1",
+    "svix": "^1.64.1",
     "tailwind-merge": "^3.2.0",
     "uuid": "^11.1.0",
     "zod": "^3.24.3"
