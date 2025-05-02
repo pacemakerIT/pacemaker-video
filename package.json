@@ -16,6 +16,7 @@
     "precommit-tasks": "npm run precommit-build && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
+    "@clerk/backend": "^1.26.0",
     "@clerk/nextjs": "^6.18.1",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.7.0",
