@@ -1,0 +1,76 @@
+/* eslint-disable prettier/prettier */
+import Image from 'next/image';
+
+export function Footer() {
+  return (
+    <footer className="border-t border-pace-gray-200 bg-white py-8 font-sans">
+      <div className="container mx-auto max-w-screen-xl px-6 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+        {/* 왼쪽: 로고 + 메뉴 */}
+        <div className="flex flex-col items-center md:items-start space-y-6">
+          {/* pacemaker + 메뉴 */}
+          <div className="flex items-center space-x-6">
+            <div className="text-pace-2xl font-extrabold text-pace-black-500 leading-none">
+              pacemaker
+            </div>
+            <div className="flex space-x-6 text-pace-base font-normal text-pace-black-900 leading-[1]">
+              {/* TODO: 온라인 강의 */}
+              <a href="#" className="hover:underline">
+                온라인 강의
+              </a>
+              {/* TODO: 전자책 */}
+              <a href="#" className="hover:underline">
+                전자책
+              </a>
+              {/* TODO: 오프라인 워크샵 */}
+              <a href="#" className="hover:underline">
+                오프라인 워크샵
+              </a>
+            </div>
+          </div>
+
+          {/* 주소 + 이메일 + 약관 전부 하나로 묶기 */}
+          <div className="flex flex-wrap justify-center md:justify-start gap-x-2 text-pace-sm font-normal text-pace-stone-500">
+            <span>4789 Yonge St Toronto, ON M2N 0G3</span>
+            <span>|</span>
+            <span>pacemaker@gmail.com</span>
+            <span>·</span>
+            {/* TODO: 개인정보 처리방침 */}
+            <a href="#" className="hover:underline">
+              개인정보 처리방침
+            </a>
+            <span>·</span>
+            {/* TODO: 이용약관 */}
+            <a href="#" className="hover:underline">
+              이용약관
+            </a>
+            <span>·</span>
+            {/* TODO: 환불정책 */}
+            <a href="#" className="hover:underline">
+              환불정책
+            </a>
+          </div>
+        </div>
+        {/* 소셜아이콘 + 저작권을 감싸는 큰 div */}
+        <div className="flex flex-col items-end space-y-6">
+          {/* 소셜 아이콘만 따로 */}
+          <div className="flex space-x-4">
+            <a href="https://facebook.com/globalpacemaker" aria-label="Facebook" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
+              <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+            </a>
+            <a href="https://www.youtube.com/@pacemaker340" aria-label="YouTube" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
+              <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
+            </a>
+            <a href="https://www.instagram.com/pacemaker_career/" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
+              <Image src="/icons/instagram.svg" alt="Instagram" width={24} height={24} />
+            </a>
+          </div>
+
+          {/* 카피라이트는 아랫줄 */}
+          <div className="text-pace-sm font-normal text-pace-stone-500">
+            &copy; 2025 pacemaker all rights reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
