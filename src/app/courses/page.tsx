@@ -15,7 +15,7 @@ export default function CoursesPage() {
         }}
       />
       {/* 메인화면 헤더 사용법 - 공유 후 삭제 예정 */}
-      {/* <ListHeader
+      <ListHeader
         slides={[
           {
             title: '첫 번째 슬라이드 제목',
@@ -37,7 +37,7 @@ export default function CoursesPage() {
           middle: '#FF823610',
           end: '#FF823640'
         }}
-      /> */}
+      />
     </div>
   );
 }
