@@ -16,6 +16,7 @@
     "precommit-tasks": "npm run precommit-build && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
     "@clerk/backend": "^1.26.0",
     "@clerk/nextjs": "^6.18.5",
     "@hookform/resolvers": "^5.0.1",
@@ -33,6 +34,7 @@
     "next": "15.3.1",
     "next-auth": "^4.24.5",
     "next-themes": "^0.4.6",
+    "pdfjs-dist": "^4.8.69",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.56.2",
@@ -48,7 +50,7 @@
     "@next/eslint-plugin-next": "^15.2.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^22",
+    "@types/node": "^22.15.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
