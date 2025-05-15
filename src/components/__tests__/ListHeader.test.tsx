@@ -11,6 +11,14 @@ describe('ListHeader', () => {
     expect(screen.getByText('테스트 버튼')).toBeDefined();
   });
 
+  // 버튼이 없는 경우 테스트
+  it('renders without button when buttonText is not provided', () => {
+    render(<ListHeader title="테스트 제목" />);
+
+    expect(screen.getByText('테스트 제목')).toBeDefined();
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
   // 커스텀 스타일 테스트
   it('renders with custom height and gradient', () => {
     render(
@@ -53,6 +61,17 @@ describe('ListHeader', () => {
     fireEvent.click(dots[1]);
     expect(screen.getByText('슬라이드 2')).toBeDefined();
     expect(screen.getByText('버튼 2')).toBeDefined();
+  });
+
+  // 버튼이 없는 슬라이드 테스트
+  it('renders slides without buttons', () => {
+    const slides = [{ title: '슬라이드 1' }, { title: '슬라이드 2' }];
+
+    render(<ListHeader slides={slides} />);
+
+    expect(screen.getByText('슬라이드 1')).toBeDefined();
+    // dots navigation 버튼은 제외하고 메인 버튼만 확인
+    expect(screen.queryByRole('button', { name: /버튼/i })).toBeNull();
   });
 
   // 자동 재생 테스트

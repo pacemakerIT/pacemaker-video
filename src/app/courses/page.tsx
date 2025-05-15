@@ -6,7 +6,6 @@ export default function CoursesPage() {
     <div className="w-screen flex gap-4 flex-col">
       <ListHeader
         title={'북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'}
-        buttonText={'강의 보러가기'}
         height={'h-[370px]'}
         gradientColors={{
           start: '#A8DBFF60',
@@ -22,8 +21,7 @@ export default function CoursesPage() {
             buttonText: '첫 번째 버튼'
           },
           {
-            title: '두 번째 슬라이드 제목',
-            buttonText: '두 번째 버튼'
+            title: '두 번째 슬라이드 제목'
           },
           {
             title: '세 번째 슬라이드 제목',

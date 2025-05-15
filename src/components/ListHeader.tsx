@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ListHeaderProps {
   title?: string;
@@ -11,7 +11,7 @@ interface ListHeaderProps {
     middle: string;
     end: string;
   };
-  slides?: { title: string; buttonText: string }[];
+  slides?: { title: string; buttonText?: string }[];
   autoPlayInterval?: number;
 }
 
@@ -30,14 +30,43 @@ export default function ListHeader({
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    if (!autoPlayInterval) return; // autoPlayInterval이 없으면 자동 재생하지 않음
+    let timer: NodeJS.Timeout;
 
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, autoPlayInterval);
+    if (autoPlayInterval && slides.length > 1) {
+      timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+      }, autoPlayInterval);
+    }
 
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [slides.length, autoPlayInterval]);
+
+  // slides가 비어있으면 빈 div 반환
+  if (slides.length === 0) {
+    return (
+      <div
+        className={`w-full flex flex-col justify-center items-center ${height} relative`}
+        style={{
+          background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
+        }}
+      >
+        <div className="flex flex-col justify-center items-center gap-8">
+          <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
+            {title}
+          </span>
+          {buttonText && (
+            <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+              {buttonText}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -50,9 +79,11 @@ export default function ListHeader({
         <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
           {slides[currentSlide].title}
         </span>
-        <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
-          {slides[currentSlide].buttonText}
-        </button>
+        {slides[currentSlide].buttonText && (
+          <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+            {slides[currentSlide].buttonText}
+          </button>
+        )}
       </div>
 
       {/* Dots Navigation - slides prop이 있을 때만 표시 */}
