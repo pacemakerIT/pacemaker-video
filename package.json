@@ -18,7 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.787.0",
     "@clerk/backend": "^1.32.0",
-    "@clerk/nextjs": "^6.19.2",
+    "@clerk/nextjs": "^6.19.4",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.7.0",
     "@radix-ui/react-dialog": "^1.1.13",
