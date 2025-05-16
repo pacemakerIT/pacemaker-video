@@ -95,6 +95,14 @@ After starting the database, run Prisma migrations:
 npx prisma migrate dev
 ```
 
+### Seeding the Database
+
+To populate your local database with initial video data (and potentially other sample data defined in prisma/seed.ts), run the following command:
+
+```bash
+npx prisma db seed
+```
+
 ## Git Workflow
 
 ### Branch Naming Convention
