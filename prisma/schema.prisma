@@ -43,6 +43,7 @@ model Video {
   description     String?
   uploadDate      DateTime         @default(now())
   price           Float? // Added Price Column
+  category        VideoCategory?
   watchedVideos   WatchedVideo[]
   purchasedVideos PurchasedVideo[]
 }
@@ -137,4 +138,10 @@ enum WorkshopStatus {
   CLOSED     // 모집마감
   ONGOING    // 진행중
   COMPLETED  // 진행완료
+}
+
+enum VideoCategory {
+  INTERVIEW
+  RESUME
+  NETWORKING
 }
