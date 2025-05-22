@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import Image from 'next/image';
+import Link from 'next/link';
 
 export function Footer() {
   return (
@@ -13,18 +14,18 @@ export function Footer() {
               pacemaker
             </div>
             <div className="flex space-x-6 text-pace-base font-normal text-pace-black-900 leading-[1]">
-              {/* TODO: 온라인 강의 */}
-              <a href="#" className="hover:underline">
+              {/* 온라인 강의 */}
+              <Link href="/courses" className="hover:underline">
                 온라인 강의
-              </a>
-              {/* TODO: 전자책 */}
-              <a href="#" className="hover:underline">
+              </Link>
+              {/* 전자책 */}
+              <Link href="/ebooks" className="hover:underline">
                 전자책
-              </a>
-              {/* TODO: 오프라인 워크샵 */}
-              <a href="#" className="hover:underline">
+              </Link>
+              {/* 오프라인 워크샵 */}
+              <Link href="workshops" className="hover:underline">
                 오프라인 워크샵
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -34,20 +35,20 @@ export function Footer() {
             <span>|</span>
             <span>pacemaker@gmail.com</span>
             <span>·</span>
-            {/* TODO: 개인정보 처리방침 */}
-            <a href="#" className="hover:underline">
+            {/* 개인정보 처리방침 */}
+            <Link href="/privacy-policy" className="hover:underline">
               개인정보 처리방침
-            </a>
+            </Link>
             <span>·</span>
-            {/* TODO: 이용약관 */}
-            <a href="#" className="hover:underline">
+            {/* 이용약관 */}
+            <Link href="/terms-of-use" className="hover:underline">
               이용약관
-            </a>
+            </Link>
             <span>·</span>
-            {/* TODO: 환불정책 */}
-            <a href="#" className="hover:underline">
+            {/* 환불정책 */}
+            <Link href="/refund-policy" className="hover:underline">
               환불정책
-            </a>
+            </Link>
           </div>
         </div>
         {/* 소셜아이콘 + 저작권을 감싸는 큰 div */}
