@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { Button } from './ui/button';
 
 interface ListHeaderProps {
   title?: string;
@@ -59,9 +60,9 @@ export default function ListHeader({
             {title}
           </span>
           {buttonText && (
-            <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+            <Button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
               {buttonText}
-            </button>
+            </Button>
           )}
         </div>
       </div>
