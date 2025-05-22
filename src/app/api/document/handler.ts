@@ -2,6 +2,8 @@ import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
+import { bucketName } from '@/lib/supabase';
+import prisma from '@/lib/prisma';
 
 function nodeReadableToWebReadable(
   nodeStream: Readable
@@ -24,30 +26,41 @@ function nodeReadableToWebReadable(
 }
 
 export function createGetHandler(s3Client: S3Client) {
-  return async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
-    const filePath = searchParams.get('filePath');
-    const bucketName = searchParams.get('bucketName');
+  return async function GET(
+    req: Request,
+    { params }: { params: Promise<{ docId: string }> }
+  ) {
+    const docData = await params;
+    const docId = docData.docId;
     const session = await auth();
 
     if (!session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!filePath || !bucketName) {
-      return NextResponse.json(
-        { error: 'Missing filePath or bucketName' },
-        { status: 400 }
-      );
+    if (!docId) {
+      return NextResponse.json({ error: 'Missing docId' }, { status: 400 });
     }
 
     try {
+      const document = await prisma.document.findUnique({
+        where: {
+          id: docId
+        },
+        select: {
+          documentId: true
+        }
+      });
+
       const command = new GetObjectCommand({
         Bucket: bucketName,
-        Key: filePath
+        Key: document?.documentId
       });
+
       const response = await s3Client.send(command);
       const stream = response.Body as Readable;
+
+      // Make sure browsers can read the pdf file
       const webStream = nodeReadableToWebReadable(stream);
 
       return new NextResponse(webStream, {

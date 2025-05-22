@@ -1,6 +1,11 @@
 import React from 'react';
-import PdfViewer from '@/components/PdfViewer';
+import DocumentList from '@/components/DocumentList';
 
 export default function Document() {
-  return <PdfViewer bucketName="document" filePath="Celpip_template.pdf" />;
+  return (
+    <div>
+      <h1>Document</h1>
+      <DocumentList />
+    </div>
+  );
 }
