@@ -1,5 +1,5 @@
 'use client';
-import ListHeader from '@/components/ListHeader';
+import ListHeader from '@/components/list-header';
 
 export default function CoursesPage() {
   return (

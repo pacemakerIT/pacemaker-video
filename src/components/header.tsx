@@ -1,3 +1,5 @@
+'use client';
+
 import {
   SignInButton,
   SignUpButton,
@@ -7,8 +9,11 @@ import {
 } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useUserContext } from '@/app/context/user-context';
 
 export function Header() {
+  const { user, isLoading, error } = useUserContext();
+
   return (
     <header className="w-full border-b">
       <div className="flex h-16 items-center justify-between px-8">
@@ -75,7 +80,7 @@ export function Header() {
               <div className="relative">
                 {/* TODO: 장바구니 DB 연결 */}
                 <div className="w-5 h-5 bg-pace-orange-600 text-white text-[10px] rounded-full flex items-center justify-center leading-none">
-                  3
+                  0
                 </div>
               </div>
               장바구니
@@ -92,12 +97,21 @@ export function Header() {
                   }
                 }}
               />
-              {/* TODO: 이름 Clerk 연결 */}
-              <span className="text-pace-base text-pace-black-500 font-medium">
-                김연아
-              </span>
+              {!isLoading && user && (
+                <>
+                  <span className="text-pace-base text-pace-black-500 font-medium">
+                    {user.name && user.name !== 'N/A'
+                      ? user.name
+                      : user.email.split('@')[0]}
+                  </span>
+                </>
+              )}
+              {error && (
+                <span className="text-pace-base text-pace-black-500 font-medium">
+                  회원
+                </span>
+              )}
               <span className="text-pace-base text-pace-black-500 font-normal">
-                {' '}
                 님
               </span>
             </div>
