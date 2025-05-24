@@ -1,7 +1,7 @@
 'use client';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { usePurchase } from '@/app/context/PurchaseContext';
+import { usePurchase } from '@/app/context/purchase-context';
 import { useAuth } from '@clerk/nextjs';
 
 export default function PurchaseVideo({ videoId }: { videoId: string }) {

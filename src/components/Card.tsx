@@ -14,31 +14,40 @@ export default function Card({
   category
 }: OnlineCards) {
   return (
-    <div className="w-[558px] cursor-pointer">
+    <div className="cursor-pointer">
       <Link href={`/courses/${id}`}>
-        <div className="bg-white rounded-lg shadow-sm border-[#EEEEEE] border overflow-hidden transition-all duration-300 hover:shadow-xl dark:bg-gray-950">
-          <Image
-            src={image}
-            width={588}
-            height={582}
-            className="w-full h-64 object-cover"
-            style={{ aspectRatio: '588/582', objectFit: 'cover' }}
-            alt="courses img"
-          />
-          {category && (
-            <div className="px-4 pt-4">
-              <CustomBadge variant={category}>{category}</CustomBadge>
-            </div>
-          )}
-          <div className="px-4 py-2 space-y-2">
-            <div className="flex w-full justify-between items-center">
-              <h3 className="text-2xl font-semibold pace-gray-500">{title}</h3>
-              <span className="text-[28px] font-bold">{`$${price}`}</span>
+        <div className="w-[588px] h-[582px] bg-white rounded-lg shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950">
+          <div className="w-[588px] h-[331px] overflow-hidden">
+            <Image
+              src={image}
+              width={588}
+              height={331}
+              className="w-full h-full object-cover"
+              alt="courses img"
+            />
+          </div>
+
+          <div className="w-[588px] h-[251px] p-6 flex flex-col gap-4 justify-start items-start">
+            <div className="w-full flex flex-col gap-2">
+              {category && (
+                <CustomBadge
+                  variant={category}
+                  className="w-[89px] flex justify-center items-center"
+                >
+                  {category}
+                </CustomBadge>
+              )}
+              <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-semibold pace-gray-500">
+                  {title}
+                </h3>
+                <span className="text-[28px] font-bold">{`$${price}`}</span>
+              </div>
             </div>
             <p className="text-gray-500 dark:text-gray-400 font-normal">
               {description}
             </p>
-            <Button variant="link" className="text-[#ED642D] py-4 px-0">
+            <Button variant="link" className="text-[#ED642D] p-0">
               {`자세히 보기`}
               <ArrowRight width={20} height={20} />
             </Button>

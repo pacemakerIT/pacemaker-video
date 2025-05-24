@@ -1,10 +1,10 @@
 'use client';
 import CardContainer from '@/components/CardContainer';
-import ListHeader from '@/components/ListHeader';
 import resume from '../../../public/img/resume_lecture.jpeg';
 import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
 import { OnlineCards } from '@/types/online';
+import ListHeader from '@/components/list-header';
 
 const cards: OnlineCards[] = [
   {
@@ -133,8 +133,8 @@ export default function CoursesPage() {
             end: '#FF823640'
           }}
         /> */}
-        <div className="w-[1200px] items-center mx-auto justify-center flex flex-col p-4">
-          <div className="flex flex-col justify-start w-full">
+        <div className="w-[1200px] items-center mx-auto justify-center flex flex-col">
+          <div className="flex flex-col justify-start w-full pt-20">
             <h5 className="text-pace-orange-600 text-lg">
               {'다양한 강의를 한 자리에서'}
             </h5>
@@ -142,12 +142,12 @@ export default function CoursesPage() {
               {'페이스메이커 온라인 강의'}
             </h3>
           </div>
-          <div className="w-full flex gap-4 justify-start items-center py-2">
+          <div className="w-full flex gap-4 justify-start items-center py-8">
             {category.map((categoryName) => (
               <Badge
                 key={categoryName}
                 variant={'outline'}
-                className={`${categoryName === currentCategory ? ' border-pace-orange-600 text-pace-orange-600' : 'text-pace-stone-600 border-pace-stone-600'} rounded-full px-8 py-4 cursor-pointer font-medium`}
+                className={`${categoryName === currentCategory ? ' border-pace-orange-600 text-pace-orange-600' : 'text-pace-stone-600 border-pace-stone-600'} rounded-full w-[120px] h-12 justify-center cursor-pointer font-medium`}
                 onClick={() => {
                   setCurrentCategory(categoryName);
                 }}

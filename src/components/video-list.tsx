@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import resume from '../../public/img/resume_lecture.jpeg';
 import { Video } from '@/types/video';
 import { toast } from 'sonner';
 
@@ -45,9 +44,17 @@ export default function VideoList() {
       ) : (
         <ul className="space-y-4">
           {videos.map((video, index) => (
-            <div key={index} className="p-4 border rounded-lg shadow">
+            <div
+              key={index}
+              className="p-4 border rounded-lg shadow relative w-[225px] h-[225px]"
+            >
               <Link href={goToVideoDetails(video.videoId)}>
-                <Image src={resume} alt="" />
+                <Image
+                  src="/img/resume_lecture.jpeg"
+                  alt=""
+                  fill
+                  className="rounded"
+                />
                 <h2 className="mt-2">{video.title}</h2>
               </Link>
             </div>

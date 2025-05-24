@@ -11,7 +11,7 @@ interface CardContainerProps {
 export default function CardContainer({ layout, cards }: CardContainerProps) {
   if (layout === 'grid') {
     return (
-      <div className="justify-center grid grid-cols-4 md:grid-cols-2 gap-4 w-full">
+      <div className="justify-center grid grid-cols-4 md:grid-cols-2 gap-6 w-full">
         {cards.map((card) => (
           <Card
             key={card.id}

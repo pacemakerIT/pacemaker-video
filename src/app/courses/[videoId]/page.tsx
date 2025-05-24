@@ -1,7 +1,7 @@
 'use client';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 import Link from 'next/link';
-import { usePurchase } from '../context/PurchaseContext';
+import { usePurchase } from '@/app/context/purchase-context';
 import { useAuth } from '@clerk/nextjs';
 import { use, useEffect, useState } from 'react';
 
@@ -45,7 +45,7 @@ export default function VideoDetails({
     if (!userId) {
       return `/sign-in?redirect_url=/${videoId}`;
     } else {
-      return `/purchase/${videoId}`;
+      return `/mypage/purchases/${videoId}`;
     }
   }
 
