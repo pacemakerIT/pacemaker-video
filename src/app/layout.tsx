@@ -1,8 +1,9 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 import { Toaster } from '@/components/ui/sonner';
-import { PurchaseProvider } from './context/PurchaseContext';
+import { UserProvider } from '@/app/context/user-context';
+import { PurchaseProvider } from '@/app/context/purchase-context';
 import './globals.css';
 
 export default function RootLayout({
@@ -14,16 +15,18 @@ export default function RootLayout({
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
-      <PurchaseProvider>
-        <html lang="en">
-          <body>
-            <Header />
-            <main className="container">{children}</main>
-            <Toaster />
-            <Footer />
-          </body>
-        </html>
-      </PurchaseProvider>
+      <UserProvider>
+        <PurchaseProvider>
+          <html lang="en">
+            <body>
+              <Header />
+              <main className="container">{children}</main>
+              <Toaster />
+              <Footer />
+            </body>
+          </html>
+        </PurchaseProvider>
+      </UserProvider>
     </ClerkProvider>
   );
 }

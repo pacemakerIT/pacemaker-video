@@ -36,17 +36,17 @@ export function Footer() {
             <span>pacemaker@gmail.com</span>
             <span>·</span>
             {/* 개인정보 처리방침 */}
-            <Link href="/privacy-policy" className="hover:underline">
+            <Link href="/legal/privacy-policy" className="hover:underline">
               개인정보 처리방침
             </Link>
             <span>·</span>
             {/* 이용약관 */}
-            <Link href="/terms-of-use" className="hover:underline">
+            <Link href="/legal/terms-of-use" className="hover:underline">
               이용약관
             </Link>
             <span>·</span>
             {/* 환불정책 */}
-            <Link href="/refund-policy" className="hover:underline">
+            <Link href="/legal/refund-policy" className="hover:underline">
               환불정책
             </Link>
           </div>
