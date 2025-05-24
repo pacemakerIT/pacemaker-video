@@ -41,8 +41,9 @@ export default function Card({
               src={image}
               width={588}
               height={331}
-              className="w-full h-full object-cover"
+              className="w-full h-64 object-cover"
               alt="courses img"
+              data-testid="card-image"
             />
           </div>
 

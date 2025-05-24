@@ -17,6 +17,30 @@ vi.mock('@/components/ListHeader', () => ({
   )
 }));
 
+// Mock the Select component
+vi.mock('@/components/ui/select', () => ({
+  Select: ({ children, value, onValueChange }: any) => (
+    <div data-testid="select-component">
+      <button data-testid="select-button" onClick={() => onValueChange('Date')}>
+        {value}
+      </button>
+      {children}
+    </div>
+  ),
+  SelectTrigger: ({ children }: any) => (
+    <div data-testid="select-trigger-container">{children}</div>
+  ),
+  SelectValue: ({ placeholder }: any) => (
+    <div data-testid="select-value">{placeholder}</div>
+  ),
+  SelectContent: ({ children }: any) => (
+    <div data-testid="select-content">{children}</div>
+  ),
+  SelectItem: ({ children, value }: any) => (
+    <div data-testid={`select-item-${value}`}>{children}</div>
+  )
+}));
+
 describe('CoursesPage', () => {
   it('renders the page with initial content', () => {
     render(<CoursesPage />);
@@ -26,10 +50,12 @@ describe('CoursesPage', () => {
 
   it('renders all category badges', () => {
     render(<CoursesPage />);
-    expect(screen.getByText('Total')).toBeDefined();
-    expect(screen.getByText('Interview')).toBeDefined();
-    expect(screen.getByText('Resume')).toBeDefined();
-    expect(screen.getByText('Networking')).toBeDefined();
+    const categoryBadges = screen.getAllByTestId(/^category-badge-/);
+    expect(categoryBadges).toHaveLength(4);
+    expect(categoryBadges[0]).toHaveTextContent('Total');
+    expect(categoryBadges[1]).toHaveTextContent('Interview');
+    expect(categoryBadges[2]).toHaveTextContent('Resume');
+    expect(categoryBadges[3]).toHaveTextContent('Networking');
   });
 
   it('filters cards when category is changed', () => {
@@ -40,11 +66,13 @@ describe('CoursesPage', () => {
     expect(initialCards).toMatch(/\d+ cards/);
 
     // Resume 카테고리 클릭
-    fireEvent.click(screen.getByText('Resume'));
+    const resumeBadge = screen.getByTestId('category-badge-Resume');
+    fireEvent.click(resumeBadge);
     expect(screen.getByTestId('card-container')).toHaveTextContent('3 cards');
 
     // Total 카테고리 클릭
-    fireEvent.click(screen.getByText('Total'));
+    const totalBadge = screen.getByTestId('category-badge-Total');
+    fireEvent.click(totalBadge);
     expect(screen.getByTestId('card-container')).toHaveTextContent(
       initialCards || ''
     );
@@ -52,7 +80,7 @@ describe('CoursesPage', () => {
 
   it('applies correct styles to selected category badge', () => {
     render(<CoursesPage />);
-    const resumeBadge = screen.getByText('Resume');
+    const resumeBadge = screen.getByTestId('category-badge-Resume');
     expect(resumeBadge.className).toContain('text-pace-stone-600');
     fireEvent.click(resumeBadge);
     expect(resumeBadge.className).toContain('text-pace-orange-600');
@@ -64,5 +92,27 @@ describe('CoursesPage', () => {
     expect(listHeader.textContent).toBe(
       '북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'
     );
+  });
+
+  it('renders select component with correct options', () => {
+    render(<CoursesPage />);
+
+    // Select 컴포넌트가 렌더링되었는지 확인
+    expect(screen.getByTestId('select-component')).toBeDefined();
+    expect(screen.getByTestId('select-button')).toBeDefined();
+    expect(screen.getByTestId('select-value')).toBeDefined();
+  });
+
+  it('changes sort value when select option is clicked', () => {
+    render(<CoursesPage />);
+
+    // Select 버튼 클릭
+    const selectButton = screen.getByTestId('select-button');
+    fireEvent.click(selectButton);
+
+    // Select 아이템이 렌더링되었는지 확인
+    expect(screen.getByTestId('select-item-Total')).toBeDefined();
+    expect(screen.getByTestId('select-item-Date')).toBeDefined();
+    expect(screen.getByTestId('select-item-Review')).toBeDefined();
   });
 });

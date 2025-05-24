@@ -50,6 +50,7 @@ export default function ListHeader({
   if (slides.length === 0) {
     return (
       <div
+        data-testid="list-header"
         className={`w-full flex flex-col justify-center items-center ${height} relative`}
         style={{
           background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
@@ -71,6 +72,7 @@ export default function ListHeader({
 
   return (
     <div
+      data-testid="list-header"
       className={`w-full flex flex-col justify-center items-center ${height} relative`}
       style={{
         background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`

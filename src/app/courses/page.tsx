@@ -156,6 +156,7 @@ export default function CoursesPage() {
                 <Badge
                   key={categoryName}
                   variant={'outline'}
+                  data-testid={`category-badge-${categoryName}`}
                   className={`${
                     categoryName === currentCategory
                       ? ' border-pace-orange-600 text-pace-orange-600'
