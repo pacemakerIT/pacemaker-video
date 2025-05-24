@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { use } from 'react';
-import PdfViewer from '@/components/PdfViewer';
+import PdfViewer from '@/components/pdf-viewer';
 import { bucketName } from '@/lib/supabase';
 
 type DocParams = Promise<{ docId: string }>;
