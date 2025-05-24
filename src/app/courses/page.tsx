@@ -90,13 +90,13 @@ const cards: OnlineCards[] = [
 
 export default function CoursesPage() {
   const category = ['Total', 'Interview', 'Resume', 'Networking'];
-  const [currentCategory, setCurrentCategory] = useState<string>('All');
-  const [sortBy, setSortBy] = useState<string>('total');
+  const [currentCategory, setCurrentCategory] = useState<string>('Total');
+  const [sortBy, setSortBy] = useState<string>('Total');
 
   const [currentCards, setCurrentCards] = useState(cards);
 
   useEffect(() => {
-    if (currentCategory !== 'All') {
+    if (currentCategory !== 'Total') {
       const filterCards = cards.filter(
         (card) => card.category === currentCategory
       );
@@ -171,13 +171,13 @@ export default function CoursesPage() {
             </div>
 
             <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
-              <SelectTrigger className="w-[180px] h-12 border-pace-stone-600 text-pace-stone-600">
-                <SelectValue placeholder="정렬 기준" />
+              <SelectTrigger className="w-[112px] h-12 text-pace-stone-800 bg-white rounded-[40px]">
+                <SelectValue placeholder="sort" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="total">Total</SelectItem>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="review">Review</SelectItem>
+              <SelectContent className=" bg-white border-[#EEEEEE]">
+                <SelectItem value="Total">Total</SelectItem>
+                <SelectItem value="Date">Date</SelectItem>
+                <SelectItem value="Review">Review</SelectItem>
               </SelectContent>
             </Select>
           </div>
