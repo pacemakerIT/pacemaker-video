@@ -5,6 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { useEffect, useState } from 'react';
 import { OnlineCards } from '@/types/online';
 import ListHeader from '@/components/list-header';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 const cards: OnlineCards[] = [
   {
@@ -83,12 +90,13 @@ const cards: OnlineCards[] = [
 
 export default function CoursesPage() {
   const category = ['Total', 'Interview', 'Resume', 'Networking'];
-  const [currentCategory, setCurrentCategory] = useState<string>('Total');
+  const [currentCategory, setCurrentCategory] = useState<string>('All');
+  const [sortBy, setSortBy] = useState<string>('total');
 
   const [currentCards, setCurrentCards] = useState(cards);
 
   useEffect(() => {
-    if (currentCategory !== 'Total') {
+    if (currentCategory !== 'All') {
       const filterCards = cards.filter(
         (card) => card.category === currentCategory
       );
@@ -142,19 +150,36 @@ export default function CoursesPage() {
               {'페이스메이커 온라인 강의'}
             </h3>
           </div>
-          <div className="w-full flex gap-4 justify-start items-center py-8">
-            {category.map((categoryName) => (
-              <Badge
-                key={categoryName}
-                variant={'outline'}
-                className={`${categoryName === currentCategory ? ' border-pace-orange-600 text-pace-orange-600' : 'text-pace-stone-600 border-pace-stone-600'} rounded-full w-[120px] h-12 justify-center cursor-pointer font-medium`}
-                onClick={() => {
-                  setCurrentCategory(categoryName);
-                }}
-              >
-                {categoryName}
-              </Badge>
-            ))}
+          <div className="w-full flex gap-4 justify-between items-center pt-8 pb-4">
+            <div className="flex gap-4">
+              {category.map((categoryName) => (
+                <Badge
+                  key={categoryName}
+                  variant={'outline'}
+                  className={`${
+                    categoryName === currentCategory
+                      ? ' border-pace-orange-600 text-pace-orange-600'
+                      : 'text-pace-stone-600 border-pace-stone-600'
+                  } rounded-full w-[120px] h-12 justify-center cursor-pointer font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
+                  onClick={() => {
+                    setCurrentCategory(categoryName);
+                  }}
+                >
+                  {categoryName}
+                </Badge>
+              ))}
+            </div>
+
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
+              <SelectTrigger className="w-[180px] h-12 border-pace-stone-600 text-pace-stone-600">
+                <SelectValue placeholder="정렬 기준" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="total">Total</SelectItem>
+                <SelectItem value="date">Date</SelectItem>
+                <SelectItem value="review">Review</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <CardContainer layout={'grid'} cards={currentCards} />
         </div>
