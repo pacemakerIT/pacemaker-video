@@ -24,7 +24,7 @@ const items = [
   },
   {
     title: '전자책 관리',
-    url: '#'
+    url: '/admin/document'
   },
   {
     title: '오프라인 워크샵 관리',

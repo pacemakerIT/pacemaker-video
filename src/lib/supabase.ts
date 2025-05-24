@@ -1,3 +1,4 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import { createClient } from '@supabase/supabase-js';
 
 // 클라이언트 사이드 Supabase 클라이언트 (공개 API만 접근 가능)
@@ -13,6 +14,18 @@ export const createClientSupabase = () => {
 
   return createClient(supabaseUrl, supabaseAnonKey);
 };
+
+export const s3clientSupabase = new S3Client({
+  forcePathStyle: true,
+  region: process.env.SUPABASE_S3_REGION!,
+  endpoint: process.env.SUPABASE_S3_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY!,
+    secretAccessKey: process.env.SUPABASE_S3_SECRET_KEY!
+  }
+});
+
+export const bucketName = process.env.SUPABASE_S3_BUCKET!;
 
 // 서버 사이드 Supabase 클라이언트 (서비스 롤 키로 더 많은 권한)
 // export const createServerSupabase = () => {

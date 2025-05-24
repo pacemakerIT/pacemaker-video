@@ -9,7 +9,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
 interface PdfViewerProps {
-  filePath: string;
+  docId: string;
   bucketName: string;
 }
 
@@ -18,7 +18,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-export default function PdfViewer({ filePath, bucketName }: PdfViewerProps) {
+export default function PdfViewer({ docId, bucketName }: PdfViewerProps) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,15 +41,12 @@ export default function PdfViewer({ filePath, bucketName }: PdfViewerProps) {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(
-          `/api/document?filePath=${filePath}&bucketName=${bucketName}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/pdf'
-            }
+        const response = await fetch(`/api/document/${docId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/pdf'
           }
-        );
+        });
 
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
@@ -64,7 +61,7 @@ export default function PdfViewer({ filePath, bucketName }: PdfViewerProps) {
     };
 
     fetchSignedUrl();
-  }, [filePath, bucketName, isSignedIn]);
+  }, [docId, bucketName, isSignedIn]);
 
   if (loading) return <div>PDF 로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;
