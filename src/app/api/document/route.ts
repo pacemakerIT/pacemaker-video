@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { format } from 'date-fns';
 import prisma from '@/lib/prisma';
 import { bucketName, s3clientSupabase } from '@/lib/supabase';
 
@@ -28,6 +29,10 @@ export async function POST(req: Request) {
       ? parseFloat(formData.get('price') as string)
       : null;
 
+    const now = new Date();
+    const timeStamp = format(now, 'yymmdd HH:mm:ss');
+    const titleWithTimestamp = `${title} - ${timeStamp}`;
+
     if (!file) {
       return NextResponse.json({ error: 'File Not Found' }, { status: 400 });
     }
@@ -37,7 +42,7 @@ export async function POST(req: Request) {
 
     const putCommand = new PutObjectCommand({
       Bucket: bucketName,
-      Key: title,
+      Key: titleWithTimestamp,
       Body: buffer,
       ContentType: file.type
     });
@@ -50,7 +55,7 @@ export async function POST(req: Request) {
 
     const newDocument = await prisma.document.create({
       data: {
-        documentId: title,
+        documentId: titleWithTimestamp,
         title,
         description,
         price,
