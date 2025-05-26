@@ -18,7 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.787.0",
     "@clerk/backend": "^1.32.0",
-    "@clerk/nextjs": "^6.19.4",
+    "@clerk/nextjs": "^6.20.0",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.8.2",
     "@radix-ui/react-dialog": "^1.1.13",
@@ -28,11 +28,11 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.6",
     "@supabase/supabase-js": "^2.49.8",
-    "@wistia/wistia-player-react": "^0.0.111",
+    "@wistia/wistia-player-react": "^0.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
-    "next": "15.3.1",
+    "next": "15.3.2",
     "next-auth": "^4.24.5",
     "next-themes": "^0.4.6",
     "pdfjs-dist": "^5.2.133",
@@ -44,7 +44,7 @@
     "svix": "^1.65.0",
     "tailwind-merge": "^3.3.0",
     "uuid": "^11.1.0",
-    "zod": "^3.24.4"
+    "zod": "^3.25.23"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
@@ -57,7 +57,7 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react": "^4.5.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.26.0",
     "eslint-config-next": "^15.3.2",
