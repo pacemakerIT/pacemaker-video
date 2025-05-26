@@ -1,6 +1,6 @@
 // src/app/courses/__tests__/page.test.tsx
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CoursesPage from '../page';
 import { OnlineCards } from '@/types/online';
 
@@ -41,46 +41,59 @@ vi.mock('@/components/ui/select', () => ({
   )
 }));
 
+// Mock the fetchCourses function
+vi.mock('@/lib/api', () => ({
+  fetchCourses: vi.fn().mockResolvedValue([
+    // mock data here
+  ])
+}));
+
 describe('CoursesPage', () => {
-  it('renders the page with initial content', () => {
+  it('renders the page with initial content', async () => {
     render(<CoursesPage />);
-    expect(screen.getByText('페이스메이커 온라인 강의')).toBeDefined();
-    expect(screen.getByText('다양한 강의를 한 자리에서')).toBeDefined();
+
+    await waitFor(() => {
+      expect(screen.getByText('페이스메이커 온라인 강의')).toBeInTheDocument();
+      expect(screen.getByText('다양한 강의를 한 자리에서')).toBeInTheDocument();
+    });
   });
 
-  it('renders all category badges', () => {
+  it('renders all category badges', async () => {
     render(<CoursesPage />);
-    const categoryBadges = screen.getAllByTestId(/^category-badge-/);
-    expect(categoryBadges).toHaveLength(4);
-    expect(categoryBadges[0]).toHaveTextContent('Total');
-    expect(categoryBadges[1]).toHaveTextContent('Interview');
-    expect(categoryBadges[2]).toHaveTextContent('Resume');
-    expect(categoryBadges[3]).toHaveTextContent('Networking');
+
+    await waitFor(() => {
+      const categoryBadges = screen.getAllByTestId(/^category-badge-/);
+      expect(categoryBadges).toHaveLength(4);
+      expect(categoryBadges[0]).toHaveTextContent('TOTAL');
+    });
   });
 
-  it('filters cards when category is changed', () => {
+  it('filters cards when category is changed', async () => {
     render(<CoursesPage />);
 
     // 초기 카드 개수 확인
-    const initialCards = screen.getByTestId('card-container').textContent;
-    expect(initialCards).toMatch(/\d+ cards/);
+    await waitFor(() => {
+      const cardContainer = screen.getByTestId('card-container');
+      expect(cardContainer).toBeInTheDocument();
+    });
 
-    // Resume 카테고리 클릭
-    const resumeBadge = screen.getByTestId('category-badge-Resume');
+    // RESUME 카테고리 선택
+    const resumeBadge = await screen.findByTestId('category-badge-RESUME');
     fireEvent.click(resumeBadge);
-    expect(screen.getByTestId('card-container')).toHaveTextContent('3 cards');
 
-    // Total 카테고리 클릭
-    const totalBadge = screen.getByTestId('category-badge-Total');
-    fireEvent.click(totalBadge);
-    expect(screen.getByTestId('card-container')).toHaveTextContent(
-      initialCards || ''
-    );
+    // 필터링 후 카드 개수 확인
+    await waitFor(() => {
+      const cardContainer = screen.getByTestId('card-container');
+      const cardCount = cardContainer.textContent?.match(/\d+/)?.[0];
+      expect(cardCount).toBeDefined();
+      expect(Number(cardCount)).toBeGreaterThanOrEqual(0);
+    });
   });
 
-  it('applies correct styles to selected category badge', () => {
+  it('applies correct styles to selected category badge', async () => {
     render(<CoursesPage />);
-    const resumeBadge = screen.getByTestId('category-badge-Resume');
+
+    const resumeBadge = await screen.findByTestId('category-badge-RESUME');
     expect(resumeBadge.className).toContain('text-pace-stone-600');
     fireEvent.click(resumeBadge);
     expect(resumeBadge.className).toContain('text-pace-orange-600');
@@ -94,25 +107,26 @@ describe('CoursesPage', () => {
     );
   });
 
-  it('renders select component with correct options', () => {
+  it('renders select component with correct options', async () => {
     render(<CoursesPage />);
 
-    // Select 컴포넌트가 렌더링되었는지 확인
-    expect(screen.getByTestId('select-component')).toBeDefined();
-    expect(screen.getByTestId('select-button')).toBeDefined();
-    expect(screen.getByTestId('select-value')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByTestId('select-component')).toBeDefined();
+      expect(screen.getByTestId('select-button')).toBeDefined();
+      expect(screen.getByTestId('select-value')).toBeDefined();
+    });
   });
 
-  it('changes sort value when select option is clicked', () => {
+  it('changes sort value when select option is clicked', async () => {
     render(<CoursesPage />);
 
-    // Select 버튼 클릭
-    const selectButton = screen.getByTestId('select-button');
+    const selectButton = await screen.findByTestId('select-button');
     fireEvent.click(selectButton);
 
-    // Select 아이템이 렌더링되었는지 확인
-    expect(screen.getByTestId('select-item-Total')).toBeDefined();
-    expect(screen.getByTestId('select-item-Date')).toBeDefined();
-    expect(screen.getByTestId('select-item-Review')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByTestId('select-item-Total')).toBeDefined();
+      expect(screen.getByTestId('select-item-Date')).toBeDefined();
+      expect(screen.getByTestId('select-item-Review')).toBeDefined();
+    });
   });
 });

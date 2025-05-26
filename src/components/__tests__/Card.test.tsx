@@ -40,8 +40,11 @@ describe('Card', () => {
     title: 'Test Course',
     price: 49.99,
     description: 'Test Description',
-    image: '/test-image.jpg',
-    category: 'Interview'
+    category: 'Interview',
+    videoId: 'video1',
+    uploadDate: new Date('2024-03-20'),
+    watchedVideos: [],
+    purchasedVideos: []
   };
 
   it('renders card with all props', () => {
@@ -61,12 +64,12 @@ describe('Card', () => {
 
     // Check if image is rendered
     const image = screen.getByTestId('card-image');
-    expect(image).toHaveAttribute('src', '/test-image.jpg');
+    expect(image).toHaveAttribute('src', '/public/img/resume_lecture.jpeg');
     expect(image).toHaveAttribute('alt', 'courses img');
   });
 
   it('renders card without category', () => {
-    const cardWithoutCategory = { ...mockCard, category: undefined };
+    const cardWithoutCategory = { ...mockCard, category: '' };
     render(<Card {...cardWithoutCategory} />);
 
     // Category badge should not be present
@@ -77,7 +80,7 @@ describe('Card', () => {
     render(<Card {...mockCard} />);
 
     const link = screen.getByTestId('card-link');
-    expect(link).toHaveAttribute('href', '/courses/1');
+    expect(link).toHaveAttribute('href', '/courses/video1');
   });
 
   it('renders "자세히 보기" button', () => {
@@ -99,7 +102,7 @@ describe('Card', () => {
     // Check image styles
     const image = screen.getByTestId('card-image');
     expect(image).toHaveClass('w-full');
-    expect(image).toHaveClass('h-64');
+    expect(image).toHaveClass('h-[331px]');
     expect(image).toHaveClass('object-cover');
 
     // Check title styles
