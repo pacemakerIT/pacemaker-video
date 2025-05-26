@@ -1,14 +1,15 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { createGetHandler } from './handler';
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
-const supabase = new S3Client({
-  forcePathStyle: true,
-  region: process.env.SUPABASE_S3_REGION!,
-  endpoint: process.env.SUPABASE_S3_ENDPOINT!,
-  credentials: {
-    accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY!,
-    secretAccessKey: process.env.SUPABASE_S3_SECRET_KEY!
+// Get all videos
+export async function GET() {
+  try {
+    const videos = await prisma.video.findMany();
+    return NextResponse.json(videos, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to fetch videos: ${error}` },
+      { status: 500 }
+    );
   }
-});
-
-export const GET = createGetHandler(supabase);
+}

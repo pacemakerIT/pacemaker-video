@@ -5,20 +5,21 @@ import { CustomBadge } from './CustomBadge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { useState } from 'react';
+import resume from '../../public/img/resume_lecture.jpeg';
 
 export default function Card({
   id,
+  videoId,
   title,
   price,
   description,
-  image,
   category
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
     <div className="cursor-pointer">
-      <Link href={`/courses/${id}`}>
+      <Link href={`/courses/${videoId}`}>
         <div className="w-[588px] bg-white rounded-lg shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative">
           <button
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10"
@@ -36,12 +37,12 @@ export default function Card({
             />
           </button>
 
-          <div className="w-[588px] h-[331px] overflow-hidden">
+          <div className="w-[588px] h-[331px]">
             <Image
-              src={image}
+              src={resume}
               width={588}
               height={331}
-              className="w-full h-64 object-cover"
+              className="w-full h-[331px] object-cover"
               alt="courses img"
               data-testid="card-image"
             />
