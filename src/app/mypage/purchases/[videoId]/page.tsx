@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
-import PurchaseVideo from '@/components/PurchaseVideo';
+import PurchaseVideo from '@/components/purchase-video';
 
 export default async function PurchaseLecture({
   params

@@ -1,5 +1,5 @@
-import VideoList from '@/components/VideoList';
-import UserInfo from '@/components/UserInfo';
+import VideoList from '@/components/video-list';
+import UserInfo from '@/components/user-info';
 
 export default async function Home() {
   return (
