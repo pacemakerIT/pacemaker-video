@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Card from '../Card';
 import { OnlineCards } from '@/types/online';
+import Image from 'next/image';
 
 // Mock next/image - className을 전달하도록 수정
 vi.mock('next/image', () => ({
@@ -15,7 +16,7 @@ vi.mock('next/image', () => ({
     alt: string;
     className?: string;
   }) => (
-    <img src={src} alt={alt} className={className} data-testid="card-image" />
+    <Image src={src} alt={alt} className={className} data-testid="card-image" />
   )
 }));
 

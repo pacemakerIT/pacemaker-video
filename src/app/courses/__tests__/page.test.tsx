@@ -19,7 +19,15 @@ vi.mock('@/components/ListHeader', () => ({
 
 // Mock the Select component
 vi.mock('@/components/ui/select', () => ({
-  Select: ({ children, value, onValueChange }: any) => (
+  Select: ({
+    children,
+    value,
+    onValueChange
+  }: {
+    children: React.ReactNode;
+    value: string;
+    onValueChange: (value: string) => void;
+  }) => (
     <div data-testid="select-component">
       <button data-testid="select-button" onClick={() => onValueChange('Date')}>
         {value}
@@ -27,18 +35,22 @@ vi.mock('@/components/ui/select', () => ({
       {children}
     </div>
   ),
-  SelectTrigger: ({ children }: any) => (
+  SelectTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="select-trigger-container">{children}</div>
   ),
-  SelectValue: ({ placeholder }: any) => (
+  SelectValue: ({ placeholder }: { placeholder: string }) => (
     <div data-testid="select-value">{placeholder}</div>
   ),
-  SelectContent: ({ children }: any) => (
+  SelectContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="select-content">{children}</div>
   ),
-  SelectItem: ({ children, value }: any) => (
-    <div data-testid={`select-item-${value}`}>{children}</div>
-  )
+  SelectItem: ({
+    children,
+    value
+  }: {
+    children: React.ReactNode;
+    value: string;
+  }) => <div data-testid={`select-item-${value}`}>{children}</div>
 }));
 
 // Mock the fetchCourses function

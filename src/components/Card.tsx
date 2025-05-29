@@ -8,7 +8,6 @@ import { useState } from 'react';
 import resume from '../../public/img/resume_lecture.jpeg';
 
 export default function Card({
-  id,
   videoId,
   title,
   price,
