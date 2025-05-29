@@ -13,29 +13,6 @@ export default function CoursesPage() {
           end: '#A8DBFF40'
         }}
       />
-      {/* 메인화면 헤더 사용법 - 공유 후 삭제 예정 */}
-      <ListHeader
-        slides={[
-          {
-            title: '첫 번째 슬라이드 제목',
-            buttonText: '첫 번째 버튼'
-          },
-          {
-            title: '두 번째 슬라이드 제목'
-          },
-          {
-            title: '세 번째 슬라이드 제목',
-            buttonText: '세 번째 버튼'
-          }
-        ]}
-        // autoPlayInterval={5000} // 5초마다 자동 전환
-        height={'h-[502px]'}
-        gradientColors={{
-          start: '#FFCDCE',
-          middle: '#FF823610',
-          end: '#FF823640'
-        }}
-      />
     </div>
   );
 }
