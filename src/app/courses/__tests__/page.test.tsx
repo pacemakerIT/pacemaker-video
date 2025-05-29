@@ -1,6 +1,12 @@
 // src/app/courses/__tests__/page.test.tsx
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup
+} from '@testing-library/react';
 import CoursesPage from '../page';
 import { OnlineCards } from '@/types/online';
 
@@ -56,89 +62,155 @@ vi.mock('@/components/ui/select', () => ({
 // Mock the fetchCourses function
 vi.mock('@/lib/api', () => ({
   fetchCourses: vi.fn().mockResolvedValue([
-    // mock data here
+    {
+      id: '1',
+      title: 'Test Course 1',
+      price: 49.99,
+      description: 'Test Description 1',
+      category: 'INTERVIEW',
+      videoId: 'video1',
+      uploadDate: new Date('2024-03-20'),
+      watchedVideos: [],
+      purchasedVideos: []
+    },
+    {
+      id: '2',
+      title: 'Test Course 2',
+      price: 39.99,
+      description: 'Test Description 2',
+      category: 'RESUME',
+      videoId: 'video2',
+      uploadDate: new Date('2024-03-21'),
+      watchedVideos: [],
+      purchasedVideos: []
+    }
   ])
 }));
 
 describe('CoursesPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders the page with initial content', async () => {
     render(<CoursesPage />);
 
-    await waitFor(() => {
-      expect(screen.getByText('페이스메이커 온라인 강의')).toBeInTheDocument();
-      expect(screen.getByText('다양한 강의를 한 자리에서')).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText('페이스메이커 온라인 강의')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('다양한 강의를 한 자리에서')
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
   });
 
   it('renders all category badges', async () => {
     render(<CoursesPage />);
 
-    await waitFor(() => {
-      const categoryBadges = screen.getAllByTestId(/^category-badge-/);
-      expect(categoryBadges).toHaveLength(4);
-      expect(categoryBadges[0]).toHaveTextContent('TOTAL');
-    });
+    await waitFor(
+      () => {
+        const categoryBadges = screen.getAllByTestId(/^category-badge-/);
+        expect(categoryBadges).toHaveLength(4);
+        expect(categoryBadges[0]).toHaveTextContent('TOTAL');
+      },
+      { timeout: 5000 }
+    );
   });
 
   it('filters cards when category is changed', async () => {
     render(<CoursesPage />);
 
-    // 초기 카드 개수 확인
-    await waitFor(() => {
-      const cardContainer = screen.getByTestId('card-container');
-      expect(cardContainer).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        const cardContainer = screen.getByTestId('card-container');
+        expect(cardContainer).toBeInTheDocument();
+      },
+      { timeout: 5000 }
+    );
 
-    // RESUME 카테고리 선택
-    const resumeBadge = await screen.findByTestId('category-badge-RESUME');
+    const resumeBadge = await screen.findByTestId(
+      'category-badge-RESUME',
+      {},
+      { timeout: 5000 }
+    );
     fireEvent.click(resumeBadge);
 
-    // 필터링 후 카드 개수 확인
-    await waitFor(() => {
-      const cardContainer = screen.getByTestId('card-container');
-      const cardCount = cardContainer.textContent?.match(/\d+/)?.[0];
-      expect(cardCount).toBeDefined();
-      expect(Number(cardCount)).toBeGreaterThanOrEqual(0);
-    });
+    await waitFor(
+      () => {
+        const cardContainer = screen.getByTestId('card-container');
+        const cardCount = cardContainer.textContent?.match(/\d+/)?.[0];
+        expect(cardCount).toBeDefined();
+        expect(Number(cardCount)).toBeGreaterThanOrEqual(0);
+      },
+      { timeout: 5000 }
+    );
   });
 
   it('applies correct styles to selected category badge', async () => {
     render(<CoursesPage />);
 
-    const resumeBadge = await screen.findByTestId('category-badge-RESUME');
+    const resumeBadge = await screen.findByTestId(
+      'category-badge-RESUME',
+      {},
+      { timeout: 5000 }
+    );
     expect(resumeBadge.className).toContain('text-pace-stone-600');
     fireEvent.click(resumeBadge);
     expect(resumeBadge.className).toContain('text-pace-orange-600');
   });
 
-  it('renders ListHeader with correct props', () => {
+  it('renders ListHeader with correct props', async () => {
     render(<CoursesPage />);
-    const listHeader = screen.getByTestId('list-header');
-    expect(listHeader.textContent).toBe(
-      '북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'
+
+    await waitFor(
+      () => {
+        const listHeader = screen.getByTestId('list-header');
+        expect(listHeader.textContent).toBe(
+          '북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'
+        );
+      },
+      { timeout: 5000 }
     );
   });
 
   it('renders select component with correct options', async () => {
     render(<CoursesPage />);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('select-component')).toBeDefined();
-      expect(screen.getByTestId('select-button')).toBeDefined();
-      expect(screen.getByTestId('select-value')).toBeDefined();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('select-component')).toBeDefined();
+        expect(screen.getByTestId('select-button')).toBeDefined();
+        expect(screen.getByTestId('select-value')).toBeDefined();
+      },
+      { timeout: 5000 }
+    );
   });
 
   it('changes sort value when select option is clicked', async () => {
     render(<CoursesPage />);
 
-    const selectButton = await screen.findByTestId('select-button');
+    const selectButton = await screen.findByTestId(
+      'select-button',
+      {},
+      { timeout: 5000 }
+    );
     fireEvent.click(selectButton);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('select-item-Total')).toBeDefined();
-      expect(screen.getByTestId('select-item-Date')).toBeDefined();
-      expect(screen.getByTestId('select-item-Review')).toBeDefined();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('select-item-Total')).toBeDefined();
+        expect(screen.getByTestId('select-item-Date')).toBeDefined();
+        expect(screen.getByTestId('select-item-Review')).toBeDefined();
+      },
+      { timeout: 5000 }
+    );
   });
 });

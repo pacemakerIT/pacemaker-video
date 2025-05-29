@@ -21,6 +21,8 @@ export default function Card({
       <Link href={`/courses/${videoId}`}>
         <div className="w-[588px] bg-white rounded-lg shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative">
           <button
+            role="button"
+            aria-label="like"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10"
             onClick={(e) => {
               e.preventDefault();
