@@ -29,7 +29,7 @@ export default function Sidebar() {
         >
           <Image
             src="/icons/btn_setting.svg"
-            alt="로그인 아이콘"
+            alt="환경설정"
             width={40}
             height={40}
             className="hover:opacity-75"

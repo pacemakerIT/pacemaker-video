@@ -1,10 +1,10 @@
 export default function PaymentSummary() {
   return (
-    <aside>
+    <aside className="w-80 border-l p-10 pt-20">
       <h2 className="text-pace-lg text-pace-gray-700 font-bold mb-4">
         예상 결제 금액
       </h2>
-      <ul className="text-pace-base text-pace-gray-700 space-y-4 mb-6 pb-[24px] border-b border-pace-gray-700">
+      <ul className="text-pace-base text-pace-gray-700 space-y-4 mb-6 pb-6 border-b border-pace-gray-700">
         <li className="flex justify-between">
           <span className="text-[#6B7280]">소계 (3개의 강의)</span>
           <span>$264.97</span>
