@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { Button } from './ui/button';
 
 interface ListHeaderProps {
   title?: string;
@@ -49,6 +50,7 @@ export default function ListHeader({
   if (slides.length === 0) {
     return (
       <div
+        data-testid="list-header"
         className={`w-full flex flex-col justify-center items-center ${height} relative`}
         style={{
           background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
@@ -59,9 +61,9 @@ export default function ListHeader({
             {title}
           </span>
           {buttonText && (
-            <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+            <Button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
               {buttonText}
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -70,6 +72,7 @@ export default function ListHeader({
 
   return (
     <div
+      data-testid="list-header"
       className={`w-full flex flex-col justify-center items-center ${height} relative`}
       style={{
         background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
