@@ -1,5 +1,5 @@
 import '@/app/globals.css';
-import Sidebar from '@/components/my-page-side-bar';
+import MyPageSidebar from '@/components/my-page-side-bar';
 
 export default function RootLayout({
   children
@@ -8,12 +8,8 @@ export default function RootLayout({
 }) {
   return (
     <div className="w-screen grid grid-cols-[320px_1fr]">
-      <Sidebar />
-      <html lang="en">
-        <body>
-          <main className="container flex">{children}</main>
-        </body>
-      </html>
+      <MyPageSidebar />
+      <main className="container flex">{children}</main>
     </div>
   );
 }
