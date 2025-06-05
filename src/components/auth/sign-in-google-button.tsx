@@ -4,7 +4,12 @@ import { useSignIn } from '@clerk/nextjs';
 import Image from 'next/image';
 import { toast } from 'sonner';
 
-export default function SignInWithGoogleButton() {
+type Props = {
+  returnUrl?: string;
+};
+
+// returnUrl 예시 <SignInWithGoogleButton returnUrl="/mypage" />
+export default function SignInWithGoogleButton({ returnUrl }: Props) {
   const { isLoaded, signIn } = useSignIn();
 
   const handleGoogleSignIn = async () => {
@@ -14,7 +19,7 @@ export default function SignInWithGoogleButton() {
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: '/sso-callback', // Clerk가 중간 인증 redirect를 수행할 곳
-        redirectUrlComplete: '/' // 로그인 성공 후 돌아올 곳
+        redirectUrlComplete: returnUrl ?? '/' // returnUrl 있으면 사용, 없으면 '/'
       });
 
       // redirect happens, so no need for setActive or router.push here
