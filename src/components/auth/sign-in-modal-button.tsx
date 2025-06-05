@@ -34,19 +34,20 @@ export default function SignInModalButton() {
 
         {/* 모달 중앙 정렬 */}
         <div className="fixed inset-0 flex items-center justify-center">
-          <Dialog.Panel className="w-[480px] bg-white rounded-lg shadow-xl px-10 py-10 flex flex-col gap-10">
+          <Dialog.Panel
+            className="
+              w-full max-w-[480px]
+              bg-white rounded-lg shadow-xl
+              px-6 py-10
+              sm:px-10 sm:py-16
+              md:px-[40px] md:py-[80px]
+              flex flex-col gap-6
+            "
+          >
             <Dialog.Title className="text-pace-xl font-bold text-center text-pace-black-500">
               로그인
             </Dialog.Title>
-
             <CustomSignIn closeModal={() => setIsOpen(false)} />
-
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-pace-sm text-pace-gray-500 hover:underline text-center"
-            >
-              닫기
-            </button>
           </Dialog.Panel>
         </div>
       </Dialog>

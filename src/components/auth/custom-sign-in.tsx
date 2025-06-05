@@ -3,6 +3,8 @@
 import { useSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SignUpButton } from '@clerk/nextjs';
+import SignInWithGoogleButton from '@/components/auth/sign-in-google-button';
 
 type Props = {
   closeModal?: () => void;
@@ -37,33 +39,57 @@ export default function CustomSignIn({ closeModal }: Props) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-6 font-sans text-pace-base"
-    >
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="이메일 주소"
-        className="rounded-full border border-pace-gray-200 px-4 py-3 placeholder-pace-gray-500 text-pace-black-500"
-        required
-      />
-      <input
-        type="password"
-        value={pw}
-        onChange={(e) => setPw(e.target.value)}
-        placeholder="비밀번호"
-        className="rounded-full border border-pace-gray-200 px-4 py-3 placeholder-pace-gray-500 text-pace-black-500"
-        required
-      />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
-        type="submit"
-        className="bg-pace-orange-800 hover:bg-pace-orange-600 text-white py-3 rounded-full text-pace-base"
+    <div className="w-full flex flex-col items-center text-pace-base">
+      <SignInWithGoogleButton />
+      <p className="w-[400px] text-pace-base font-bold text-pace-black-500 text-center mb-6">
+        혹은
+      </p>
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-full flex flex-col items-center"
       >
-        로그인 하기
-      </button>
-    </form>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="이메일 주소"
+          className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 text-pace-base leading-[1.4] font-normal placeholder-pace-stone-800 mb-6"
+          required
+        />
+        <input
+          type="password"
+          value={pw}
+          onChange={(e) => setPw(e.target.value)}
+          placeholder="비밀번호"
+          className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 text-pace-base leading-[1.4] font-normal placeholder-pace-stone-800 mb-0"
+          required
+        />
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <button
+          type="submit"
+          className="
+            w-full
+            bg-pace-orange-800 hover:bg-pace-orange-600
+            text-white text-pace-base font-medium rounded-full
+            py-3
+            mt-6 mb-6
+            sm:mt-8 sm:mb-8
+            md:mt-[40px] md:mb-[40px]
+          "
+        >
+          로그인 하기
+        </button>
+      </form>
+
+      <p className="text-pace-base font-normal text-pace-stone-500 text-center">
+        회원이 아니신가요?{' '}
+        <SignUpButton mode="modal">
+          <span className="text-pace-gray-500 underline hover:text-pace-orange-800 cursor-pointer">
+            회원가입 하기
+          </span>
+        </SignUpButton>
+      </p>
+    </div>
   );
 }
