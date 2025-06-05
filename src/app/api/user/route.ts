@@ -23,3 +23,32 @@ export async function GET() {
     );
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { name, role } = body;
+
+    const updatedUser = await prisma.user.update({
+      where: { clerkId: userId },
+      data: {
+        ...(name && { name }),
+        ...(role && { role }),
+        updatedAt: new Date()
+      }
+    });
+
+    return NextResponse.json(updatedUser, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to update user: ${error}` },
+      { status: 500 }
+    );
+  }
+}

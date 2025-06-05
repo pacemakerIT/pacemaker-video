@@ -1,5 +1,5 @@
-'use client';
 import ListHeader from '@/components/list-header';
+import CourseList from '@/components/CourseList';
 
 export default function CoursesPage() {
   return (
@@ -10,9 +10,10 @@ export default function CoursesPage() {
         gradientColors={{
           start: '#A8DBFF60',
           middle: '#FF823610',
-          end: '#A8DBFF40'
+          end: '#a5b1b940'
         }}
       />
+      <CourseList />
     </div>
   );
 }
