@@ -10,7 +10,7 @@ export default function CoursesPage() {
         gradientColors={{
           start: '#A8DBFF60',
           middle: '#FF823610',
-          end: '#A8DBFF40'
+          end: '#a5b1b940'
         }}
       />
       <CourseList />

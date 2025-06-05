@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // src/components/__tests__/Card.test.tsx
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
