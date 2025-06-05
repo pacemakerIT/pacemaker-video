@@ -1,15 +1,15 @@
 'use client';
 
 import {
-  SignInButton,
+  // SignInButton,
   SignUpButton,
   SignedIn,
   SignedOut,
   UserButton
 } from '@clerk/nextjs';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useUserContext } from '@/app/context/user-context';
+import SignInModalButton from '@/components/auth/sign-in-modal-button';
 
 export function Header() {
   const { user, isLoading, error } = useUserContext();
@@ -59,7 +59,8 @@ export function Header() {
             </SignUpButton>
 
             {/* 로그인 */}
-            <SignInButton mode="modal">
+            <SignInModalButton />
+            {/* <SignInButton mode="modal">
               <button className="flex items-center gap-2 text-pace-base font-normal text-pace-orange-800 hover:text-pace-orange-600">
                 <Image
                   src="/icons/login.svg"
@@ -70,7 +71,7 @@ export function Header() {
                 />
                 로그인
               </button>
-            </SignInButton>
+            </SignInButton> */}
           </SignedOut>
           <SignedIn>
             <Link
