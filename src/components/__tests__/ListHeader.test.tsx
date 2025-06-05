@@ -1,9 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import ListHeader from '@/components/list-header';
+import ListHeader from '../list-header';
 
 describe('ListHeader', () => {
-  // 기본 렌더링 테스트
   it('renders with basic props', () => {
     render(<ListHeader title="테스트 제목" buttonText="테스트 버튼" />);
 
