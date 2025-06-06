@@ -75,7 +75,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
       )}
       <div
         ref={containerRef}
-        className="flex overflow-hidden gap-4 pb-4 w-full"
+        className="flex overflow-hidden gap-4 pb-4 w-[1560px]"
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none">
