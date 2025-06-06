@@ -21,6 +21,7 @@ interface ListHeaderProps {
   };
   slides?: { title: string; subtitle?: string; buttonText?: string }[];
   autoPlayInterval?: number;
+  interval?: number;
 }
 
 export default function ListHeader({
@@ -106,11 +107,11 @@ export default function ListHeader({
           {slides.map((slide, index) => (
             <CarouselItem key={index} className="w-screen h-full">
               <div className="flex flex-col justify-center items-center gap-8 h-full">
-                <div className="flex flex-col justify-center items-center gap-4 h-full">
-                  <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
+                <div className="flex flex-col justify-center items-center gap-4 h-full ">
+                  <span className="font-bold text-pace-4xl text-center whitespace-pre-line pointer-events-none cursor-default select-none">
                     {slide.title}
                   </span>
-                  <span className="font-medium text-pace-xl text-center whitespace-pre-line">
+                  <span className="font-medium text-pace-xl text-center whitespace-pre-line pointer-events-none cursor-default select-none">
                     {slide.subtitle}
                   </span>
                 </div>
