@@ -30,12 +30,14 @@ interface UserContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
   isLoading: true,
-  error: null
+  error: null,
+  setUser: () => {}
 });
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
@@ -94,7 +96,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isLoaded, isSignedIn]);
 
   return (
-    <UserContext.Provider value={{ user, isLoading, error }}>
+    <UserContext.Provider value={{ user, isLoading, error, setUser }}>
       {children}
     </UserContext.Provider>
   );
