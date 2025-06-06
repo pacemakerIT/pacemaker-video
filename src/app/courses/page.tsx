@@ -1,5 +1,5 @@
-'use client';
 import ListHeader from '@/components/list-header';
+import CourseList from '@/components/CourseList';
 
 export default function CoursesPage() {
   return (
@@ -10,32 +10,10 @@ export default function CoursesPage() {
         gradientColors={{
           start: '#A8DBFF60',
           middle: '#FF823610',
-          end: '#A8DBFF40'
+          end: '#a5b1b940'
         }}
       />
-      {/* 메인화면 헤더 사용법 - 공유 후 삭제 예정 */}
-      <ListHeader
-        slides={[
-          {
-            title: '첫 번째 슬라이드 제목',
-            buttonText: '첫 번째 버튼'
-          },
-          {
-            title: '두 번째 슬라이드 제목'
-          },
-          {
-            title: '세 번째 슬라이드 제목',
-            buttonText: '세 번째 버튼'
-          }
-        ]}
-        // autoPlayInterval={5000} // 5초마다 자동 전환
-        height={'h-[502px]'}
-        gradientColors={{
-          start: '#FFCDCE',
-          middle: '#FF823610',
-          end: '#FF823640'
-        }}
-      />
+      <CourseList />
     </div>
   );
 }
