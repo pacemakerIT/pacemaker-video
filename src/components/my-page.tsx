@@ -19,6 +19,7 @@ export default function MyPage({ children }: { children: React.ReactNode }) {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <p>Error: {error}</p>;
+  if (!user) return null;
 
   return (
     <div className="w-screen grid grid-cols-[320px_1fr]">
