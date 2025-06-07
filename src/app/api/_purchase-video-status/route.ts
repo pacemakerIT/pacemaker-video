@@ -28,39 +28,27 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all purchased videos for this user with their actual video IDs
-    const purchases: {
-      id: string;
-      video: {
-        videoId: string | null;
-      } | null;
-    }[] = await prisma.purchasedVideo.findMany({
+    const purchasedVideos = await prisma.video.findMany({
+      distinct: ['id'],
       where: {
-        userId: currentUser.id
-      },
-      select: {
-        id: true,
-        video: {
-          select: {
-            videoId: true
+        orderItems: {
+          some: {
+            order: {
+              userId: currentUser.id,
+              status: 'COMPLETED'
+            }
           }
         }
+      },
+      select: {
+        videoId: true
       }
     });
 
     // Extract actual video IDs from the video table, filtering out any null videos
-    const purchasedVideoIds = purchases
-      .filter((purchase) => {
-        if (!purchase.video) {
-          return false;
-        }
-        if (!purchase.video.videoId) {
-          return false;
-        }
-        return true;
-      })
-      .map((purchase) => {
-        return purchase.video?.videoId;
-      });
+    const purchasedVideoIds = purchasedVideos.map(
+      (video: { videoId: string }) => video.videoId
+    );
 
     return NextResponse.json({ purchasedVideoIds }, { status: 200 });
   } catch (error) {
