@@ -9,12 +9,11 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>[0];
 
 interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   opts?: UseCarouselParameters;
-  api?: CarouselApi;
   setApi?: (api: CarouselApi) => void;
 }
 
 const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
-  ({ opts, api, setApi, className, children, ...props }, ref) => {
+  ({ opts, setApi, className, children, ...props }, ref) => {
     const [carouselRef, emblaApi] = useEmblaCarousel({
       ...opts,
       loop: true

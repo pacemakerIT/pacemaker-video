@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import { Carousel } from './ui/carousel';
+import { Carousel, type CarouselApi } from './ui/carousel';
 
 interface ListHeaderProps {
   title?: string;
@@ -29,11 +29,15 @@ export default function ListHeader({
   slides = title && buttonText ? [{ title, buttonText }] : [],
   autoPlayInterval
 }: ListHeaderProps) {
+  const [api, setApi] = useState<CarouselApi | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [api, setApi] = useState<any>(null);
 
   useEffect(() => {
     if (!api) return;
+
+    api.on('select', () => {
+      setCurrentSlide(api.selectedScrollSnap());
+    });
 
     let timer: NodeJS.Timeout;
 
