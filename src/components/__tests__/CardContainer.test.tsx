@@ -63,46 +63,25 @@ describe('CardContainer', () => {
     // 다음 버튼이 보여야 함
     const nextButton = screen.getByRole('button');
     expect(nextButton).toBeInTheDocument();
+    expect(nextButton).toHaveClass('right-[calc(100%-1210px)]');
   });
 
-  it('shows/hides navigation buttons based on scroll position', () => {
-    const { container } = render(
+  it('shows/hides navigation buttons based on current index', () => {
+    const { rerender } = render(
       <CardContainer layout="horizontal" cards={mockCards} />
     );
 
-    const scrollContainer = container.querySelector('.flex.overflow-hidden');
-    expect(scrollContainer).toBeInTheDocument();
+    // 초기 상태에서는 이전 버튼이 없고 다음 버튼이 있어야 함
+    expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
+    expect(screen.getByRole('button')).toBeInTheDocument();
 
-    // 스크롤 이벤트를 모킹
-    if (scrollContainer) {
-      Object.defineProperty(scrollContainer, 'scrollLeft', {
-        writable: true,
-        value: 1000
-      });
-      Object.defineProperty(scrollContainer, 'scrollWidth', {
-        writable: true,
-        value: 1000
-      });
-      Object.defineProperty(scrollContainer, 'clientWidth', {
-        writable: true,
-        value: 500
-      });
+    // 마지막 카드로 이동한 상태를 시뮬레이션
+    rerender(
+      <CardContainer layout="horizontal" cards={mockCards.slice(0, 2)} />
+    );
 
-      // 스크롤 이벤트 발생
-      fireEvent.scroll(scrollContainer, {
-        target: {
-          scrollLeft: 1000,
-          scrollWidth: 1000,
-          clientWidth: 500
-        }
-      });
-
-      // 상태 업데이트를 기다림
-      setTimeout(() => {
-        // 다음 버튼이 사라져야 함
-        expect(screen.queryByRole('button')).toBeNull();
-      }, 0);
-    }
+    // 마지막 카드에서는 다음 버튼이 없어야 함
+    expect(screen.queryByRole('button')).toBeNull();
   });
 
   it('handles navigation button clicks correctly', () => {
@@ -111,9 +90,8 @@ describe('CardContainer', () => {
     );
 
     const nextButton = screen.getByRole('button');
-
-    // scrollTo 메서드 모킹
     const scrollContainer = container.querySelector('.flex.overflow-hidden');
+
     if (scrollContainer) {
       scrollContainer.scrollTo = vi.fn();
     }
@@ -122,6 +100,7 @@ describe('CardContainer', () => {
 
     // 다음 버튼 클릭 후 이전 버튼이 나타나야 함
     expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(scrollContainer?.scrollTo).toHaveBeenCalled();
   });
 
   it('renders empty container when no cards provided', () => {

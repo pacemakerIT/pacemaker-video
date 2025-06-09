@@ -31,9 +31,9 @@ export default async function Home() {
           end: '#FF823660'
         }}
       />
-      <div className="w-[1200px] items-center mx-auto justify-center flex flex-col gap-8">
+      <div className="w-[62.5%] items-center mx-auto justify-center flex flex-col gap-8">
         <iframe
-          width="1200"
+          width="100%"
           height="673"
           src="https://www.youtube.com/embed/gk43OcYMes8?si=4rPZKvzBGS9H6Mhx&mute=1&autoplay=1"
           title="YouTube video player"

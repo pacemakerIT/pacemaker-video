@@ -43,7 +43,7 @@ export default function Card({
               src={resume}
               width={588}
               height={331}
-              className="w-full h-[331px] object-cover"
+              className="w-full h-[331px] object-cover rounded-lg"
               alt="courses img"
               data-testid="card-image"
             />
