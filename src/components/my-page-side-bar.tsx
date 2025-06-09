@@ -49,7 +49,7 @@ export default function MyPageSidebar() {
           const isLast = index === menuItems.length - 1;
           const isActive = pathname === item.href;
           const borderClass = `${isLast ? 'border-b' : ''}`;
-          const activeClass = isActive ? 'font-bold text-pace-orange-700' : '';
+          const activeClass = isActive ? 'font-bold !text-pace-orange-700' : '';
 
           return (
             <Link
