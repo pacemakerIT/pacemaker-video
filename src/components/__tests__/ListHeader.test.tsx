@@ -77,8 +77,14 @@ describe('ListHeader', () => {
 
     render(<ListHeader title="Test Title" slides={slides} />);
 
-    const slidesElements = screen.getAllByText(/Slide \d/);
-    expect(slidesElements).toHaveLength(slides.length);
+    // Check for slide content in the carousel
+    const carousel = screen.getByRole('region', { hidden: true });
+    expect(carousel).toBeInTheDocument();
+
+    // Check for slide titles
+    slides.forEach((slide) => {
+      expect(screen.getByText(slide.title)).toBeInTheDocument();
+    });
   });
 
   it('auto plays slides when interval is provided', () => {

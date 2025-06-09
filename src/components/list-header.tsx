@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
+import { Carousel } from './ui/carousel';
 
 interface ListHeaderProps {
   title?: string;
@@ -29,13 +30,16 @@ export default function ListHeader({
   autoPlayInterval
 }: ListHeaderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [api, setApi] = useState<any>(null);
 
   useEffect(() => {
+    if (!api) return;
+
     let timer: NodeJS.Timeout;
 
     if (autoPlayInterval && slides.length > 1) {
       timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        api.scrollNext();
       }, autoPlayInterval);
     }
 
@@ -44,7 +48,7 @@ export default function ListHeader({
         clearInterval(timer);
       }
     };
-  }, [slides.length, autoPlayInterval]);
+  }, [api, slides.length, autoPlayInterval]);
 
   // slides가 비어있으면 빈 div 반환
   if (slides.length === 0) {
@@ -78,16 +82,30 @@ export default function ListHeader({
         background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
       }}
     >
-      <div className="flex flex-col justify-center items-center gap-8">
-        <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
-          {slides[currentSlide].title}
-        </span>
-        {slides[currentSlide].buttonText && (
-          <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
-            {slides[currentSlide].buttonText}
-          </button>
-        )}
-      </div>
+      <Carousel
+        opts={{
+          loop: true,
+          skipSnaps: false
+        }}
+        setApi={setApi}
+        className="w-full"
+      >
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className="flex flex-col justify-center items-center gap-8 min-w-full"
+          >
+            <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
+              {slide.title}
+            </span>
+            {slide.buttonText && (
+              <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+                {slide.buttonText}
+              </button>
+            )}
+          </div>
+        ))}
+      </Carousel>
 
       {/* Dots Navigation - slides prop이 있을 때만 표시 */}
       {slides.length > 1 && (
@@ -95,7 +113,7 @@ export default function ListHeader({
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => api?.scrollTo(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 currentSlide === index
                   ? 'bg-pace-orange-600 w-4'
