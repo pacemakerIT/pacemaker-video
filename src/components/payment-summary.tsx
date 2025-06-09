@@ -26,7 +26,7 @@ export default function PaymentSummary() {
         <input
           type="text"
           placeholder="프로모션 코드 입력"
-          className="flex-grow px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE]"
+          className="flex-1 min-w-0 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE]"
         />
         <button className="w-[57px] px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE]">
           등록
