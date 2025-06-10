@@ -20,62 +20,83 @@ export async function POST(req: Request) {
       );
     }
 
-    const currentUser = await prisma.user.findFirst({
-      where: {
-        clerkId: clerkId
-      },
-      select: {
-        id: true
-      }
-    });
+    const [currentUser, currentVideo] = await Promise.all([
+      prisma.user.findUnique({ where: { clerkId } }),
+      prisma.video.findUnique({ where: { videoId } })
+    ]);
 
     if (!currentUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const currentVideo = await prisma.video.findFirst({
-      where: {
-        videoId: videoId
-      },
-      select: {
-        id: true
-      }
-    });
-
     if (!currentVideo) {
       return NextResponse.json({ error: 'Video not found' }, { status: 404 });
     }
 
-    const existingPurchase = await prisma.purchasedVideo.findUnique({
+    // Check if the user has already purchased this video
+    // We assume that a video can only be purchased once per user
+    const existingOrder = await prisma.order.findFirst({
       where: {
-        userId_videoId: { userId: currentUser.id, videoId: currentVideo.id }
-      }
-    });
-
-    if (existingPurchase) {
-      return NextResponse.json(
-        { error: 'Video already purchased' },
-        { status: 409 }
-      );
-    }
-
-    const purchase = await prisma.purchasedVideo.create({
-      data: {
         userId: currentUser.id,
-        videoId: currentVideo.id,
-        price
-      },
-      select: {
-        id: true,
-        video: {
-          select: {
-            videoId: true
+        status: 'COMPLETED',
+        items: {
+          some: {
+            videoId: currentVideo.id
           }
         }
       }
     });
 
-    return NextResponse.json(purchase, { status: 201 });
+    if (existingOrder) {
+      return NextResponse.json(
+        { error: 'This is already purchased video' },
+        { status: 409 } // Conflict
+      );
+    }
+
+    const newOrder = await prisma.order.create({
+      data: {
+        userId: currentUser.id,
+        totalAmount: price,
+        status: 'COMPLETED',
+        items: {
+          create: [
+            {
+              videoId: currentVideo.id,
+              priceAtPurchase: price,
+              quantity: 1
+            }
+          ]
+        }
+      },
+      include: {
+        items: {
+          select: {
+            id: true,
+            video: {
+              select: {
+                videoId: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const createdItem = newOrder.items[0];
+
+    if (!createdItem || !createdItem.video) {
+      throw new Error('Failed to create purchase item or video not found');
+    }
+
+    const responseData = {
+      id: createdItem.id,
+      video: {
+        videoId: createdItem.video.videoId
+      }
+    };
+
+    return NextResponse.json(responseData, { status: 201 });
   } catch (error) {
     // Handle known error cases
     if (error instanceof Error) {
