@@ -43,7 +43,7 @@ export default function Card({
               src={resume}
               width={588}
               height={331}
-              className="w-full h-[331px] object-cover"
+              className="w-full h-[331px] object-cover rounded-lg"
               alt="courses img"
               data-testid="card-image"
             />
@@ -66,7 +66,9 @@ export default function Card({
                 <span className="text-[28px] font-bold">{`$${price}`}</span>
               </div>
             </div>
-            <p className="w-full ">{description}</p>
+            <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
+              {description}
+            </p>
             <Button variant="link" className="text-[#ED642D] p-0 h-5">
               {`자세히 보기`}
               <ArrowRight width={20} height={20} />

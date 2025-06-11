@@ -48,6 +48,12 @@ export default function ListHeader({
   }, [api]);
 
   useEffect(() => {
+    if (!api) return;
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+
     let timer: NodeJS.Timeout;
 
     if (autoPlayInterval && slides.length > 1) {

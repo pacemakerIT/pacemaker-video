@@ -67,7 +67,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
         <Button
           variant="outline"
           size="icon"
-          className="absolute left-0 top-1/3 -translate-y-1/3 -translate-x-1/3 z-10 bg-white rounded-full shadow-md hover:bg-gray-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handlePrev}
         >
           <ChevronLeft className="h-6 w-6" />
@@ -75,7 +75,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
       )}
       <div
         ref={containerRef}
-        className="flex overflow-hidden gap-4 pb-4 w-full"
+        className="flex gap-4 pb-4 w-[calc(100vw-360px)] overflow-hidden"
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none">
@@ -97,7 +97,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
         <Button
           variant="outline"
           size="icon"
-          className="absolute right-0 top-1/3 -translate-y-1/2 translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100"
+          className="absolute right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handleNext}
         >
           <ChevronRight className="h-6 w-6" />
