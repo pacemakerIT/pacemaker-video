@@ -11,13 +11,9 @@ export default function RootLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <html lang="en">
-        <body>
-          <SidebarTrigger />
-          <main className="container">{children}</main>
-          <Toaster />
-        </body>
-      </html>
+      <SidebarTrigger />
+      <main className="container">{children}</main>
+      <Toaster />
     </SidebarProvider>
   );
 }

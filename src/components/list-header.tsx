@@ -2,9 +2,16 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem
+} from '@/components/ui/carousel';
 
 interface ListHeaderProps {
   title?: string;
+  subtitle?: string;
   buttonText?: string;
   height?: string;
   gradientColors?: {
@@ -12,8 +19,9 @@ interface ListHeaderProps {
     middle: string;
     end: string;
   };
-  slides?: { title: string; buttonText?: string }[];
+  slides?: { title: string; subtitle?: string; buttonText?: string }[];
   autoPlayInterval?: number;
+  interval?: number;
 }
 
 export default function ListHeader({
@@ -28,14 +36,29 @@ export default function ListHeader({
   slides = title && buttonText ? [{ title, buttonText }] : [],
   autoPlayInterval
 }: ListHeaderProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
+    if (!api) return;
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+
     let timer: NodeJS.Timeout;
 
     if (autoPlayInterval && slides.length > 1) {
       timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        api?.scrollNext();
       }, autoPlayInterval);
     }
 
@@ -44,7 +67,7 @@ export default function ListHeader({
         clearInterval(timer);
       }
     };
-  }, [slides.length, autoPlayInterval]);
+  }, [api, autoPlayInterval, slides.length]);
 
   // slides가 비어있으면 빈 div 반환
   if (slides.length === 0) {
@@ -78,28 +101,48 @@ export default function ListHeader({
         background: `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`
       }}
     >
-      <div className="flex flex-col justify-center items-center gap-8">
-        <span className="font-bold text-pace-4xl text-center whitespace-pre-line">
-          {slides[currentSlide].title}
-        </span>
-        {slides[currentSlide].buttonText && (
-          <button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
-            {slides[currentSlide].buttonText}
-          </button>
-        )}
-      </div>
+      <Carousel
+        setApi={setApi}
+        className="w-screen h-full flex items-center justify-center"
+        opts={{
+          align: 'center',
+          loop: true
+        }}
+      >
+        <CarouselContent className="w-screen h-full">
+          {slides.map((slide, index) => (
+            <CarouselItem key={index} className="w-screen h-full">
+              <div className="flex flex-col justify-center items-center gap-8 h-full">
+                <div className="flex flex-col justify-center items-center gap-4 h-full ">
+                  <span className="font-bold text-pace-4xl text-center whitespace-pre-line pointer-events-none cursor-default select-none">
+                    {slide.title}
+                  </span>
+                  <span className="font-medium text-pace-xl text-center whitespace-pre-line pointer-events-none cursor-default select-none">
+                    {slide.subtitle}
+                  </span>
+                </div>
+                {slide.buttonText && (
+                  <Button className="w-[178px] h-[66px]  bg-pace-orange-600 text-white px-10 py-6 rounded-full flex justify-center items-center mx-auto">
+                    {slide.buttonText}
+                  </Button>
+                )}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
 
-      {/* Dots Navigation - slides prop이 있을 때만 표시 */}
+      {/* Dots Navigation */}
       {slides.length > 1 && (
-        <div className="absolute bottom-8 flex gap-2">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4">
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                currentSlide === index
-                  ? 'bg-pace-orange-600 w-4'
-                  : 'bg-gray-300 hover:bg-gray-400'
+              onClick={() => api?.scrollTo(index)}
+              className={`w-4 h-4 rounded-full transition-all duration-300 ${
+                current === index
+                  ? 'bg-pace-orange-600 shadow-[0_4px_4px_rgba(0,0,0,0.25)]'
+                  : 'bg-white hover:bg-pace-orange-600'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
