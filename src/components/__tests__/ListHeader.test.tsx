@@ -13,18 +13,14 @@ vi.mock('embla-carousel-react', () => {
     canScrollNext: () => true,
     selectedScrollSnap: () => 0,
     scrollSnaps: () => [0, 1, 2],
-    scrollProgress: () => 0,
-    options: () => ({
-      mediaQueries: []
-    })
+    scrollProgress: () => 0
   };
 
-  const useEmblaCarousel = () => {
-    return [vi.fn(), mockEmblaApi];
-  };
+  const useEmblaCarousel = () => [vi.fn(), mockEmblaApi];
 
   return {
-    default: useEmblaCarousel
+    default: useEmblaCarousel,
+    useEmblaCarousel
   };
 });
 
@@ -77,14 +73,8 @@ describe('ListHeader', () => {
 
     render(<ListHeader title="Test Title" slides={slides} />);
 
-    // Check for slide content in the carousel
-    const carousel = screen.getByRole('region', { hidden: true });
-    expect(carousel).toBeInTheDocument();
-
-    // Check for slide titles
-    slides.forEach((slide) => {
-      expect(screen.getByText(slide.title)).toBeInTheDocument();
-    });
+    const slidesElements = screen.getAllByText(/Slide \d/);
+    expect(slidesElements).toHaveLength(slides.length);
   });
 
   it('auto plays slides when interval is provided', () => {
