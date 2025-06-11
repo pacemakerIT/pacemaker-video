@@ -56,7 +56,8 @@ export async function POST(req: Request) {
           id: userId, // Use application UUID for ID
           clerkId: clerkId, // Store Clerk ID
           email: email_addresses[0]?.email_address ?? '',
-          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
+          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null,
+          roleId: 'USER' // Default USER
         },
         update: {
           email: email_addresses[0]?.email_address ?? '',

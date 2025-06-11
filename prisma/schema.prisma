@@ -17,7 +17,8 @@ model User {
   email     String   @unique
   name      String?
   image     String?
-  role      Role     @default(USER)
+  roleId    String   @default("USER")
+  role      Role     @relation(fields: [roleId], references: [id]) //* 추가됨
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -37,6 +38,12 @@ model User {
   favorites             Favorite[]
 }
 
+model Role { 
+  id    String @id
+  label String
+  users User[]
+}
+
 model Video {
   id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   videoId         String           @unique // wistia video ID
@@ -45,9 +52,7 @@ model Video {
   uploadDate      DateTime         @default(now())
   price           Float? // Added Price Column
   category        VideoCategory?
-  orderItems      OrderItem[]
   watchedVideos   WatchedVideo[]
-  favorites       Favorite[]
 }
 
 model WatchedVideo {
@@ -70,8 +75,6 @@ model Document {
   uploadDate         DateTime            @default(now())
   price              Float?
   bucketUrl          String
-  orderItems         OrderItem[]
-  favorites          Favorite[]
 }
 
 model Workshop {
@@ -87,9 +90,7 @@ model Workshop {
   instructorId  String   @db.Uuid
   instructor    User     @relation("InstructorWorkshops", fields: [instructorId], references: [id]) // User의 Role이 INSTRUCTOR인 경우
 
-  orderItems    OrderItem[]
   registrations WorkshopRegistration[] // 이 워크숍에 등록한 사용자 목록
-  favorites     Favorite[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -137,16 +138,8 @@ model OrderItem {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId         String    @db.Uuid
   order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  videoId         String?   @db.Uuid
-  video           Video?    @relation(fields: [videoId], references: [id], onDelete: SetNull)
-
-  documentId      String?   @db.Uuid
-  document        Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
-  
-  workshopId      String?   @db.Uuid
-  workshop        Workshop? @relation(fields: [workshopId], references: [id], onDelete: SetNull)
-  
+  itemType        ItemType  // VIDEO, DOCUMENT, WORKSHOP
+  itemId          String    
   priceAtPurchase Float     // 구매 시점의 상품 가격 (가격 변동에 대비)
   quantity        Int       @default(1)
 }
@@ -155,28 +148,12 @@ model Favorite {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String   @db.Uuid
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  videoId    String?  @db.Uuid
-  video      Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
-
-  documentId String?  @db.Uuid
-  document   Document?@relation(fields: [documentId], references: [id], onDelete: Cascade)
-
-  workshopId String?  @db.Uuid
-  workshop   Workshop?@relation(fields: [workshopId], references: [id], onDelete: Cascade)
-
+  itemType   ItemType // VIDEO, DOCUMENT, WORKSHOP
+  itemId     String   
   createdAt  DateTime @default(now())
 
   // 사용자는 각 상품을 한 번만 찜할 수 있도록 복합 유니크 제약조건 설정
-  @@unique([userId, videoId])
-  @@unique([userId, documentId])
-  @@unique([userId, workshopId])
-}
-
-enum Role {
-  USER
-  ADMIN
-  INSTRUCTOR
+  @@unique([userId, itemType, itemId])
 }
 
 enum WorkshopStatus {
@@ -198,4 +175,10 @@ enum OrderStatus {
   FAILED     // 결제 실패
   CANCELLED  // 주문 취소
   REFUNDED   // 환불됨
+}
+
+enum ItemType {
+  VIDEO
+  DOCUMENT
+  WORKSHOP
 }

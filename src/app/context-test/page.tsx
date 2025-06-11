@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useUserContext } from '@/app/context/user-context';
 import { toast } from 'sonner';
@@ -12,7 +12,7 @@ export default function UserContextTestPage() {
   const [nameInput, setNameInput] = useState('');
   const [roleInput, setRoleInput] = useState('');
 
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = useCallback(async () => {
     try {
       const res = await fetch('/api/user');
       if (res.ok) {
@@ -40,7 +40,7 @@ export default function UserContextTestPage() {
       toast.error(`Failed to connect to server: ${message}`);
       setUser(null);
     }
-  };
+  }, [setUser]);
 
   const handleSetLocalOnly = () => {
     setUser((prev) =>
@@ -92,7 +92,7 @@ export default function UserContextTestPage() {
     } else if (isLoaded && !isSignedIn) {
       setUser(null);
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, fetchUserInfo, setUser]);
 
   if (!isLoaded) return <div>Loading authentication...</div>;
   if (!isSignedIn) return <div>Please sign in to view your information.</div>;
