@@ -51,7 +51,7 @@ export default function ListHeader({
     if (!api) return;
 
     api.on('select', () => {
-      setCurrentSlide(api.selectedScrollSnap());
+      setCurrent(api.selectedScrollSnap());
     });
 
     let timer: NodeJS.Timeout;
