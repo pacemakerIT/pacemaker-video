@@ -1,7 +1,6 @@
-import { Toaster } from '@/components/ui/sonner';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/ui/app-sidebar';
 import '@/app/globals.css';
+import { UserProvider } from '../context/user-context';
+import AdminPage from '@/components/admin-page';
 
 export default function RootLayout({
   children
@@ -9,11 +8,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarTrigger />
-      <main className="container">{children}</main>
-      <Toaster />
-    </SidebarProvider>
+    <UserProvider>
+      <AdminPage>{children}</AdminPage>
+    </UserProvider>
   );
 }
