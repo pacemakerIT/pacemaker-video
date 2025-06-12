@@ -17,11 +17,16 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
       toast('Please sign in');
       return router.push('/');
     }
+
+    if (user && user.role !== 'ADMIN') {
+      toast('Access denied');
+      return router.push('/');
+    }
   }, [user, isLoading, router]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <p>Error: {error}</p>;
-  if (!user) return null;
+  if (!user || user.role !== 'ADMIN') return null;
 
   return (
     <>
