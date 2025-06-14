@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         status: 'COMPLETED',
         items: {
           some: {
-            videoId: currentVideo.id
+            itemId: currentVideo.id
           }
         }
       }
@@ -54,11 +54,13 @@ export async function POST(req: Request) {
       );
     }
 
+    // orderItems 테이블 컬럼 변경으로 최신화 필요
+    /*
     const newOrder = await prisma.order.create({
       data: {
         userId: currentUser.id,
         totalAmount: price,
-        status: 'COMPLETED',
+        status: 'COMPLETED'
         items: {
           create: [
             {
@@ -72,17 +74,19 @@ export async function POST(req: Request) {
       include: {
         items: {
           select: {
-            id: true,
+            id: true
             video: {
               select: {
                 videoId: true
               }
-            }
+            } 
           }
         }
       }
-    });
+    });*/
 
+    // orderItems 테이블 컬럼 변경으로 최신화 필요
+    /* 
     const createdItem = newOrder.items[0];
 
     if (!createdItem || !createdItem.video) {
@@ -97,6 +101,7 @@ export async function POST(req: Request) {
     };
 
     return NextResponse.json(responseData, { status: 201 });
+    */
   } catch (error) {
     // Handle known error cases
     if (error instanceof Error) {

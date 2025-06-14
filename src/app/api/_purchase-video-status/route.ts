@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
     // Get all purchased videos for this user with their actual video IDs
     const purchasedVideos = await prisma.video.findMany({
       distinct: ['id'],
-      where: {
+      // orderItems 테이블 컬럼 변경으로 최신화 필요
+      /* where: {
         orderItems: {
           some: {
             order: {
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-      },
+      }, */
       select: {
         videoId: true
       }
