@@ -6,6 +6,8 @@ import { XIcon } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import img from '../../public/img/resume_lecture.jpeg';
+import MyPageCard from './my-page-card';
+import { CustomBadge } from './CustomBadge';
 
 const items = [
   {
@@ -43,6 +45,35 @@ const items = [
   }
 ];
 
+const cards = [
+  {
+    videoId: '4e8wv1z7tl',
+    title: 'UX Design Fundamentals',
+    price: 12.43,
+    description:
+      '자소서를 위한 스펙이 무엇인지와, 스펙을 쌓기 위하여 어떻게 정보를 구해야 할지 도와드릴게요.',
+    category: 'Marketing',
+    type: '전자책'
+  },
+  {
+    videoId: '4e8wv1z7tl',
+    title: 'UX Design Fundamentals',
+    price: 15.99,
+    description:
+      '2~30대의 다양한 선택지를 두루 경험한 제가, 취준 일변도가 아니라 다양한 분야에서 쓰일 수 있는 스펙 쌓기부터 각종 자소서 작성 및 면접 준비까지 차근차근 준비해나가실 수 있도록 도와드리겠습니다.',
+    category: 'Interview',
+    type: '온라인 강의'
+  },
+  {
+    videoId: '4e8wv1z7tl',
+    title: 'Test3',
+    price: 9.99,
+    description: 'test3',
+    category: 'Resume',
+    type: '온라인 강의'
+  }
+];
+
 export default function CartPage() {
   const [selectedItems, setSelectedItems] = useState(items);
 
@@ -70,12 +101,13 @@ export default function CartPage() {
 
   return (
     <section className="flex-1 p-10 pt-20">
-      <h1 className="text-pace-xl font-bold mb-4 text-pace-gray-700">
+      <h1 className="text-pace-xl font-bold mb-6 text-pace-gray-700">
         장바구니
       </h1>
 
       <div className="flex items-center mb-4 text-pace-sm">
         <Checkbox
+          className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
           checked={selectedItems.every((item) => item.selected)}
           onCheckedChange={(val) => toggleAll(!!val)}
         />
@@ -94,6 +126,7 @@ export default function CartPage() {
             <Checkbox
               checked={item.selected}
               onCheckedChange={() => toggleSelect(item.id)}
+              className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
             />
             <div className="w-20 h-4 text-pace-sm text-center text-pace-stone-500 mx-6">
               {item.type}
@@ -105,17 +138,12 @@ export default function CartPage() {
             />
             <div className="ml-6">
               {item.tag && (
-                <span
-                  className={`text-pace-sm text-pace-white-500 px-3 py-2 rounded-full ${
-                    item.tag === 'Interview'
-                      ? 'bg-pace-blue-500'
-                      : item.tag === 'Marketing'
-                        ? 'bg-pace-orange-700'
-                        : 'bg-pace-black-900'
-                  }`}
+                <CustomBadge
+                  variant={item.tag}
+                  className="w-fit flex justify-center items-center py-2 px-3"
                 >
                   {item.tag}
-                </span>
+                </CustomBadge>
               )}
               {item.date && <div className="text-pace-sm">{item.date}</div>}
               <div className="mt-2">{item.title}</div>
@@ -130,6 +158,28 @@ export default function CartPage() {
               <XIcon className="w-5 h-5" />
             </button>
           </div>
+        ))}
+      </div>
+      <h1 className="text-pace-xl font-bold mt-20 mb-6 text-pace-gray-700">
+        You Might Also Like
+      </h1>
+
+      <div className="flex gap-6">
+        {cards.map((card, index) => (
+          <MyPageCard
+            key={index}
+            // id={card.id}
+            title={card.title}
+            price={card.price}
+            description={card.description}
+            category={card.category}
+            type={card.type}
+            videoId={card.videoId}
+            // uploadDate={card.uploadDate}
+            // watchedVideos={card.watchedVideos}
+            // purchasedVideos={card.purchasedVideos}
+          />
+          // <MyPageCard key={index} {...card} />
         ))}
       </div>
     </section>
