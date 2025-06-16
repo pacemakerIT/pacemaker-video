@@ -41,7 +41,7 @@ export default function MyPageSidebar() {
           />
         </button>
 
-        <h2 className="text-pace-xl text-pace-gray-500 font-semibold">Jamie</h2>
+        <h2 className="text-pace-xl text-pace-gray-500 font-bold">Jamie</h2>
       </div>
 
       <nav className="flex flex-col">
