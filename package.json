@@ -48,7 +48,7 @@
     "react-pdf": "^9.2.1",
     "sonner": "^2.0.5",
     "svix": "^1.67.0",
-    "tailwind-merge": "^3.3.0",
+    "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
     "zod": "^3.25.61"
   },
