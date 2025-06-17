@@ -84,7 +84,7 @@ const UserInfo = () => {
         <h3>User Info (from DB)</h3>
         <p>Name: {userInfo.name || 'N/A'}</p>
         <p>Email: {userInfo.email}</p>
-        <p>Role: {userInfo.role}</p>
+        <p>RoleId: {userInfo.roleId}</p>
         <p>ClerkId: {userInfo.clerkId}</p>
       </div>
     );

@@ -20,7 +20,7 @@ import { User } from '@/types/user';
  *    {
  *      name: 'Seulgi',
  *      email: 'seulgi-dev@gmail.com',
- *      role: 'ADMIN',
+ *      roleId: 'ADMIN',
  *      clerkId: 'user_xxxxx'
  *    }
  *  추가) set 함수, api 호출 re-fatch

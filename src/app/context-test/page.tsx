@@ -10,7 +10,7 @@ export default function UserContextTestPage() {
   const { isLoaded, isSignedIn } = useUser();
   const { user, isLoading, error, setUser } = useUserContext();
   const [nameInput, setNameInput] = useState('');
-  const [roleInput, setRoleInput] = useState('');
+  const [roleIdInput, setRoleIdInput] = useState('');
 
   const fetchUserInfo = useCallback(async () => {
     try {
@@ -48,7 +48,7 @@ export default function UserContextTestPage() {
         ? {
             ...prev,
             name: nameInput || prev.name,
-            role: roleInput || prev.role,
+            roleId: roleIdInput || prev.roleId,
             updatedAt: new Date().toISOString()
           }
         : null
@@ -65,7 +65,7 @@ export default function UserContextTestPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: nameInput || user.name,
-          role: roleInput || user.role
+          roleId: roleIdInput || user.roleId
         })
       });
 
@@ -109,7 +109,7 @@ export default function UserContextTestPage() {
         <div className="mb-4">
           <p>이름: {user.name ?? 'N/A'}</p>
           <p>이메일: {user.email}</p>
-          <p>역할: {user.role}</p>
+          <p>역할: {user.roleId}</p>
           <p>Clerk ID: {user.clerkId}</p>
         </div>
       ) : (
@@ -127,8 +127,8 @@ export default function UserContextTestPage() {
         <input
           type="text"
           placeholder="역할 입력"
-          value={roleInput}
-          onChange={(e) => setRoleInput(e.target.value)}
+          value={roleIdInput}
+          onChange={(e) => setRoleIdInput(e.target.value)}
           className="border px-2 py-1 rounded w-full"
         />
         <div className="flex flex-col sm:flex-row gap-2">
