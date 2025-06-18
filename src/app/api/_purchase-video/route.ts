@@ -41,7 +41,8 @@ export async function POST(req: Request) {
         status: 'COMPLETED',
         items: {
           some: {
-            videoId: currentVideo.id
+            itemType: 'VIDEO',
+            itemId: currentVideo.id
           }
         }
       }
@@ -62,7 +63,8 @@ export async function POST(req: Request) {
         items: {
           create: [
             {
-              videoId: currentVideo.id,
+              itemType: 'VIDEO',
+              itemId: currentVideo.id,
               priceAtPurchase: price,
               quantity: 1
             }
@@ -73,11 +75,8 @@ export async function POST(req: Request) {
         items: {
           select: {
             id: true,
-            video: {
-              select: {
-                videoId: true
-              }
-            }
+            itemId: true,
+            itemType: true
           }
         }
       }
@@ -85,14 +84,14 @@ export async function POST(req: Request) {
 
     const createdItem = newOrder.items[0];
 
-    if (!createdItem || !createdItem.video) {
+    if (!createdItem) {
       throw new Error('Failed to create purchase item or video not found');
     }
 
     const responseData = {
       id: createdItem.id,
       video: {
-        videoId: createdItem.video.videoId
+        videoId: currentVideo.videoId
       }
     };
 
