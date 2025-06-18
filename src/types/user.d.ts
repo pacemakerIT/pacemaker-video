@@ -4,7 +4,7 @@ export interface User {
   email: string;
   name: string | null;
   image: string | null;
-  role: string;
+  roleId: string;
   isSubscribed: boolean;
   subscriptionEndDate: string | null;
   createdAt: string;

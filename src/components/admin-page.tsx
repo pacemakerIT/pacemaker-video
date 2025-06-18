@@ -18,7 +18,7 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
       return router.push('/');
     }
 
-    if (user && user.role !== 'ADMIN') {
+    if (user && user.roleId !== 'ADMIN') {
       toast('Access denied');
       return router.push('/');
     }
@@ -26,7 +26,7 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <p>Error: {error}</p>;
-  if (!user || user.role !== 'ADMIN') return null;
+  if (!user || user.roleId !== 'ADMIN') return null;
 
   return (
     <>

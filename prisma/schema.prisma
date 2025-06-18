@@ -17,7 +17,8 @@ model User {
   email     String   @unique
   name      String?
   image     String?
-  role      Role     @default(USER)
+  roleId    String   @default("USER")
+  role      UserRole @relation(fields: [roleId], references: [id]) //* 추가됨
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -35,6 +36,12 @@ model User {
   workshopRegistrations WorkshopRegistration[] // 사용자가 등록한 워크숍
 
   favorites             Favorite[]
+}
+
+model UserRole { 
+  id    String @id
+  label String
+  users User[]
 }
 
 model Video {
@@ -171,12 +178,6 @@ model Favorite {
   @@unique([userId, videoId])
   @@unique([userId, documentId])
   @@unique([userId, workshopId])
-}
-
-enum Role {
-  USER
-  ADMIN
-  INSTRUCTOR
 }
 
 enum WorkshopStatus {

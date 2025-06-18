@@ -33,13 +33,13 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { name, role } = body;
+    const { name, roleId } = body;
 
     const updatedUser = await prisma.user.update({
       where: { clerkId: userId },
       data: {
         ...(name && { name }),
-        ...(role && { role }),
+        ...(roleId && { roleId }),
         updatedAt: new Date()
       }
     });
