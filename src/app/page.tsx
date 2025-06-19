@@ -1,6 +1,7 @@
 import VideoList from '@/components/video-list';
 import UserInfo from '@/components/user-info';
 import ListHeader from '@/components/list-header';
+import { Button } from '@headlessui/react';
 
 export default async function Home() {
   return (
