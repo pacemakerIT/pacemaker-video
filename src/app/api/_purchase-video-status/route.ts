@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { ItemType } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,28 +28,40 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get all purchased videos for this user with their actual video IDs
-    const purchasedVideos = await prisma.video.findMany({
-      distinct: ['id'],
+    // 2. Find all OrderItems of type VIDEO that belong to completed orders for this user
+    const videoOrderItems = await prisma.orderItem.findMany({
       where: {
-        orderItems: {
-          some: {
-            order: {
-              userId: currentUser.id,
-              status: 'COMPLETED'
-            }
-          }
+        itemType: ItemType.VIDEO,
+        order: {
+          userId: currentUser.id,
+          status: 'COMPLETED'
         }
       },
       select: {
-        videoId: true
+        itemId: true
       }
     });
 
-    // Extract actual video IDs from the video table, filtering out any null videos
-    const purchasedVideoIds = purchasedVideos.map(
-      (video: { videoId: string }) => video.videoId
-    );
+    // 3. Extract all itemIds (video IDs)
+    const videoIds = videoOrderItems.map((item) => item.itemId);
+
+    if (videoIds.length === 0) {
+      return NextResponse.json({ purchasedVideoIds: [] }, { status: 200 });
+    }
+
+    // 4. Fetch actual videos
+    const purchasedVideos = await prisma.video.findMany({
+      where: {
+        id: { in: videoIds }
+      },
+      select: {
+        videoId: true // assuming you still want the actual videoId, not the DB id
+      }
+    });
+
+    const purchasedVideoIds = purchasedVideos
+      .map((video) => video.videoId)
+      .filter(Boolean); // remove null/undefined if any
 
     return NextResponse.json({ purchasedVideoIds }, { status: 200 });
   } catch (error) {
