@@ -1,38 +1,38 @@
-export default function PaymentSummary() {
+import { CartItem } from '@/types/my-card';
+
+interface PaymentSummaryProps {
+  cartItems: CartItem[];
+}
+
+export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
+  const selectedItem = cartItems.filter((item) => item.selected);
+  const subtotal = selectedItem.reduce((acc, item) => acc + item.price, 0);
+  const discount = 20;
+  const tax = subtotal * 0.13;
+  const total = subtotal - discount + tax;
+
   return (
     <aside className="w-80 border-l p-10 pt-20">
-      <h2 className="text-pace-lg text-pace-gray-700 font-bold mb-4">
-        예상 결제 금액
-      </h2>
-      <ul className="text-pace-base text-pace-gray-700 space-y-4 mb-6 pb-6 border-b border-pace-gray-700">
+      <h2 className="text-lg font-bold mb-4">예상 결제 금액</h2>
+      <ul className="space-y-2 mb-6 border-b pb-6 text-sm">
         <li className="flex justify-between">
-          <span className="text-[#6B7280]">소계 (3개의 강의)</span>
-          <span>$264.97</span>
+          <span className="text-gray-500">소계 ({selectedItem.length}개)</span>
+          <span>${subtotal.toFixed(2)}</span>
         </li>
         <li className="flex justify-between">
-          <span className="text-[#6B7280]">할인 금액</span>
-          <span>-$20.00</span>
+          <span className="text-gray-500">할인 금액</span>
+          <span>-${discount.toFixed(2)}</span>
         </li>
         <li className="flex justify-between">
-          <span className="text-[#6B7280]">세금</span>
-          <span>$24.49</span>
+          <span className="text-gray-500">세금</span>
+          <span>${tax.toFixed(2)}</span>
         </li>
       </ul>
-      <div className="flex justify-between items-center font-semibold text-pace-lg mb-6">
-        <span className="text-pace-gray-700">총 결제 금액</span>
-        <span className="font-bold text-[#E86642]">$260.46</span>
+      <div className="flex justify-between text-lg font-bold text-[#E86642]">
+        <span>총 결제 금액</span>
+        <span>${total.toFixed(2)}</span>
       </div>
-      <div className="w-60 h-[37px] flex gap-1 mb-6 text-pace-sm">
-        <input
-          type="text"
-          placeholder="프로모션 코드 입력"
-          className="flex-1 min-w-0 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE]"
-        />
-        <button className="w-[57px] px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE]">
-          등록
-        </button>
-      </div>
-      <button className="w-full bg-pace-orange-800 hover:bg-orange-600 text-white font-bold py-3 rounded-full">
+      <button className="mt-6 w-full bg-orange-500 text-white py-2 rounded-full">
         결제하기
       </button>
     </aside>
