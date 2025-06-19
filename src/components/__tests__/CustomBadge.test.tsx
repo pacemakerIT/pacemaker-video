@@ -5,7 +5,7 @@ import { CustomBadge } from '../CustomBadge';
 
 describe('CustomBadge', () => {
   it('renders with default variant (Interview)', () => {
-    render(<CustomBadge variant="INTERVIEW">Interview</CustomBadge>);
+    render(<CustomBadge variant="Interview">Interview</CustomBadge>);
     const badge = screen.getByText('Interview');
     expect(badge).toHaveClass('bg-pace-blue-500');
     expect(badge).toHaveClass('text-pace-white-500');
@@ -13,7 +13,7 @@ describe('CustomBadge', () => {
   });
 
   it('renders with Resume variant', () => {
-    render(<CustomBadge variant="RESUME">Resume</CustomBadge>);
+    render(<CustomBadge variant="Resume">Resume</CustomBadge>);
     const badge = screen.getByText('Resume');
     expect(badge).toHaveClass('bg-pace-purple-500');
     expect(badge).toHaveClass('text-pace-white-500');
@@ -21,7 +21,7 @@ describe('CustomBadge', () => {
   });
 
   it('renders with Networking variant', () => {
-    render(<CustomBadge variant="NETWORKING">Networking</CustomBadge>);
+    render(<CustomBadge variant="Networking">Networking</CustomBadge>);
     const badge = screen.getByText('Networking');
     expect(badge).toHaveClass('bg-pace-yellow-500');
     expect(badge).toHaveClass('text-pace-white-500');
@@ -41,7 +41,7 @@ describe('CustomBadge', () => {
   });
 
   it('applies all variant styles correctly', () => {
-    render(<CustomBadge variant="INTERVIEW">Interview</CustomBadge>);
+    render(<CustomBadge variant="Interview">Interview</CustomBadge>);
     const badge = screen.getByText('Interview');
 
     // Check all expected classes

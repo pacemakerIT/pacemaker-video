@@ -5,21 +5,23 @@ import { cn } from '@/lib/utils';
 const customBadgeVariants = cva(badgeVariants(), {
   variants: {
     variant: {
-      INTERVIEW:
-        'border-transparent bg-pace-blue-500 text-pace-white-500 font-light',
-      RESUME:
-        'border-transparent bg-pace-purple-500 text-pace-white-500 font-light',
-      NETWORKING:
-        'border-transparent bg-pace-yellow-500 text-pace-white-500 font-light'
+      Interview:
+        'border-transparent bg-pace-blue-500 !text-pace-sm text-pace-white-500 font-light',
+      Resume:
+        'border-transparent bg-pace-purple-500 !text-pace-sm text-pace-white-500 font-light',
+      Networking:
+        'border-transparent bg-pace-yellow-500 !text-pace-sm text-pace-white-500 font-light',
+      Marketing:
+        'border-transparent bg-pace-orange-700 !text-pace-sm text-pace-white-500 font-light'
     }
   },
   defaultVariants: {
-    variant: 'INTERVIEW'
+    variant: 'Interview'
   }
 });
 
 interface CustomBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'INTERVIEW' | 'RESUME' | 'NETWORKING' | string;
+  variant?: 'Interview' | 'Resume' | 'Networking' | 'Marketing' | string;
 }
 
 export function CustomBadge({
@@ -31,7 +33,11 @@ export function CustomBadge({
     <Badge
       className={cn(
         customBadgeVariants({
-          variant: variant as 'INTERVIEW' | 'RESUME' | 'NETWORKING'
+          variant: variant as
+            | 'Interview'
+            | 'Resume'
+            | 'Networking'
+            | 'Marketing'
         }),
         className
       )}
