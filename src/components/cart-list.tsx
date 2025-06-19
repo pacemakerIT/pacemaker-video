@@ -1,52 +1,17 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
 import { XIcon } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import img from '../../public/img/resume_lecture.jpeg';
 import MyPageCard from './my-page-card';
 import { CustomBadge } from './CustomBadge';
-
-const items = [
-  {
-    id: 1,
-    type: '온라인 강의',
-    title: '자기소개서 작성 및 면접 준비까지 하나로!',
-    tag: 'Interview',
-    price: 2800,
-    selected: true
-  },
-  {
-    id: 2,
-    type: '전자책',
-    title: '마케터를 위한 자소서 네트워킹',
-    tag: 'Marketing',
-    price: 2800,
-    selected: false
-  },
-  {
-    id: 3,
-    type: '워크샵',
-    title: '성공을 부르는 마인드 트레이닝',
-    date: '2025.05.10',
-    location: 'North York centre',
-    price: 20,
-    selected: false
-  },
-  {
-    id: 4,
-    type: '온라인 강의',
-    title: '한번 배워서 평생 써먹는 취업·이직 노하우',
-    tag: 'Interview',
-    price: 2800,
-    selected: false
-  }
-];
+import { CartItem } from '@/types/my-card';
 
 const cards = [
   {
+    id: '1',
     videoId: '4e8wv1z7tl',
     title: 'UX Design Fundamentals',
     price: 12.43,
@@ -56,6 +21,7 @@ const cards = [
     type: '전자책'
   },
   {
+    id: '2',
     videoId: '4e8wv1z7tl',
     title: 'UX Design Fundamentals',
     price: 15.99,
@@ -65,6 +31,7 @@ const cards = [
     type: '온라인 강의'
   },
   {
+    id: '3',
     videoId: '4e8wv1z7tl',
     title: 'Test3',
     price: 9.99,
@@ -74,29 +41,33 @@ const cards = [
   }
 ];
 
-export default function CartPage() {
-  const [selectedItems, setSelectedItems] = useState(items);
+interface CartListProps {
+  cartItems: CartItem[];
+  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+}
 
-  const toggleSelect = (id: number) => {
-    setSelectedItems((prev) =>
+export default function CartList({ cartItems, setCartItems }: CartListProps) {
+  const toggleSelect = (id: string) => {
+    setCartItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, selected: !item.selected } : item
       )
     );
+    console.log('togle', cartItems.length);
   };
 
   const toggleAll = (checked: boolean) => {
-    setSelectedItems((prev) =>
+    setCartItems((prev) =>
       prev.map((item) => ({ ...item, selected: checked }))
     );
   };
 
   const handleDeleteSelected = () => {
-    setSelectedItems((prev) => prev.filter((item) => !item.selected));
+    setCartItems((prev) => prev.filter((item) => !item.selected));
   };
 
-  const handleRemove = (id: number) => {
-    setSelectedItems((prev) => prev.filter((item) => item.id !== id));
+  const handleRemove = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -108,7 +79,7 @@ export default function CartPage() {
       <div className="flex items-center mb-4 text-pace-sm">
         <Checkbox
           className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
-          checked={selectedItems.every((item) => item.selected)}
+          checked={cartItems.every((item) => item.selected)}
           onCheckedChange={(val) => toggleAll(!!val)}
         />
         <span className="ml-2">전체선택</span>
@@ -121,7 +92,7 @@ export default function CartPage() {
         </Button>
       </div>
       <div className="space-y-4 text-[20px] text-pace-gray-500">
-        {selectedItems.map((item) => (
+        {cartItems.map((item) => (
           <div key={item.id} className="flex items-center border-t p-4 !m-0">
             <Checkbox
               checked={item.selected}
@@ -137,15 +108,24 @@ export default function CartPage() {
               className="w-40 h-[106px] rounded-lg object-cover"
             />
             <div className="ml-6">
-              {item.tag && (
+              {item.category && (
                 <CustomBadge
-                  variant={item.tag}
+                  variant={item.category}
                   className="w-fit flex justify-center items-center py-2 px-3"
                 >
-                  {item.tag}
+                  {item.category}
                 </CustomBadge>
               )}
-              {item.date && <div className="text-pace-sm">{item.date}</div>}
+              {item.date && (
+                <div className="text-pace-sm">
+                  {item.date && (
+                    <div className="text-pace-sm">
+                      {item.date.toISOString().slice(0, 10).replace(/-/g, '.')}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="mt-2">{item.title}</div>
             </div>
             <div className="text-right font-semibold text-pace-lg ml-auto">
@@ -160,15 +140,15 @@ export default function CartPage() {
           </div>
         ))}
       </div>
+
       <h1 className="text-pace-xl font-bold mt-20 mb-6 text-pace-gray-700">
         You Might Also Like
       </h1>
-
       <div className="flex gap-6">
         {cards.map((card, index) => (
           <MyPageCard
             key={index}
-            // id={card.id}
+            id={card.id}
             title={card.title}
             price={card.price}
             description={card.description}
