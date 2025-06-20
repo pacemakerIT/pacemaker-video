@@ -1,5 +1,5 @@
 // src/components/__tests__/CardContainer.test.tsx
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OnlineCards } from '@/types/online';
 import CardContainer from '../CardContainer';
@@ -48,6 +48,12 @@ describe('CardContainer', () => {
     }
   ];
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Mock scrollTo
+    Element.prototype.scrollTo = vi.fn();
+  });
+
   it('renders grid layout correctly', () => {
     render(<CardContainer layout="grid" cards={mockCards} />);
     const cards = screen.getAllByTestId('card');
@@ -57,50 +63,79 @@ describe('CardContainer', () => {
   it('renders horizontal layout with navigation buttons', () => {
     render(<CardContainer layout="horizontal" cards={mockCards} />);
 
-    // 초기에는 이전 버튼이 보이지 않아야 함
+    // Check if cards are rendered
+    const cards = screen.getAllByTestId('card');
+    expect(cards).toHaveLength(3);
+
+    // Check if container has correct classes
+    const container = screen.getByTestId('horizontal-container');
+    expect(container).toHaveClass('relative', 'w-full');
+
+    // Check if scroll container has correct classes
+    const scrollContainer = container.querySelector('div[class*="flex gap-4"]');
+    expect(scrollContainer).toHaveClass(
+      'flex',
+      'gap-4',
+      'pb-4',
+      'w-[calc(100vw-360px)]',
+      'overflow-hidden'
+    );
+
+    // Initially, prev button should not be visible
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
 
-    // 다음 버튼이 보여야 함
-    const nextButton = screen.getByRole('button');
+    // Next button should be visible
+    const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
     expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
-    const { rerender } = render(
-      <CardContainer layout="horizontal" cards={mockCards} />
+    const mockCardsWithMoreItems = [
+      ...mockCards,
+      {
+        id: '4',
+        title: 'Test Card 4',
+        description: 'Test Description 4',
+        price: 79.99,
+        category: 'INTERVIEW',
+        uploadDate: new Date(),
+        videoId: 'video4',
+        watchedVideos: undefined,
+        purchasedVideos: undefined
+      }
+    ];
+
+    render(
+      <CardContainer layout="horizontal" cards={mockCardsWithMoreItems} />
     );
 
-    // 초기 상태에서는 이전 버튼이 없고 다음 버튼이 있어야 함
+    // 초기 상태: 다음 버튼만 보여야 함
+    const initialNextButton = screen.getByRole('button', { name: /next/i });
+    expect(initialNextButton).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
-    expect(screen.getByRole('button')).toBeInTheDocument();
 
-    // 마지막 카드로 이동한 상태를 시뮬레이션
-    rerender(
-      <CardContainer layout="horizontal" cards={mockCards.slice(0, 2)} />
-    );
+    // 다음 버튼 클릭
+    fireEvent.click(initialNextButton);
 
-    // 마지막 카드에서는 다음 버튼이 없어야 함
-    expect(screen.queryByRole('button')).toBeNull();
+    // 이제 양쪽 버튼 모두 보여야 함
+    const prevButton = screen.getByRole('button', { name: /previous/i });
+    const nextButton = screen.getByRole('button', { name: /next/i });
+
+    expect(prevButton).toBeInTheDocument();
+    expect(nextButton).toBeInTheDocument();
   });
 
   it('handles navigation button clicks correctly', () => {
-    const { container } = render(
-      <CardContainer layout="horizontal" cards={mockCards} />
-    );
+    render(<CardContainer layout="horizontal" cards={mockCards} />);
 
-    const nextButton = screen.getByRole('button');
-    const scrollContainer = container.querySelector('.flex.overflow-hidden');
+    const nextButton = screen.getByRole('button', { name: /next/i });
 
-    if (scrollContainer) {
-      scrollContainer.scrollTo = vi.fn();
-    }
-
+    // Click next button
     fireEvent.click(nextButton);
 
-    // 다음 버튼 클릭 후 이전 버튼이 나타나야 함
-    expect(screen.getByRole('button')).toBeInTheDocument();
-    expect(scrollContainer?.scrollTo).toHaveBeenCalled();
+    // Check if scrollTo was called
+    expect(Element.prototype.scrollTo).toHaveBeenCalled();
   });
 
   it('renders empty container when no cards provided', () => {

@@ -5,12 +5,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light !important;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: light !important;
+  }
+
+  html,
+  body {
+    background-color: white !important;
+    color: black !important;
   }
 }
 
@@ -45,5 +51,12 @@ body {
 @layer base {
   body {
     @apply font-sans bg-background text-foreground;
+  }
+}
+
+/* 시스템 다크모드 설정을 무시 */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: light;
   }
 }
