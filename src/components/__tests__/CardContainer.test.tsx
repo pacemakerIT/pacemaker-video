@@ -87,7 +87,7 @@ describe('CardContainer', () => {
     // Next button should be visible
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
+    expect(nextButton).toHaveClass('right-0');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
