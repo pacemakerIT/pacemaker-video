@@ -4,7 +4,6 @@ import { WebhookEvent } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
-
 export async function POST(req: Request) {
   const headerPayload = headers();
   const svix_id = (await headerPayload).get('svix-id');

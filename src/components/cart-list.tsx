@@ -53,7 +53,6 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
         item.id === id ? { ...item, selected: !item.selected } : item
       )
     );
-    console.log('togle', cartItems.length);
   };
 
   const toggleAll = (checked: boolean) => {
