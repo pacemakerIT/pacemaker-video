@@ -3,8 +3,8 @@
 import { useSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SignUpButton } from '@clerk/nextjs';
 import SignInWithGoogleButton from '@/components/auth/sign-in-google-button';
+import CustomSignUp from '@/components/auth/custom-sign-up'; // 커스텀 회원가입 컴포넌트 import
 
 type Props = {
   closeModal?: () => void;
@@ -17,6 +17,7 @@ export default function CustomSignIn({ closeModal }: Props) {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [error, setError] = useState('');
+  const [showSignUp, setShowSignUp] = useState(false); // 회원가입 모달 상태
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,12 +85,23 @@ export default function CustomSignIn({ closeModal }: Props) {
 
       <p className="text-pace-base font-normal text-pace-stone-500 text-center">
         회원이 아니신가요?{' '}
-        <SignUpButton mode="modal">
-          <span className="text-pace-gray-500 underline hover:text-pace-orange-800 cursor-pointer">
-            회원가입 하기
-          </span>
-        </SignUpButton>
+        <button
+          onClick={() => setShowSignUp(true)}
+          className="text-pace-gray-500 underline hover:text-pace-orange-800"
+        >
+          회원가입 하기
+        </button>
       </p>
+
+      {showSignUp && (
+        <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto">
+          <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+            <div className="w-full max-w-[480px] bg-white rounded-xl p-6 shadow-xl">
+              <CustomSignUp closeModal={() => setShowSignUp(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

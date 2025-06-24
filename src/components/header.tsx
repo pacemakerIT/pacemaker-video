@@ -1,15 +1,10 @@
 'use client';
 
-import {
-  // SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { useUserContext } from '@/app/context/user-context';
 import SignInModalButton from '@/components/auth/sign-in-modal-button';
+import SignUpModalButton from '@/components/auth/sign-up-modal-button';
 
 export function Header() {
   const { user, isLoading, error } = useUserContext();
@@ -51,12 +46,8 @@ export function Header() {
           </nav>
 
           <SignedOut>
-            {/* 회원가입: 모달 */}
-            <SignUpButton mode="modal">
-              <button className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800">
-                회원가입
-              </button>
-            </SignUpButton>
+            {/* 회원가입: 커스텀 모달로 변경 */}
+            <SignUpModalButton />
 
             {/* 로그인 */}
             <SignInModalButton />
