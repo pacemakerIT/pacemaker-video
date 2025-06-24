@@ -60,6 +60,7 @@
     "@chromatic-com/storybook": "^4.0.1",
     "@eslint/eslintrc": "^3.3.0",
     "@next/eslint-plugin-next": "^15.2.4",
+    "@storybook/addon-designs": "^10.0.1",
     "@storybook/addon-docs": "^9.0.12",
     "@storybook/nextjs": "^9.0.12",
     "@testing-library/dom": "^10.4.0",
