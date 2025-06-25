@@ -47,3 +47,20 @@ body {
     @apply font-sans bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  #clerk-captcha {
+    @apply mb-0 pb-0;
+  }
+
+  #clerk-captcha > div {
+    @apply mb-0 pb-0;
+  }
+
+  /* 강제 스타일 제거용 추가 */
+  #clerk-captcha,
+  #clerk-captcha * {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
