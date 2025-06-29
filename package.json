@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.837.0",
-    "@aws-sdk/s3-request-presigner": "^3.835.0",
+    "@aws-sdk/s3-request-presigner": "^3.837.0",
     "@clerk/backend": "^2.2.0",
     "@clerk/nextjs": "^6.22.0",
     "@headlessui/react": "^2.2.4",
@@ -34,7 +34,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.6",
     "@supabase/supabase-js": "^2.50.1",
-    "@wistia/wistia-player-react": "^0.1.6",
+    "@wistia/wistia-player-react": "^0.1.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
