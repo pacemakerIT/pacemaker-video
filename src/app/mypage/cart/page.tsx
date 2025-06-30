@@ -56,9 +56,9 @@ export default function CartPage() {
   );
 
   return (
-    <>
+    <div className="flex justify-between w-full">
       <CartList cartItems={cartItems} setCartItems={setCartItems} />
       <PaymentSummary cartItems={cartItems} />
-    </>
+    </div>
   );
 }
