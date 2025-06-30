@@ -10,15 +10,14 @@ const menuItems = [
   { label: '장바구니', href: '/mypage/cart' },
   { label: '찜목록', href: '/mypage/favorites' },
   { label: '구매 내역', href: '/mypage/purchases' },
-  { label: '1:1문의', href: '/mypage/inquiries' },
-  { label: '로그아웃', href: '/logout' }
+  { label: '1:1문의', href: '/mypage/inquiries' }
 ];
 
 export default function MyPageSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex flex-col w-80 h-screen shrink-0 border-r bg-white py-8">
+    <aside className="hidden md:flex flex-col w-80 h-full shrink-0 border-r bg-white py-8">
       <div className="relative flex flex-col items-center mb-8">
         <Image
           src={profileImg}
