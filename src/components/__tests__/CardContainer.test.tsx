@@ -67,19 +67,9 @@ describe('CardContainer', () => {
     const cards = screen.getAllByTestId('card');
     expect(cards).toHaveLength(3);
 
-    // Check if container has correct classes
+    // Check if container has correct classes and testid
     const container = screen.getByTestId('horizontal-container');
-    expect(container).toHaveClass('relative', 'w-full');
-
-    // Check if scroll container has correct classes
-    const scrollContainer = container.querySelector('div[class*="flex gap-4"]');
-    expect(scrollContainer).toHaveClass(
-      'flex',
-      'gap-4',
-      'pb-4',
-      'w-[calc(100vw-360px)]',
-      'overflow-hidden'
-    );
+    expect(container).toHaveClass('relative', 'flex', 'w-screen');
 
     // Initially, prev button should not be visible
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
@@ -87,7 +77,7 @@ describe('CardContainer', () => {
     // Next button should be visible
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('right-0');
+    expect(nextButton.className).toContain('right-[330px]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {

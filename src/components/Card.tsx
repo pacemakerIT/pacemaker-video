@@ -1,11 +1,12 @@
+'use client';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
 import { CustomBadge } from './CustomBadge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState } from 'react';
 import resume from '../../public/img/resume_lecture.jpeg';
+import { useState } from 'react';
 
 export default function Card({
   videoId,
