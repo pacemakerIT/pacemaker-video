@@ -1,6 +1,6 @@
 import '@/app/globals.css';
 import { UserProvider } from '../context/user-context';
-import AdminPage from '@/components/admin-page';
+import AdminPage from '@/components/admin/admin-page';
 
 export default function RootLayout({
   children

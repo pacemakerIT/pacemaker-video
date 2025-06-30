@@ -1,9 +1,9 @@
 'use client';
 import * as React from 'react';
-import Card from './Card';
+import Card from './card';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 interface CardContainerProps {
   layout: 'grid' | 'horizontal';

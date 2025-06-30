@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OnlineCards } from '@/types/online';
-import CardContainer from '../CardContainer';
+import CardContainer from '../common/card-container';
 
 // Mock the Card component
 vi.mock('../Card', () => ({
