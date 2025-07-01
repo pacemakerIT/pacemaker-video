@@ -1,5 +1,5 @@
-import ListHeader from '@/components/list-header';
-import CourseList from '@/components/CourseList';
+import ListHeader from '@/components/common/list-header';
+import CourseList from '@/components/features/course/course-list';
 
 export default function CoursesPage() {
   return (

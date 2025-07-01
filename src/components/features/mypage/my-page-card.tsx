@@ -1,10 +1,9 @@
 import Image from 'next/image';
-import { Button } from './ui/button';
+import { Button } from '../../ui/button';
 import { Heart } from 'lucide-react';
-import { CustomBadge } from './CustomBadge';
+import { CustomBadge } from '../../common/custom-badge';
 import Link from 'next/link';
 import { useState } from 'react';
-import resume from '../../public/img/resume_lecture.jpeg';
 import { MyCard } from '@/types/my-card';
 
 export default function MyPageCard({
@@ -41,7 +40,7 @@ export default function MyPageCard({
 
           <div className="w-96 h-64">
             <Image
-              src={resume}
+              src="/img/resume_lecture.jpeg"
               width={384}
               height={256}
               className="w-full h-full object-cover"

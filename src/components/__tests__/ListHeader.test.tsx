@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import ListHeader from '../list-header';
+import ListHeader from '../common/list-header';
 
 // Mock embla-carousel-react
 vi.mock('embla-carousel-react', () => {

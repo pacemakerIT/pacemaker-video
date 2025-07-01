@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import profileImg from '../../public/img/resume_lecture.jpeg';
 
 const menuItems = [
   { label: '마이페이지', href: '/mypage' },
@@ -20,7 +19,7 @@ export default function MyPageSidebar() {
     <aside className="hidden md:flex flex-col w-80 h-full shrink-0 border-r bg-white py-8">
       <div className="relative flex flex-col items-center mb-8">
         <Image
-          src={profileImg}
+          src="/img/resume_lecture.jpeg"
           alt="프로필"
           className="w-40 h-40 rounded-full mb-4"
           width={160}

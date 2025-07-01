@@ -1,6 +1,6 @@
-import VideoList from '@/components/video-list';
-import UserInfo from '@/components/user-info';
-import ListHeader from '@/components/list-header';
+import VideoList from '@/components/features/course/video-list';
+import UserInfo from '@/components/common/user-info';
+import ListHeader from '@/components/common/list-header';
 
 export default async function Home() {
   return (
