@@ -5,7 +5,7 @@ import { OnlineCards } from '@/types/online';
 import CardContainer from '../common/card-container';
 
 // Mock the Card component
-vi.mock('../Card', () => ({
+vi.mock('../common/card', () => ({
   default: ({ title }: { title: string }) => (
     <div data-testid="card">{title}</div>
   )
@@ -60,8 +60,8 @@ describe('CardContainer', () => {
     // 초기에는 이전 버튼이 보이지 않아야 함
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
 
-    // 다음 버튼이 보여야 함
-    const nextButton = screen.getByRole('button');
+    // 다음 버튼이 보여야 함 (ChevronRight 아이콘을 포함한 버튼)
+    const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
     expect(nextButton).toHaveClass('right-[calc(100%-1210px)]');
   });
@@ -73,7 +73,7 @@ describe('CardContainer', () => {
 
     // 초기 상태에서는 이전 버튼이 없고 다음 버튼이 있어야 함
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
 
     // 마지막 카드로 이동한 상태를 시뮬레이션
     rerender(
@@ -81,7 +81,7 @@ describe('CardContainer', () => {
     );
 
     // 마지막 카드에서는 다음 버튼이 없어야 함
-    expect(screen.queryByRole('button')).toBeNull();
+    expect(screen.queryByRole('button', { name: /next/i })).toBeNull();
   });
 
   it('handles navigation button clicks correctly', () => {
@@ -89,7 +89,7 @@ describe('CardContainer', () => {
       <CardContainer layout="horizontal" cards={mockCards} />
     );
 
-    const nextButton = screen.getByRole('button');
+    const nextButton = screen.getByRole('button', { name: /next/i });
     const scrollContainer = container.querySelector('.flex.overflow-hidden');
 
     if (scrollContainer) {
@@ -99,7 +99,9 @@ describe('CardContainer', () => {
     fireEvent.click(nextButton);
 
     // 다음 버튼 클릭 후 이전 버튼이 나타나야 함
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /previous/i })
+    ).toBeInTheDocument();
     expect(scrollContainer?.scrollTo).toHaveBeenCalled();
   });
 
