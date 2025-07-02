@@ -53,7 +53,6 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
         item.id === id ? { ...item, selected: !item.selected } : item
       )
     );
-    console.log('togle', cartItems.length);
   };
 
   const toggleAll = (checked: boolean) => {
@@ -144,7 +143,7 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
       <h1 className="text-pace-xl font-bold mt-20 mb-6 text-pace-gray-700">
         You Might Also Like
       </h1>
-      <div className="flex gap-6">
+      <div className="flex flex-wrap h-[515px] gap-6 overflow-hidden">
         {cards.map((card, index) => (
           <MyPageCard
             key={index}
