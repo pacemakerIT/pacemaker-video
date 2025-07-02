@@ -33,7 +33,7 @@ interface UserContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
-const UserContext = createContext<UserContextType>({
+export const UserContext = createContext<UserContextType>({
   user: null,
   isLoading: true,
   error: null,
