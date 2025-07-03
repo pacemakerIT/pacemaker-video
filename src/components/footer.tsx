@@ -11,7 +11,7 @@ export function Footer() {
           {/* pacemaker + 메뉴 */}
           <div className="flex items-center space-x-6">
             <div className="text-pace-2xl font-extrabold text-pace-black-500 leading-none">
-              pacemaker
+              paceup
             </div>
             <div className="flex space-x-6 text-pace-base font-normal text-pace-black-900 leading-[1]">
               {/* 온라인 강의 */}
