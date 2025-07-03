@@ -63,7 +63,7 @@ describe('CardContainer', () => {
     // 다음 버튼이 보여야 함
     const nextButton = screen.getByRole('button');
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('right-[calc(100%-1210px)]');
+    expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
