@@ -21,7 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.837.0",
     "@aws-sdk/s3-request-presigner": "^3.837.0",
-    "@clerk/backend": "^2.3.1",
+    "@clerk/backend": "^2.4.0",
     "@clerk/nextjs": "^6.23.2",
     "@headlessui/react": "^2.2.4",
     "@hookform/resolvers": "^5.0.1",
