@@ -81,7 +81,7 @@
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.2",
     "postcss": "^8",
-    "prettier": "^3.6.0",
+    "prettier": "^3.6.2",
     "prisma": "^6.10.1",
     "storybook": "^9.0.13",
     "tailwindcss": "^3.3.0",
