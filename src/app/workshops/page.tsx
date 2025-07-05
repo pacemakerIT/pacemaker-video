@@ -1,8 +1,11 @@
-export default function PlaceholderPage() {
+'use client';
+
+import WorkshopCalendar from '@/components/calendar/workshop-calendar';
+
+export default function Page() {
   return (
-    <div className="p-4 text-gray-500">
-      <h1 className="text-lg font-semibold">🚧 Page Under Construction</h1>
-      <p>This page is currently being set up.</p>
+    <div className="p-4">
+      <WorkshopCalendar />
     </div>
   );
 }
