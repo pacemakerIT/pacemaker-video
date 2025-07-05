@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import SignInModalButton from '@/components/auth/sign-in-modal-button';
 import SignUpModalButton from '@/components/auth/sign-up-modal-button';
