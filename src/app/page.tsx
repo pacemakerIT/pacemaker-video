@@ -1,5 +1,5 @@
 import VideoList from '@/components/video-list';
-import UserInfo from '@/components/user-info';
+import UserInfo from '@/components/user/user-info';
 import ListHeader from '@/components/list-header';
 import { Button } from '@/components/ui/button';
 
