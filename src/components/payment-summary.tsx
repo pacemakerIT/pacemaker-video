@@ -12,7 +12,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const total = subtotal - discount + tax;
 
   return (
-    <aside className="w-80 h-full border-l p-10 pt-20">
+    <aside className="w-80 h-auto border-l p-10 pt-20">
       <h2 className="text-lg font-bold mb-4">예상 결제 금액</h2>
       <ul className="space-y-4 mb-6 font-normal border-b border-pace-gray-700 pb-6 text-pace-base text-pace-gray-700">
         <li className="flex justify-between">
