@@ -1,69 +1,83 @@
 'use client';
 
-import {
-  // SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton
-} from '@clerk/nextjs';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
-import { useUserContext } from '@/app/context/user-context';
 import SignInModalButton from '@/components/auth/sign-in-modal-button';
+import SignUpModalButton from '@/components/auth/sign-up-modal-button';
+import UserDropdown from '@/components/user/user-drop-down';
+import LanguageDropdown from '@/components/language-drop-down';
+import Image from 'next/image';
+import { useState, useRef, useEffect } from 'react';
 
 export function Header() {
-  const { user, isLoading, error } = useUserContext();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        isDropdownOpen &&
+        langDropdownRef.current &&
+        !langDropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <header className="w-full border-b">
-      <div className="flex h-16 items-center justify-between px-8">
-        {/* 왼쪽: Pacemaker 로고 */}
-        <div className="flex-shrink-0">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-extrabold text-pace-2xl text-pace-orange-800">
-              pacemaker
-            </span>
-          </Link>
-        </div>
+      <div className="flex flex-wrap items-center justify-between px-4 md:px-10 h-auto md:h-20 gap-y-2">
+        {/* 로고 */}
+        <Link href="/" className="flex items-center pt-5 pb-5">
+          <Image
+            src="/icons/paceup-logo.svg"
+            alt="Paceup Logo"
+            width={140}
+            height={30}
+            priority
+          />
+        </Link>
 
-        {/* 오른쪽: 메뉴 + 회원가입 + 로그인 */}
-        <div className="flex items-center gap-8">
+        {/* 오른쪽: 메뉴 및 로그인 등 */}
+        <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {/* 메뉴 */}
-          <nav className="flex items-center gap-6 text-pace-base font-medium text-pace-black-500">
+          <nav className="flex flex-wrap items-center gap-[0px] text-pace-lg font-medium text-pace-black-500">
             <Link
               href="/courses"
-              className="text-pace-lg font-medium text-pace-black-500 hover:text-pace-orange-800"
+              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
             >
               온라인 강의
             </Link>
             <Link
               href="/ebooks"
-              className="text-pace-lg font-medium text-pace-black-500 hover:text-pace-orange-800"
+              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
             >
               전자책
             </Link>
             <Link
               href="/workshops"
-              className="text-pace-lg font-medium text-pace-black-500 hover:text-pace-orange-800"
+              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
             >
-              오프라인 워크샵
+              워크샵
             </Link>
           </nav>
 
           <SignedOut>
-            {/* 회원가입: 모달 */}
-            <SignUpButton mode="modal">
-              <button className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800">
-                회원가입
-              </button>
-            </SignUpButton>
+            {/* 회원가입: 커스텀 모달로 변경 */}
+            <SignUpModalButton />
 
             {/* 로그인 */}
             <SignInModalButton />
           </SignedOut>
           <SignedIn>
             <Link
-              href="/cart"
+              href="/mypage/cart"
               className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
             >
               <div className="relative">
@@ -75,36 +89,14 @@ export function Header() {
               장바구니
             </Link>
 
-            {/* 사용자 이름 + 프로필 버튼 */}
+            {/* 사용자 이름 + 커스텀 드롭다운 */}
             <div className="flex items-center gap-2">
-              <UserButton
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox:
-                      'w-6 h-6 rounded-full bg-white shadow-sm',
-                    userButtonTrigger: 'flex items-center'
-                  }
-                }}
-              />
-              {!isLoading && user && (
-                <>
-                  <span className="text-pace-base text-pace-black-500 font-medium">
-                    {user.name && user.name !== 'N/A'
-                      ? user.name
-                      : user.email.split('@')[0]}
-                  </span>
-                </>
-              )}
-              {error && (
-                <span className="text-pace-base text-pace-black-500 font-medium">
-                  회원
-                </span>
-              )}
-              <span className="text-pace-base text-pace-black-500 font-normal">
-                님
-              </span>
+              <UserDropdown />
             </div>
           </SignedIn>
+
+          {/* 언어 선택 UI (TO-DO : 기능 추가) */}
+          <LanguageDropdown />
         </div>
       </div>
     </header>
