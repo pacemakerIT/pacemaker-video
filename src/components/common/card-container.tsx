@@ -98,7 +98,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
         <Button
           variant="outline"
           size="icon"
-          className="absolute right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          className="absolute md:right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handleNext}
           aria-label="next"
         >

@@ -63,7 +63,7 @@ describe('CardContainer', () => {
     // 다음 버튼이 보여야 함 (ChevronRight 아이콘을 포함한 버튼)
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('right-[calc(100%-1210px)]');
+    expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {

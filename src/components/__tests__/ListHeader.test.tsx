@@ -13,14 +13,18 @@ vi.mock('embla-carousel-react', () => {
     canScrollNext: () => true,
     selectedScrollSnap: () => 0,
     scrollSnaps: () => [0, 1, 2],
-    scrollProgress: () => 0
+    scrollProgress: () => 0,
+    options: () => ({
+      mediaQueries: []
+    })
   };
 
-  const useEmblaCarousel = () => [vi.fn(), mockEmblaApi];
+  const useEmblaCarousel = () => {
+    return [vi.fn(), mockEmblaApi];
+  };
 
   return {
-    default: useEmblaCarousel,
-    useEmblaCarousel
+    default: useEmblaCarousel
   };
 });
 
