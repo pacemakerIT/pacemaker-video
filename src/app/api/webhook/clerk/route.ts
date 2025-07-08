@@ -4,7 +4,6 @@ import { WebhookEvent } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { v4 as uuidv4 } from 'uuid';
-
 export async function POST(req: Request) {
   const headerPayload = headers();
   const svix_id = (await headerPayload).get('svix-id');
@@ -45,8 +44,18 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const { id: clerkId, email_addresses, first_name, last_name } = evt.data; // Get Clerk ID
+    //const { id: clerkId, email_addresses, first_name, last_name } = evt.data; // Get Clerk ID
+    const {
+      id: clerkId,
+      email_addresses,
+      unsafe_metadata,
+      public_metadata
+    } = evt.data;
 
+    const firstName =
+      unsafe_metadata?.firstName ?? public_metadata?.firstName ?? '';
+    const lastName =
+      unsafe_metadata?.lastName ?? public_metadata?.lastName ?? '';
     const userId = uuidv4(); // Generate application UUID
 
     try {
@@ -56,11 +65,13 @@ export async function POST(req: Request) {
           id: userId, // Use application UUID for ID
           clerkId: clerkId, // Store Clerk ID
           email: email_addresses[0]?.email_address ?? '',
-          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
+          name: `${firstName} ${lastName}`.trim() || null
+          //name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
         },
         update: {
           email: email_addresses[0]?.email_address ?? '',
-          name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
+          name: `${firstName} ${lastName}`.trim() || null
+          //name: `${first_name ?? ''} ${last_name ?? ''}`.trim() || null
         }
       });
     } catch (dbError) {
