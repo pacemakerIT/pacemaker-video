@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.837.0",
-    "@aws-sdk/s3-request-presigner": "^3.837.0",
+    "@aws-sdk/s3-request-presigner": "^3.842.0",
     "@clerk/backend": "^2.3.1",
     "@clerk/nextjs": "^6.23.3",
     "@headlessui/react": "^2.2.4",
@@ -48,7 +48,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-filepond": "^7.1.3",
-    "react-hook-form": "^7.59.0",
+    "react-hook-form": "^7.60.0",
     "react-pdf": "^10.0.1",
     "sonner": "^2.0.6",
     "svix": "^1.68.0",
