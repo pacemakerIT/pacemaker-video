@@ -30,10 +30,12 @@ export default {
           700: '#021734'
         },
         'pace-orange': {
+          50: '#FFF3E6',
           500: '#FF9631',
           600: '#FF8236',
           700: '#FB773F',
-          800: '#FF6F20'
+          800: '#FF6F20',
+          900: '#ff7e00'
         },
         'pace-pink': { 500: '#F96164' },
         'pace-purple': { 500: '#9F5BE7' },
@@ -68,6 +70,7 @@ export default {
 
       // fontWeight는 Tailwind 기본 디자인 시스템 (font-normal, font-medium, font-bold 등) 사용
       fontSize: {
+        'pace-xs': ['12px', { lineHeight: '1.5' }],
         'pace-sm': ['14px', { lineHeight: '1.4' }], // small text
         'pace-base': ['16px', { lineHeight: '1.5' }], // base text
         'pace-lg': ['18px', { lineHeight: '1.4' }], // large text

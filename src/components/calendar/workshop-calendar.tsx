@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import Image from 'next/image';
 import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-custom.css';
+import EventPopup from '@/components/calendar/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
 
@@ -48,9 +49,9 @@ const events: CalendarEvent[] = [
 
 function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
   return (
-    <div className="relative w-full py-4">
+    <div className="relative w-[1200px] mx-auto py-4 pb-8">
       <button
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center md:w-14 md:h-14"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center"
         onClick={() => onNavigate('PREV')}
       >
         <Image
@@ -62,15 +63,14 @@ function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
       </button>
 
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-gray-900">{label}</h2>
-        <p className="text-sm text-gray-400">
-          6월에는 <span className="text-orange-500 font-semibold">5개</span>의
-          워크숍이 있어요
+        <h2 className="font-bold text-[24px] text-[#333333] pb-2">{label}</h2>
+        <p className="text-[#666666] text-[16px]">
+          6월에는 <span className="text-[#FF8236]">5개</span>의 워크숍이 있어요
         </p>
       </div>
 
       <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center md:w-14 md:h-14"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center"
         onClick={() => onNavigate('NEXT')}
       >
         <Image
@@ -85,14 +85,36 @@ function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
 }
 
 export default function WorkshopCalendar() {
-  const [openedEventId, setOpenedEventId] = useState<string | null>(null);
+  const [openedEvent, setOpenedEvent] = useState<CalendarEvent | null>(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0 });
+
+  const handleEventClick = (e: MouseEvent, event: CalendarEvent) => {
+    e.stopPropagation();
+
+    const target = (e.target as HTMLElement).closest(
+      '.rbc-event'
+    ) as HTMLElement;
+
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY;
+    const left = rect.left + window.scrollX;
+    const width = rect.width;
+
+    if (openedEvent?.title === event.title) {
+      setOpenedEvent(null);
+    } else {
+      setOpenedEvent(event);
+      setPopupPos({ top, left, width });
+    }
+  };
 
   return (
-    <div className="p-6 rounded-xl bg-white shadow-md">
-      <div className="text-center mb-4">
-        <h2 className="text-2xl font-semibold">페이스메이커 워크샵</h2>
-      </div>
-
+    <div
+      className="max-w-[1200px] mx-auto p-6 rounded-xl bg-white"
+      onClick={() => setOpenedEvent(null)}
+    >
       <Calendar
         localizer={localizer}
         events={events}
@@ -102,35 +124,43 @@ export default function WorkshopCalendar() {
         views={['month']}
         components={{
           toolbar: CustomToolbar,
-          event: ({ event }) => {
-            const isOpen = openedEventId === event.title;
-            return (
-              <div className="space-y-1">
-                <div
-                  onClick={() => setOpenedEventId(isOpen ? null : event.title)}
-                  className="cursor-pointer bg-[#FFF3E6] text-[#FF9631] text-sm rounded px-2 py-[2px] font-medium truncate"
-                >
-                  {event.title}
-                </div>
-                {isOpen && (
-                  <div className="mt-1 bg-[#FFF3E6] rounded-lg p-3 shadow-md text-[#666666] text-xs space-y-1">
-                    <p>
-                      <span className="text-[#FF9631] font-semibold">
-                        {event.title}
-                      </span>
-                    </p>
-                    <p>강사: {event.speaker}</p>
-                    <p>참가비: {event.fee}</p>
-                    <Button className="mt-1 h-7 px-3 text-xs bg-[#FF9631] hover:bg-[#ff7e00] text-white">
-                      자세히 보기
-                    </Button>
-                  </div>
-                )}
-              </div>
-            );
-          }
+          event: ({ event }) => (
+            <div
+              onClick={(e) => handleEventClick(e, event)}
+              className="cursor-pointer bg-[#FFF3E6] text-[#FF9631] text-sm rounded px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02]"
+            >
+              {event.title}
+            </div>
+          )
         }}
       />
+
+      {/* TO-DO 강사명, 참가비 DB 연결 필요 / 자세히보기 버튼 클릭 시 해당 워크샵으로 이동 필요 */}
+      {openedEvent && (
+        <EventPopup
+          top={popupPos.top}
+          left={popupPos.left}
+          width={popupPos.width}
+          onClose={() => setOpenedEvent(null)}
+        >
+          {/* <p>강사 {openedEvent.speaker}</p> */}
+          <p className="text-[14px] text-[#666666] pb-2">강사 구수진</p>
+          {/* <p>참가비 {openedEvent.fee}</p> */}
+          <p className="text-[14px] text-[#666666] pb-2">참가비 $20</p>
+          <Button
+            className="
+              mt-1 w-[87px] h-[22px]
+              bg-pace-orange-600 hover:bg-pace-orange-900
+              text-white text-xs font-light
+              rounded-full mx-auto block p-0 text-center
+              flex items-center justify-center
+              transition-all duration-200
+            "
+          >
+            자세히 보기
+          </Button>
+        </EventPopup>
+      )}
     </div>
   );
 }
