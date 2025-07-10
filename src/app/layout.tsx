@@ -1,6 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
+import { Header } from '@/components/common/header';
+import { Footer } from '@/components/common/footer';
 import { Toaster } from '@/components/ui/sonner';
 import { UserProvider } from '@/app/context/user-context';
 import { PurchaseProvider } from '@/app/context/purchase-context';

@@ -1,9 +1,9 @@
 'use client';
 import * as React from 'react';
-import Card from './Card';
+import Card from './card';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 interface CardContainerProps {
   layout: 'grid' | 'horizontal';
@@ -69,6 +69,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
           size="icon"
           className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handlePrev}
+          aria-label="previous"
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
@@ -99,6 +100,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
           size="icon"
           className="absolute md:right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handleNext}
+          aria-label="next"
         >
           <ChevronRight className="h-6 w-6" />
         </Button>

@@ -1,11 +1,13 @@
 import Image from 'next/image';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
-import { CustomBadge } from './CustomBadge';
+import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { useState } from 'react';
-import resume from '../../public/img/resume_lecture.jpeg';
+// import resume from 'public/img/resume_lecture.jpeg';
+// import resume from '/Users/mirimkim/Desktop/projects/pacemaker/pacemaker-video/public/img/resume_lecture.jpeg';
+// import resume from 'public/img/resume_lecture.jpeg';
 
 export default function Card({
   videoId,
@@ -40,7 +42,7 @@ export default function Card({
 
           <div className="w-[588px] h-[331px]">
             <Image
-              src={resume}
+              src="/img/resume_lecture.jpeg"
               width={588}
               height={331}
               className="w-full h-[331px] object-cover rounded-lg"

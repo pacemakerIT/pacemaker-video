@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import CardContainer from './CardContainer';
+import CardContainer from '../../common/card-container';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
