@@ -24,7 +24,7 @@ export default function MyPage({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-screen grid grid-cols-[320px_1fr]">
       <MyPageSidebar />
-      <main className="flex">{children}</main>
+      <main>{children}</main>
     </div>
   );
 }

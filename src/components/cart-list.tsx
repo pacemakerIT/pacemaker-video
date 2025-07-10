@@ -12,17 +12,17 @@ import { CartItem } from '@/types/my-card';
 const cards = [
   {
     id: '1',
-    videoId: '4e8wv1z7tl',
+    itemId: '4e8wv1z7tl',
     title: 'UX Design Fundamentals',
     price: 12.43,
     description:
-      '자소서를 위한 스펙이 무엇인지와, 스펙을 쌓기 위하여 어떻게 정보를 구해야 할지 도와드릴게요.',
+      '자소서를 위한 스펙이 무엇인지와, 스펙을 쌓기 위하여 어떻게 정보를 구해야 할지 도와드릴게요.',
     category: 'Marketing',
-    type: '전자책'
+    type: '워크샵'
   },
   {
     id: '2',
-    videoId: '4e8wv1z7tl',
+    itemId: '4e8wv1z7tl',
     title: 'UX Design Fundamentals',
     price: 15.99,
     description:
@@ -32,7 +32,7 @@ const cards = [
   },
   {
     id: '3',
-    videoId: '4e8wv1z7tl',
+    itemId: '4e8wv1z7tl',
     title: 'Test3',
     price: 9.99,
     description: 'test3',
@@ -143,7 +143,7 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
       <h1 className="text-pace-xl font-bold mt-20 mb-6 text-pace-gray-700">
         You Might Also Like
       </h1>
-      <div className="flex flex-wrap h-[515px] gap-6 overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card, index) => (
           <MyPageCard
             key={index}
@@ -153,12 +153,9 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
             description={card.description}
             category={card.category}
             type={card.type}
-            videoId={card.videoId}
-            // uploadDate={card.uploadDate}
-            // watchedVideos={card.watchedVideos}
-            // purchasedVideos={card.purchasedVideos}
+            itemId={card.itemId}
+            purchased={false}
           />
-          // <MyPageCard key={index} {...card} />
         ))}
       </div>
     </section>
