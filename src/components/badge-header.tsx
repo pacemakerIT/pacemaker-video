@@ -24,7 +24,7 @@ export default function BadgeHeader({
                 categoryName === currentCategory
                   ? ' border-pace-orange-600 text-pace-orange-600'
                   : 'text-pace-stone-600 border-pace-stone-600'
-              } rounded-full w-full h-12 min-w-40 justify-center cursor-pointer font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
+              } rounded-full w-full h-12 min-w-40 justify-center cursor-pointer !text-pace-base font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
               onClick={() => {
                 setCurrentCategory(categoryName);
               }}

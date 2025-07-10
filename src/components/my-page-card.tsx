@@ -117,7 +117,7 @@ export default function MyPageCard({
                 </p>
                 <Button
                   variant="link"
-                  className="text-[#E86642] font-pace-base font-normal p-0 gap-1"
+                  className="text-[#E86642] !text-pace-base font-normal p-0 gap-1"
                 >
                   {progress === 100
                     ? '수강리뷰 쓰러가기'
