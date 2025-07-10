@@ -36,20 +36,19 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
             <span>${tax.toFixed(2)}</span>
           </li>
         </ul>
-        <div className="flex justify-between text-pace-base font-semibold">
+        <div className="flex justify-between text-pace-base font-semibold pb-6">
           <span className="text-pace-gray-700">총 결제 금액</span>
           <span className="text-[#E86642] font-bold">${total.toFixed(2)}</span>
         </div>
-        <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm">
-          <input
-            type="text"
-            placeholder="프로모션 코드 입력"
-            className="flex-1 min-w-0 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
-          />
-          <button className="w-[57px] px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
-            등록
-          </button>
-        </div>
+        <input
+          type="text"
+          placeholder="프로모션 코드 입력"
+          className="w-full flex-1 mb-1 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
+        />
+        <button className="w-full px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
+          등록
+        </button>
+        <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm"></div>
         <button className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full">
           결제하기
         </button>
