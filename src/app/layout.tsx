@@ -17,7 +17,7 @@ export default function RootLayout({
     >
       <UserProvider>
         <PurchaseProvider>
-          <html lang="en">
+          <html lang="en" style={{ colorScheme: 'light' }}>
             <body>
               <Header />
               <main className="container">{children}</main>
