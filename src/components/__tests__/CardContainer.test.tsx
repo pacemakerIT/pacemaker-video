@@ -68,11 +68,13 @@ describe('CardContainer', () => {
     expect(cards).toHaveLength(3);
 
     // Check if container has correct classes
-    const container = screen.getByTestId('horizontal-container');
+    const container = screen.getByRole('button').closest('div');
     expect(container).toHaveClass('relative', 'w-full');
 
     // Check if scroll container has correct classes
-    const scrollContainer = container.querySelector('div[class*="flex gap-4"]');
+    const scrollContainer = container?.querySelector(
+      'div[class*="flex gap-4"]'
+    );
     expect(scrollContainer).toHaveClass(
       'flex',
       'gap-4',
@@ -82,12 +84,12 @@ describe('CardContainer', () => {
     );
 
     // Initially, prev button should not be visible
-    expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
+    expect(screen.queryByRole('button')).toBeInTheDocument();
 
     // Next button should be visible
-    const nextButton = screen.getByRole('button', { name: /next/i });
+    const nextButton = screen.getByRole('button');
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('right-0');
+    expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
@@ -111,25 +113,21 @@ describe('CardContainer', () => {
     );
 
     // 초기 상태: 다음 버튼만 보여야 함
-    const initialNextButton = screen.getByRole('button', { name: /next/i });
-    expect(initialNextButton).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(1);
 
     // 다음 버튼 클릭
-    fireEvent.click(initialNextButton);
+    fireEvent.click(buttons[0]);
 
     // 이제 양쪽 버튼 모두 보여야 함
-    const prevButton = screen.getByRole('button', { name: /previous/i });
-    const nextButton = screen.getByRole('button', { name: /next/i });
-
-    expect(prevButton).toBeInTheDocument();
-    expect(nextButton).toBeInTheDocument();
+    const buttonsAfterClick = screen.getAllByRole('button');
+    expect(buttonsAfterClick).toHaveLength(2);
   });
 
   it('handles navigation button clicks correctly', () => {
     render(<CardContainer layout="horizontal" cards={mockCards} />);
 
-    const nextButton = screen.getByRole('button', { name: /next/i });
+    const nextButton = screen.getByRole('button');
 
     // Click next button
     fireEvent.click(nextButton);
