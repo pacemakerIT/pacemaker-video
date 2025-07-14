@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createGetHandler } from './handler';
 import { NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
-import { TextEncoder } from 'util';
 import type { Mock } from 'vitest';
 
 vi.mock('@clerk/nextjs/server', () => ({
