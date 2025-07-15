@@ -3,8 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { MyWorkshopCard } from '@/types/my-card';
-import { Button } from './ui/button';
-import resume from '../../public/img/resume_lecture.jpeg';
+import { Button } from '../../ui/button';
 
 export default function MyPageWorkshopCard({
   itemId,
@@ -17,7 +16,7 @@ export default function MyPageWorkshopCard({
         <div className="w-full bg-white rounded-lg overflow-hidden shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative">
           <div className="w-full aspect-[3/2]">
             <Image
-              src={resume}
+              src="/img/resume_lecture.jpeg"
               width={384}
               height={256}
               className="w-full h-full object-cover"

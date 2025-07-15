@@ -1,5 +1,5 @@
-import MyList from '@/components/my-list';
-import MyPageWorkshopCard from '@/components/my-page-workshop-card';
+import MyList from '@/components/features/mypage/my-list';
+import MyPageWorkshopCard from '@/components/features/mypage/my-page-workshop-card';
 import { MyCard, MyWorkshopCard } from '@/types/my-card';
 
 export default function MyPage() {
