@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { MyCard } from '@/types/my-card';
-import MyPageCard from './my-page-card';
+import MyPageCard from '@/components/features/mypage/my-page-card';
 
 interface CardContainerProps {
   cards: MyCard[];

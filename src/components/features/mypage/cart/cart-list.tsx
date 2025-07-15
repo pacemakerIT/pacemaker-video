@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { XIcon } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import img from '../../public/img/resume_lecture.jpeg';
-import MyPageCard from './my-page-card';
-import { CustomBadge } from './CustomBadge';
+// import img from 'public/img/resume_lecture.jpeg';
+import MyPageCard from '../my-page-card';
+import { CustomBadge } from '../../../common/custom-badge';
 import { CartItem } from '@/types/my-card';
 
 const cards = [
@@ -26,7 +26,7 @@ const cards = [
     title: 'UX Design Fundamentals',
     price: 15.99,
     description:
-      '2~30대의 다양한 선택지를 두루 경험한 제가, 취준 일변도가 아니라 다양한 분야에서 쓰일 수 있는 스펙 쌓기부터 각종 자소서 작성 및 면접 준비까지 차근차근 준비해나가실 수 있도록 도와드리겠습니다.',
+      '2~30대의 다양한 선택지를 두루 경험한 제가, 취준 일변도가 아니라 다양한 분야에서 쓰일 수 있는 스펙 쌓기부터 각종 자소서 작성 및 면접 준비까지 차근차근 준비해나가실 수 있도록 도와드리겠습니다.',
     category: 'Interview',
     type: '온라인 강의'
   },
@@ -102,8 +102,10 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
               {item.type}
             </div>
             <Image
-              src={img}
+              src="/img/resume_lecture.jpeg"
               alt={item.title}
+              width={160}
+              height={106}
               className="w-40 h-[106px] rounded-lg object-cover"
             />
             <div className="ml-6">

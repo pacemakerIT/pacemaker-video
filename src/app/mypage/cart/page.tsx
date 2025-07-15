@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
-import CartList from '@/components/cart-list';
-import PaymentSummary from '@/components/payment-summary';
+import CartList from '@/components/features/mypage/cart/cart-list';
+import PaymentSummary from '@/components/features/mypage/cart/payment-summary';
 import { CartItem } from '@/types/my-card';
 
 const items: CartItem[] = [

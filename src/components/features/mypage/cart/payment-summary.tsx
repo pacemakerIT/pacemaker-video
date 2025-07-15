@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
 
 interface PaymentSummaryProps {
@@ -43,9 +43,9 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         <input
           type="text"
           placeholder="프로모션 코드 입력"
-          className="w-full flex-1 mb-1 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
+          className="w-full flex-1 mb-1 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
         />
-        <button className="w-full px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
+        <button className="w-full px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
           등록
         </button>
         <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm"></div>
@@ -108,9 +108,9 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
                   <input
                     type="text"
                     placeholder="프로모션 코드 입력"
-                    className="flex-1 min-w-0 px-3 py-1 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
+                    className="flex-1 min-w-0 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
                   />
-                  <button className="w-[57px] px-3 py-1 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
+                  <button className="px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
                     등록
                   </button>
                 </div>

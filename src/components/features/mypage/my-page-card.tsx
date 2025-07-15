@@ -5,12 +5,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { MyCard } from '@/types/my-card';
-import { Heart } from 'lucide-react';
-import { Button } from './ui/button';
-import { CustomBadge } from './CustomBadge';
-import resume from '../../public/img/resume_lecture.jpeg';
+import { CustomBadge } from '@/components/common/custom-badge';
 
 export default function MyPageCard({
   itemId,
@@ -56,7 +55,7 @@ export default function MyPageCard({
 
           <div className="w-full aspect-[3/2]">
             <Image
-              src={resume}
+              src="/img/resume_lecture.jpeg"
               width={384}
               height={256}
               className="w-full h-full object-cover"
