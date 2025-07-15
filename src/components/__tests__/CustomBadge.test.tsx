@@ -1,7 +1,7 @@
 // src/components/__tests__/CustomBadge.test.tsx
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { CustomBadge } from '../CustomBadge';
+import { CustomBadge } from '../common/custom-badge';
 
 describe('CustomBadge', () => {
   it('renders with default variant (Interview)', () => {
