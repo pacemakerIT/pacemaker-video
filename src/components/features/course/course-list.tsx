@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import CardContainer from '@/components/CardContainer';
-import CourseHeader from '@/components/CourseHeader';
+import CardContainer from '@/components/common/card-container';
+import CourseHeader from '@/components/features/course/course-header';
 import { OnlineCards } from '@/types/online';
 import { toast } from 'sonner';
 

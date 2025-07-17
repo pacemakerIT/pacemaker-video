@@ -1,20 +1,32 @@
-// Used in /mypage/cart
-// TODO: Make scalable for both item type - video, document
-export interface MyCard {
+export interface MyCardBase {
   id: string;
-  videoId: string;
+  itemId: string;
   title: string;
-  description: string;
-  // uploadDate: Date;
-  date?: Date;
-  price: number;
-  category: string;
-  type: string;
-  // watchedVideos: Array;
-  // purchasedVideos: Array;
 }
 
 // Added selected property for the cart list in /mypage/cart
-export interface CartItem extends MyCard {
-  selected: boolean;
+export interface CartItem extends MyCardBase {
+  category: string;
+  price: number;
+  type: string;
+  date?: Date;
+  selected?: boolean;
+}
+
+export interface MyCard extends MyCardBase {
+  purchased: boolean;
+  category: string;
+  type: string;
+
+  // Used in /mypage/page.tsx
+  totalChapters?: number;
+  completedChapters?: number;
+
+  // Used in You Might Also Like in /mypage/cart/page.tsx
+  description?: string;
+  price?: number;
+}
+
+export interface MyWorkshopCard extends MyCardBase {
+  date: Date;
 }
