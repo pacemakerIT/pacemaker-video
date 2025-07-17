@@ -1,5 +1,5 @@
 import React from 'react';
-import DocumentList from '@/components/DocumentList';
+import DocumentList from '@/components/features/document/document-list';
 
 export default function Document() {
   return (

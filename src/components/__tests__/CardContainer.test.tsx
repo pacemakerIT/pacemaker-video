@@ -2,10 +2,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OnlineCards } from '@/types/online';
-import CardContainer from '../CardContainer';
+import CardContainer from '../common/card-container';
 
 // Mock the Card component
-vi.mock('../Card', () => ({
+vi.mock('../common/card', () => ({
   default: ({ title }: { title: string }) => (
     <div data-testid="card">{title}</div>
   )
@@ -86,8 +86,8 @@ describe('CardContainer', () => {
     // Initially, prev button should not be visible
     expect(screen.queryByRole('button')).toBeInTheDocument();
 
-    // Next button should be visible
-    const nextButton = screen.getByRole('button');
+    // 다음 버튼이 보여야 함 (ChevronRight 아이콘을 포함한 버튼)
+    const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
     expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
   });
@@ -112,28 +112,31 @@ describe('CardContainer', () => {
       <CardContainer layout="horizontal" cards={mockCardsWithMoreItems} />
     );
 
-    // 초기 상태: 다음 버튼만 보여야 함
-    const buttons = screen.getAllByRole('button');
-    expect(buttons).toHaveLength(1);
+    // 초기 상태에서는 이전 버튼이 없고 다음 버튼이 있어야 함
+    expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
+    expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
 
     // 다음 버튼 클릭
     fireEvent.click(buttons[0]);
 
-    // 이제 양쪽 버튼 모두 보여야 함
-    const buttonsAfterClick = screen.getAllByRole('button');
-    expect(buttonsAfterClick).toHaveLength(2);
+    // 마지막 카드에서는 다음 버튼이 없어야 함
+    expect(screen.queryByRole('button', { name: /next/i })).toBeNull();
   });
 
   it('handles navigation button clicks correctly', () => {
     render(<CardContainer layout="horizontal" cards={mockCards} />);
 
-    const nextButton = screen.getByRole('button');
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    const scrollContainer = container.querySelector('.flex.overflow-hidden');
 
     // Click next button
     fireEvent.click(nextButton);
 
-    // Check if scrollTo was called
-    expect(Element.prototype.scrollTo).toHaveBeenCalled();
+    // 다음 버튼 클릭 후 이전 버튼이 나타나야 함
+    expect(
+      screen.getByRole('button', { name: /previous/i })
+    ).toBeInTheDocument();
+    expect(scrollContainer?.scrollTo).toHaveBeenCalled();
   });
 
   it('renders empty container when no cards provided', () => {
