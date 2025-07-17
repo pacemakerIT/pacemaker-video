@@ -1,0 +1,57 @@
+/* -------- 기본 캘린더 설정 -------- */
+.rbc-calendar {
+  @apply font-sans text-[21px] font-medium min-w-[1200px];
+  height: auto !important;
+}
+
+/* 전체 월 뷰 너비 고정 */
+.rbc-month-view {
+  @apply w-[1200px] overflow-visible;
+}
+
+/* 행/열 정렬 및 overflow 해제 */
+.rbc-month-row,
+.rbc-row,
+.rbc-row-bg {
+  @apply flex w-full overflow-visible;
+}
+
+/* 오늘 날짜 강조 */
+.rbc-today {
+  @apply bg-pace-yellow-100;
+}
+
+/* -------- 헤더 스타일 -------- */
+.rbc-header {
+  @apply w-[171.43px] h-[43px] p-3 flex items-center justify-center text-[16px] font-medium text-pace-stone-600 text-center uppercase box-border;
+}
+
+/* -------- 셀 스타일 -------- */
+.rbc-date-cell {
+  @apply w-[171.43px] h-auto p-3 text-left align-top relative z-0 overflow-hidden box-border;
+}
+
+.rbc-date-cell > button {
+  cursor: default !important;
+  pointer-events: none;
+}
+
+/* 셀 배경과 테두리 */
+.rbc-day-bg {
+  @apply w-[171.43px] min-h-[120px] border border-[#E8E8E8] box-border;
+}
+
+/* 행 높이 */
+.rbc-month-row {
+  @apply min-h-[120px];
+}
+
+/* -------- 이벤트 스타일 -------- */
+.rbc-event {
+  @apply bg-transparent text-inherit shadow-none outline-none border-none px-[6px] py-[2px] text-[14px] font-medium whitespace-nowrap overflow-hidden text-ellipsis rounded-md;
+}
+
+/* 선택 효과 제거 */
+.rbc-event.rbc-selected {
+  @apply bg-inherit text-inherit shadow-none border-none;
+}
