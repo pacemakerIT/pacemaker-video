@@ -1,14 +1,16 @@
 'use client';
 
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './calendar-custom.css';
+import '@/components/calendar/calendar-custom.css';
 import EventPopup from '@/components/calendar/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
+import { toast } from 'sonner';
+import { calendarStyleMap } from '@/components/ui/calendar-style-map';
 
 const locales = {
   'en-US': enUS
@@ -22,32 +24,46 @@ const localizer = dateFnsLocalizer({
   locales
 });
 
-type CalendarEvent = {
+export type CalendarEvent = {
   title: string;
   start: Date;
   end: Date;
   speaker: string;
   fee: string;
+  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED';
 };
 
-const events: CalendarEvent[] = [
-  {
-    title: 'Career Brew',
-    start: new Date(2025, 6, 18),
-    end: new Date(2025, 6, 18),
-    speaker: 'SuJin Ku',
-    fee: '₩20,000'
-  },
-  {
-    title: 'UX Design workshop',
-    start: new Date(2025, 6, 4),
-    end: new Date(2025, 6, 4),
-    speaker: 'Unknown',
-    fee: 'Free'
-  }
-];
+type WorkshopFromApi = {
+  title: string;
+  startDate: string;
+  endDate: string;
+  price: number | null;
+  status: string;
+  instructor: {
+    name: string | null;
+  } | null;
+};
 
-function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
+const monthMap: { [key: string]: string } = {
+  January: '1\uC6D4',
+  February: '2\uC6D4',
+  March: '3\uC6D4',
+  April: '4\uC6D4',
+  May: '5\uC6D4',
+  June: '6\uC6D4',
+  July: '7\uC6D4',
+  August: '8\uC6D4',
+  September: '9\uC6D4',
+  October: '10\uC6D4',
+  November: '11\uC6D4',
+  December: '12\uC6D4'
+};
+
+function CustomToolbar({
+  label,
+  onNavigate,
+  count
+}: ToolbarProps<CalendarEvent> & { count: number }) {
   return (
     <div className="relative w-[1200px] mx-auto py-4 pb-8">
       <button
@@ -63,9 +79,13 @@ function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
       </button>
 
       <div className="text-center">
-        <h2 className="font-bold text-[24px] text-[#333333] pb-2">{label}</h2>
-        <p className="text-[#666666] text-[16px]">
-          6월에는 <span className="text-[#FF8236]">5개</span>의 워크숍이 있어요
+        <h2 className="font-bold text-pace-xl text-pace-gray-700 pb-2">
+          {label}
+        </h2>
+        <p className="text-pace-stone-500 text-pace-base">
+          {monthMap[label.split(' ')[0]]}에는{' '}
+          <span className="text-pace-orange-600">{count}개</span>의 워크숍이
+          있어요
         </p>
       </div>
 
@@ -85,16 +105,47 @@ function CustomToolbar({ label, onNavigate }: ToolbarProps<CalendarEvent>) {
 }
 
 export default function WorkshopCalendar() {
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [count, setCount] = useState(0);
   const [openedEvent, setOpenedEvent] = useState<CalendarEvent | null>(null);
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0 });
 
+  const fetchWorkshops = async (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+
+    try {
+      const res = await fetch(`/api/workshops?year=${year}&month=${month}`);
+      const text = await res.text();
+      const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
+      const { workshops, count } = json;
+
+      const formatted = workshops.map((w: WorkshopFromApi) => ({
+        title: w.title,
+        start: new Date(w.startDate),
+        end: new Date(w.endDate),
+        speaker: w.instructor?.name ?? 'Unknown',
+        fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
+        status: w.status as CalendarEvent['status']
+      }));
+
+      setEvents(formatted);
+      setCount(count);
+    } catch (error) {
+      toast(`Failed to fetch /api/workshops: ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    const today = new Date();
+    fetchWorkshops(today);
+  }, []);
+
   const handleEventClick = (e: MouseEvent, event: CalendarEvent) => {
     e.stopPropagation();
-
     const target = (e.target as HTMLElement).closest(
-      '.rbc-event'
+      '.rbc-event-content'
     ) as HTMLElement;
-
     if (!target) return;
 
     const rect = target.getBoundingClientRect();
@@ -110,6 +161,10 @@ export default function WorkshopCalendar() {
     }
   };
 
+  const handleNavigate = (newDate: Date) => {
+    fetchWorkshops(newDate);
+  };
+
   return (
     <div
       className="max-w-[1200px] mx-auto p-6 rounded-xl bg-white"
@@ -122,12 +177,13 @@ export default function WorkshopCalendar() {
         endAccessor="end"
         style={{ height: 600 }}
         views={['month']}
+        onNavigate={handleNavigate}
         components={{
-          toolbar: CustomToolbar,
+          toolbar: (props) => <CustomToolbar {...props} count={count} />,
           event: ({ event }) => (
             <div
               onClick={(e) => handleEventClick(e, event)}
-              className="cursor-pointer bg-[#FFF3E6] text-[#FF9631] text-sm rounded px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02]"
+              className={`cursor-pointer text-sm rounded px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02] ${calendarStyleMap[event.status].event}`}
             >
               {event.title}
             </div>
@@ -135,7 +191,6 @@ export default function WorkshopCalendar() {
         }}
       />
 
-      {/* TO-DO 강사명, 참가비 DB 연결 필요 / 자세히보기 버튼 클릭 시 해당 워크샵으로 이동 필요 */}
       {openedEvent && (
         <EventPopup
           top={popupPos.top}
@@ -143,22 +198,17 @@ export default function WorkshopCalendar() {
           width={popupPos.width}
           onClose={() => setOpenedEvent(null)}
         >
-          {/* <p>강사 {openedEvent.speaker}</p> */}
-          <p className="text-[14px] text-[#666666] pb-2">강사 구수진</p>
-          {/* <p>참가비 {openedEvent.fee}</p> */}
-          <p className="text-[14px] text-[#666666] pb-2">참가비 $20</p>
-          <Button
-            className="
-              mt-1 w-[87px] h-[22px]
-              bg-pace-orange-600 hover:bg-pace-orange-900
-              text-white text-xs font-light
-              rounded-full mx-auto block p-0 text-center
-              flex items-center justify-center
-              transition-all duration-200
-            "
+          <div
+            className={`rounded-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
           >
-            자세히 보기
-          </Button>
+            <p className="text-pace-sm pb-2">강사 {openedEvent.speaker}</p>
+            <p className="text-pace-sm pb-2">참가비 {openedEvent.fee}</p>
+            <Button
+              className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
+            >
+              자세히 보기
+            </Button>
+          </div>
         </EventPopup>
       )}
     </div>

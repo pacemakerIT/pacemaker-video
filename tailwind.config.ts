@@ -4,7 +4,7 @@ export default {
   darkMode: ['class'],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx,css}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
@@ -24,7 +24,10 @@ export default {
           700: '#333333'
         },
         'pace-ivory': { 500: '#F9F6F3' },
-        'pace-mint': { 500: '#3BC982' },
+        'pace-mint': {
+          50: '#ECFDF5',
+          500: '#3BC982'
+        },
         'pace-navy': {
           500: '#37446C',
           700: '#021734'
@@ -41,12 +44,16 @@ export default {
         'pace-purple': { 500: '#9F5BE7' },
         'pace-sand': { 500: '#E3CFBC' },
         'pace-stone': {
+          200: '#F0F0F0',
           500: '#666666',
           600: '#7E7E7E',
           700: '#888888',
           800: '#999999'
         },
-        'pace-yellow': { 500: '#F6AD36' },
+        'pace-yellow': {
+          100: '#FEF9C3',
+          500: '#F6AD36'
+        },
         'pace-white': { 500: '#FFFFFF' },
 
         // basic

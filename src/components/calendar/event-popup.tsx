@@ -19,9 +19,10 @@ export default function EventPopup({ top, left, width, children }: Props) {
         top,
         left,
         width,
-        zIndex: 99999
+        zIndex: 99999,
+        boxSizing: 'border-box'
       }}
-      className="absolute box-border rounded-lg p-3 shadow-md bg-pace-orange-50 text-pace-stone-500 text-pace-xs"
+      className="absolute rounded-lg shadow-md text-pace-xs"
       onClick={(e) => e.stopPropagation()}
     >
       {children}
