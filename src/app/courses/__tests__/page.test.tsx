@@ -10,14 +10,23 @@ import {
 import CoursesPage from '../page';
 import { OnlineCards } from '@/types/online';
 
+// Mock fetch globally
+global.fetch = vi.fn();
+
 // Mock the components
-vi.mock('@/components/CardContainer', () => ({
+vi.mock('@/components/common/card-container', () => ({
   default: ({ cards }: { cards: OnlineCards[] }) => (
-    <div data-testid="card-container">{cards.length} cards</div>
+    <div data-testid="card-container">
+      {cards.map((card) => (
+        <div key={card.id} data-testid="card">
+          {card.title}
+        </div>
+      ))}
+    </div>
   )
 }));
 
-vi.mock('@/components/ListHeader', () => ({
+vi.mock('@/components/common/list-header', () => ({
   default: ({ title }: { title: string }) => (
     <div data-testid="list-header">{title}</div>
   )
@@ -100,37 +109,58 @@ vi.mock('@/components/ui/select', () => ({
   }) => <div data-testid={`select-item-${value}`}>{children}</div>
 }));
 
-// Mock the fetchCourses function
-vi.mock('@/lib/api', () => ({
-  fetchCourses: vi.fn().mockResolvedValue([
-    {
-      id: '1',
-      title: 'Test Course 1',
-      price: 49.99,
-      description: 'Test Description 1',
-      category: 'INTERVIEW',
-      videoId: 'video1',
-      uploadDate: new Date('2024-03-20'),
-      watchedVideos: [],
-      purchasedVideos: []
-    },
-    {
-      id: '2',
-      title: 'Test Course 2',
-      price: 39.99,
-      description: 'Test Description 2',
-      category: 'RESUME',
-      videoId: 'video2',
-      uploadDate: new Date('2024-03-21'),
-      watchedVideos: [],
-      purchasedVideos: []
-    }
-  ])
+// Mock the Badge component
+vi.mock('@/components/ui/badge', () => ({
+  Badge: ({
+    children,
+    onClick,
+    className,
+    'data-testid': testId
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+    'data-testid'?: string;
+  }) => (
+    <button data-testid={testId} className={className} onClick={onClick}>
+      {children}
+    </button>
+  )
 }));
+
+const mockCourses = [
+  {
+    id: '1',
+    title: 'Test Course 1',
+    price: 49.99,
+    description: 'Test Description 1',
+    category: 'INTERVIEW',
+    videoId: 'video1',
+    uploadDate: new Date('2024-03-20'),
+    watchedVideos: [],
+    purchasedVideos: []
+  },
+  {
+    id: '2',
+    title: 'Test Course 2',
+    price: 39.99,
+    description: 'Test Description 2',
+    category: 'RESUME',
+    videoId: 'video2',
+    uploadDate: new Date('2024-03-21'),
+    watchedVideos: [],
+    purchasedVideos: []
+  }
+];
 
 describe('CoursesPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock fetch to return courses
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => mockCourses
+    } as Response);
   });
 
   afterEach(() => {
@@ -169,14 +199,16 @@ describe('CoursesPage', () => {
   it('filters cards when category is changed', async () => {
     render(<CoursesPage />);
 
+    // 초기 카드들이 로드될 때까지 대기
     await waitFor(
       () => {
-        const cardContainer = screen.getByTestId('card-container');
-        expect(cardContainer).toBeInTheDocument();
+        const cards = screen.getAllByTestId('card');
+        expect(cards.length).toBe(2); // 총 2개의 카드가 있어야 함
       },
       { timeout: 5000 }
     );
 
+    // RESUME 카테고리 배지 클릭
     const resumeBadge = await screen.findByTestId(
       'category-badge-RESUME',
       {},
@@ -184,12 +216,13 @@ describe('CoursesPage', () => {
     );
     fireEvent.click(resumeBadge);
 
+    // 카테고리 변경 후 카드들이 필터링되었는지 확인
     await waitFor(
       () => {
-        const cardContainer = screen.getByTestId('card-container');
-        const cardCount = cardContainer.textContent?.match(/\d+/)?.[0];
-        expect(cardCount).toBeDefined();
-        expect(Number(cardCount)).toBeGreaterThanOrEqual(0);
+        const cards = screen.getAllByTestId('card');
+        // RESUME 카테고리만 필터링되어야 하므로 카드 수가 1개여야 함
+        expect(cards.length).toBe(1);
+        expect(cards[0]).toHaveTextContent('Test Course 2');
       },
       { timeout: 5000 }
     );

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import SignInModalButton from '@/components/auth/sign-in-modal-button';
 import SignUpModalButton from '@/components/auth/sign-up-modal-button';
 import UserDropdown from '@/components/user/user-drop-down';
-import LanguageDropdown from '@/components/language-drop-down';
+import LanguageDropdown from './language-drop-down';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 
