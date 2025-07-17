@@ -1,6 +1,6 @@
 'use client';
 
-import '../lib/polyfills';
+import '../../../lib/polyfills';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { Document, Page } from 'react-pdf';

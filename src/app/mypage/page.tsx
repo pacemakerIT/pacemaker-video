@@ -1,3 +1,7 @@
+import MyList from '@/components/features/mypage/my-list';
+import MyPageWorkshopCard from '@/components/features/mypage/my-page-workshop-card';
+import { MyCard, MyWorkshopCard } from '@/types/my-card';
+
 export default function MyPage() {
   function formatKoreanDateTime(dateString?: string) {
     if (!dateString) return '';
@@ -29,9 +33,117 @@ export default function MyPage() {
     {
       type: 'workshop',
       total: 3,
-      nextDate: '2025-04-15T19:00:00'
+      nextDate: '2025-10-15T19:00:00'
     }
   ];
+
+  const courseCards: MyCard[] = [
+    {
+      id: '1',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      category: 'Marketing',
+      type: '온라인 강의',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 4
+    },
+    {
+      id: '2',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      category: 'Interview',
+      type: '온라인 강의',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 8
+    },
+    {
+      id: '3',
+      itemId: '4e8wv1z7tl',
+      title: 'Test3',
+      category: 'Resume',
+      type: '온라인 강의',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 0
+    },
+    {
+      id: '4',
+      itemId: '4e8wv1z7tl',
+      title: 'Test3',
+      category: 'Resume',
+      type: '온라인 강의',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 0
+    },
+    {
+      id: '5',
+      itemId: '4e8wv1z7tl',
+      title: 'Test3',
+      category: 'Resume',
+      type: '온라인 강의',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 0
+    }
+  ];
+
+  const documentCards: MyCard[] = [
+    {
+      id: '1',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      category: 'Marketing',
+      type: '전자책',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 4
+    },
+    {
+      id: '2',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      category: 'Interview',
+      type: '전자책',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 8
+    },
+    {
+      id: '3',
+      itemId: '4e8wv1z7tl',
+      title: 'Test3',
+      category: 'Resume',
+      type: '전자책',
+      purchased: true,
+      totalChapters: 8,
+      completedChapters: 0
+    }
+  ];
+
+  const workshopCards: MyWorkshopCard[] = [
+    {
+      id: '1',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      date: new Date('2025-03-15T19:00:00')
+    },
+    {
+      id: '2',
+      itemId: '4e8wv1z7tl',
+      title: 'UX Design Fundamentals',
+      date: new Date('2025-12-15T19:00:00')
+    },
+    {
+      id: '3',
+      itemId: '4e8wv1z7tl',
+      title: 'Test3',
+      date: new Date('2025-09-15T16:00:00')
+    }
+  ];
+
   return (
     <>
       {/* Hero Section */}
@@ -46,13 +158,13 @@ export default function MyPage() {
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {cardData.map((card) => (
               <div
                 key={card.type}
-                className="h-fit max-w-[400px] bg-pace-white-500 rounded-lg shadow p-6 flex-1 justify-between items-center"
+                className="h-fit bg-pace-white-500 rounded-lg shadow p-6 flex flex-col justify-between items-center"
               >
-                <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-row justify-between items-center w-full">
                   <div>
                     <div className="text-pace-stone-500 mb-4">
                       {card.type === 'video'
@@ -64,24 +176,64 @@ export default function MyPage() {
                             : ''}
                     </div>
                     <div className="text-pace-stone-600 text-pace-sm">
-                      {card.type === 'video' ? (
-                        `${card.inProgress} 강의 수강 중, ${card.completed} 강의 수강완료`
-                      ) : card.type === 'document' ? (
-                        `${card.inProgress}개 강의 수강중, ${card.notStarted}개 강의 미수강`
-                      ) : (
-                        <>
-                          다음 워크샵:{' '}
-                          <span className="text-pace-orange-500">
-                            {formatKoreanDateTime(card.nextDate)}
-                          </span>
-                        </>
-                      )}
+                      {card.type === 'video'
+                        ? `${card.inProgress} 강의 수강 중, ${card.completed} 강의 수강완료`
+                        : card.type === 'document'
+                          ? `${card.inProgress}개 강의 수강중, ${card.notStarted}개 강의 미수강`
+                          : card.type === 'workshop'
+                            ? workshopCards && workshopCards.length > 0
+                              ? (() => {
+                                  const now = new Date();
+                                  const upcoming = workshopCards.filter(
+                                    (w) => w.date > now
+                                  );
+                                  if (upcoming.length === 0)
+                                    return '예정된 워크샵이 없습니다';
+                                  const nearest = upcoming.reduce((a, b) =>
+                                    a.date < b.date ? a : b
+                                  );
+                                  return (
+                                    <>
+                                      다음 워크샵:{' '}
+                                      <span className="text-pace-orange-500">
+                                        {formatKoreanDateTime(
+                                          nearest.date.toISOString()
+                                        )}
+                                      </span>
+                                    </>
+                                  );
+                                })()
+                              : '예정된 워크샵이 없습니다'
+                            : null}
                     </div>
                   </div>
                   <div className="text-pace-orange-600 text-pace-4xl font-bold text-right">
                     {card.total}
                   </div>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <MyList title="내 온라인 강의 목록" cards={courseCards} />
+      <MyList title="내 전자책 목록" cards={documentCards} />
+
+      <div className="my-20 mx-10">
+        <h1 className="text-pace-gray-700 font-bold text-pace-xl mb-6">
+          내 워크샵 목록
+        </h1>
+        <div className="w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workshopCards.map((card) => (
+              <div key={card.id} className="w-full">
+                <MyPageWorkshopCard
+                  id={card.id}
+                  title={card.title}
+                  itemId={card.itemId}
+                  date={card.date}
+                />
               </div>
             ))}
           </div>

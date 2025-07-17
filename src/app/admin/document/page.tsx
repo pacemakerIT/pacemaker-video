@@ -15,7 +15,7 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import FileUpload from '@/components/FileUpload';
+import FileUpload from '@/components/admin/file-upload';
 
 const formSchema = z.object({
   title: z.string().min(2, {

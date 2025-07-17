@@ -1,6 +1,6 @@
-import VideoList from '@/components/video-list';
+import VideoList from '@/components/features/course/video-list';
 import UserInfo from '@/components/user/user-info';
-import ListHeader from '@/components/list-header';
+import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
 import WorkshopList from '@/components/WorkshopList';
 
