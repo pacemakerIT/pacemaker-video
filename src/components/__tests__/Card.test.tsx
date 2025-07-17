@@ -8,7 +8,7 @@ import {
   cleanup,
   fireEvent
 } from '@testing-library/react';
-import Card from '../Card';
+import Card from '../common/card';
 import { OnlineCards } from '@/types/online';
 
 // Mock next/image
