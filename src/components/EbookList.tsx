@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
-import CardContainer from './CardContainer';
+import CardContainer from './common/card-container';
 
 export default function EbookList() {
   const [ebooks, setEbooks] = useState<OnlineCards[]>([]);
