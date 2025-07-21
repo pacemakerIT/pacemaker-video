@@ -22,6 +22,21 @@ export default function CourseHeader({
   sortBy,
   setSortBy
 }: CourseHeaderProps) {
+  // 카테고리 한글 매핑 함수
+  const getKoreanCategory = (categoryName: string) => {
+    switch (categoryName) {
+      case 'TOTAL':
+        return '전체';
+      case 'INTERVIEW':
+        return '인터뷰';
+      case 'RESUME':
+        return '이력서';
+      case 'NETWORKING':
+        return '네트워킹';
+      default:
+        return categoryName;
+    }
+  };
   return (
     <>
       <div className="flex flex-col justify-start w-full pt-20">
@@ -43,12 +58,12 @@ export default function CourseHeader({
                 categoryName === currentCategory
                   ? ' border-pace-orange-600 text-pace-orange-600'
                   : 'text-pace-stone-600 border-pace-stone-600'
-              } rounded-full w-full h-12 min-w-40 justify-center cursor-pointer font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
+              } rounded-full w-full h-12 min-w-32 justify-center cursor-pointer !text-pace-base font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
               onClick={() => {
                 setCurrentCategory(categoryName);
               }}
             >
-              {categoryName}
+              {getKoreanCategory(categoryName)}
             </Badge>
           ))}
         </div>
