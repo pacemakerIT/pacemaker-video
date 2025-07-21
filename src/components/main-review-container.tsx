@@ -26,7 +26,7 @@ const MainReviewContainer = () => {
             Boost your career with Pacemaker Today!
           </h2>
 
-          <button className="px-6 py-2 bg-white text-[#FF8236] font-semibold rounded shadow hover:bg-orange-100 transition">
+          <button className="h-[66px]  rounded-full px-6 py-2 bg-white text-[#FF8236] font-semibold w-[234px] shadow hover:bg-orange-100 transition">
             로그인 하고 강의 듣기
           </button>
         </div>

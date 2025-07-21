@@ -3,7 +3,7 @@ import UserInfo from '@/components/user/user-info';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
 import WorkshopList from '@/components/WorkshopList';
-import MainReviewContainer from '@/components/MainReviewContainer';
+import MainReviewContainer from '@/components/main-review-container';
 
 export default async function Home() {
   return (
