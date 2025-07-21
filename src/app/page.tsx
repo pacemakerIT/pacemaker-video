@@ -3,6 +3,7 @@ import UserInfo from '@/components/user/user-info';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
 import WorkshopList from '@/components/WorkshopList';
+import MainReviewContainer from '@/components/MainReviewContainer';
 
 export default async function Home() {
   return (
@@ -61,6 +62,7 @@ export default async function Home() {
         <VideoList />
         <UserInfo />
         <WorkshopList />
+        <MainReviewContainer />
       </div>
     </div>
   );
