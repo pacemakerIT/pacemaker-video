@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { MyCard } from '@/types/my-card';
 import { CustomBadge } from '@/components/common/custom-badge';
+import ReviewForm from './review-form';
 
 export default function MyPageCard({
   itemId,
@@ -114,24 +115,7 @@ export default function MyPageCard({
                 <p className="text-pace-sm text-pace-gray-700">
                   {`${progress}% 완료`}
                 </p>
-                <Button
-                  variant="link"
-                  className="text-[#E86642] !text-pace-base font-normal p-0 gap-1"
-                >
-                  {progress === 100
-                    ? '수강리뷰 쓰러가기'
-                    : progress === 0
-                      ? '수강 시작하기'
-                      : '이어서 수강하기'}
-                  <span>
-                    <Image
-                      src="/icons/arrow-right.svg"
-                      alt="arrow-right"
-                      width={20}
-                      height={20}
-                    />
-                  </span>
-                </Button>
+                <ReviewForm progress={progress} />
               </div>
             ) : (
               <div className="w-full flex justify-end">
