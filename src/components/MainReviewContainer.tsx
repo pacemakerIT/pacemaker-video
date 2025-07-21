@@ -7,7 +7,7 @@ const MainReviewContainer = () => {
       <img
         src="/img/main-review.png"
         alt="background"
-        className="absolute top-0 right-0 h-full w-1/2 object-center z-0"
+        className="absolute top-0 right-0 h-full max-w-[908px] w-1/2 object-center z-0"
         style={{ pointerEvents: 'none' }}
       />
       {/* 이미지 위에 올라가는 투명 배경 */}
