@@ -24,13 +24,13 @@ const MainReviewContainer = () => {
         }}
       />
       {/* 왼쪽 텍스트/버튼 */}
-      <div className="relative z-20 h-full flex items-center justify-center pl-16 w-3/5">
-        <div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <div className="relative z-20 h-full flex items-center justify-center w-3/5">
+        <div className="flex flex-col gap-8">
+          <h2 className="text-pace-3xl font-normal  text-white mb-4">
             Boost your career with Pacemaker Today!
           </h2>
 
-          <button className="h-[66px]  rounded-full px-6 py-2 bg-white text-pace-orange-600 font-semibold w-[234px] shadow hover:bg-orange-100 transition">
+          <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
             로그인 하고 강의 듣기
           </button>
         </div>
