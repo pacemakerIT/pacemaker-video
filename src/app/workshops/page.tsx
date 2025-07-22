@@ -15,7 +15,7 @@ export default function Page() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedWorkshopTitle, setSelectedWorkshopTitle] = useState<
     string | null
-  >(null); // ✅ TO-DO: 선택된 워크숍 title 상태
+  >(null); // 선택된 워크숍 title 상태
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -48,7 +48,7 @@ export default function Page() {
         <WorkshopCalendar
           onMonthChange={setCurrentMonth}
           onSelectWorkshop={(title) => {
-            setSelectedWorkshopTitle(title); // ✅ TO-DO: 상세 버튼 클릭 시 워크숍 타이틀 설정
+            setSelectedWorkshopTitle(title); // 상세 버튼 클릭 시 워크숍 타이틀 설정
           }}
         />
 
@@ -60,8 +60,8 @@ export default function Page() {
           filter={filterStatus}
           workshops={workshops}
           selectedMonth={currentMonth}
-          selectedTitle={selectedWorkshopTitle} // ✅ TO-DO: 선택된 워크숍 title 전달
-          onCloseDetail={() => setSelectedWorkshopTitle(null)} // ✅ TO-DO: 상세 닫을 때 상태 초기화
+          selectedTitle={selectedWorkshopTitle} // 선택된 워크숍 title 전달
+          onCloseDetail={() => setSelectedWorkshopTitle(null)} // 상세 닫을 때 상태 초기화
         />
 
         <br />
