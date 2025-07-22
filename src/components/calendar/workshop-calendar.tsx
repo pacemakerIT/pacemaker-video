@@ -12,9 +12,7 @@ import { enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { calendarStyleMap } from '@/components/ui/calendar-style-map';
 
-const locales = {
-  'en-US': enUS
-};
+const locales = { 'en-US': enUS };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -33,31 +31,46 @@ export type CalendarEvent = {
   status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED';
 };
 
-type WorkshopFromApi = {
+export type WorkshopFromApi = {
   title: string;
   startDate: string;
   endDate: string;
   price: number | null;
   status: string;
-  instructor: {
-    name: string | null;
-  } | null;
+  instructor: { name: string | null } | null;
 };
 
 const monthMap: { [key: string]: string } = {
-  January: '1\uC6D4',
-  February: '2\uC6D4',
-  March: '3\uC6D4',
-  April: '4\uC6D4',
-  May: '5\uC6D4',
-  June: '6\uC6D4',
-  July: '7\uC6D4',
-  August: '8\uC6D4',
-  September: '9\uC6D4',
-  October: '10\uC6D4',
-  November: '11\uC6D4',
-  December: '12\uC6D4'
+  January: '1월',
+  February: '2월',
+  March: '3월',
+  April: '4월',
+  May: '5월',
+  June: '6월',
+  July: '7월',
+  August: '8월',
+  September: '9월',
+  October: '10월',
+  November: '11월',
+  December: '12월'
 };
+
+function get6MonthRange(center: Date) {
+  const start = new Date(center.getFullYear(), center.getMonth() - 3, 1);
+  const end = new Date(
+    center.getFullYear(),
+    center.getMonth() + 4,
+    0,
+    23,
+    59,
+    59
+  );
+  return { start, end };
+}
+
+function isInRange(date: Date, range: { start: Date; end: Date }) {
+  return date >= range.start && date <= range.end;
+}
 
 function CustomToolbar({
   label,
@@ -65,81 +78,136 @@ function CustomToolbar({
   count
 }: ToolbarProps<CalendarEvent> & { count: number }) {
   return (
-    <div className="relative w-[1200px] mx-auto py-4 pb-8">
+    <div className="w-full flex items-center justify-between gap-4 flex-wrap py-4 pb-8">
       <button
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center"
+        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
         onClick={() => onNavigate('PREV')}
       >
         <Image
           src="/icons/calendar-arrow-left.svg"
           alt="prev"
-          width={56}
-          height={56}
+          width={40}
+          height={40}
         />
       </button>
-
-      <div className="text-center">
+      <div className="flex-1 text-center min-w-[200px] max-w-[600px] mx-auto">
         <h2 className="font-bold text-pace-xl text-pace-gray-700 pb-2">
           {label}
         </h2>
-        <p className="text-pace-stone-500 text-pace-base">
+        <p className="text-pace-stone-500 text-pace-base truncate">
           {monthMap[label.split(' ')[0]]}에는{' '}
-          <span className="text-pace-orange-600">{count}개</span>의 워크숍이
+          <span className="text-pace-orange-600">{count}개</span>의 워크샵이
           있어요
         </p>
       </div>
-
       <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center"
+        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
         onClick={() => onNavigate('NEXT')}
       >
         <Image
           src="/icons/calendar-arrow-right.svg"
           alt="next"
-          width={56}
-          height={56}
+          width={40}
+          height={40}
         />
       </button>
     </div>
   );
 }
 
-export default function WorkshopCalendar() {
+export default function WorkshopCalendar({
+  onMonthChange,
+  onSelectWorkshop // 외부에서 워크숍 선택 시 처리할 함수
+}: {
+  onMonthChange?: (date: Date) => void;
+  onSelectWorkshop?: (title: string) => void; // 워크숍 title (또는 id) 전달
+}) {
+  const [allWorkshops, setAllWorkshops] = useState<WorkshopFromApi[]>([]);
+  const [loadedRange, setLoadedRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [count, setCount] = useState(0);
   const [openedEvent, setOpenedEvent] = useState<CalendarEvent | null>(null);
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0 });
 
-  const fetchWorkshops = async (date: Date) => {
+  const filterWorkshopsByMonth = (date: Date, workshops: WorkshopFromApi[]) => {
     const year = date.getFullYear();
-    const month = date.getMonth() + 1;
+    const month = date.getMonth();
 
-    try {
-      const res = await fetch(`/api/workshops?year=${year}&month=${month}`);
-      const text = await res.text();
-      const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
-      const { workshops, count } = json;
+    const filtered = workshops.filter((w) => {
+      const start = new Date(w.startDate);
+      return start.getFullYear() === year && start.getMonth() === month;
+    });
 
-      const formatted = workshops.map((w: WorkshopFromApi) => ({
-        title: w.title,
-        start: new Date(w.startDate),
-        end: new Date(w.endDate),
-        speaker: w.instructor?.name ?? 'Unknown',
-        fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
-        status: w.status as CalendarEvent['status']
-      }));
+    const formatted = filtered.map((w) => ({
+      title: w.title,
+      start: new Date(w.startDate),
+      end: new Date(w.endDate),
+      speaker: w.instructor?.name ?? 'Unknown',
+      fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
+      status: w.status as CalendarEvent['status']
+    }));
 
-      setEvents(formatted);
-      setCount(count);
-    } catch (error) {
-      toast(`Failed to fetch /api/workshops: ${error}`);
+    setEvents(formatted);
+    setCount(formatted.length);
+  };
+
+  const handleNavigate = async (newDate: Date) => {
+    onMonthChange?.(newDate); // 새로 조회한 날짜 상위에 전달
+
+    if (!loadedRange || !isInRange(newDate, loadedRange)) {
+      const { start, end } = get6MonthRange(newDate);
+
+      try {
+        const res = await fetch(
+          `/api/workshops?range=6months&center=${newDate.toISOString()}`
+        );
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
+
+        const newWorkshops = json.workshops.filter(
+          (newW: WorkshopFromApi) =>
+            !allWorkshops.some(
+              (w) => w.title === newW.title && w.startDate === newW.startDate
+            )
+        );
+
+        const merged = [...allWorkshops, ...newWorkshops];
+        setAllWorkshops(merged);
+        setLoadedRange({ start, end });
+        filterWorkshopsByMonth(newDate, merged);
+      } catch (error) {
+        toast(`Failed to fetch extended range: ${error}`);
+      }
+    } else {
+      filterWorkshopsByMonth(newDate, allWorkshops);
     }
   };
 
   useEffect(() => {
     const today = new Date();
-    fetchWorkshops(today);
-  }, []);
+    const { start, end } = get6MonthRange(today);
+
+    const fetchInitial = async () => {
+      try {
+        const res = await fetch(
+          `/api/workshops?range=6months&center=${today.toISOString()}`
+        );
+        const text = await res.text();
+        const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
+        setAllWorkshops(json.workshops);
+        setLoadedRange({ start, end });
+        filterWorkshopsByMonth(today, json.workshops);
+        onMonthChange?.(today); // 초기 조회일도 전달
+      } catch (error) {
+        toast(`Failed to fetch initial data: ${error}`);
+      }
+    };
+
+    fetchInitial();
+  }, [onMonthChange]);
 
   const handleEventClick = (e: MouseEvent, event: CalendarEvent) => {
     e.stopPropagation();
@@ -161,13 +229,9 @@ export default function WorkshopCalendar() {
     }
   };
 
-  const handleNavigate = (newDate: Date) => {
-    fetchWorkshops(newDate);
-  };
-
   return (
     <div
-      className="max-w-[1200px] mx-auto p-6 rounded-xl bg-white"
+      className="w-[62.5%] max-w-[900px] items-center mx-auto justify-center flex flex-col gap-8 bg-white"
       onClick={() => setOpenedEvent(null)}
     >
       <Calendar
@@ -175,7 +239,7 @@ export default function WorkshopCalendar() {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 600 }}
+        style={{ height: 600, width: '100%' }}
         views={['month']}
         onNavigate={handleNavigate}
         components={{
@@ -204,6 +268,10 @@ export default function WorkshopCalendar() {
             <p className="text-pace-sm pb-2">강사 {openedEvent.speaker}</p>
             <p className="text-pace-sm pb-2">참가비 {openedEvent.fee}</p>
             <Button
+              onClick={() => {
+                onSelectWorkshop?.(openedEvent.title); // 워크숍 title을 상위로 전달
+                setOpenedEvent(null);
+              }}
               className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
             >
               자세히 보기
