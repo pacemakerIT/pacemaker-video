@@ -54,6 +54,25 @@ export default function WorkshopCardList({
     return diff >= 0 ? `D-${diff}` : '종료';
   };
 
+  function formatDateTime(dateStr: string) {
+    const date = new Date(dateStr);
+
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const isPM = hour >= 12;
+
+    const hour12 = hour % 12 || 12;
+    const minuteStr =
+      minute === 0 ? '' : `:${minute.toString().padStart(2, '0')}`;
+    const ampm = isPM ? 'PM' : 'AM';
+
+    return `${year}.${month}.${day} ${hour12}${minuteStr}${ampm}`;
+  }
+
   useEffect(() => {
     if (selectedTitle) {
       const matched = filtered.find((w) => w.title === selectedTitle);
@@ -155,9 +174,9 @@ export default function WorkshopCardList({
 
                 {/* 일정 / 장소 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
-                  일정 | {new Date(w.startDate).toLocaleDateString()}{' '}
-                  &nbsp;&nbsp; 강사 | {w.instructor?.name ?? '미정'}{' '}
-                  &nbsp;&nbsp; 장소 | {w.locationOrUrl ?? 'TBD'}
+                  일정 | {formatDateTime(w.startDate)} &nbsp;&nbsp; 강사 |{' '}
+                  {w.instructor?.name ?? '미정'} &nbsp;&nbsp; 장소 |{' '}
+                  {w.locationOrUrl ?? 'TBD'}
                 </p>
 
                 {/* 설명 */}
@@ -237,7 +256,7 @@ export default function WorkshopCardList({
                       </div>
                     </div>
 
-                    {/* 강사 소개 멘트 */}
+                    {/* TO-DO: 강사 소개 멘트 변경 필요*/}
                     <div className="mt-6 text-pace-sm text-pace-gray-700 whitespace-pre-line leading-relaxed">
                       “모든 사람은 저마다 빛나는 강점과 잠재력을 가지고 있어요.”
                       <br />
