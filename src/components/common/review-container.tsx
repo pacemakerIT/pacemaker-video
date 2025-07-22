@@ -28,51 +28,60 @@ const ReviewContainer = () => {
   }, []);
 
   return (
-    <div className="w-screen relative h-[360px] overflow-hidden bg-pace-ivory-500 flex items-center">
-      <div
-        className={`whitespace-nowrap flex${reviews.length > 0 ? ' animate-marquee' : ''}`}
-      >
-        {[...Array(3)].map((_, idx) =>
-          reviews.map((review) => (
-            <div
-              key={review.id + '-' + idx}
-              className="inline-block bg-white rounded-lg shadow p-4 mx-4 w-[300px] min-[151px]"
-            >
-              <div className="font-bold mb-2">{review.author}</div>
-              <div className="flex items-center mb-1">
-                {Array.from({ length: review.rating }).map((_, i) => (
-                  <Image
-                    key={i}
-                    src="/img/rating.png"
-                    alt="star"
-                    width={20}
-                    height={20}
-                    className="inline-block mr-1"
-                  />
-                ))}
+    <div className="w-screen relative flex-col justify-center gap-8 py-20 overflow-hidden bg-pace-ivory-500 flex items-center">
+      <>
+        <h3 className="text-center text-2xl font-medium">
+          수강생들의 솔직한 리뷰를 확인해 보세요
+        </h3>
+        <div
+          className={`whitespace-nowrap flex${reviews.length > 0 ? ' animate-marquee' : ''} p-4`}
+        >
+          {[...Array(3)].map((_, idx) =>
+            reviews.map((review) => (
+              <div
+                key={review.id + '-' + idx}
+                className="inline-block bg-white rounded-lg shadow p-4 mx-4 w-[300px]"
+              >
+                <div className="flex justify-between">
+                  <div className="font-medium text-[10px] text-pace-orange-600 mb-2">
+                    {review.author}
+                  </div>
+                  <div className="flex items-center mb-1">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Image
+                        key={i}
+                        src="/img/rating.png"
+                        alt="star"
+                        width={14}
+                        height={14}
+                        className="inline-block mr-1"
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="text-[10px] text-pace-stone-700 break-words whitespace-pre-line mb-2 max-w-64 line-clamp-4">
+                  {review.content}
+                </div>
+                {/* <div className="text-xs text-gray-400">{review.date}</div> */}
               </div>
-              <div className="text-sm break-words whitespace-pre-line mb-2 max-w-64 line-clamp-6">
-                {review.content}
-              </div>
-              {/* <div className="text-xs text-gray-400">{review.date}</div> */}
-            </div>
-          ))
-        )}
-      </div>
-      {/* marquee 애니메이션용 스타일 */}
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0%);
+            ))
+          )}
+        </div>
+        {/* marquee 애니메이션용 스타일 */}
+        <style jsx>{`
+          @keyframes marquee {
+            0% {
+              transform: translateX(0%);
+            }
+            100% {
+              transform: translateX(-33.3333%);
+            }
           }
-          100% {
-            transform: translateX(-33.3333%);
+          .animate-marquee {
+            animation: marquee 300s linear infinite;
           }
-        }
-        .animate-marquee {
-          animation: marquee 300s linear infinite;
-        }
-      `}</style>
+        `}</style>
+      </>
     </div>
   );
 };
