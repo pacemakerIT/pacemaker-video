@@ -23,7 +23,7 @@
 
 /* -------- 헤더 스타일 -------- */
 .rbc-header {
-  @apply w-[171.43px] h-[43px] p-3 flex items-center justify-center text-[16px] font-medium text-pace-stone-600 text-center uppercase box-border;
+  @apply w-[171.43px] h-[43px] p-3 flex items-center justify-center text-pace-base font-medium text-pace-stone-600 text-center uppercase box-border;
 }
 
 /* -------- 셀 스타일 -------- */
