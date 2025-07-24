@@ -53,9 +53,8 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         <button className="w-full px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
           등록
         </button>
-        <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm"></div>
         <button
-          className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full"
+          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full"
           onClick={goToPaymentSuccess}
         >
           결제하기
