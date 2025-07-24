@@ -20,9 +20,10 @@ export default function MyPageCard({
   type,
   purchased,
   totalChapters,
-  completedChapters
+  completedChapters,
+  like
 }: MyCard) {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(like);
 
   const progress =
     totalChapters && completedChapters
