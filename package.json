@@ -64,7 +64,7 @@
     "@eslint/eslintrc": "^3.3.0",
     "@next/eslint-plugin-next": "^15.2.4",
     "@storybook/addon-designs": "^10.0.1",
-    "@storybook/addon-docs": "^9.0.17",
+    "@storybook/addon-docs": "^9.0.18",
     "@storybook/nextjs": "^9.0.16",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
