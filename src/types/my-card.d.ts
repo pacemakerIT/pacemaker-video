@@ -14,7 +14,8 @@ export interface CartItem extends MyCardBase {
 }
 
 export interface MyCard extends MyCardBase {
-  purchased: boolean;
+  purchased?: boolean; // TODO: May not need after fetching data from db
+
   category: string;
   type: string;
 
@@ -22,9 +23,10 @@ export interface MyCard extends MyCardBase {
   totalChapters?: number;
   completedChapters?: number;
 
-  // Used in You Might Also Like in /mypage/cart/page.tsx
+  // Used in You Might Also Like in /mypage/cart/page.tsx and /mypage/favorites
   description?: string;
   price?: number;
+  like?: boolean;
 }
 
 export interface MyWorkshopCard extends MyCardBase {
