@@ -1,0 +1,43 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import WorkshopList from '../WorkshopList';
+
+const mockWorkshops = [
+  {
+    id: '1',
+    title: '워크샵 1',
+    price: 0,
+    description: '설명',
+    category: 'WORKSHOP',
+    videoId: 'video1',
+    uploadDate: new Date(),
+    watchedVideos: [],
+    purchasedVideos: []
+  }
+];
+
+describe('WorkshopList', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockWorkshops)
+        })
+      )
+    );
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('renders loading text and then workshop list', async () => {
+    render(<WorkshopList />);
+    expect(screen.getByText('📡 워크샵 불러오는 중...')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('페이스메이커 워크샵')).toBeInTheDocument();
+      expect(screen.getByText('워크샵 1')).toBeInTheDocument();
+    });
+  });
+});
