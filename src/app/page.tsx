@@ -2,10 +2,12 @@ import VideoList from '@/components/features/course/video-list';
 import UserInfo from '@/components/user/user-info';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
+import WorkshopList from '@/components/WorkshopList';
+import MainReviewContainer from '@/components/main-review-container';
 
 export default async function Home() {
   return (
-    <div className="w-screen flex gap-20 flex-col">
+    <div className="w-screen flex gap-20 flex-col bg-[#FBF9f6]">
       <ListHeader
         slides={[
           {
@@ -59,6 +61,8 @@ export default async function Home() {
         </div>
         <VideoList />
         <UserInfo />
+        <WorkshopList />
+        <MainReviewContainer />
       </div>
     </div>
   );

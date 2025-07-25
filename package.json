@@ -19,7 +19,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.846.0",
+    "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/s3-request-presigner": "^3.844.0",
     "@clerk/backend": "^2.4.1",
     "@clerk/nextjs": "^6.25.4",
@@ -36,7 +36,7 @@
     "@radix-ui/react-tooltip": "^1.2.6",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@supabase/supabase-js": "^2.50.4",
-    "@wistia/wistia-player-react": "^0.1.8",
+    "@wistia/wistia-player-react": "^0.1.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -75,7 +75,7 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.31.0",
     "eslint-config-next": "^15.4.1",

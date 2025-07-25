@@ -1,4 +1,5 @@
 import ListHeader from '@/components/common/list-header';
+import ReviewContainer from '@/components/common/review-container';
 import CourseList from '@/components/features/course/course-list';
 
 export default function CoursesPage() {
@@ -14,6 +15,7 @@ export default function CoursesPage() {
         }}
       />
       <CourseList />
+      <ReviewContainer />
     </div>
   );
 }
