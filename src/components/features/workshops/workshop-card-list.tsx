@@ -75,7 +75,7 @@ export default function WorkshopCardList({
 
   useEffect(() => {
     if (selectedTitle) {
-      const matched = workshops.find((w) => w.title === selectedTitle); // ✅ 전체에서 찾기
+      const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
       if (matched) {
         setOpenCardId(matched.id);
         const target = cardRefs.current[matched.id];
