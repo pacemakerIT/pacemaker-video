@@ -75,16 +75,16 @@ export default function WorkshopCardList({
 
   useEffect(() => {
     if (selectedTitle) {
-      const matched = filtered.find((w) => w.title === selectedTitle);
+      const matched = workshops.find((w) => w.title === selectedTitle); // ✅ 전체에서 찾기
       if (matched) {
-        setOpenCardId(matched.id); // 해당 카드 열기
+        setOpenCardId(matched.id);
         const target = cardRefs.current[matched.id];
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' }); // 스크롤 이동
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
     }
-  }, [selectedTitle, filtered]);
+  }, [selectedTitle, workshops]);
 
   return (
     <div className="w-full max-w-[1200px] flex flex-col">

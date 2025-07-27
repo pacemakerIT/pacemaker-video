@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import WorkshopCalendar from '@/components/calendar/workshop-calendar';
+import WorkshopCalendar from '@/components/features/workshops/workshop-calendar';
 import WorkshopFilter from '@/components/features/workshops/workshop-filter';
 import WorkshopCardList from '@/components/features/workshops/workshop-card-list';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';

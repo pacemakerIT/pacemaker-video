@@ -1,6 +1,6 @@
 // components/ui/calendar-style-map.ts
 
-import type { CalendarEvent } from '@/components/calendar/workshop-calendar';
+import type { CalendarEvent } from '@/components/features/workshops/workshop-calendar';
 
 type CalendarStyle = {
   event: string;
