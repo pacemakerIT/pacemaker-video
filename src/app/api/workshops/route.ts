@@ -8,6 +8,8 @@ export async function GET(req: Request) {
   const id = searchParams.get('id');
   const year = Number(searchParams.get('year'));
   const month = Number(searchParams.get('month'));
+  const range = searchParams.get('range'); // '6months' 파라미터용
+  const center = searchParams.get('center'); // optional center date
 
   try {
     // 1. 단건 조회
@@ -27,7 +29,49 @@ export async function GET(req: Request) {
       return NextResponse.json(workshop);
     }
 
-    // 2. 월별 조회
+    // 2. 현재 기준 or center 기준 앞뒤 3개월 (총 6개월) 조회
+    if (range === '6months') {
+      const centerDate = center ? new Date(center) : new Date();
+      if (isNaN(centerDate.getTime())) {
+        return NextResponse.json(
+          { error: 'Invalid center date' },
+          { status: 400 }
+        );
+      }
+
+      const startDate = new Date(
+        centerDate.getFullYear(),
+        centerDate.getMonth() - 3,
+        1
+      );
+      const endDate = new Date(
+        centerDate.getFullYear(),
+        centerDate.getMonth() + 4,
+        0,
+        23,
+        59,
+        59
+      );
+
+      const workshops = await prisma.workshop.findMany({
+        where: {
+          startDate: {
+            gte: startDate,
+            lte: endDate
+          }
+        },
+        include: { instructor: true }
+      });
+
+      const count = workshops.length;
+
+      return NextResponse.json({
+        workshops,
+        count
+      });
+    }
+
+    // 3. 월별 조회
     if (year && month) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
@@ -50,7 +94,7 @@ export async function GET(req: Request) {
       });
     }
 
-    // 3. 전체 조회 (fallback)
+    // 4. 전체 조회 (fallback)
     const workshops = await prisma.workshop.findMany({
       include: { instructor: true }
     });
