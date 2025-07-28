@@ -19,7 +19,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const total = subtotal - discount + tax;
 
   const goToPaymentSuccess = () => {
-    router.push('/payment/success');
+    router.push('/mypage/payment-success');
   };
   return (
     <>
