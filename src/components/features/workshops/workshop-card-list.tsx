@@ -5,6 +5,10 @@ import Image from 'next/image';
 import { Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { calendarStyleMap } from '@/components/ui/calendar-style-map';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
+import { useUserContext } from '@/app/context/user-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { ItemType } from '@prisma/client';
+import { toast } from 'sonner';
 
 interface Props {
   workshops: WorkshopCard[];
@@ -22,16 +26,26 @@ export default function WorkshopCardList({
   onCloseDetail
 }: Props) {
   const [openCardId, setOpenCardId] = useState<string | null>(null);
-  const [likedWorkshops, setLikedWorkshops] = useState<Record<string, boolean>>(
-    {}
-  );
-  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({}); // 카드별 ref 저장용
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const { user } = useUserContext();
+  const userId = user?.id;
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+
+  const isLiked = (id: string) =>
+    favorites?.some((f) => f.itemId === id && f.itemType === ItemType.WORKSHOP);
 
   const toggleLike = (id: string) => {
-    setLikedWorkshops((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    if (!userId) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (isLiked(id)) {
+      removeFavorite(id, ItemType.WORKSHOP);
+    } else {
+      addFavorite(id, ItemType.WORKSHOP);
+    }
   };
 
   const filtered = workshops.filter((w) => {
@@ -39,9 +53,7 @@ export default function WorkshopCardList({
     const inSelectedMonth =
       date.getFullYear() === selectedMonth.getFullYear() &&
       date.getMonth() === selectedMonth.getMonth();
-
     const matchesStatus = filter === '전체' || w.status === filter;
-
     return inSelectedMonth && matchesStatus;
   });
 
@@ -56,20 +68,16 @@ export default function WorkshopCardList({
 
   function formatDateTime(dateStr: string) {
     const date = new Date(dateStr);
-
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, '0');
     const day = `${date.getDate()}`.padStart(2, '0');
-
     const hour = date.getHours();
     const minute = date.getMinutes();
     const isPM = hour >= 12;
-
     const hour12 = hour % 12 || 12;
     const minuteStr =
       minute === 0 ? '' : `:${minute.toString().padStart(2, '0')}`;
     const ampm = isPM ? 'PM' : 'AM';
-
     return `${year}.${month}.${day} ${hour12}${minuteStr}${ampm}`;
   }
 
@@ -114,14 +122,14 @@ export default function WorkshopCardList({
                     onClick={() => toggleLike(w.id)}
                     className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md"
                   >
-                    {/* TO-DO: 찜 상태 연동 */}
+                    {/* 찜 상태 */}
                     <Heart
                       className={`w-5 h-5 transition-colors duration-200 ${
-                        likedWorkshops[w.id]
+                        isLiked(w.id)
                           ? 'text-pace-orange-800 fill-pace-orange-800'
                           : 'text-pace-gray-200 hover:text-pace-orange-800'
                       }`}
-                      fill={likedWorkshops[w.id] ? 'currentColor' : 'none'}
+                      fill={isLiked(w.id) ? 'currentColor' : 'none'}
                     />
                   </button>
                 </div>
@@ -182,7 +190,7 @@ export default function WorkshopCardList({
                 {/* 설명 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
                   꿈을 현실로 만드는 이야기{' '}
-                  {/* TO-DO: 워크숍 highlight 문구 필드 생기면 대체 */}
+                  {/* TO-DO: 워크숍 subTitle 문구 필드 생기면 대체 */}
                 </p>
 
                 {/* 펼치기 버튼 - 닫혀있을 때만 표시 */}
@@ -256,16 +264,9 @@ export default function WorkshopCardList({
                       </div>
                     </div>
 
-                    {/* TO-DO: 강사 소개 멘트 변경 필요*/}
+                    {/* 강의 소개 멘트 */}
                     <div className="mt-6 text-pace-sm text-pace-gray-700 whitespace-pre-line leading-relaxed">
-                      “모든 사람은 저마다 빛나는 강점과 잠재력을 가지고 있어요.”
-                      <br />
-                      글로벌 커리어 환경에서의 도전과 극복, 네트워킹의 힘,
-                      그리고 “나만의 길”을 찾는 방법에 대한 따뜻한 조언들이
-                      기다리고 있습니다.
-                      <br />
-                      토론토 대학의 구수진 커리어 코치님의 강의를 들을 수 있는
-                      특별한 기회를 놓치지 마세요!
+                      {w.description}
                     </div>
 
                     {/* 닫기 버튼 */}
