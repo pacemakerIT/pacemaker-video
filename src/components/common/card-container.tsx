@@ -8,9 +8,14 @@ import { Button } from '../ui/button';
 interface CardContainerProps {
   layout: 'grid' | 'horizontal';
   cards: OnlineCards[];
+  imageType?: 'ebook' | 'course';
 }
 
-export default function CardContainer({ layout, cards }: CardContainerProps) {
+export default function CardContainer({
+  layout,
+  cards,
+  imageType = 'course'
+}: CardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const cardWidth = 588; // Card 컴포넌트의 width 값
@@ -55,6 +60,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
             uploadDate={card.uploadDate}
             watchedVideos={card.watchedVideos}
             purchasedVideos={card.purchasedVideos}
+            imageType={imageType}
           />
         ))}
       </div>
@@ -90,6 +96,7 @@ export default function CardContainer({ layout, cards }: CardContainerProps) {
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
+              imageType={imageType}
             />
           </div>
         ))}

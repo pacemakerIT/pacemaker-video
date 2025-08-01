@@ -4,19 +4,38 @@ import { ArrowRight, Heart } from 'lucide-react';
 import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 // import resume from 'public/img/resume_lecture.jpeg';
 // import resume from '/Users/mirimkim/Desktop/projects/pacemaker/pacemaker-video/public/img/resume_lecture.jpeg';
 // import resume from 'public/img/resume_lecture.jpeg';
+
+interface CardProps extends OnlineCards {
+  imageType?: 'ebook' | 'course';
+}
 
 export default function Card({
   videoId,
   title,
   price,
   description,
-  category
-}: OnlineCards) {
+  category,
+  imageType = 'course'
+}: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
+
+  // 랜덤 이미지 선택
+  const randomImage = useMemo(() => {
+    const images =
+      imageType === 'ebook'
+        ? ['/img/ebook_image1.png', '/img/ebook_image2.png']
+        : [
+            '/img/course_image1.png',
+            '/img/course_image2.png',
+            '/img/course_image3.png'
+          ];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    return images[randomIndex];
+  }, [imageType]);
 
   return (
     <div className="cursor-pointer">
@@ -40,14 +59,14 @@ export default function Card({
             />
           </button>
 
-          <div className="w-[588px] h-[331px]">
+          <div className="w-[588px] h-[331px] relative overflow-hidden rounded-t-lg">
             <Image
-              src="/img/resume_lecture.jpeg"
-              width={588}
-              height={331}
-              className="w-full h-[331px] object-cover rounded-lg"
+              src={randomImage}
+              fill
+              className="object-cover object-center"
               alt="courses img"
               data-testid="card-image"
+              sizes="588px"
             />
           </div>
 

@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
-import ImageOverlayCardContainer from './ImageOverlayCardContainer';
+import ImageOverlayCardContainer from './image-overlay-card-container';
 
 export default function WorkshopList() {
   const [workshops, setWorkshops] = useState<OnlineCards[]>([]);

@@ -26,6 +26,7 @@ export const s3clientSupabase = new S3Client({
 });
 
 export const bucketName = process.env.SUPABASE_S3_BUCKET!;
+export const imgBucketName = process.env.SUPABASE_S3_IMG_BUCKET!;
 
 // 서버 사이드 Supabase 클라이언트 (서비스 롤 키로 더 많은 권한)
 // export const createServerSupabase = () => {
