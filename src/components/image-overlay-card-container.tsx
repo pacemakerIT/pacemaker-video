@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ImageOverlayCard from './ImageOverlayCard';
+import ImageOverlayCard from './image-overlay-card';
 
 interface ImageOverlayCardContainerProps {
   layout: 'grid' | 'horizontal';
