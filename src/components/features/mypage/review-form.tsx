@@ -98,7 +98,7 @@ export default function ReviewForm({ progress }: Props) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="p-10 text-pace-black-500"
+          className="w-[600px] p-10 gap-10 text-pace-black-500"
           onClick={(e) => e.stopPropagation()}
         >
           <DialogHeader className="justify-between items-center">
@@ -122,8 +122,8 @@ export default function ReviewForm({ progress }: Props) {
           </DialogHeader>
 
           <div className="text-center">
-            <p className="text-pace-xl font-medium mb-1">강의가 어땠나요?</p>
-            <p className="text-pace-gray-700 font-medium mb-2">
+            <p className="text-pace-xl font-medium mb-6">강의가 어땠나요?</p>
+            <p className="text-pace-gray-700 font-medium mb-[10px]">
               {selectedLabel}
             </p>
 
@@ -154,15 +154,15 @@ export default function ReviewForm({ progress }: Props) {
 
             <Textarea
               placeholder="강의에 대한 소감을 말해주세요!"
-              className="min-h-[100px] resize-none mb-4 font-light text-pace-base focus:ring-pace-orange-600"
+              className="min-h-[160px] resize-none p-4 mt-6 mb-10 font-light text-pace-base focus:ring-pace-orange-600"
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
             />
 
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 font-normal">
               <Button
                 onClick={handleSubmit}
-                className="bg-pace-orange-800 text-white px-6 py-2 rounded-full"
+                className="w-[154px] h-auto bg-pace-orange-800 text-pace-white-500 px-10 py-4 rounded-full"
               >
                 작성완료
               </Button>
@@ -173,7 +173,7 @@ export default function ReviewForm({ progress }: Props) {
                   setReviewText('');
                   setOpen(false);
                 }}
-                className="border-pace-orange-600 text-pace-orange-600 px-6 py-2 rounded-full hover:bg-orange-50"
+                className="w-[154px] h-auto border-2 border-pace-orange-600 text-pace-orange-600 px-10 py-4 rounded-full hover:bg-orange-50"
               >
                 취소
               </Button>
