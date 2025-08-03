@@ -2,25 +2,13 @@
 import React, { useState } from 'react';
 import ImageDownload from './image-download';
 
-interface TableColumn {
-  table: string;
-  column: string;
-}
-
-const AVAILABLE_TABLES: TableColumn[] = [
-  { table: 'Video', column: 'thumbnail' },
-  { table: 'Workshop', column: 'thumbnail' }
-];
-
 const ImageUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedTable, setSelectedTable] = useState<string>('');
-  const [selectedColumn, setSelectedColumn] = useState<string>('');
   const [recordId, setRecordId] = useState<string>('');
-  const [availableColumns, setAvailableColumns] = useState<TableColumn[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -31,12 +19,7 @@ const ImageUpload = () => {
 
   const handleTableChange = (tableName: string) => {
     setSelectedTable(tableName);
-    setSelectedColumn('');
     setRecordId('');
-
-    // 선택된 테이블에 해당하는 컬럼들 필터링
-    const columns = AVAILABLE_TABLES.filter((item) => item.table === tableName);
-    setAvailableColumns(columns);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -45,8 +28,8 @@ const ImageUpload = () => {
       setError('파일을 선택해주세요.');
       return;
     }
-    if (!selectedTable || !selectedColumn) {
-      setError('테이블과 컬럼을 선택해주세요.');
+    if (!selectedTable) {
+      setError('테이블을 선택해주세요.');
       return;
     }
 
@@ -56,7 +39,7 @@ const ImageUpload = () => {
     const formData = new FormData();
     formData.append('image', file);
     formData.append('table', selectedTable);
-    formData.append('column', selectedColumn);
+    formData.append('column', 'thumbnail'); // thumbnail로 고정
 
     // recordId가 비어있지 않을 때만 추가
     if (recordId && recordId.trim() !== '') {
@@ -121,29 +104,8 @@ const ImageUpload = () => {
               </select>
             </div>
 
-            {/* 컬럼 선택 */}
-            {selectedTable && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  컬럼 선택
-                </label>
-                <select
-                  value={selectedColumn}
-                  onChange={(e) => setSelectedColumn(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">컬럼을 선택하세요</option>
-                  {availableColumns.map((col) => (
-                    <option key={col.column} value={col.column}>
-                      {col.column}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
             {/* 레코드 ID 입력 (선택사항) */}
-            {selectedTable && selectedColumn && (
+            {selectedTable && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   레코드 ID (선택사항)
@@ -164,7 +126,7 @@ const ImageUpload = () => {
 
             <button
               type="submit"
-              disabled={uploading || !file || !selectedTable || !selectedColumn}
+              disabled={uploading || !file || !selectedTable}
               className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {uploading ? '업로드 중...' : '업로드'}
