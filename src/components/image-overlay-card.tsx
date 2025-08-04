@@ -3,8 +3,8 @@ import { Button } from './ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState } from 'react';
-import resume from '../../public/img/resume_lecture.jpeg';
+import { useState, useMemo } from 'react';
+// import resume from '../../public/img/resume_lecture.jpeg';
 
 export default function ImageOverlayCard({
   videoId,
@@ -12,6 +12,18 @@ export default function ImageOverlayCard({
   category
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
+
+  // 워크샵용 랜덤 이미지 선택
+  const randomImage = useMemo(() => {
+    const images = [
+      '/img/workshop_image1.png',
+      '/img/workshop_image2.png',
+      '/img/workshop_image3.png',
+      '/img/workshop_image4.png'
+    ];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    return images[randomIndex];
+  }, []);
 
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
@@ -37,7 +49,7 @@ export default function ImageOverlayCard({
 
           <div className="relative w-full h-[331px]">
             <Image
-              src={resume}
+              src={randomImage}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               alt="courses img"
