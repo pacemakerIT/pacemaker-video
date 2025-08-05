@@ -22,7 +22,7 @@ export default function BadgeHeader({
               data-testid={`category-badge-${categoryName}`}
               className={`${
                 categoryName === currentCategory
-                  ? ' border-pace-orange-600 text-pace-orange-600'
+                  ? ' border-pace-orange-600 text-pace-orange-600 border-2'
                   : 'text-pace-stone-600 border-pace-stone-600'
               } rounded-full w-full h-12 min-w-40 justify-center cursor-pointer !text-pace-base font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
               onClick={() => {
