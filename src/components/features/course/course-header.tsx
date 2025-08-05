@@ -39,7 +39,7 @@ export default function CourseHeader({
   };
   return (
     <>
-      <div className="flex flex-col justify-start w-full pt-20">
+      <div className="flex flex-col justify-start w-full">
         <h5 className="text-pace-orange-600 text-lg">
           {'다양한 강의를 한 자리에서'}
         </h5>
