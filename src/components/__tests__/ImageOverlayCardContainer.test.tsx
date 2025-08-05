@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import ImageOverlayCardContainer from '../ImageOverlayCardContainer';
+import ImageOverlayCardContainer from '../image-overlay-card-container';
 import { OnlineCards } from '@/types/online';
 
 const mockCards: OnlineCards[] = [
