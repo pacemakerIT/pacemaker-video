@@ -64,7 +64,11 @@ export default function VideoList() {
             videos.length === 0 ? (
               <p>📭 등록된 비디오가 없습니다.</p>
             ) : (
-              <CardContainer layout={'horizontal'} cards={videos} />
+              <CardContainer
+                layout={'horizontal'}
+                cards={videos}
+                imageType="course"
+              />
             )
             // <ul className="space-y-4">
             //   {videos.map((video, index) => (

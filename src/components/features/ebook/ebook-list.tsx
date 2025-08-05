@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
-import CardContainer from './common/card-container';
+import CardContainer from '../../common/card-container';
 
 export default function EbookList() {
   const [ebooks, setEbooks] = useState<OnlineCards[]>([]);
@@ -34,7 +34,7 @@ export default function EbookList() {
   return (
     <>
       {loading ? (
-        <p>📡 비디오 불러오는 중...</p>
+        <p>📡 전자책 불러오는 중...</p>
       ) : (
         <>
           <div className="flex flex-col justify-start w-full pt-12">
@@ -62,9 +62,13 @@ export default function EbookList() {
           </div>
           {
             ebooks.length === 0 ? (
-              <p>📭 등록된 비디오가 없습니다.</p>
+              <p>📭 등록된 전자책이 없습니다.</p>
             ) : (
-              <CardContainer layout={'horizontal'} cards={ebooks} />
+              <CardContainer
+                layout={'horizontal'}
+                cards={ebooks}
+                imageType="ebook"
+              />
             )
             // <ul className="space-y-4">
             //   {videos.map((video, index) => (

@@ -160,6 +160,13 @@ model Favorite {
   @@unique([userId, itemType, itemId])
 }
 
+model Image {
+  id        String   @id @default(uuid())
+  fileName  String
+  url       String
+  createdAt DateTime @default(now())
+}
+
 enum WorkshopStatus {
   RECRUITING // 모집중
   CLOSED     // 모집마감
