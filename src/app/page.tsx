@@ -1,9 +1,9 @@
 import VideoList from '@/components/features/course/video-list';
-import UserInfo from '@/components/user/user-info';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
-import MainReviewContainer from '@/components/main-review-container';
 import WorkshopList from '@/components/workshop-card';
+import MainReviewContainer from '@/components/main-review-container';
+import EbookList from '@/components/features/ebook/ebook-list';
 
 export default async function Home() {
   return (
@@ -60,7 +60,7 @@ export default async function Home() {
           </Button>
         </div>
         <VideoList />
-        <UserInfo />
+        <EbookList />
         <WorkshopList />
         <MainReviewContainer />
       </div>
