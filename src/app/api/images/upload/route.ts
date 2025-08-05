@@ -74,14 +74,14 @@ export async function POST(req: Request) {
             data: { [column]: imageUrl }
           });
         } else {
-          // 새 레코드 생성
+          // 새 레코드 생성 - instructorId는 나중에 설정해야 함
           updatedRecord = await prisma.workshop.create({
             data: {
               title: '새 워크숍',
               description: '워크숍 설명',
               startDate: new Date(),
               endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-              instructorId: '00000000-0000-0000-0000-000000000000',
+              instructorId: '00000000-0000-0000-0000-000000000000', // 임시 값, 실제 사용 시 업데이트 필요
               [column]: imageUrl
             }
           });
