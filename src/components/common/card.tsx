@@ -27,7 +27,7 @@ interface CardProps extends OnlineCards {
 }
 
 export default function Card({
-  videoId,
+  itemId,
   title,
   price,
   description,
@@ -36,6 +36,19 @@ export default function Card({
   imageUrl
 }: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
+
+  const getLinkPath = () => {
+    switch (itemType) {
+      case ItemType.VIDEO:
+        return `/courses/${itemId}`;
+      case ItemType.DOCUMENT:
+        return `/ebooks/${itemId}`;
+      case ItemType.WORKSHOP:
+        return `/workshops/${itemId}`;
+      default:
+        return '/'; // fallback
+    }
+  };
 
   // 랜덤 이미지 선택
   const ImageUrl = useMemo(() => {
@@ -58,9 +71,9 @@ export default function Card({
 
   return (
     <div className="cursor-pointer">
-      {/* TO-DO : courses, ebooks, workshop 분기 처리 필요 */}
-      <Link href={`/courses/${videoId}`}>
+      <Link href={getLinkPath()}>
         <div className="w-[588px] bg-white rounded-lg shadow-sm border-pace-gray-100 border hover:shadow-xl dark:bg-gray-950 relative">
+          {/* TO-DO: 찜버튼 온라인, 전자책, 워크샵 DB 마이그 후 처리 */}
           <button
             role="button"
             aria-label="like"

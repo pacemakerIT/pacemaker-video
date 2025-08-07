@@ -15,6 +15,26 @@ interface EbookHeaderProps {
   setSortBy: (sort: string) => void;
 }
 
+// 카테고리 한글 매핑
+const getKoreanCategory = (categoryName: string) => {
+  switch (categoryName) {
+    case 'TOTAL':
+      return '전체';
+    case 'MARKETING':
+      return '마케팅';
+    case 'IT':
+      return 'IT';
+    case 'DESIGN':
+      return '디자인';
+    case 'PUBLIC':
+      return '북미 공무원';
+    case 'ACCOUNTING':
+      return '재무/회계';
+    default:
+      return categoryName;
+  }
+};
+
 export default function EbookHeader({
   category,
   currentCategory,
@@ -22,26 +42,6 @@ export default function EbookHeader({
   sortBy,
   setSortBy
 }: EbookHeaderProps) {
-  // 카테고리 한글 매핑
-  const getKoreanCategory = (categoryName: string) => {
-    switch (categoryName) {
-      case 'TOTAL':
-        return '전체';
-      case 'MARKETING':
-        return '마케팅';
-      case 'IT':
-        return 'IT';
-      case 'DESIGN':
-        return '디자인';
-      case 'PUBLIC':
-        return '북미 공무원';
-      case 'ACCOUNTING':
-        return '재무회계';
-      default:
-        return categoryName;
-    }
-  };
-
   return (
     <>
       {/* 타이틀 */}

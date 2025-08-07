@@ -60,7 +60,7 @@ describe('Card', () => {
     price: 49.99,
     description: 'Test Description',
     category: 'INTERVIEW',
-    videoId: 'video1',
+    itemId: 'video1',
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
     purchasedVideos: [],

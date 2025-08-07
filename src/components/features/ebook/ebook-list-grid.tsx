@@ -8,16 +8,16 @@ import { toast } from 'sonner';
 import { ItemType } from '@prisma/client';
 
 export default function EbookListGrid() {
-  // 전자책 카테고리 (UI 상단 버튼)
+  // 전자책 카테고리 (UI 상단 버튼) - 영문 키로 유지
   const category = useMemo(
-    () => ['TOTAL', '마케팅', 'IT', '디자인', '북미 공무원', '재무/회계'],
+    () => ['TOTAL', 'MARKETING', 'IT', 'DESIGN', 'PUBLIC', 'ACCOUNTING'],
     []
   );
 
-  const [currentCategory, setCurrentCategory] = useState<string>('TOTAL');
+  const [currentCategory, setCurrentCategory] = useState<string>('TOTAL'); // 현재 카테고리 상태
   const [sortBy, setSortBy] = useState<string>('Total'); // 정렬 기준
-  const [allCards, setAllCards] = useState<OnlineCards[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allCards, setAllCards] = useState<OnlineCards[]>([]); // 전체 전자책 목록
+  const [loading, setLoading] = useState(true); // 로딩 상태
 
   const fetchEbooks = useCallback(async () => {
     try {
@@ -39,12 +39,19 @@ export default function EbookListGrid() {
     fetchEbooks();
   }, [fetchEbooks]);
 
+  // TO-DO : 정렬 반영 (영문 기반 처리)
+  // 카테고리만 반영 (영문 기반 처리, 대소문자 통일)
   const currentCards = useMemo(() => {
-    if (currentCategory === 'TOTAL') {
-      return allCards;
-    }
-    return allCards.filter((card) => card.category === currentCategory);
-  }, [currentCategory, allCards]);
+    const filtered =
+      currentCategory === 'TOTAL'
+        ? allCards
+        : allCards.filter(
+            (card) =>
+              card.category.toUpperCase() === currentCategory.toUpperCase()
+          );
+
+    return filtered;
+  }, [allCards, currentCategory]);
 
   return (
     <div className="w-[1200px] mx-auto flex flex-col items-center justify-center">
