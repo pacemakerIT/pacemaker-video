@@ -4,10 +4,7 @@ import { ArrowRight, Heart } from 'lucide-react';
 import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
-// import resume from 'public/img/resume_lecture.jpeg';
-// import resume from '/Users/mirimkim/Desktop/projects/pacemaker/pacemaker-video/public/img/resume_lecture.jpeg';
-// import resume from 'public/img/resume_lecture.jpeg';
+import { useState } from 'react';
 
 interface CardProps extends OnlineCards {
   imageType?: 'ebook' | 'course';
@@ -19,23 +16,17 @@ export default function Card({
   price,
   description,
   category,
-  imageType = 'course'
+  imageType = 'course',
+  thumbnail
 }: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
-  // 랜덤 이미지 선택
-  const randomImage = useMemo(() => {
-    const images =
-      imageType === 'ebook'
-        ? ['/img/ebook_image1.png', '/img/ebook_image2.png']
-        : [
-            '/img/course_image1.png',
-            '/img/course_image2.png',
-            '/img/course_image3.png'
-          ];
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
-  }, [imageType]);
+  // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
+  const imageSrc = thumbnail
+    ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
+    : imageType === 'ebook'
+      ? '/img/ebook_image1.png'
+      : '/img/course_image1.png';
 
   return (
     <div className="cursor-pointer">
@@ -61,7 +52,7 @@ export default function Card({
 
           <div className="w-[588px] h-[331px] relative overflow-hidden rounded-t-lg">
             <Image
-              src={randomImage}
+              src={imageSrc}
               fill
               className="object-cover object-center"
               alt="courses img"
@@ -94,29 +85,6 @@ export default function Card({
               {`자세히 보기`}
               <ArrowRight width={20} height={20} />
             </Button>
-            {/* <div className="w-full flex flex-col gap-2">
-              {category && (
-                <CustomBadge
-                  variant={category}
-                  className="w-[89px] flex justify-center items-center"
-                >
-                  {category}
-                </CustomBadge>
-              )}
-              <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-semibold pace-gray-500">
-                  {title}
-                </h3>
-                <span className="text-[28px] font-bold">{`$${price}`}</span>
-              </div>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400 font-normal">
-              {description}
-            </p>
-            <Button variant="link" className="text-[#ED642D] p-0">
-              {`자세히 보기`}
-              <ArrowRight width={20} height={20} />
-            </Button> */}
           </div>
         </div>
       </Link>
