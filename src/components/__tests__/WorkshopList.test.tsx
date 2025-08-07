@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import WorkshopList from '../WorkshopList';
+import WorkshopList from '../workshop-card';
 
 const mockWorkshops = [
   {
