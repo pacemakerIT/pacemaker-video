@@ -1,12 +1,15 @@
+'use client';
+
 import { ClerkProvider } from '@clerk/nextjs';
 import { Header } from '@/components/common/header';
 import { Footer } from '@/components/common/footer';
 import { Toaster } from '@/components/ui/sonner';
-import { UserProvider } from '@/app/context/user-context';
+import { UserProvider, useUserContext } from '@/app/context/user-context';
 import { PurchaseProvider } from '@/app/context/purchase-context';
+import { FavoriteProvider } from '@/app/context/favorite-context';
 import './globals.css';
 
-export default function RootLayout({
+export default function RootLayoutWrapper({
   children
 }: {
   children: React.ReactNode;
@@ -17,16 +20,26 @@ export default function RootLayout({
     >
       <UserProvider>
         <PurchaseProvider>
-          <html lang="en" style={{ colorScheme: 'light' }}>
-            <body>
-              <Header />
-              <main className="container">{children}</main>
-              <Toaster />
-              <Footer />
-            </body>
-          </html>
+          <FavoriteWrapper>{children}</FavoriteWrapper>
         </PurchaseProvider>
       </UserProvider>
     </ClerkProvider>
+  );
+}
+
+function FavoriteWrapper({ children }: { children: React.ReactNode }) {
+  const { user } = useUserContext();
+
+  return (
+    <FavoriteProvider userId={user?.id ?? ''}>
+      <html lang="en" style={{ colorScheme: 'light' }}>
+        <body>
+          <Header />
+          <main className="container">{children}</main>
+          <Toaster />
+          <Footer />
+        </body>
+      </html>
+    </FavoriteProvider>
   );
 }
