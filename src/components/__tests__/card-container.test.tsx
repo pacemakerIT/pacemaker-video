@@ -20,7 +20,7 @@ describe('CardContainer', () => {
       price: 49.99,
       category: 'INTERVIEW',
       uploadDate: new Date(),
-      videoId: 'video1',
+      itemId: 'video1',
       watchedVideos: undefined,
       purchasedVideos: undefined
     },
@@ -31,7 +31,7 @@ describe('CardContainer', () => {
       price: 59.99,
       category: 'RESUME',
       uploadDate: new Date(),
-      videoId: 'video2',
+      itemId: 'video2',
       watchedVideos: undefined,
       purchasedVideos: undefined
     },
@@ -42,7 +42,7 @@ describe('CardContainer', () => {
       price: 69.99,
       category: 'NETWORKING',
       uploadDate: new Date(),
-      videoId: 'video3',
+      itemId: 'video3',
       watchedVideos: undefined,
       purchasedVideos: undefined
     }
