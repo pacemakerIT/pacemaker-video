@@ -22,7 +22,7 @@ const categoryMap: Record<string, string> = {
 };
 
 interface CardProps extends OnlineCards {
-  itemType: ItemType; // WORKSHOP, DOCUMENT, VIDEO
+  itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
   imageUrl?: string;
 }
 

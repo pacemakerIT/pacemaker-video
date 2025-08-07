@@ -9,7 +9,7 @@ import { ItemType } from '@prisma/client';
 interface CardContainerProps {
   layout: 'grid' | 'horizontal';
   cards: OnlineCards[];
-  itemType: ItemType;
+  itemType?: ItemType;
 }
 
 export default function CardContainer({
