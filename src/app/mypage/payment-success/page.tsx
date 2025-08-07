@@ -62,7 +62,7 @@ export default function PaymentSuccess() {
         </p>
       </div>
 
-      <div className="flex mt-6 mb-20 gap-4 items-center justify-center text-center">
+      <div className="flex mt-6 gap-4 items-center justify-center text-center">
         <Link
           href="/mypage"
           className="bg-pace-orange-800 px-10 py-4 rounded-full text-pace-white-500 hover:bg-pace-orange-600"
@@ -77,7 +77,7 @@ export default function PaymentSuccess() {
         </Link>
       </div>
 
-      <div className="space-y-4 text-[20px] text-pace-gray-500">
+      <div className="mt-20 space-y-4 text-[20px] text-pace-gray-500">
         {items.map((item, index) => (
           <div
             key={item.id}
@@ -113,10 +113,13 @@ export default function PaymentSuccess() {
               )}
 
               <div className="mt-2">{item.title}</div>
+              <div className="mt-2 font-bold text-pace-gray-500 text-pace-lg">
+                ${item.price}
+              </div>
             </div>
             <Link
               href="/purchase"
-              className="w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
+              className="min-w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
             >
               {item.type === '워크샵' ? '자세히 보기' : '수강하러 가기'}
             </Link>
