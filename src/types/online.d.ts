@@ -1,3 +1,5 @@
+import { ItemType } from '@prisma/client';
+
 export interface OnlineCards {
   id: string;
   videoId: string;
@@ -8,6 +10,8 @@ export interface OnlineCards {
   category: string;
   watchedVideos: Array;
   purchasedVideos: Array;
+  imageUrl?: string;
+  itemType?: ItemType;
   // id: string;
   // title: string;
   // price: number;

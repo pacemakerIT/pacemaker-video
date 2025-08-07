@@ -10,6 +10,7 @@ import {
 } from '@testing-library/react';
 import Card from '../common/card';
 import { OnlineCards } from '@/types/online';
+import { ItemType } from '@prisma/client';
 
 // Mock next/image
 vi.mock('next/image', () => ({
@@ -62,7 +63,8 @@ describe('Card', () => {
     videoId: 'video1',
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
-    purchasedVideos: []
+    purchasedVideos: [],
+    itemType: ItemType.VIDEO
   };
 
   beforeEach(() => {
@@ -124,7 +126,7 @@ describe('Card', () => {
     await waitFor(() => {
       const button = screen.getByText('자세히 보기');
       expect(button).toBeDefined();
-      expect(button).toHaveClass('text-[#ED642D]');
+      expect(button).toHaveClass('text-pace-650');
     });
   });
 

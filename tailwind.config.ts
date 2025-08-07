@@ -17,8 +17,12 @@ const config: Config = {
           500: '#1F1F1F',
           900: '#000000'
         },
-        'pace-blue': { 500: '#36A6F6' },
+        'pace-blue': {
+          500: '#36A6F6',
+          700: '#1577E6'
+        },
         'pace-gray': {
+          100: '#EEEEEE',
           200: '#DDDDDD',
           500: '#222222',
           700: '#333333'
@@ -26,7 +30,8 @@ const config: Config = {
         'pace-ivory': { 500: '#F9F6F3' },
         'pace-mint': {
           50: '#ECFDF5',
-          500: '#3BC982'
+          500: '#3BC982',
+          600: '#32B875'
         },
         'pace-navy': {
           500: '#37446C',
@@ -36,6 +41,7 @@ const config: Config = {
           50: '#FFF3E6',
           500: '#FF9631',
           600: '#FF8236',
+          650: '#ED642D',
           700: '#FB773F',
           800: '#FF6F20',
           900: '#ff7e00'
@@ -49,6 +55,9 @@ const config: Config = {
           600: '#7E7E7E',
           700: '#888888',
           800: '#999999'
+        },
+        'pace-teal': {
+          500: '#00A1A1'
         },
         'pace-yellow': {
           100: '#FEF9C3',

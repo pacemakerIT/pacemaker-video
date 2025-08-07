@@ -2,28 +2,31 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import CardContainer from '@/components/common/card-container';
-import CourseHeader from '@/components/features/course/course-header';
-import { OnlineCards } from '@/types/online';
+import EBookHeader from '@/components/features/ebook/ebook-header';
+import { OnlineCards } from '@/types/online'; // 전자책 타입 생기면 교체
 import { toast } from 'sonner';
+import { ItemType } from '@prisma/client';
 
-export default function CourseList() {
+export default function EbookListGrid() {
+  // 전자책 카테고리 (UI 상단 버튼)
   const category = useMemo(
-    () => ['TOTAL', 'INTERVIEW', 'RESUME', 'NETWORKING'],
+    () => ['TOTAL', '마케팅', 'IT', '디자인', '북미 공무원', '재무/회계'],
     []
   );
+
   const [currentCategory, setCurrentCategory] = useState<string>('TOTAL');
-  const [sortBy, setSortBy] = useState<string>('Total');
+  const [sortBy, setSortBy] = useState<string>('Total'); // 정렬 기준
   const [allCards, setAllCards] = useState<OnlineCards[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchCourses = useCallback(async () => {
+  const fetchEbooks = useCallback(async () => {
     try {
-      const res = await fetch('/api/courses');
+      const res = await fetch('/api/ebooks'); // 전자책 API 엔드포인트
       if (res.ok) {
         const data = await res.json();
         setAllCards(data);
       } else {
-        toast('Failed to fetch courses');
+        toast('Failed to fetch ebooks');
       }
     } catch (error) {
       toast(`Failed to connect server: ${error}`);
@@ -33,8 +36,8 @@ export default function CourseList() {
   }, []);
 
   useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+    fetchEbooks();
+  }, [fetchEbooks]);
 
   const currentCards = useMemo(() => {
     if (currentCategory === 'TOTAL') {
@@ -44,19 +47,26 @@ export default function CourseList() {
   }, [currentCategory, allCards]);
 
   return (
-    <div className="w-[1200px] items-center mx-auto justify-center flex flex-col">
+    <div className="w-[1200px] mx-auto flex flex-col items-center justify-center">
       {loading ? (
-        <p className="p-4">📡 강의 불러오는 중...</p>
+        <p className="p-4">📡 전자책 불러오는 중...</p>
       ) : (
         <>
-          <CourseHeader
+          {/* 상단 카테고리 + 정렬 */}
+          <EBookHeader
             category={category}
             currentCategory={currentCategory}
             setCurrentCategory={setCurrentCategory}
             sortBy={sortBy}
             setSortBy={setSortBy}
           />
-          <CardContainer layout={'grid'} cards={currentCards} />
+
+          {/* 카드 리스트 (Grid) */}
+          <CardContainer
+            layout={'grid'}
+            cards={currentCards}
+            itemType={ItemType.DOCUMENT}
+          />
         </>
       )}
     </div>

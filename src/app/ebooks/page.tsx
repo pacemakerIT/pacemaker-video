@@ -1,7 +1,7 @@
 import ListHeader from '@/components/common/list-header';
 import LogoCarousel from '@/components/common/logo-marquee';
 import ReviewContainer from '@/components/common/review-container';
-import CourseList from '@/components/features/course/course-list';
+import EbookListGrid from '@/components/features/ebook/ebook-list-grid';
 
 export default function EBooksPage() {
   return (
@@ -21,8 +21,7 @@ export default function EBooksPage() {
         buttonText={'전자책 보러가기'}
       />
       <LogoCarousel />
-      {/* TO-DO: PACE-112/main-ebook-card 완료 시 적용 가능 (현재 온라인 강의 페이지)  */}
-      <CourseList />
+      <EbookListGrid />
       <ReviewContainer />
     </div>
   );
