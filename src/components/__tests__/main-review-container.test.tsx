@@ -4,12 +4,23 @@ import MainReviewContainer from '../main-review-container';
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 
+// Clerk useAuth 모킹
+vi.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({
+    userId: null,
+    isLoaded: true,
+    isSignedIn: false
+  })
+}));
+
 // next/image mocking
 vi.mock('next/image', () => ({
   __esModule: true,
   default: (props: Record<string, unknown>) => {
+    // priority 속성 제거
+    const { priority, ...restProps } = props;
     // eslint-disable-next-line @next/next/no-img-element
-    return <img alt="" {...props} />;
+    return <img alt="" {...restProps} />;
   }
 }));
 
