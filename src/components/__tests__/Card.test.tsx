@@ -126,7 +126,7 @@ describe('Card', () => {
     await waitFor(() => {
       const button = screen.getByText('자세히 보기');
       expect(button).toBeDefined();
-      expect(button).toHaveClass('text-pace-650');
+      expect(button).toHaveClass('text-pace-orange-650');
     });
   });
 
@@ -140,7 +140,7 @@ describe('Card', () => {
       expect(cardContainer).toHaveClass('bg-white');
       expect(cardContainer).toHaveClass('rounded-lg');
       expect(cardContainer).toHaveClass('shadow-sm');
-      expect(cardContainer).toHaveClass('border-[#EEEEEE]');
+      expect(cardContainer).toHaveClass('border-pace-gray-100');
 
       // Check image container styles
       const imageContainer = screen.getByTestId('card-image').parentElement;
