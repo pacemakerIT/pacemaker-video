@@ -10,6 +10,7 @@ import {
 } from '@testing-library/react';
 import Card from '../common/card';
 import { OnlineCards } from '@/types/online';
+import { ItemType } from '@prisma/client';
 
 // Mock next/image
 vi.mock('next/image', () => ({
@@ -59,10 +60,11 @@ describe('Card', () => {
     price: 49.99,
     description: 'Test Description',
     category: 'INTERVIEW',
-    videoId: 'video1',
+    itemId: 'video1',
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
-    purchasedVideos: []
+    purchasedVideos: [],
+    itemType: ItemType.VIDEO
   };
 
   beforeEach(() => {
@@ -124,7 +126,7 @@ describe('Card', () => {
     await waitFor(() => {
       const button = screen.getByText('자세히 보기');
       expect(button).toBeDefined();
-      expect(button).toHaveClass('text-[#ED642D]');
+      expect(button).toHaveClass('text-pace-orange-650');
     });
   });
 
@@ -138,7 +140,7 @@ describe('Card', () => {
       expect(cardContainer).toHaveClass('bg-white');
       expect(cardContainer).toHaveClass('rounded-lg');
       expect(cardContainer).toHaveClass('shadow-sm');
-      expect(cardContainer).toHaveClass('border-[#EEEEEE]');
+      expect(cardContainer).toHaveClass('border-pace-gray-100');
 
       // Check image container styles
       const imageContainer = screen.getByTestId('card-image').parentElement;

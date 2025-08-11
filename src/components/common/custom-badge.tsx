@@ -12,7 +12,16 @@ const customBadgeVariants = cva(badgeVariants(), {
       Networking:
         'border-transparent bg-pace-yellow-500 !text-pace-sm text-pace-white-500 font-light',
       Marketing:
-        'border-transparent bg-pace-orange-700 !text-pace-sm text-pace-white-500 font-light'
+        'border-transparent bg-pace-orange-700 !text-pace-sm text-pace-white-500 font-light',
+      Design:
+        'border-transparent bg-pace-pink-500 !text-pace-sm text-pace-white-500 font-light',
+      Public:
+        'border-transparent bg-pace-mint-600 !text-pace-sm text-pace-white-500 font-light',
+      IT: 'border-transparent bg-pace-blue-700 !text-pace-sm text-pace-white-500 font-light',
+      Accounting:
+        'border-transparent bg-pace-navy-500 !text-pace-sm text-pace-white-500 font-light',
+      Service:
+        'border-transparent bg-pace-teal-500 !text-pace-sm text-pace-white-500 font-light'
     }
   },
   defaultVariants: {
@@ -21,7 +30,17 @@ const customBadgeVariants = cva(badgeVariants(), {
 });
 
 interface CustomBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'Interview' | 'Resume' | 'Networking' | 'Marketing' | string;
+  variant?:
+    | 'Interview'
+    | 'Resume'
+    | 'Networking'
+    | 'Marketing'
+    | 'Design'
+    | 'Public'
+    | 'IT'
+    | 'Accounting'
+    | 'Service'
+    | string;
 }
 
 export function CustomBadge({
@@ -38,6 +57,11 @@ export function CustomBadge({
             | 'Resume'
             | 'Networking'
             | 'Marketing'
+            | 'Design'
+            | 'Public'
+            | 'IT'
+            | 'Accounting'
+            | 'Service'
         }),
         className
       )}
