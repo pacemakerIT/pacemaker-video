@@ -77,6 +77,7 @@ const config: Config = {
 
       // fontWeight는 Tailwind 기본 디자인 시스템 (font-normal, font-medium, font-bold 등) 사용
       fontSize: {
+        'pace-2xs': ['10px', { lineHeight: '1.5' }], // extra small text
         'pace-xs': ['12px', { lineHeight: '1.5' }],
         'pace-sm': ['14px', { lineHeight: '1.4' }], // small text
         'pace-base': ['16px', { lineHeight: '1.5' }], // base text
