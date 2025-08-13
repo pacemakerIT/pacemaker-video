@@ -4,8 +4,9 @@ import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { SignInButton } from '@clerk/nextjs';
+import CustomSignInWrapper from '@/components/auth/custom-sign-in-wrapper';
 import SignUpWithGoogleButton from '@/components/auth/sign-up-google-button';
+import { createPortal } from 'react-dom'; // 포털로 렌더링
 
 type Props = {
   closeModal?: () => void;
@@ -22,6 +23,7 @@ export default function CustomSignUp({ closeModal }: Props) {
   const [code, setCode] = useState('');
   const [pendingVerification, setPendingVerification] = useState(false);
   const [error, setError] = useState('');
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,12 +162,33 @@ export default function CustomSignUp({ closeModal }: Props) {
 
           <p className="text-pace-base font-normal text-pace-stone-500 text-center">
             이미 회원이신가요?{' '}
-            <SignInButton mode="modal">
-              <span className="text-pace-gray-500 underline hover:text-pace-orange-800 cursor-pointer">
-                로그인 하기
-              </span>
-            </SignInButton>
+            <span
+              onClick={() => setIsSignInOpen(true)}
+              className="text-pace-gray-500 underline hover:text-pace-orange-800 cursor-pointer"
+            >
+              로그인 하기
+            </span>
           </p>
+
+          {/* 모달 (Portal로 body에 렌더링: 화면 전체 덮임) */}
+          {isSignInOpen &&
+            createPortal(
+              <div
+                className="fixed inset-0 flex items-center justify-center bg-black/50 z-[1000]"
+                onClick={() => setIsSignInOpen(false)}
+              >
+                <div
+                  className="w-full max-w-[480px] bg-white rounded-lg px-6 py-10 sm:px-10 sm:py-16   md:px-[40px] md:py-[80px] flex flex-col gap-6"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <CustomSignInWrapper
+                    isPage={false}
+                    closeModal={() => setIsSignInOpen(false)}
+                  />
+                </div>
+              </div>,
+              document.body
+            )}
         </>
       ) : (
         <form
