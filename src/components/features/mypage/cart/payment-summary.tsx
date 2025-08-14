@@ -2,12 +2,14 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
+import { useRouter } from 'next/navigation';
 
 interface PaymentSummaryProps {
   cartItems: CartItem[];
 }
 
 export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
+  const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
   const selectedItem = cartItems.filter((item) => item.selected);
@@ -16,6 +18,9 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const tax = subtotal * 0.13;
   const total = subtotal - discount + tax;
 
+  const goToPaymentSuccess = () => {
+    router.push('/mypage/payment-success');
+  };
   return (
     <>
       <aside className="hidden lg:block w-80 h-full border-l p-10 pt-20">
@@ -48,8 +53,10 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         <button className="w-full px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
           등록
         </button>
-        <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm"></div>
-        <button className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full">
+        <button
+          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full"
+          onClick={goToPaymentSuccess}
+        >
           결제하기
         </button>
         <div className="flex justify-center mt-6 text-pace-stone-700 text-[12px]">
@@ -125,7 +132,10 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
               <span className="text-[#E86642] font-bold">
                 ${total.toFixed(2)}
               </span>
-              <button className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg">
+              <button
+                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg"
+                onClick={goToPaymentSuccess}
+              >
                 결제하기
               </button>
             </div>
