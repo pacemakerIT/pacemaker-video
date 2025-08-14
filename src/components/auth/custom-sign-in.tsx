@@ -4,7 +4,8 @@ import { useSignIn } from '@clerk/nextjs';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SignInWithGoogleButton from '@/components/auth/sign-in-google-button';
-import CustomSignUp from '@/components/auth/custom-sign-up'; // 커스텀 회원가입 컴포넌트 import
+import CustomSignUpWrapper from '@/components/auth/custom-sign-up-wrapper'; // 래퍼 사용
+import { createPortal } from 'react-dom'; // 포털로 렌더링
 
 type Props = {
   closeModal?: () => void;
@@ -93,15 +94,27 @@ export default function CustomSignIn({ closeModal }: Props) {
         </button>
       </p>
 
-      {showSignUp && (
-        <div className="fixed inset-0 z-50 bg-black/50 overflow-y-auto">
-          <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-            <div className="w-full max-w-[480px] bg-white rounded-xl p-6 shadow-xl">
-              <CustomSignUp closeModal={() => setShowSignUp(false)} />
+      {/* 회원가입 모달: 래퍼 사용 (createPortal) */}
+      {showSignUp &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4"
+            onClick={() => setShowSignUp(false)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="w-full max-w-[480px] bg-white rounded-lg shadow-xl px-6 py-10 sm:px-10 sm:py-16 md:px-[40px] md:py-[80px] flex flex-col gap-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CustomSignUpWrapper
+                isPage={false}
+                closeModal={() => setShowSignUp(false)}
+              />
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
