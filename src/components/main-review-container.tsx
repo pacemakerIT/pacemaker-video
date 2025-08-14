@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useAuth } from '@clerk/nextjs';
+import Link from 'next/link';
 
 const MainReviewContainer = () => {
   const { userId } = useAuth();
@@ -35,9 +36,11 @@ const MainReviewContainer = () => {
             Boost your career with Pacemaker Today!
           </h2>
 
-          <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
-            {userId ? '강의 보러가기' : '로그인 하고 강의 듣기'}
-          </button>
+          <Link href={userId ? '/courses' : '/sign-in'}>
+            <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
+              {userId ? '강의 보러가기' : '로그인 하고 강의 듣기'}
+            </button>
+          </Link>
         </div>
       </div>
     </div>

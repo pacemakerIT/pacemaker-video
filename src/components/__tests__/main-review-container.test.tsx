@@ -2,15 +2,13 @@
 import { render, screen } from '@testing-library/react';
 import MainReviewContainer from '../main-review-container';
 import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Clerk useAuth 모킹
+const mockUseAuth = vi.fn();
+
 vi.mock('@clerk/nextjs', () => ({
-  useAuth: () => ({
-    userId: null,
-    isLoaded: true,
-    isSignedIn: false
-  })
+  useAuth: () => mockUseAuth()
 }));
 
 // next/image mocking
@@ -25,6 +23,15 @@ vi.mock('next/image', () => ({
 }));
 
 describe('MainReviewContainer', () => {
+  beforeEach(() => {
+    // 기본적으로 로그인하지 않은 상태로 설정
+    mockUseAuth.mockReturnValue({
+      userId: null,
+      isLoaded: true,
+      isSignedIn: false
+    });
+  });
+
   it('renders the main review image', () => {
     render(<MainReviewContainer />);
     const img = screen.getByAltText('background');
@@ -39,10 +46,24 @@ describe('MainReviewContainer', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the login button', () => {
+  it('renders the login button when user is not signed in', () => {
     render(<MainReviewContainer />);
     expect(
       screen.getByRole('button', { name: /로그인 하고 강의 듣기/i })
+    ).toBeInTheDocument();
+  });
+
+  it('renders the courses button when user is signed in', () => {
+    // 로그인된 상태로 모킹
+    mockUseAuth.mockReturnValue({
+      userId: 'test-user-id',
+      isLoaded: true,
+      isSignedIn: true
+    });
+
+    render(<MainReviewContainer />);
+    expect(
+      screen.getByRole('button', { name: /강의 보러가기/i })
     ).toBeInTheDocument();
   });
 });
