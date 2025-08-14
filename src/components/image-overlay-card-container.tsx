@@ -60,6 +60,7 @@ export default function ImageOverlayCardContainer({
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
+              thumbnail={card.thumbnail}
             />
           </div>
         ))}
@@ -94,6 +95,7 @@ export default function ImageOverlayCardContainer({
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
+              thumbnail={card.thumbnail}
             />
           </div>
         ))}

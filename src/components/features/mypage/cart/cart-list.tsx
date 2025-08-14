@@ -91,8 +91,11 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
         </Button>
       </div>
       <div className="space-y-4 text-[20px] text-pace-gray-500">
-        {cartItems.map((item) => (
-          <div key={item.id} className="flex items-center border-t p-4 !m-0">
+        {cartItems.map((item, index) => (
+          <div
+            key={item.id}
+            className={`flex items-center border-b p-4 !m-0 ${index == 0 ? 'border-t' : ''}`}
+          >
             <Checkbox
               checked={item.selected}
               onCheckedChange={() => toggleSelect(item.id)}
