@@ -1,66 +1,60 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
   output          = "../node_modules/.prisma/client"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
 model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  clerkId   String   @unique // Clerk user ID
-  email     String   @unique
-  name      String?
-  image     String?
-  roleId    String   @default("USER")
-  role      UserRole @relation(fields: [roleId], references: [id]) //* 추가됨
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Subscription related fields
-  isSubscribed        Boolean   @default(false)
-  subscriptionEndDate DateTime?
-
-  // Learning progress related fields
-  lastLoginAt        DateTime?
-  watchedVideos      WatchedVideo[]
-  orders             Order[]
-
-  // 워크숍 관련 추가
-  taughtWorkshops       Workshop[]             @relation("InstructorWorkshops") // 강사로서 진행하는 워크숍
-  workshopRegistrations WorkshopRegistration[] // 사용자가 등록한 워크숍
-
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                 String                 @unique
+  name                  String?
+  image                 String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  isSubscribed          Boolean                @default(false)
+  subscriptionEndDate   DateTime?
+  lastLoginAt           DateTime?
+  clerkId               String                 @unique
+  roleId                String                 @default("USER")
+  role                  UserRole               @relation(fields: [roleId], references: [id])
+  watchedVideos         WatchedVideo[]
+  orders                Order[]
+  taughtWorkshops       Workshop[]             @relation("InstructorWorkshops")
+  workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
 }
 
-model UserRole { 
+model UserRole {
   id    String @id
   label String
   users User[]
 }
 
 model Video {
-  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  videoId         String           @unique // wistia video ID
-  title           String?
-  description     String?
-  uploadDate      DateTime         @default(now())
-  price           Float? // Added Price Column
-  category        VideoCategory?
-  watchedVideos   WatchedVideo[]
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  videoId       String         @unique
+  title         String?
+  description   String?
+  uploadDate    DateTime       @default(now())
+  price         Float?
+  category      VideoCategory?
+  thumbnail     String?
+  watchedVideos WatchedVideo[]
 }
 
 model WatchedVideo {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid // Application user ID (references User.id)
-  videoId   String   @db.Uuid // Application video ID (references Video.id)
+  userId    String   @db.Uuid
   watchedAt DateTime @default(now())
-  progress  Float // Video watching progress (0-100%)
+  progress  Float
+  videoId   String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
@@ -68,95 +62,79 @@ model WatchedVideo {
 }
 
 model Document {
-  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId         String              @unique // wistia document ID
-  title              String?
-  description        String?
-  uploadDate         DateTime            @default(now())
-  price              Float?
-  bucketUrl          String
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId  String   @unique
+  title       String?
+  description String?
+  uploadDate  DateTime @default(now())
+  price       Float?
+  bucketUrl   String
 }
 
 model Workshop {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String
   description   String?
   startDate     DateTime
   endDate       DateTime
   price         Float?
-  locationOrUrl String?  // 오프라인 장소 또는 온라인 링크
-  status        WorkshopStatus @default(RECRUITING)
-
-  instructorId  String   @db.Uuid
-  instructor    User     @relation("InstructorWorkshops", fields: [instructorId], references: [id]) // User의 Role이 INSTRUCTOR인 경우
-
-  registrations WorkshopRegistration[] // 이 워크숍에 등록한 사용자 목록
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  locationOrUrl String?
+  status        WorkshopStatus         @default(RECRUITING)
+  instructorId  String                 @db.Uuid
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  thumbnail     String?
+  instructor    User                   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
+  registrations WorkshopRegistration[]
 }
 
 model WorkshopRegistration {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId       String   @db.Uuid
   workshopId   String   @db.Uuid
-  attended     Boolean  @default(false)
   registeredAt DateTime @default(now())
-
-  orderId      String?  @db.Uuid 
+  attended     Boolean  @default(false)
+  orderId      String?  @db.Uuid
   order        Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
-
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   workshop     Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, workshopId]) // 한 사용자는 한 워크숍에 한 번만 등록 가능
+  @@unique([userId, workshopId])
 }
 
 model Order {
-  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId            String?      @db.Uuid
-  user              User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  totalAmount       Float        // 최종 결제 금액 (할인 등 적용 후)
-  status            OrderStatus  @default(PENDING) // 주문 상태
-
-  // Stripe 결제 정보
-  stripePaymentIntentId String?      @unique // Stripe's Payment Intent ID (pi_...)
-
-  // Stripe 인보이스 정보
-  stripeInvoiceId       String?      @unique // Stripe에서 발급한 인보이스 ID (in_...)
-  stripeInvoiceUrl      String?      // Stripe에서 제공하는 인보이스 PDF 다운로드/보기 URL
-
-  orderedAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-
-  items             OrderItem[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String?                @db.Uuid
+  totalAmount           Float
+  status                OrderStatus            @default(PENDING)
+  stripePaymentIntentId String?                @unique
+  stripeInvoiceId       String?                @unique
+  stripeInvoiceUrl      String?
+  orderedAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  user                  User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items                 OrderItem[]
   workshopRegistrations WorkshopRegistration[]
 }
 
 model OrderItem {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId         String    @db.Uuid
-  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  itemType        ItemType  // VIDEO, DOCUMENT, WORKSHOP
-  itemId          String    
-  
-  priceAtPurchase Float     // 구매 시점의 상품 가격 (가격 변동에 대비)
-  quantity        Int       @default(1)
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId         String   @db.Uuid
+  priceAtPurchase Float
+  quantity        Int      @default(1)
+  itemId          String
+  itemType        ItemType
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId     String   @db.Uuid
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  itemId    String
+  itemType  ItemType
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  itemType   ItemType // VIDEO, DOCUMENT, WORKSHOP
-  itemId     String   
-
-  createdAt  DateTime @default(now())
-
-  // 사용자는 각 상품을 한 번만 찜할 수 있도록 복합 유니크 제약조건 설정
   @@unique([userId, itemType, itemId])
 }
 
@@ -168,10 +146,10 @@ model Image {
 }
 
 enum WorkshopStatus {
-  RECRUITING // 모집중
-  CLOSED     // 모집마감
-  ONGOING    // 진행중
-  COMPLETED  // 진행완료
+  RECRUITING
+  CLOSED
+  ONGOING
+  COMPLETED
 }
 
 enum VideoCategory {
@@ -181,11 +159,11 @@ enum VideoCategory {
 }
 
 enum OrderStatus {
-  PENDING    // 결제 대기중
-  COMPLETED  // 결제 완료
-  FAILED     // 결제 실패
-  CANCELLED  // 주문 취소
-  REFUNDED   // 환불됨
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
 }
 
 enum ItemType {
