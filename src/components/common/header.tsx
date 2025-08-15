@@ -8,6 +8,30 @@ import UserDropdown from '@/components/user/user-drop-down';
 import LanguageDropdown from './language-drop-down';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+
+function NavItem({
+  href,
+  children
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  // 필요에 따라 startsWith 또는 정확 일치로 변경
+  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+
+  const base =
+    'w-fit h-fit px-6 py-4 flex items-center justify-center transition-colors';
+  const active = 'text-pace-orange-800';
+  const idle = 'text-pace-black-500 hover:text-pace-orange-800';
+
+  return (
+    <Link href={href} className={`${base} ${isActive ? active : idle}`}>
+      {children}
+    </Link>
+  );
+}
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -47,25 +71,10 @@ export function Header() {
         {/* 오른쪽: 메뉴 및 로그인 등 */}
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {/* 메뉴 */}
-          <nav className="flex flex-wrap items-center gap-[0px] text-pace-lg font-medium text-pace-black-500">
-            <Link
-              href="/courses"
-              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
-            >
-              온라인 강의
-            </Link>
-            <Link
-              href="/ebooks"
-              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
-            >
-              전자책
-            </Link>
-            <Link
-              href="/workshops"
-              className="w-fit h-fit px-6 py-4 flex items-center justify-center hover:text-pace-orange-800"
-            >
-              워크샵
-            </Link>
+          <nav className="flex flex-wrap items-center gap-[0px] text-pace-lg font-medium">
+            <NavItem href="/courses">온라인 강의</NavItem>
+            <NavItem href="/ebooks">전자책</NavItem>
+            <NavItem href="/workshops">워크샵</NavItem>
           </nav>
 
           <SignedOut>
@@ -81,8 +90,8 @@ export function Header() {
               className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
             >
               <div className="relative">
-                {/* TODO: 장바구니 DB 연결 */}
-                <div className="w-5 h-5 bg-pace-orange-600 text-white text-[10px] rounded-full flex items-center justify-center leading-none">
+                {/* TO-DO: 장바구니 DB 연결 */}
+                <div className="w-5 h-5 bg-pace-orange-600 text-white text-pace-2xs rounded-full flex items-center justify-center leading-none">
                   0
                 </div>
               </div>

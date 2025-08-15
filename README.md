@@ -103,6 +103,27 @@ To populate your local database with initial video data (and potentially other s
 npx prisma db seed
 ```
 
+### Naming Consistency (DB ↔ Code)
+
+The names in the database and the code are different. Use this mapping to avoid mistakes:
+
+| DB Enum (`ItemType`) | Code Name   |
+| -------------------- | ----------- |
+| `VIDEO`              | `courses`   |
+| `DOCUMENT`           | `ebooks`    |
+| `WORKSHOP`           | `workshops` |
+
+- In the DB (Prisma), use `VIDEO`, `DOCUMENT`, `WORKSHOP`.
+- In the code (front-end, routing, UI), use `courses`, `ebooks`, `workshops`.
+- Always convert between DB values and code names when sending/receiving data.
+
+### Internationalization (i18n) Rules
+
+- Use **English** for logic, filters, and DB values
+- Apply translations **only when displaying on the screen**
+- Use English values in APIs, queries, and conditions
+- Convert English values to the target language in the UI layer
+
 ## Git Workflow
 
 ### Branch Naming Convention
@@ -141,3 +162,10 @@ The project uses Husky for pre-commit hooks that run:
   "printWidth": 80
 }
 ```
+
+### Tailwind Color Usage
+
+Tailwind updates often, so some colors may change or be removed.
+
+- If a color is missing, check the docs and update it while working.
+- After all work is done, we’ll review and update colors in one go.
