@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
+import SignInModal from '@/components/auth/sign-in-modal';
 
 const MainReviewContainer = () => {
   const { userId } = useAuth();
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
   return (
     <div className="w-screen relative h-[360px] overflow-hidden bg-pace-orange-600">
@@ -36,13 +38,28 @@ const MainReviewContainer = () => {
             Boost your career with Pacemaker Today!
           </h2>
 
-          <Link href={userId ? '/courses' : '/sign-in'}>
-            <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
-              {userId ? '강의 보러가기' : '로그인 하고 강의 듣기'}
+          {userId ? (
+            <Link href="/courses">
+              <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
+                강의 보러가기
+              </button>
+            </Link>
+          ) : (
+            <button
+              onClick={() => setIsSignInModalOpen(true)}
+              className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition"
+            >
+              로그인 하고 강의 듣기
             </button>
-          </Link>
+          )}
         </div>
       </div>
+
+      {/* 로그인 모달 */}
+      <SignInModal
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
+      />
     </div>
   );
 };
