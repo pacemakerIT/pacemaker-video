@@ -83,7 +83,7 @@ export default function CardContainer({
       )}
       <div
         ref={containerRef}
-        className="flex gap-4 pb-4 w-[calc(100vw-360px)] overflow-hidden"
+        className="flex gap-6 pb-4 w-[calc(100vw-360px)] overflow-hidden min-w-[1200px]"
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none">
