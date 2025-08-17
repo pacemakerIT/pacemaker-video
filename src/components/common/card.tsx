@@ -4,7 +4,7 @@ import { ArrowRight, Heart } from 'lucide-react';
 import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { ItemType } from '@prisma/client';
 
 // CustomBadge를 쓰는 쪽에서 category 영문 → 한글 변환
@@ -23,6 +23,7 @@ const categoryMap: Record<string, string> = {
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
+  thumbnail?: string;
   imageUrl?: string;
 }
 
@@ -33,19 +34,18 @@ export default function Card({
   description,
   category,
   itemType,
-  imageUrl,
-  imageType = 'course',
-  thumbnail
+  thumbnail,
+  imageUrl
 }: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
   const imageSrc = thumbnail
     ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
-    : imageType === 'ebook'
-      ? '/img/ebook_image1.png'
-      : '/img/course_image1.png';
-  
+    : itemType === ItemType.VIDEO
+      ? '/img/course_image1.png'
+      : imageUrl || '/img/ebook-default.png';
+
   const getLinkPath = () => {
     switch (itemType) {
       case ItemType.VIDEO:
@@ -58,25 +58,6 @@ export default function Card({
         return '/'; // fallback
     }
   };
-
-  // 랜덤 이미지 선택
-  const ImageUrl = useMemo(() => {
-    if (itemType === ItemType.DOCUMENT) {
-      // DB에서 받은 이미지 URL 사용
-      return imageUrl ?? '/img/ebook-default.png'; // OnlineCards 타입에 imageUrl이 있어야 함
-    } else if (itemType === ItemType.VIDEO) {
-      // course는 랜덤 이미지
-      const images = [
-        '/img/course_image1.png',
-        '/img/course_image2.png',
-        '/img/course_image3.png'
-      ];
-      const randomIndex = Math.floor(Math.random() * images.length);
-      return images[randomIndex];
-    }
-    // TO-DO: 워크샵 등 다른 타입 처리
-    return '/img/default.png';
-  }, [itemType, imageUrl]);
 
   return (
     <div className="cursor-pointer">

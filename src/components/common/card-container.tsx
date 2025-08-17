@@ -62,8 +62,6 @@ export default function CardContainer({
             watchedVideos={card.watchedVideos}
             purchasedVideos={card.purchasedVideos}
             itemType={itemType}
-            imageUrl={card.imageUrl}
-            imageType={imageType}
             thumbnail={card.thumbnail}
           />
         ))}
@@ -101,8 +99,6 @@ export default function CardContainer({
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
               itemType={itemType}
-              imageUrl={card.imageUrl}
-              imageType={imageType}
               thumbnail={card.thumbnail}
             />
           </div>
