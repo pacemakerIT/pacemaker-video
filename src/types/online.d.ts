@@ -13,4 +13,5 @@ export interface OnlineCards {
   purchasedVideos: Array;
   imageUrl?: string;
   itemType?: ItemType;
+  thumbnail: string;
 }

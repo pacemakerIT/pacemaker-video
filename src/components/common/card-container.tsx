@@ -63,6 +63,8 @@ export default function CardContainer({
             purchasedVideos={card.purchasedVideos}
             itemType={itemType}
             imageUrl={card.imageUrl}
+            imageType={imageType}
+            thumbnail={card.thumbnail}
           />
         ))}
       </div>
@@ -100,6 +102,8 @@ export default function CardContainer({
               purchasedVideos={card.purchasedVideos}
               itemType={itemType}
               imageUrl={card.imageUrl}
+              imageType={imageType}
+              thumbnail={card.thumbnail}
             />
           </div>
         ))}

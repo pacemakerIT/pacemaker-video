@@ -33,10 +33,19 @@ export default function Card({
   description,
   category,
   itemType,
-  imageUrl
+  imageUrl,
+  imageType = 'course',
+  thumbnail
 }: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
+  // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
+  const imageSrc = thumbnail
+    ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
+    : imageType === 'ebook'
+      ? '/img/ebook_image1.png'
+      : '/img/course_image1.png';
+  
   const getLinkPath = () => {
     switch (itemType) {
       case ItemType.VIDEO:
@@ -94,7 +103,7 @@ export default function Card({
 
           <div className="w-[588px] h-[331px] relative overflow-hidden rounded-t-lg">
             <Image
-              src={ImageUrl}
+              src={imageSrc}
               fill
               className="object-cover object-center"
               alt="courses img"
