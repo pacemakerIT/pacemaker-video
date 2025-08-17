@@ -33,7 +33,7 @@ export default async function Home() {
           end: '#FF823660'
         }}
       />
-      <div className="w-[62.5%] items-center mx-auto justify-center flex flex-col gap-8">
+      <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex flex-col gap-8">
         <iframe
           width="100%"
           height="673"
