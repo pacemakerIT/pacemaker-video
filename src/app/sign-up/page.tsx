@@ -1,7 +1,7 @@
 'use client';
 
-import CustomSignUpWrapper from '@/components/auth/custom-sign-up-wrapper';
+import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 
 export default function SignUpPage() {
-  return <CustomSignUpWrapper isPage />;
+  return <CustomAuthWrapper isPage initialMode="signup" />;
 }

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import CustomSignIn from '@/components/auth/custom-sign-in';
 import { Dialog } from '@headlessui/react';
 import Image from 'next/image';
+import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 
 export default function SignInModalButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,10 +44,12 @@ export default function SignInModalButton() {
               flex flex-col gap-6
             "
           >
-            <Dialog.Title className="text-pace-xl font-bold text-center text-pace-black-500">
-              로그인
-            </Dialog.Title>
-            <CustomSignIn closeModal={() => setIsOpen(false)} />
+            {/* Wrapper로 교체 */}
+            <CustomAuthWrapper
+              isPage={false}
+              initialMode="signin" // 로그인 모드로 시작
+              closeModal={() => setIsOpen(false)}
+            />
           </Dialog.Panel>
         </div>
       </Dialog>

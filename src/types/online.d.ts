@@ -8,7 +8,7 @@ export interface OnlineCards {
   category: string;
   watchedVideos: Array;
   purchasedVideos: Array;
-  thumbnail: string;
+  thumbnail?: string;
   // id: string;
   // title: string;
   // price: number;
