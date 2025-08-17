@@ -35,7 +35,8 @@ export const Default: Story = {
     category: 'Intermediate',
     uploadDate: new Date(),
     watchedVideos: [],
-    purchasedVideos: []
+    purchasedVideos: [],
+    thumbnail: '/img/course_image1.png'
   },
   parameters: {
     design: {
