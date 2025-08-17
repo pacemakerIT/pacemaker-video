@@ -1,7 +1,7 @@
 'use client';
 
-import CustomSignInWrapper from '@/components/auth/custom-sign-in-wrapper';
+import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 
 export default function SignInPage() {
-  return <CustomSignInWrapper isPage />;
+  return <CustomAuthWrapper isPage initialMode="signin" />;
 }

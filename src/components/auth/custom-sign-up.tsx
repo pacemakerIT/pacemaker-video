@@ -4,15 +4,16 @@ import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import CustomSignInWrapper from '@/components/auth/custom-sign-in-wrapper';
+import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 import SignUpWithGoogleButton from '@/components/auth/sign-up-google-button';
 import { createPortal } from 'react-dom'; // 포털로 렌더링
 
 type Props = {
   closeModal?: () => void;
+  switchToSignIn?: () => void; // 추가
 };
 
-export default function CustomSignUp({ closeModal }: Props) {
+export default function CustomSignUp({ closeModal, switchToSignIn }: Props) {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
@@ -163,7 +164,11 @@ export default function CustomSignUp({ closeModal }: Props) {
           <p className="text-pace-base font-normal text-pace-stone-500 text-center">
             이미 회원이신가요?{' '}
             <span
-              onClick={() => setIsSignInOpen(true)}
+              onClick={() => {
+                // eslint-disable-next-line no-console
+                console.log('switchToSignIn clicked');
+                switchToSignIn?.();
+              }}
               className="text-pace-gray-500 underline hover:text-pace-orange-800 cursor-pointer"
             >
               로그인 하기
@@ -181,7 +186,7 @@ export default function CustomSignUp({ closeModal }: Props) {
                   className="w-full max-w-[480px] bg-white rounded-lg px-6 py-10 sm:px-10 sm:py-16   md:px-[40px] md:py-[80px] flex flex-col gap-6"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <CustomSignInWrapper
+                  <CustomAuthWrapper
                     isPage={false}
                     closeModal={() => setIsSignInOpen(false)}
                   />
