@@ -141,12 +141,12 @@ export default function WorkshopCardList({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <span
-                      className={`h-[38px] w-[85px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
+                      className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
                     >
                       {w.status === 'RECRUITING'
                         ? '모집중'
                         : w.status === 'ONGOING'
-                          ? '진행중'
+                          ? '모집완료'
                           : '진행완료'}
                     </span>
                     {/* TO-DO: category 필드 생기면 대체 */}
@@ -182,9 +182,12 @@ export default function WorkshopCardList({
 
                 {/* 일정 / 장소 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
-                  일정 | {formatDateTime(w.startDate)} &nbsp;&nbsp; 강사 |{' '}
-                  {w.instructor?.name ?? '미정'} &nbsp;&nbsp; 장소 |{' '}
-                  {w.locationOrUrl ?? 'TBD'}
+                  일정 | {formatDateTime(w.startDate)}
+                  {w.instructor?.name &&
+                    w.instructor?.name.toUpperCase() != 'UNKNOWN' && (
+                      <>&nbsp;&nbsp; 강사 | {w.instructor.name}</>
+                    )}
+                  &nbsp;&nbsp; 장소 | {w.locationOrUrl ?? 'TBD'}
                 </p>
 
                 {/* 설명 */}
@@ -208,60 +211,65 @@ export default function WorkshopCardList({
                   <div className="mt-2 bg-pace-ivory-500 text-sm text-pace-stone-600 p-6 rounded-b-xl">
                     <div className="flex flex-col md:flex-row justify-between gap-6">
                       {/* 강사 정보 */}
-                      <div className="flex-1 space-y-1">
-                        <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                          강사
-                        </h4>
-                        <p className="font-bold text-pace-base text-pace-black-500 mb-2">
-                          {w.instructor?.name}
-                        </p>
-                        <p>
-                          Employer Strategy & Engagement Specialist at
-                          University of Toronto, Career Coach
-                        </p>
-                        {/* TO-DO: instructor.title, organization 필드 필요 */}
-                      </div>
+                      {w.instructor && (
+                        <div className="flex-1 space-y-1">
+                          <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
+                            강사
+                          </h4>
+                          <p className="font-bold text-pace-base text-pace-black-500 mb-2">
+                            {w.instructor?.name}
+                          </p>
+                          <p>
+                            Employer Strategy & Engagement Specialist at
+                            University of Toronto, Career Coach
+                          </p>
+                          {/* TO-DO: instructor.title, organization 필드 필요 */}
+                        </div>
+                      )}
 
                       {/* 커리큘럼 */}
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                          커리큘럼
-                        </h4>
-                        <ul className="space-y-1">
-                          {[
-                            'Session 01',
-                            'Session 02',
-                            'Session 03',
-                            'Session 04'
-                          ].map((s, i) => (
-                            <li
-                              key={i}
-                              className="flex justify-between items-center"
-                            >
-                              <div className="flex items-center gap-4">
-                                <span className="text-pace-gray-700 text-pace-sm">
-                                  {s}
-                                </span>
-                                {/* TO-DO: Start 버튼 클릭 시 이동 */}
+                      {/* TO-DO: instrutor가 아닌 커리큘럼 관련 컬럼으로 변경 필요 */}
+                      {w.instructor && (
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
+                            커리큘럼
+                          </h4>
+                          <ul className="space-y-1">
+                            {[
+                              'Session 01',
+                              'Session 02',
+                              'Session 03',
+                              'Session 04'
+                            ].map((s, i) => (
+                              <li
+                                key={i}
+                                className="flex justify-between items-center"
+                              >
+                                <div className="flex items-center gap-4">
+                                  <span className="text-pace-gray-700 text-pace-sm">
+                                    {s}
+                                  </span>
+                                  {/* TO-DO: Start 버튼 클릭 시 이동 */}
+                                  <button className="text-pace-stone-500 text-pace-sm">
+                                    Start
+                                  </button>
+                                </div>
+                                {/* TO-DO: 재생 버튼 클릭 시 이동 */}
                                 <button className="text-pace-stone-500 text-pace-sm">
-                                  Start
+                                  <Image
+                                    src="/icons/video-circle.svg"
+                                    alt="재생"
+                                    width={16}
+                                    height={16}
+                                    className="cursor-pointer mr-2"
+                                  />
                                 </button>
-                              </div>
-                              {/* TO-DO: 재생 버튼 클릭 시 이동 */}
-                              <button className="text-pace-stone-500 text-pace-sm">
-                                <Image
-                                  src="/icons/video-circle.svg"
-                                  alt="재생"
-                                  width={16}
-                                  height={16}
-                                  className="cursor-pointer mr-2"
-                                />
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                        {/* TO-DO: 실제 커리큘럼 리스트 연결 */}
-                      </div>
+                              </li>
+                            ))}
+                          </ul>
+                          {/* TO-DO: 실제 커리큘럼 리스트 연결 */}
+                        </div>
+                      )}
                     </div>
 
                     {/* 강의 소개 멘트 */}

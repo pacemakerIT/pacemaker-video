@@ -265,7 +265,10 @@ export default function WorkshopCalendar({
           <div
             className={`rounded-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
           >
-            <p className="text-pace-sm pb-2">강사 {openedEvent.speaker}</p>
+            {openedEvent.speaker &&
+              openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
+                <p className="text-pace-sm pb-2">강사 {openedEvent.speaker}</p>
+              )}
             <p className="text-pace-sm pb-2">참가비 {openedEvent.fee}</p>
             <Button
               onClick={() => {

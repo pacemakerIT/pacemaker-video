@@ -8,11 +8,5 @@ export interface OnlineCards {
   category: string;
   watchedVideos: Array;
   purchasedVideos: Array;
-  thumbnail: string;
-  // id: string;
-  // title: string;
-  // price: number;
-  // description: string;
-  // image: StaticImageData;
-  // category: 'Interview' | 'Resume' | 'Networking' | undefined;
+  thumbnail?: string;
 }
