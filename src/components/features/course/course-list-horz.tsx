@@ -6,6 +6,7 @@ import CardContainer from '../../common/card-container';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ItemType } from '@prisma/client';
 
 export default function VideoList() {
   const [videos, setVideos] = useState<OnlineCards[]>([]);
@@ -60,36 +61,15 @@ export default function VideoList() {
               </Link>
             </div>
           </div>
-          {
-            videos.length === 0 ? (
-              <p>📭 등록된 비디오가 없습니다.</p>
-            ) : (
-              <CardContainer
-                layout={'horizontal'}
-                cards={videos}
-                imageType="course"
-              />
-            )
-            // <ul className="space-y-4">
-            //   {videos.map((video, index) => (
-            //     <div
-            //       key={index}
-            //       className="p-4 border rounded-lg shadow relative w-[225px] h-[225px]"
-            //     >
-            //       <Link href={goToVideoDetails(video.videoId)}>
-            //         <Image
-            //           src="/img/resume_lecture.jpeg"
-            //           alt=""
-            //           fill
-            //           className="rounded"
-            //         />
-            //         <h2 className="mt-2">{video.title}</h2>
-            //       </Link>
-            //     </div>
-            //   ))}
-            // </ul>
-            // )
-          }
+          {videos.length === 0 ? (
+            <p>📭 등록된 비디오가 없습니다.</p>
+          ) : (
+            <CardContainer
+              layout={'horizontal'}
+              cards={videos}
+              itemType={ItemType.VIDEO}
+            />
+          )}
         </>
       )}
     </>

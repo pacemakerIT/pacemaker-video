@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import Image from 'next/image';
-import ImageOverlayCardContainer from './image-overlay-card-container';
+import ImageOverlayCardContainer from '../../image-overlay-card-container';
 
 export default function WorkshopList() {
   const [workshops, setWorkshops] = useState<OnlineCards[]>([]);
@@ -46,7 +46,7 @@ export default function WorkshopList() {
                 {'페이스메이커 워크샵'}
               </h3>
               <Link
-                href="/courses"
+                href="/workshops"
                 className="w-fit flex items-center text-base text-pace-stone-500 font-normal gap-1"
               >
                 <span>{'워크샵 전체 보기'}</span>
@@ -60,35 +60,14 @@ export default function WorkshopList() {
               </Link>
             </div>
           </div>
-          {
-            workshops.length === 0 ? (
-              <p>📭 등록된 비디오가 없습니다.</p>
-            ) : (
-              <ImageOverlayCardContainer
-                layout={'horizontal'}
-                cards={workshops}
-              />
-            )
-            // <ul className="space-y-4">
-            //   {videos.map((video, index) => (
-            //     <div
-            //       key={index}
-            //       className="p-4 border rounded-lg shadow relative w-[225px] h-[225px]"
-            //     >
-            //       <Link href={goToVideoDetails(video.videoId)}>
-            //         <Image
-            //           src="/img/resume_lecture.jpeg"
-            //           alt=""
-            //           fill
-            //           className="rounded"
-            //         />
-            //         <h2 className="mt-2">{video.title}</h2>
-            //       </Link>
-            //     </div>
-            //   ))}
-            // </ul>
-            // )
-          }
+          {workshops.length === 0 ? (
+            <p>📭 등록된 비디오가 없습니다.</p>
+          ) : (
+            <ImageOverlayCardContainer
+              layout={'horizontal'}
+              cards={workshops}
+            />
+          )}
         </>
       )}
     </>

@@ -5,33 +5,65 @@ import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { useState } from 'react';
+import { ItemType } from '@prisma/client';
+
+// CustomBadge를 쓰는 쪽에서 category 영문 → 한글 변환
+// (영문 페이지는 매핑 교체로 재사용 가능, CustomBadge 수정 불필요)
+const categoryMap: Record<string, string> = {
+  Marketing: '마케팅',
+  Design: '디자인',
+  Public: '북미 공무원',
+  IT: 'IT',
+  Accounting: '재무회계',
+  Service: '서비스',
+  Interview: '인터뷰',
+  Resume: '이력서',
+  Networking: '네트워킹'
+};
 
 interface CardProps extends OnlineCards {
-  imageType?: 'ebook' | 'course';
+  itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
+  thumbnail?: string;
+  imageUrl?: string;
 }
 
 export default function Card({
-  videoId,
+  itemId,
   title,
   price,
   description,
   category,
-  imageType = 'course',
-  thumbnail
+  itemType,
+  thumbnail,
+  imageUrl
 }: CardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
   const imageSrc = thumbnail
     ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
-    : imageType === 'ebook'
-      ? '/img/ebook_image1.png'
-      : '/img/course_image1.png';
+    : itemType === ItemType.VIDEO
+      ? '/img/course_image1.png'
+      : imageUrl || '/img/ebook-default.png';
+
+  const getLinkPath = () => {
+    switch (itemType) {
+      case ItemType.VIDEO:
+        return `/courses/${itemId}`;
+      case ItemType.DOCUMENT:
+        return `/ebooks/${itemId}`;
+      case ItemType.WORKSHOP:
+        return `/workshops/${itemId}`;
+      default:
+        return '/'; // fallback
+    }
+  };
 
   return (
     <div className="cursor-pointer">
-      <Link href={`/courses/${videoId}`}>
-        <div className="w-[588px] bg-white rounded-lg shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative">
+      <Link href={getLinkPath()}>
+        <div className="w-[588px] bg-white rounded-lg shadow-sm border-pace-gray-100 border hover:shadow-xl dark:bg-gray-950 relative">
+          {/* TO-DO: 찜버튼 온라인, 전자책, 워크샵 DB 마이그 후 처리 */}
           <button
             role="button"
             aria-label="like"
@@ -68,7 +100,7 @@ export default function Card({
                   variant={category}
                   className="w-fit flex justify-center items-center py-2 px-3"
                 >
-                  {category}
+                  {categoryMap[category] || category}
                 </CustomBadge>
               )}
               <div className="w-full flex justify-between items-center">
@@ -81,7 +113,10 @@ export default function Card({
             <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
               {description}
             </p>
-            <Button variant="link" className="text-[#ED642D] p-0 h-5">
+            <Button
+              variant="link"
+              className="!text-pace-lg text-pace-orange-650 p-0 h-5"
+            >
               {`자세히 보기`}
               <ArrowRight width={20} height={20} />
             </Button>
