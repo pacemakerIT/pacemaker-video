@@ -56,7 +56,7 @@ export default function ImageOverlayCardContainer({
               price={card.price}
               description={card.description}
               category={card.category}
-              videoId={card.videoId}
+              itemId={card.itemId}
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
@@ -91,7 +91,7 @@ export default function ImageOverlayCardContainer({
               price={card.price}
               description={card.description}
               category={card.category}
-              videoId={card.videoId}
+              itemId={card.itemId}
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}

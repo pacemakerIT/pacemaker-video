@@ -5,6 +5,7 @@ import CardContainer from '@/components/common/card-container';
 import CourseHeader from '@/components/features/course/course-header';
 import { OnlineCards } from '@/types/online';
 import { toast } from 'sonner';
+import { ItemType } from '@prisma/client';
 
 export default function CourseList() {
   const category = useMemo(
@@ -56,7 +57,11 @@ export default function CourseList() {
             sortBy={sortBy}
             setSortBy={setSortBy}
           />
-          <CardContainer layout={'grid'} cards={currentCards} />
+          <CardContainer
+            layout={'grid'}
+            cards={currentCards}
+            itemType={ItemType.VIDEO}
+          />
         </>
       )}
     </div>

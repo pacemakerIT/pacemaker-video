@@ -4,17 +4,18 @@ import Card from './card';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
+import { ItemType } from '@prisma/client';
 
 interface CardContainerProps {
   layout: 'grid' | 'horizontal';
   cards: OnlineCards[];
-  imageType?: 'ebook' | 'course';
+  itemType?: ItemType;
 }
 
 export default function CardContainer({
   layout,
   cards,
-  imageType = 'course'
+  itemType
 }: CardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -56,11 +57,11 @@ export default function CardContainer({
             price={card.price}
             description={card.description}
             category={card.category}
-            videoId={card.videoId}
+            itemId={card.itemId}
             uploadDate={card.uploadDate}
             watchedVideos={card.watchedVideos}
             purchasedVideos={card.purchasedVideos}
-            imageType={imageType}
+            itemType={itemType}
             thumbnail={card.thumbnail}
           />
         ))}
@@ -93,11 +94,11 @@ export default function CardContainer({
               price={card.price}
               description={card.description}
               category={card.category}
-              videoId={card.videoId}
+              itemId={card.itemId}
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
-              imageType={imageType}
+              itemType={itemType}
               thumbnail={card.thumbnail}
             />
           </div>

@@ -4,10 +4,9 @@ import { ArrowRight, Heart } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
-// import resume from '../../public/img/resume_lecture.jpeg';
 
 export default function ImageOverlayCard({
-  videoId,
+  itemId,
   title,
   category
 }: OnlineCards) {
@@ -27,8 +26,8 @@ export default function ImageOverlayCard({
 
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
-      <Link href={`/courses/${videoId}`}>
-        <div className="w-96 bg-white rounded-lg hover:shadow-xl dark:bg-gray-950 relative overflow-hidden group">
+      <Link href={`/courses/${itemId}`}>
+        <div className="w-[354px] bg-white rounded-lg hover:shadow-xl dark:bg-gray-950 relative overflow-hidden group">
           <button
             role="button"
             aria-label="like"
