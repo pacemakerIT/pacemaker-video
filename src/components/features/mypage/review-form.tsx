@@ -105,20 +105,6 @@ export default function ReviewForm({ progress }: Props) {
             <DialogTitle className="text-[28px] font-bold">
               강의평 남기기
             </DialogTitle>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setOpen(false);
-              }}
-            >
-              <Image
-                src="/icons/close_btn.svg"
-                alt="close"
-                width={40}
-                height={40}
-              />
-            </button>
           </DialogHeader>
 
           <div className="text-center">
