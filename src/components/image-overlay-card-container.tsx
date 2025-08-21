@@ -56,10 +56,11 @@ export default function ImageOverlayCardContainer({
               price={card.price}
               description={card.description}
               category={card.category}
-              videoId={card.videoId}
+              itemId={card.itemId}
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
+              thumbnail={card.thumbnail}
             />
           </div>
         ))}
@@ -80,7 +81,7 @@ export default function ImageOverlayCardContainer({
       )}
       <div
         ref={containerRef}
-        className="flex gap-4 pb-4 w-[calc(100vw-360px)] overflow-hidden"
+        className="flex gap-6 pb-4 w-[calc(100vw-360px)] overflow-hidden min-w-[1200px]"
       >
         {cards.map((card) => (
           <div key={card.id} className="flex-none">
@@ -90,10 +91,11 @@ export default function ImageOverlayCardContainer({
               price={card.price}
               description={card.description}
               category={card.category}
-              videoId={card.videoId}
+              itemId={card.itemId}
               uploadDate={card.uploadDate}
               watchedVideos={card.watchedVideos}
               purchasedVideos={card.purchasedVideos}
+              thumbnail={card.thumbnail}
             />
           </div>
         ))}

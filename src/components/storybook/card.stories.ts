@@ -11,7 +11,7 @@ const meta = {
     title: { control: 'text', description: '카드의 제목' },
     description: { control: 'text', description: '카드에 표시될 설명' },
     price: { control: 'number', description: '가격 정보' },
-    videoId: { control: 'text', description: '연결될 비디오의 ID' },
+    itemId: { control: 'text', description: '연결될 비디오의 ID' },
     category: {
       control: { type: 'select' },
       options: ['Beginner', 'Intermediate', 'Advanced', 'All Levels'], // 예시 카테고리
@@ -27,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     id: 'default-id',
-    videoId: 'default-video-id',
+    itemId: 'default-video-id',
     title: '리액트 마스터클래스',
     price: 99,
     description:
@@ -35,7 +35,8 @@ export const Default: Story = {
     category: 'Intermediate',
     uploadDate: new Date(),
     watchedVideos: [],
-    purchasedVideos: []
+    purchasedVideos: [],
+    thumbnail: '/img/course_image1.png'
   },
   parameters: {
     design: {

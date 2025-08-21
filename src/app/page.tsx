@@ -1,9 +1,9 @@
-import VideoList from '@/components/features/course/video-list';
+import VideoList from '@/components/features/course/course-list-horz';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
-import WorkshopList from '@/components/workshop-card';
+import WorkshopList from '@/components/features/workshops/workshop-list-horz';
 import MainReviewContainer from '@/components/main-review-container';
-import EbookList from '@/components/features/ebook/ebook-list';
+import EbookList from '@/components/features/ebook/ebook-list-horz';
 
 export default async function Home() {
   return (
@@ -33,7 +33,7 @@ export default async function Home() {
           end: '#FF823660'
         }}
       />
-      <div className="w-[62.5%] items-center mx-auto justify-center flex flex-col gap-8">
+      <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex flex-col gap-8">
         <iframe
           width="100%"
           height="673"

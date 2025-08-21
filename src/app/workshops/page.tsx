@@ -20,9 +20,11 @@ export default function Page() {
   useEffect(() => {
     const fetchWorkshops = async () => {
       try {
-        const res = await fetch('/api/workshops?range=6months');
+        // TO-DO: DB 완료 후 API 연결필요
+        // mock 데이터 불러오기 (public/json/workshop.json)
+        const res = await fetch('/json/workshops.json');
         const data = await res.json();
-        setWorkshops(data.workshops);
+        setWorkshops(data); // data 자체가 배열이면 그대로 세팅
       } catch (err) {
         toast('워크숍 불러오기 실패:' + err);
       }

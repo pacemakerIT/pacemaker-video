@@ -1,0 +1,203 @@
+[
+  {
+    "id": "1",
+    "title": "UX Design workshop",
+    "description": "꿈을 현실로 만드는 이야기",
+    "subTitle": "UX 기본 이해와 실습",
+    "startDate": "2025-07-10T19:00:00-04:00",
+    "endDate": "2025-07-10T21:00:00-04:00",
+    "price": 20,
+    "locationOrUrl": "North York centre",
+    "status": "ONGOING",
+    "instructor": {
+      "name": "구수진",
+      "title": "Career Coach",
+      "organization": "University of Toronto",
+      "bio": "Employer Strategy & Engagement Specialist at University of Toronto, Career Coach"
+    },
+    "sessions": ["Session 01", "Session 02", "Session 03"]
+  },
+  {
+    "id": "2",
+    "title": "React 실전 워크숍",
+    "description": "실무 중심의 리액트 프로젝트 실습",
+    "subTitle": "React + Hooks + 상태관리",
+    "startDate": "2025-06-15T14:00:00-04:00",
+    "endDate": "2025-06-15T17:00:00-04:00",
+    "price": 30,
+    "locationOrUrl": "Zoom",
+    "status": "RECRUITING",
+    "instructor": {
+      "name": "구수진",
+      "title": "Frontend Mentor",
+      "organization": "Toronto Coding Bootcamp",
+      "bio": "10년차 프론트엔드 개발자, 스타트업 및 교육 경력 다수"
+    },
+    "sessions": ["Intro & Setup", "Component Patterns", "State Management"]
+  },
+  {
+    "id": "3",
+    "title": "UX 포트폴리오 리뷰 세션",
+    "description": "1:1 피드백으로 UX 포트폴리오 업그레이드",
+    "subTitle": "UX 전문가 포트폴리오 첨삭",
+    "startDate": "2025-06-28T19:00:00-04:00",
+    "endDate": "2025-06-28T21:00:00-04:00",
+    "price": 15,
+    "locationOrUrl": "Google Meet",
+    "status": "CLOSED",
+    "instructor": {
+      "name": "구수진",
+      "title": "UX Designer",
+      "organization": "Design Agency",
+      "bio": "다양한 UX 프로젝트 경험과 멘토링 경험 보유"
+    },
+    "sessions": ["Portfolio Review", "Feedback & Q&A"]
+  },
+  {
+    "id": "4",
+    "title": "프론트엔드 취업 부트캠프",
+    "description": "React, TypeScript 집중 실습",
+    "subTitle": "취업 준비용 집중 과정",
+    "startDate": "2025-07-12T13:00:00-04:00",
+    "endDate": "2025-07-12T17:00:00-04:00",
+    "price": 25,
+    "locationOrUrl": "North York Centre",
+    "status": "ONGOING",
+    "instructor": {
+      "name": "구수진",
+      "title": "Senior Frontend Engineer",
+      "organization": "Tech Corp",
+      "bio": "대기업 프론트엔드 팀 리더, 다양한 강의 경험 보유"
+    },
+    "sessions": ["React Basics", "TS Integration", "Project Practice"]
+  },
+  {
+    "id": "5",
+    "title": "개발자 커리어 전략 세미나",
+    "description": "시니어 개발자의 이직 전략 공유",
+    "subTitle": "경력 개발 및 커리어 관리",
+    "startDate": "2025-07-22T18:30:00-04:00",
+    "endDate": "2025-07-22T20:00:00-04:00",
+    "price": 0,
+    "locationOrUrl": "온라인",
+    "status": "RECRUITING",
+    "instructor": {
+      "name": "구수진",
+      "title": "Tech Lead",
+      "organization": "Fintech Startup",
+      "bio": "여러 스타트업을 거친 시니어 개발자의 생생한 커리어 전략"
+    },
+    "sessions": ["Resume Strategy", "Networking", "Interview Prep"]
+  },
+  {
+    "id": "6",
+    "title": "백엔드 아키텍처 기초",
+    "description": "도메인 중심 설계와 시스템 구성의 이해",
+    "subTitle": "DDD와 시스템 설계 기초",
+    "startDate": "2025-08-03T10:00:00-04:00",
+    "endDate": "2025-08-03T13:00:00-04:00",
+    "price": 35,
+    "locationOrUrl": "KakaoTalk Live",
+    "status": "COMPLETED",
+    "instructor": {
+      "name": "구수진",
+      "title": "Backend Architect",
+      "organization": "Enterprise Solutions",
+      "bio": "대규모 백엔드 시스템 설계 경험 다수"
+    },
+    "sessions": ["Intro to DDD", "Service Design", "System Integration"]
+  },
+  {
+    "id": "7",
+    "title": "디자인 시스템과 컴포넌트 관리",
+    "description": "Figma + Storybook 실습",
+    "subTitle": "디자인 시스템 구축과 관리",
+    "startDate": "2025-08-10T15:00:00-04:00",
+    "endDate": "2025-08-10T17:00:00-04:00",
+    "price": 18,
+    "locationOrUrl": "Zoom",
+    "status": "RECRUITING",
+    "instructor": {
+      "name": "구수진",
+      "title": "Product Designer",
+      "organization": "DesignOps",
+      "bio": "디자인 시스템 구축 경험과 협업 툴 전문성 보유"
+    },
+    "sessions": ["Figma Basics", "Component Design", "Storybook Integration"]
+  },
+  {
+    "id": "8",
+    "title": "면접에서 실력을 보여주는 방법",
+    "description": "라이브 코딩 면접 전략 및 모의 면접",
+    "subTitle": "개발자 인터뷰 완전정복",
+    "startDate": "2025-08-18T16:00:00-04:00",
+    "endDate": "2025-08-18T18:00:00-04:00",
+    "price": 20,
+    "locationOrUrl": "Discord",
+    "status": "CLOSED",
+    "instructor": {
+      "name": "구수진",
+      "title": "Interview Coach",
+      "organization": "Career Lab",
+      "bio": "수백 건의 개발자 인터뷰 경험을 바탕으로 한 실전 전략 제공"
+    },
+    "sessions": ["Live Coding", "Problem Solving", "Mock Interview"]
+  },
+  {
+    "id": "9",
+    "title": "자기소개서 클리닉 워크숍",
+    "description": "글쓰기 코치와 함께하는 1:1 첨삭",
+    "subTitle": "자기소개서 맞춤 피드백",
+    "startDate": "2025-06-21T11:00:00-04:00",
+    "endDate": "2025-06-21T12:30:00-04:00",
+    "price": 10,
+    "locationOrUrl": "Toronto Public Library",
+    "status": "COMPLETED",
+    "instructor": {
+      "name": "구수진",
+      "title": "Writing Coach",
+      "organization": "Career Writing Center",
+      "bio": "취업 준비생 대상 글쓰기 첨삭 다수 진행"
+    },
+    "sessions": ["Intro to Self-PR", "Draft Review", "Final Feedback"]
+  },
+  {
+    "id": "10",
+    "title": "AI 트렌드 세미나",
+    "description": "최신 AI 동향과 실무 적용 사례를 공유합니다.",
+    "subTitle": "AI 최신 기술 이해",
+    "startDate": "2025-09-05T19:00:00-04:00",
+    "endDate": "2025-09-05T21:00:00-04:00",
+    "price": 0,
+    "locationOrUrl": "Zoom",
+    "status": "RECRUITING",
+    "instructor": null,
+    "sessions": []
+  },
+  {
+    "id": "11",
+    "title": "스타트업 네트워킹 데이",
+    "description": "다양한 스타트업 종사자와 네트워킹 기회 제공",
+    "subTitle": "현업자와 소통의 장",
+    "startDate": "2025-09-12T18:30:00-04:00",
+    "endDate": "2025-09-12T20:30:00-04:00",
+    "price": 5,
+    "locationOrUrl": "Toronto Tech Hub",
+    "status": "ONGOING",
+    "instructor": null,
+    "sessions": []
+  },
+  {
+    "id": "12",
+    "title": "클라우드 서비스 입문",
+    "description": "AWS와 GCP를 중심으로 클라우드 기초 개념을 학습합니다.",
+    "subTitle": "클라우드 기본기",
+    "startDate": "2025-09-20T14:00:00-04:00",
+    "endDate": "2025-09-20T16:00:00-04:00",
+    "price": 15,
+    "locationOrUrl": "Google Meet",
+    "status": "RECRUITING",
+    "instructor": null,
+    "sessions": []
+  }
+]
