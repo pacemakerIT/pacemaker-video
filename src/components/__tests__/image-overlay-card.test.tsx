@@ -2,14 +2,15 @@ import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ImageOverlayCard from '../image-overlay-card';
 import { OnlineCards } from '@/types/online';
+import { ItemType } from '@prisma/client';
 
 const mockCard: OnlineCards = {
   id: '1',
   title: 'Card 1',
   price: 0,
   description: '',
-  category: 'WORKSHOP',
-  videoId: 'video1',
+  category: ItemType.WORKSHOP,
+  itemId: 'video1',
   uploadDate: new Date(),
   watchedVideos: [],
   purchasedVideos: []

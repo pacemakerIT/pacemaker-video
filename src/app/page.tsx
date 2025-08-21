@@ -1,9 +1,9 @@
-import VideoList from '@/components/features/course/video-list';
+import VideoList from '@/components/features/course/course-list-horz';
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
-import WorkshopList from '@/components/workshop-card';
+import WorkshopList from '@/components/features/workshops/workshop-list-horz';
 import MainReviewContainer from '@/components/main-review-container';
-import EbookList from '@/components/features/ebook/ebook-list';
+import EbookList from '@/components/features/ebook/ebook-list-horz';
 
 export default async function Home() {
   return (
