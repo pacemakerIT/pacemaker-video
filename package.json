@@ -21,7 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.864.0",
     "@aws-sdk/s3-request-presigner": "^3.844.0",
-    "@clerk/backend": "^2.9.1",
+    "@clerk/backend": "^2.9.3",
     "@clerk/nextjs": "^6.28.1",
     "@headlessui/react": "^2.2.7",
     "@hookform/resolvers": "^5.0.1",
@@ -79,7 +79,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.32.0",
-    "eslint-config-next": "^15.4.6",
+    "eslint-config-next": "^15.5.0",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-storybook": "^9.0.17",
     "husky": "^9.1.7",
