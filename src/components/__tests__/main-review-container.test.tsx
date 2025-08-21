@@ -16,7 +16,7 @@ vi.mock('next/image', () => ({
   __esModule: true,
   default: (props: Record<string, unknown>) => {
     // priority 속성 제거
-    const { priority, ...restProps } = props;
+    const { ...restProps } = props;
     // eslint-disable-next-line @next/next/no-img-element
     return <img alt="" {...restProps} />;
   }

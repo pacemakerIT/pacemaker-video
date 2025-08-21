@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { toast } from 'sonner';
+import workshops from '@/../public/json/workshops.json'; // mock JSON import
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,22 +13,17 @@ export async function GET(req: Request) {
   try {
     // 1. 단건 조회
     if (id) {
-      const workshop = await prisma.workshop.findUnique({
-        where: { id },
-        include: { instructor: true }
-      });
-
+      const workshop = workshops.find((w) => w.id === id);
       if (!workshop) {
         return NextResponse.json(
           { error: 'Workshop not found' },
           { status: 404 }
         );
       }
-
       return NextResponse.json(workshop);
     }
 
-    // 2. 현재 기준 or center 기준 앞뒤 3개월 (총 6개월) 조회
+    // 2. 6개월 조회 (center 기준 앞뒤 3개월)
     if (range === '6months') {
       const centerDate = center ? new Date(center) : new Date();
       if (isNaN(centerDate.getTime())) {
@@ -53,21 +47,14 @@ export async function GET(req: Request) {
         59
       );
 
-      const workshops = await prisma.workshop.findMany({
-        where: {
-          startDate: {
-            gte: startDate,
-            lte: endDate
-          }
-        },
-        include: { instructor: true }
+      const filtered = workshops.filter((w) => {
+        const d = new Date(w.startDate);
+        return d >= startDate && d <= endDate;
       });
 
-      const count = workshops.length;
-
       return NextResponse.json({
-        workshops,
-        count
+        workshops: filtered,
+        count: filtered.length
       });
     }
 
@@ -76,32 +63,25 @@ export async function GET(req: Request) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
 
-      const workshops = await prisma.workshop.findMany({
-        where: {
-          startDate: {
-            gte: startDate,
-            lte: endDate
-          }
-        },
-        include: { instructor: true }
+      const filtered = workshops.filter((w) => {
+        const d = new Date(w.startDate);
+        return d >= startDate && d <= endDate;
       });
 
-      const count = workshops.length;
-
       return NextResponse.json({
-        workshops,
-        count
+        workshops: filtered,
+        count: filtered.length
       });
     }
 
     // 4. 전체 조회 (fallback)
-    const workshops = await prisma.workshop.findMany({
-      include: { instructor: true }
+    return NextResponse.json({
+      workshops,
+      count: workshops.length
     });
-
-    return NextResponse.json(workshops);
   } catch (error) {
-    toast(`[API ERROR] /api/workshops: ${error}`);
+    // eslint-disable-next-line no-console
+    console.error(`[API ERROR] /api/workshops:`, error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }
