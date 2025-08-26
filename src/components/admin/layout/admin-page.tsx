@@ -3,10 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
-import { Toaster } from '@/components/ui/sonner';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/ui/app-sidebar';
 import { useUserContext } from '@/app/context/user-context';
+import AdminSidebar from '@/components/admin/layout/admin-sidebar';
 
 export default function AdminPage({ children }: { children: React.ReactNode }) {
   const { user, isLoading, error } = useUserContext();
@@ -15,12 +13,10 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user && !isLoading) {
       toast('Please sign in');
-      return router.push('/');
-    }
-
-    if (user && user.roleId !== 'ADMIN') {
+      router.push('/');
+    } else if (user && user.roleId !== 'ADMIN') {
       toast('Access denied');
-      return router.push('/');
+      router.push('/');
     }
   }, [user, isLoading, router]);
 
@@ -29,13 +25,9 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
   if (!user || user.roleId !== 'ADMIN') return null;
 
   return (
-    <>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarTrigger />
-        <main className="container flex">{children}</main>
-        <Toaster />
-      </SidebarProvider>
-    </>
+    <div className="w-screen grid grid-cols-[320px_1fr]">
+      <AdminSidebar />
+      <main>{children}</main>
+    </div>
   );
 }
