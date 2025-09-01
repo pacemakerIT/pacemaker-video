@@ -90,9 +90,7 @@ describe('CardContainer', () => {
   });
 
   it('handles navigation button clicks correctly', () => {
-    render(
-      <CardContainer layout="horizontal" cards={mockCards} />
-    );
+    render(<CardContainer layout="horizontal" cards={mockCards} />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
 
@@ -102,7 +100,7 @@ describe('CardContainer', () => {
     expect(
       screen.getByRole('button', { name: /previous/i })
     ).toBeInTheDocument();
-    
+
     // scrollTo가 호출되었는지 확인
     expect(Element.prototype.scrollTo).toHaveBeenCalled();
   });
