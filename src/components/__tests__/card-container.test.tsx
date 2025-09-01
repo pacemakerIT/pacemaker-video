@@ -1,8 +1,13 @@
 // src/components/__tests__/CardContainer.test.tsx
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OnlineCards } from '@/types/online';
 import CardContainer from '../common/card-container';
+
+// scrollTo 메서드를 전역적으로 모킹
+beforeEach(() => {
+  Element.prototype.scrollTo = vi.fn();
+});
 
 // Mock the Card component
 vi.mock('../common/card', () => ({
@@ -63,7 +68,7 @@ describe('CardContainer', () => {
     // 다음 버튼이 보여야 함 (ChevronRight 아이콘을 포함한 버튼)
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('md:right-[calc(100%-1210px)]');
+    expect(nextButton).toHaveClass('right-[360px]');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
@@ -85,16 +90,11 @@ describe('CardContainer', () => {
   });
 
   it('handles navigation button clicks correctly', () => {
-    const { container } = render(
+    render(
       <CardContainer layout="horizontal" cards={mockCards} />
     );
 
     const nextButton = screen.getByRole('button', { name: /next/i });
-    const scrollContainer = container.querySelector('.flex.overflow-hidden');
-
-    if (scrollContainer) {
-      scrollContainer.scrollTo = vi.fn();
-    }
 
     fireEvent.click(nextButton);
 
@@ -102,7 +102,9 @@ describe('CardContainer', () => {
     expect(
       screen.getByRole('button', { name: /previous/i })
     ).toBeInTheDocument();
-    expect(scrollContainer?.scrollTo).toHaveBeenCalled();
+    
+    // scrollTo가 호출되었는지 확인
+    expect(Element.prototype.scrollTo).toHaveBeenCalled();
   });
 
   it('renders empty container when no cards provided', () => {
