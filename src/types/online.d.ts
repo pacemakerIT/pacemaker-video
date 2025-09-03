@@ -11,7 +11,6 @@ export interface OnlineCards {
   category: string;
   watchedVideos: Array;
   purchasedVideos: Array;
-  imageUrl?: string;
-  itemType?: ItemType;
   thumbnail?: string;
+  itemType?: ItemType;
 }

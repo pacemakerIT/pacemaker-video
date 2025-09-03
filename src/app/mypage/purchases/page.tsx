@@ -9,7 +9,8 @@ export default function Purchases() {
         '자기소개서 작성 및 면접 준비까지 하나로!'
       ],
       amount: 4320,
-      status: '결제완료'
+      status: '결제완료',
+      date: new Date(2025, 7, 1)
     },
     {
       orderNumber: 'AA1000002',
@@ -18,7 +19,8 @@ export default function Purchases() {
         '자기소개서 작성 및 면접 준비까지 하나로!'
       ],
       amount: 2800,
-      status: '환불진행중'
+      status: '환불진행중',
+      date: new Date(2025, 7, 3)
     },
     {
       orderNumber: 'AA1000003',
@@ -27,7 +29,8 @@ export default function Purchases() {
         '자기소개서 작성 및 면접 준비까지 하나로!'
       ],
       amount: 2800,
-      status: '환불완료'
+      status: '환불완료',
+      date: new Date(2025, 7, 5)
     },
     {
       orderNumber: 'AA1000004',
@@ -36,7 +39,8 @@ export default function Purchases() {
         '자기소개서 작성 및 면접 준비까지 하나로!'
       ],
       amount: 2800,
-      status: '환불진행중'
+      status: '환불진행중',
+      date: new Date(2025, 7, 6)
     },
     {
       orderNumber: 'AA1000005',
@@ -45,7 +49,8 @@ export default function Purchases() {
         '자기소개서 작성 및 면접 준비까지 하나로!'
       ],
       amount: 2800,
-      status: '환불완료'
+      status: '환불완료',
+      date: new Date(2025, 7, 10)
     }
   ];
 
