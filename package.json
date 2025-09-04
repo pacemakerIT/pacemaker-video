@@ -60,7 +60,7 @@
     "zod": "^4.1.4"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.0.1",
+    "@chromatic-com/storybook": "^4.1.1",
     "@eslint/eslintrc": "^3.3.0",
     "@next/eslint-plugin-next": "^15.2.4",
     "@storybook/addon-designs": "^10.0.2",
