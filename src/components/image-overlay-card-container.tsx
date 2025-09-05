@@ -3,6 +3,7 @@ import * as React from 'react';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageOverlayCard from './image-overlay-card';
+import { Button } from './ui/button';
 
 interface ImageOverlayCardContainerProps {
   layout: 'grid' | 'horizontal';
@@ -15,15 +16,34 @@ export default function ImageOverlayCardContainer({
 }: ImageOverlayCardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const cardWidth = 588; // Card 컴포넌트의 width 값
+  const didInitRef = React.useRef(false);
+  const cardWidth = 384; // Card 컴포넌트의 width 값
   const gap = 16; // gap-4 = 16px
+
+  React.useEffect(() => {
+    if (didInitRef.current) return;
+    if (containerRef.current) {
+      containerRef.current.scrollLeft = 50 + 0 * (cardWidth + gap);
+      didInitRef.current = true;
+    }
+  }, [cardWidth, gap]);
+
+  const PlaceholderCard = () => (
+    <div className="flex-none bg-transparent">
+      <div className="w-[384px] bg-transparent rounded-lg shadow-sm border-transparent border"></div>
+    </div>
+  );
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      const nextIndex = currentIndex - 1;
+      setCurrentIndex(nextIndex);
       if (containerRef.current) {
+        const isFirstClick = currentIndex === 1;
+        const scrollPosition =
+          50 + nextIndex * (cardWidth + gap) + (isFirstClick ? 5 : 10);
         containerRef.current.scrollTo({
-          left: (currentIndex - 1) * (cardWidth + gap),
+          left: scrollPosition,
           behavior: 'smooth'
         });
       }
@@ -32,10 +52,16 @@ export default function ImageOverlayCardContainer({
 
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
       if (containerRef.current) {
+        const isFirstClick = currentIndex === 0;
+        const scrollPosition =
+          50 +
+          nextIndex * (cardWidth + gap) +
+          (isFirstClick ? 5 : 10 * currentIndex);
         containerRef.current.scrollTo({
-          left: (currentIndex + 1) * (cardWidth + gap),
+          left: scrollPosition,
           behavior: 'smooth'
         });
       }
@@ -68,47 +94,58 @@ export default function ImageOverlayCardContainer({
     );
   }
 
+  // 왼쪽 화살표: 첫 번째 카드가 완전히 보일 때부터 표시
+  const showLeftButton = currentIndex > 0;
+  // 오른쪽 화살표: 마지막 카드가 중앙 3개 카드 영역의 3번째 위치에 완전히 보일 때까지 표시
+  const showRightButton = currentIndex < cards.length - 3;
+
   return (
-    <div className="relative w-full" data-testid="horizontal-container">
-      {currentIndex > 0 && (
-        <button
+    <div className="relative w-screen" data-testid="horizontal-container">
+      {showLeftButton && (
+        <Button
           aria-label="previous"
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          className="absolute left-[360px] top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handlePrev}
         >
           <ChevronLeft className="h-6 w-6" />
-        </button>
+        </Button>
       )}
-      <div
-        ref={containerRef}
-        className="flex gap-6 pb-4 w-[calc(100vw-360px)] overflow-hidden min-w-[1200px]"
-      >
-        {cards.map((card) => (
-          <div key={card.id} className="flex-none">
-            <ImageOverlayCard
-              id={card.id}
-              title={card.title}
-              price={card.price}
-              description={card.description}
-              category={card.category}
-              itemId={card.itemId}
-              uploadDate={card.uploadDate}
-              watchedVideos={card.watchedVideos}
-              purchasedVideos={card.purchasedVideos}
-              thumbnail={card.thumbnail}
-            />
-          </div>
-        ))}
+      <div ref={containerRef} className="overflow-hidden">
+        <div className="flex gap-6 pb-4">
+          {/* 왼쪽 빈 카드 - 항상 존재 */}
+          <PlaceholderCard />
+
+          {/* 실제 카드들 */}
+          {cards.map((card) => (
+            <div key={card.id} className="flex-none">
+              <ImageOverlayCard
+                id={card.id}
+                title={card.title}
+                price={card.price}
+                description={card.description}
+                category={card.category}
+                itemId={card.itemId}
+                uploadDate={card.uploadDate}
+                watchedVideos={card.watchedVideos}
+                purchasedVideos={card.purchasedVideos}
+                thumbnail={card.thumbnail}
+              />
+            </div>
+          ))}
+
+          {/* 오른쪽 빈 카드 - 항상 존재 */}
+          <PlaceholderCard />
+        </div>
+        {showRightButton && (
+          <Button
+            aria-label="next"
+            className="absolute right-[360px] top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+            onClick={handleNext}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+        )}
       </div>
-      {currentIndex < cards.length - 2 && (
-        <button
-          aria-label="next"
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
-          onClick={handleNext}
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
-      )}
     </div>
   );
 }
