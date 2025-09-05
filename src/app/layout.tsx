@@ -43,8 +43,7 @@ function FavoriteWrapper({ children }: { children: React.ReactNode }) {
           <main className={!isAdmin ? 'container' : ''}>{children}</main>
           <Toaster />
 
-          {/* Footer는 항상 공통 */}
-          <Footer />
+          {!isAdmin && <Footer />}
         </body>
       </html>
     </FavoriteProvider>
