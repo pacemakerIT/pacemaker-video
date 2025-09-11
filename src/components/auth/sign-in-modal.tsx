@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog } from '@headlessui/react';
-import CustomSignIn from '@/components/auth/custom-sign-in';
+import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -26,10 +26,11 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
             flex flex-col gap-6
           "
         >
-          <Dialog.Title className="text-pace-xl font-bold text-center text-pace-black-500">
-            로그인
-          </Dialog.Title>
-          <CustomSignIn closeModal={onClose} />
+          <CustomAuthWrapper
+            isPage={false}
+            closeModal={onClose}
+            initialMode="signin"
+          />
         </Dialog.Panel>
       </div>
     </Dialog>
