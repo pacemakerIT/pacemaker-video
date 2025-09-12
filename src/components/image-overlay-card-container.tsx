@@ -3,7 +3,6 @@ import * as React from 'react';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageOverlayCard from './image-overlay-card';
-import { Button } from './ui/button';
 
 interface ImageOverlayCardContainerProps {
   layout: 'grid' | 'horizontal';
@@ -15,33 +14,25 @@ export default function ImageOverlayCardContainer({
   cards
 }: ImageOverlayCardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const didInitRef = React.useRef(false);
-  const cardWidth = 384; // Card 컴포넌트의 width 값
-  const gap = 24; // gap-6 = 24px
+  const [offsetX, setOffsetX] = React.useState(0);
 
-  // 초기 위치: 첫 번째 카드가 전체가 보이도록
-  React.useEffect(() => {
-    if (didInitRef.current) return;
-    setCurrentIndex(0);
-    didInitRef.current = true;
-  }, []);
-
-  const PlaceholderCard = () => (
-    <div className="flex-none bg-transparent">
-      <div className="w-[384px] bg-transparent rounded-lg border-transparent border"></div>
-    </div>
-  );
+  const cardWidth = 384;
+  const gap = 24;
+  const totalMovement = cardWidth + gap;
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+    const newIndex = currentIndex - 1;
+    if (newIndex >= 0) {
+      setCurrentIndex(newIndex);
+      setOffsetX(newIndex * totalMovement);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < cards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+    const newIndex = currentIndex + 1;
+    if (newIndex < cards.length) {
+      setCurrentIndex(newIndex);
+      setOffsetX(newIndex * totalMovement);
     }
   };
 
@@ -53,92 +44,51 @@ export default function ImageOverlayCardContainer({
       >
         {cards.map((card) => (
           <div key={card.id} data-testid="image-overlay-card">
-            <ImageOverlayCard
-              id={card.id}
-              title={card.title}
-              price={card.price}
-              description={card.description}
-              category={card.category}
-              itemId={card.itemId}
-              uploadDate={card.uploadDate}
-              watchedVideos={card.watchedVideos}
-              purchasedVideos={card.purchasedVideos}
-              thumbnail={card.thumbnail}
-            />
+            <ImageOverlayCard {...card} />
           </div>
         ))}
       </div>
     );
   }
 
-  // 왼쪽 화살표: 첫 번째 카드가 완전히 보일 때부터 표시
-  const showLeftButton = currentIndex > 0;
-  // 오른쪽 화살표: 마지막 카드가 중앙 2개 카드 영역의 2번째 위치에 완전히 보일 때까지 표시
-  const showRightButton = currentIndex < cards.length - 1;
-
   return (
-    <div
-      className="relative w-full max-w-7xl mx-auto"
-      data-testid="horizontal-container"
-    >
-      {/* Carousel Container */}
-      <div ref={containerRef} className="relative">
-        <div
-          className="flex gap-6 pb-4 transition-transform duration-300 ease-in-out w-screen  ml-[calc(50%-50vw)]
-  mr-[calc(50%-50vw)]
-  pl-[calc(-50%+50vw)]"
-          style={{
-            transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`
-          }}
+    <div className="relative w-full" data-testid="horizontal-container">
+      {currentIndex > 0 && (
+        <button
+          aria-label="previous"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute left-0 top-[230px] -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          onClick={handlePrev}
         >
-          {/* <PlaceholderCard /> */}
-          {/* 실제 카드들 */}
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+      )}
+      {/* 뷰포트(viewport) 역할을 하는 외부 컨테이너 */}
+      <div className="min-w-[1200px]">
+        {/* 실제 움직이는 내부 컨테이너 */}
+        <div
+          className="flex gap-6 pb-4 transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${offsetX}px)` }}
+        >
           {cards.map((card) => (
-            <div key={card.id} className="flex-none">
-              <ImageOverlayCard
-                id={card.id}
-                title={card.title}
-                price={card.price}
-                description={card.description}
-                category={card.category}
-                itemId={card.itemId}
-                uploadDate={card.uploadDate}
-                watchedVideos={card.watchedVideos}
-                purchasedVideos={card.purchasedVideos}
-                thumbnail={card.thumbnail}
-              />
+            <div
+              key={card.id}
+              className="flex-none"
+              style={{ width: `${cardWidth}px` }}
+            >
+              <ImageOverlayCard {...card} />
             </div>
           ))}
-          <PlaceholderCard />
         </div>
       </div>
-
-      {/* 왼쪽 화살표 - 중앙 첫 카드 시작 */}
-      {showLeftButton && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
-          onClick={handlePrev}
-          aria-label="Go to Previous Page"
-          title="Go to Previous Page"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-
-      {/* 오른쪽 화살표 - 중앙 마지막 카드 끝 */}
-      {showRightButton && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
+      {currentIndex < cards.length - 3 && (
+        <button
+          aria-label="next"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute right-[calc(100%-1225px)] top-[230px] -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handleNext}
-          aria-label="Go to Next Page"
           title="Go to Next Page"
         >
           <ChevronRight className="h-5 w-5" />
-        </Button>
+        </button>
       )}
     </div>
   );
