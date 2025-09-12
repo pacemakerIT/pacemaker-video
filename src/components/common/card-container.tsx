@@ -58,7 +58,7 @@ export default function CardContainer({
 
   return (
     <div className="relative w-full">
-      {currentIndex > 0 && (
+      {/* {currentIndex > 0 && (
         <Button
           variant="outline"
           size="icon"
@@ -68,7 +68,7 @@ export default function CardContainer({
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
-      )}
+      )} */}
 
       {/* 구조 변경: 뷰포트 역할을 하는 외부 div와 실제 움직이는 내부 div로 분리 */}
       <div className="w-[1200px]">
@@ -93,7 +93,7 @@ export default function CardContainer({
         <Button
           variant="outline"
           size="icon"
-          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
+          className="absolute -left-5 top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
           onClick={handlePrev}
           aria-label="Go to Previous Page"
           title="Go to Previous Page"
@@ -107,7 +107,7 @@ export default function CardContainer({
         <Button
           variant="outline"
           size="icon"
-          className="absolute md:right-[calc(100%-1225px)] top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          className="absolute md:right-[calc(100%-1225px)] top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-12 h-12"
           onClick={handleNext}
           aria-label="Go to Next Page"
           title="Go to Next Page"
