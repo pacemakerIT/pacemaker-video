@@ -1,13 +1,8 @@
 // src/components/__tests__/CardContainer.test.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OnlineCards } from '@/types/online';
 import CardContainer from '../common/card-container';
-
-// scrollTo 메서드를 전역적으로 모킹
-beforeEach(() => {
-  Element.prototype.scrollTo = vi.fn();
-});
 
 // Mock the Card component
 vi.mock('../common/card', () => ({
@@ -68,7 +63,7 @@ describe('CardContainer', () => {
     // 다음 버튼이 보여야 함 (ChevronRight 아이콘을 포함한 버튼)
     const nextButton = screen.getByRole('button', { name: /next/i });
     expect(nextButton).toBeInTheDocument();
-    expect(nextButton).toHaveClass('right-[360px]');
+    expect(nextButton).toHaveClass('-right-4');
   });
 
   it('shows/hides navigation buttons based on current index', () => {
@@ -80,12 +75,10 @@ describe('CardContainer', () => {
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
     expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
 
-    // 마지막 카드로 이동한 상태를 시뮬레이션
-    rerender(
-      <CardContainer layout="horizontal" cards={mockCards.slice(0, 2)} />
-    );
+    // 카드가 1개만 있을 때는 다음 버튼이 없어야 함 (currentIndex < 1 - 1 = 0이므로)
+    rerender(<CardContainer layout="horizontal" cards={[mockCards[0]]} />);
 
-    // 마지막 카드에서는 다음 버튼이 없어야 함
+    // 카드가 1개일 때는 다음 버튼이 없어야 함
     expect(screen.queryByRole('button', { name: /next/i })).toBeNull();
   });
 
@@ -96,13 +89,10 @@ describe('CardContainer', () => {
 
     fireEvent.click(nextButton);
 
-    // 다음 버튼 클릭 후 이전 버튼이 나타나야 함
+    // 다음 버튼 클릭 후 이전 버튼이 나타나야 함 (currentIndex > 0이므로)
     expect(
       screen.getByRole('button', { name: /previous/i })
     ).toBeInTheDocument();
-
-    // scrollTo가 호출되었는지 확인
-    expect(Element.prototype.scrollTo).toHaveBeenCalled();
   });
 
   it('renders empty container when no cards provided', () => {

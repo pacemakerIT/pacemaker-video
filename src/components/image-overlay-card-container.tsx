@@ -18,53 +18,30 @@ export default function ImageOverlayCardContainer({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const didInitRef = React.useRef(false);
   const cardWidth = 384; // Card 컴포넌트의 width 값
-  const gap = 16; // gap-4 = 16px
+  const gap = 24; // gap-6 = 24px
 
+  // 초기 위치: 첫 번째 카드가 전체가 보이도록
   React.useEffect(() => {
     if (didInitRef.current) return;
-    if (containerRef.current) {
-      containerRef.current.scrollLeft = 50 + 0 * (cardWidth + gap);
-      didInitRef.current = true;
-    }
-  }, [cardWidth, gap]);
+    setCurrentIndex(0);
+    didInitRef.current = true;
+  }, []);
 
   const PlaceholderCard = () => (
     <div className="flex-none bg-transparent">
-      <div className="w-[384px] bg-transparent rounded-lg shadow-sm border-transparent border"></div>
+      <div className="w-[384px] bg-transparent rounded-lg border-transparent border"></div>
     </div>
   );
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      const nextIndex = currentIndex - 1;
-      setCurrentIndex(nextIndex);
-      if (containerRef.current) {
-        const isFirstClick = currentIndex === 1;
-        const scrollPosition =
-          50 + nextIndex * (cardWidth + gap) + (isFirstClick ? 5 : 10);
-        containerRef.current.scrollTo({
-          left: scrollPosition,
-          behavior: 'smooth'
-        });
-      }
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
-      const nextIndex = currentIndex + 1;
-      setCurrentIndex(nextIndex);
-      if (containerRef.current) {
-        const isFirstClick = currentIndex === 0;
-        const scrollPosition =
-          50 +
-          nextIndex * (cardWidth + gap) +
-          (isFirstClick ? 5 : 10 * currentIndex);
-        containerRef.current.scrollTo({
-          left: scrollPosition,
-          behavior: 'smooth'
-        });
-      }
+      setCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -96,25 +73,25 @@ export default function ImageOverlayCardContainer({
 
   // 왼쪽 화살표: 첫 번째 카드가 완전히 보일 때부터 표시
   const showLeftButton = currentIndex > 0;
-  // 오른쪽 화살표: 마지막 카드가 중앙 3개 카드 영역의 3번째 위치에 완전히 보일 때까지 표시
-  const showRightButton = currentIndex < cards.length - 3;
+  // 오른쪽 화살표: 마지막 카드가 중앙 2개 카드 영역의 2번째 위치에 완전히 보일 때까지 표시
+  const showRightButton = currentIndex < cards.length - 1;
 
   return (
-    <div className="relative w-screen" data-testid="horizontal-container">
-      {showLeftButton && (
-        <Button
-          aria-label="previous"
-          className="absolute left-[360px] top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
-          onClick={handlePrev}
+    <div
+      className="relative w-full max-w-7xl mx-auto"
+      data-testid="horizontal-container"
+    >
+      {/* Carousel Container */}
+      <div ref={containerRef} className="relative">
+        <div
+          className="flex gap-6 pb-4 transition-transform duration-300 ease-in-out w-screen  ml-[calc(50%-50vw)]
+  mr-[calc(50%-50vw)]
+  pl-[calc(-50%+50vw)]"
+          style={{
+            transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`
+          }}
         >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-      )}
-      <div ref={containerRef} className="overflow-hidden">
-        <div className="flex gap-6 pb-4">
-          {/* 왼쪽 빈 카드 - 항상 존재 */}
-          <PlaceholderCard />
-
+          {/* <PlaceholderCard /> */}
           {/* 실제 카드들 */}
           {cards.map((card) => (
             <div key={card.id} className="flex-none">
@@ -132,20 +109,37 @@ export default function ImageOverlayCardContainer({
               />
             </div>
           ))}
-
-          {/* 오른쪽 빈 카드 - 항상 존재 */}
           <PlaceholderCard />
         </div>
-        {showRightButton && (
-          <Button
-            aria-label="next"
-            className="absolute right-[360px] top-1/2 -translate-y-1/2 translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
-            onClick={handleNext}
-          >
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        )}
       </div>
+
+      {/* 왼쪽 화살표 - 중앙 첫 카드 시작 */}
+      {showLeftButton && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
+          onClick={handlePrev}
+          aria-label="Go to Previous Page"
+          title="Go to Previous Page"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      )}
+
+      {/* 오른쪽 화살표 - 중앙 마지막 카드 끝 */}
+      {showRightButton && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
+          onClick={handleNext}
+          aria-label="Go to Next Page"
+          title="Go to Next Page"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 }
