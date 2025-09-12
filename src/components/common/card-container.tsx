@@ -18,27 +18,31 @@ export default function CardContainer({
   itemType
 }: CardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [offsetX, setOffsetX] = React.useState(0);
-
-  const cardWidth = 588;
-  const gap = 24;
-  const totalMovement = cardWidth + gap;
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const cardWidth = 588; // Card 컴포넌트의 width 값
+  const gap = 16; // gap-4 = 16px
 
   const handlePrev = () => {
-    // currentIndex를 기준으로 새로운 offsetX 계산
-    const newIndex = currentIndex - 1;
-    if (newIndex >= 0) {
-      setCurrentIndex(newIndex);
-      setOffsetX(newIndex * totalMovement);
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          left: (currentIndex - 1) * (cardWidth + gap),
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
   const handleNext = () => {
-    // currentIndex를 기준으로 새로운 offsetX 계산
-    const newIndex = currentIndex + 1;
-    if (newIndex < cards.length) {
-      setCurrentIndex(newIndex);
-      setOffsetX(newIndex * totalMovement);
+    if (currentIndex < cards.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      if (containerRef.current) {
+        containerRef.current.scrollTo({
+          left: (currentIndex + 1) * (cardWidth + gap),
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
@@ -46,7 +50,20 @@ export default function CardContainer({
     return (
       <div className="justify-center grid grid-cols-4 md:grid-cols-2 gap-6 w-full py-4">
         {cards.map((card) => (
-          <Card key={card.id} {...card} itemType={itemType} />
+          <Card
+            key={card.id}
+            id={card.id}
+            title={card.title}
+            price={card.price}
+            description={card.description}
+            category={card.category}
+            itemId={card.itemId}
+            uploadDate={card.uploadDate}
+            watchedVideos={card.watchedVideos}
+            purchasedVideos={card.purchasedVideos}
+            itemType={itemType}
+            thumbnail={card.thumbnail}
+          />
         ))}
       </div>
     );
@@ -58,36 +75,40 @@ export default function CardContainer({
         <Button
           variant="outline"
           size="icon"
-          className="absolute left-0 top-[290px] -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handlePrev}
           aria-label="previous"
         >
           <ChevronLeft className="h-6 w-6" />
         </Button>
       )}
-
-      {/* 구조 변경: 뷰포트 역할을 하는 외부 div와 실제 움직이는 내부 div로 분리 */}
-      <div className="w-[1200px]">
-        <div
-          className="flex gap-6 pb-4 transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${offsetX}px)` }}
-        >
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              className="flex-none"
-              style={{ width: `${cardWidth}px` }}
-            >
-              <Card {...card} itemType={itemType} />
-            </div>
-          ))}
-        </div>
+      <div
+        ref={containerRef}
+        className="flex gap-6 pb-4 w-[calc(100vw-360px)] overflow-hidden min-w-[1200px]"
+      >
+        {cards.map((card) => (
+          <div key={card.id} className="flex-none">
+            <Card
+              id={card.id}
+              title={card.title}
+              price={card.price}
+              description={card.description}
+              category={card.category}
+              itemId={card.itemId}
+              uploadDate={card.uploadDate}
+              watchedVideos={card.watchedVideos}
+              purchasedVideos={card.purchasedVideos}
+              itemType={itemType}
+              thumbnail={card.thumbnail}
+            />
+          </div>
+        ))}
       </div>
       {currentIndex < cards.length - 2 && (
         <Button
           variant="outline"
           size="icon"
-          className="absolute md:right-[calc(100%-1225px)] top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
+          className="absolute md:right-[calc(100%-1210px)] top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
           onClick={handleNext}
           aria-label="next"
         >
