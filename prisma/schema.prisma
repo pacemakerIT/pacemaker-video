@@ -29,6 +29,7 @@ model User {
   taughtWorkshops       Workshop[]             @relation("InstructorWorkshops")
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
+  Cart                  Cart[]
 }
 
 model UserRole {
@@ -143,6 +144,17 @@ model Image {
   fileName  String
   url       String
   createdAt DateTime @default(now())
+}
+
+model Cart {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  itemId    String
+  itemType  ItemType
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType, itemId])
 }
 
 enum WorkshopStatus {

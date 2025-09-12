@@ -11,6 +11,10 @@ import { Progress } from '@/components/ui/progress';
 import { MyCard } from '@/types/my-card';
 import { CustomBadge } from '@/components/common/custom-badge';
 import ReviewForm from './review-form';
+import { useCartContext } from '@/app/context/cart-context';
+import { toast } from 'sonner';
+import { useUserContext } from '@/app/context/user-context';
+import { itemTypeLabels } from '@/constants/labels';
 
 export default function MyPageCard({
   itemId,
@@ -25,11 +29,24 @@ export default function MyPageCard({
   like
 }: MyCard) {
   const [isLiked, setIsLiked] = useState(like);
+  const { addToCart } = useCartContext();
+
+  const { user } = useUserContext();
+  const userId = user?.id;
 
   const progress =
     totalChapters && completedChapters
       ? (completedChapters / totalChapters) * 100
       : 0;
+
+  const handleAddToCart = () => {
+    if (!userId) {
+      toast.error('Please log in to use cart.');
+      return;
+    }
+
+    addToCart(itemId, type);
+  };
 
   return (
     <div className="w-full cursor-pointer font-normal">
@@ -81,10 +98,12 @@ export default function MyPageCard({
                 {purchased ? (
                   <div className="flex items-center justify-end w-full">
                     <span className="text-pace-sm text-pace-stone-600">{`${completedChapters}/${totalChapters} 
-                    ${type === '온라인 강의' ? '레슨' : type === '전자책' ? '페이지' : ''} 남음`}</span>
+                    ${itemTypeLabels[type] === '온라인 강의' ? '레슨' : itemTypeLabels[type] === '전자책' ? '페이지' : ''} 남음`}</span>
                   </div>
                 ) : (
-                  <span className="text-pace-stone-600">{type}</span>
+                  <span className="text-pace-stone-600">
+                    {itemTypeLabels[type]}
+                  </span>
                 )}
               </div>
 
@@ -123,8 +142,13 @@ export default function MyPageCard({
                 <Button
                   variant="link"
                   className="text-[#E86642] font-normal p-0"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart();
+                  }}
                 >
-                  {`장바구니에 추가`}
+                  장바구니에 추가
                   <Image
                     src="/icons/shopping-cart.svg"
                     alt="Cart"
