@@ -4,6 +4,7 @@ import '@/app/globals.css';
 import { UserProvider } from '../context/user-context';
 import AdminPage from '@/components/admin/layout/admin-page';
 import { AdminHeader } from '@/components/admin/layout/admin-header';
+import { AdminFooter } from '@/components/admin/layout/admin-footer';
 
 export default function AdminLayout({
   children
@@ -20,6 +21,8 @@ export default function AdminLayout({
         <div className="flex flex-1">
           <AdminPage>{children}</AdminPage>
         </div>
+
+        <AdminFooter />
       </div>
     </UserProvider>
   );
