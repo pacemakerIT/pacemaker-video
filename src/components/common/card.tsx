@@ -28,7 +28,7 @@ interface CardProps extends OnlineCards {
 }
 
 export default function Card({
-  itemId,
+  id,
   title,
   price,
   description,
@@ -49,11 +49,11 @@ export default function Card({
   const getLinkPath = () => {
     switch (itemType) {
       case ItemType.VIDEO:
-        return `/courses/${itemId}`;
+        return `/courses/${id}`;
       case ItemType.DOCUMENT:
-        return `/ebooks/${itemId}`;
+        return `/ebooks/${id}`;
       case ItemType.WORKSHOP:
-        return `/workshops/${itemId}`;
+        return `/workshops/${id}`;
       default:
         return '/'; // fallback
     }
