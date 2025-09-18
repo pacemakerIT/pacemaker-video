@@ -93,8 +93,57 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const cart = await prisma.cart.create({
-    data: { userId, itemId, itemType }
+  const cart = await prisma.$transaction(async (tx) => {
+    const newCart = await tx.cart.create({
+      data: { userId, itemId, itemType }
+    });
+    let item = null;
+
+    try {
+      switch (newCart.itemType) {
+        case ItemType.VIDEO:
+          item = await prisma.video.findUnique({
+            where: { videoId: newCart.itemId },
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              description: true,
+              category: true
+            }
+          });
+          break;
+        case ItemType.DOCUMENT:
+          item = await prisma.document.findUnique({
+            where: { documentId: newCart.itemId },
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              description: true
+            }
+          });
+          break;
+        case ItemType.WORKSHOP:
+          item = await prisma.workshop.findUnique({
+            where: { id: newCart.itemId },
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              description: true,
+              startDate: true
+            }
+          });
+          break;
+      }
+    } catch (err) {
+      return NextResponse.json(
+        { error: `Failed to get item details: ${err}` },
+        { status: 500 }
+      );
+    }
+    return { ...newCart, ...item };
   });
 
   return NextResponse.json(cart);

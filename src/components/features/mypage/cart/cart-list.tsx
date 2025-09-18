@@ -53,9 +53,6 @@ interface CartListProps {
 export default function CartList({ cartItems, setCartItems }: CartListProps) {
   const { removeFromCart } = useCartContext();
 
-  const { user } = useUserContext();
-  const userId = user?.id;
-
   const toggleSelect = (id: string) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -77,28 +74,11 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
       return;
     }
     const itemIds = itemsToRemove.map((item) => item.itemId);
-
-    try {
-      const res = await fetch(`/api/cart?userId=${userId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds })
-      });
-
-      if (!res.ok) throw new Error(`Status code: ${res.status}`);
-
-      setCartItems((prev) =>
-        prev.filter((item) => !itemIds.includes(item.itemId))
-      );
-
-      toast.success(`${itemIds.length} item(s) removed`);
-    } catch (err) {
-      toast.error(`Failed to remove items: ${err}`);
-    }
+    removeFromCart(itemIds);
   };
 
   const handleRemove = (id: string) => {
-    removeFromCart(id);
+    removeFromCart([id]);
   };
 
   return (

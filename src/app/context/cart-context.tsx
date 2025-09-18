@@ -13,19 +13,19 @@ import { toast } from 'sonner';
 export type Cart = {
   itemId: string;
   itemType: ItemType;
-  id?: string;
-  title?: string;
-  price?: number;
-  description?: string;
-  category?: VideoCategory | null;
-  startDate?: Date;
-  selected?: boolean;
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  category: VideoCategory | null;
+  startDate: Date;
+  selected: boolean;
 };
 
 interface CartContextType {
   cart: Cart[];
   addToCart: (itemId: string, itemType: ItemType) => Promise<void>;
-  removeFromCart: (itemId: string) => Promise<void>;
+  removeFromCart: (itemId: string[]) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -73,8 +73,9 @@ export const CartProvider = ({
         throw new Error(`Failed with status ${res.status}`);
       }
 
-      setCart((prev) => [...prev, { itemId, itemType }]);
-      fetchCart();
+      const newItem: Cart = await res.json();
+
+      setCart((prev) => [...prev, newItem]);
 
       toast.success('Added to cart!');
     } catch (err) {
@@ -82,7 +83,7 @@ export const CartProvider = ({
     }
   };
 
-  const removeFromCart = async (itemIds: string | string[]) => {
+  const removeFromCart = async (itemIds: string[]) => {
     try {
       const ids = Array.isArray(itemIds) ? itemIds : [itemIds];
 
