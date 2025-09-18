@@ -1,20 +1,21 @@
 'use client';
-import { WistiaPlayer } from '@wistia/wistia-player-react';
-import Link from 'next/link';
-import { usePurchase } from '@/app/context/purchase-context';
-import { useAuth } from '@clerk/nextjs';
-import { use, useEffect, useState } from 'react';
-import DetailHeader from '@/components/common/detail-header';
+// import { WistiaPlayer } from '@wistia/wistia-player-react';
+// import Link from 'next/link';
+// import { usePurchase } from '@/app/context/purchase-context';
+// import { useAuth } from '@clerk/nextjs';
+// import { use, useState } from 'react';
+import VideoDetailContainer from '@/components/features/course/video-detail-container';
 
-export default function VideoDetails({
-  params
-}: {
-  params: Promise<{ videoId: string }>;
-}) {
-  const { userId } = useAuth();
-  const { videoId } = use(params);
-  const { isPurchased } = usePurchase();
-  const [error, setError] = useState<string | null>(null);
+export default function VideoDetails() {
+  // {
+  //   // params
+  // }: {
+  //   // params: Promise<{ videoId: string }>;
+  // }
+  // const { userId } = useAuth();
+  // const { videoId } = use(params);
+  // const { isPurchased } = usePurchase();
+  // const [error, setError] = useState<string | null>(null);
 
   // useEffect(() => {
   //   // Validate video ID format
@@ -71,7 +72,7 @@ export default function VideoDetails({
 
   return (
     <div className="w-screen flex flex-col">
-      <DetailHeader />
+      <VideoDetailContainer />
     </div>
     // <div className="flex h-screen items-center justify-center p-4">
     //   <div className="w-full max-w-4xl mx-auto relative">
