@@ -48,7 +48,7 @@ export default async function Home() {
         </h1>
         <span className="font-light text-pace-sm text-center whitespace-pre-line leading-[140%]">
           {
-            '어렵기만 한 북미 취업, 어디서부터 어떻게 시작해야 할지 막막하셨죠?\n페이스메이커 온라인 강의 플랫폼에서는 IT, 그래픽 디자인, UX/UI 디자인,마케팅, 회계 등 다양한 분야에서\n 실제 북미 기업 취업에 성공한 멘토들이 실전 노하우를 전해드립니다.\n \n 지금 한국에 계시든, 캐나다에계시든 장소에 구애받지 않고\n 페이스메이커와 함께 북미 취업에 도전해보세요!\n'
+            '어렵기만 한 북미 취업, 어디서부터 어떻게 시작해야 할지 막막하셨죠?\n페이스메이커 온라인 강의 플랫폼에서는 IT, 그래픽 디자인, UX/UI 디자인,마케팅, 회계 등 다양한 분야에서\n 실제 북미 기업 취업에 성공한 멘토들이 실전 노하우를 전해드립니다.\n \n 지금 한국에 계시든, 캐나다에 계시든 장소에 구애받지 않고\n 페이스메이커와 함께 북미 취업에 도전해보세요!\n'
           }
         </span>
         <div className="flex justify-center items-center gap-4">
