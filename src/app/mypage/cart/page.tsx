@@ -1,49 +1,28 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CartList from '@/components/features/mypage/cart/cart-list';
 import PaymentSummary from '@/components/features/mypage/cart/payment-summary';
 import { CartItem } from '@/types/my-card';
-
-const items: CartItem[] = [
-  {
-    id: '1',
-    itemId: '4e8wv1z7tl',
-    title: 'UX Design Fundamentals',
-    price: 2800,
-    category: 'Marketing',
-    type: '전자책'
-  },
-  {
-    id: '2',
-    itemId: '4e8wv1z7tl',
-    title: 'UX Design Fundamentals',
-    price: 15.99,
-    category: 'Interview',
-    type: '온라인 강의'
-  },
-  {
-    id: '3',
-    itemId: '4e8wv1z7tl',
-    title: '성공을 부르는 마인드 트레이닝',
-    price: 20,
-    category: '',
-    date: new Date('2025-05-10'),
-    type: '워크샵'
-  },
-  {
-    id: '4',
-    itemId: '4e8wv1z7tl',
-    title: 'Test3',
-    price: 9.57,
-    category: 'Resume',
-    type: '온라인 강의'
-  }
-];
+import { useCartContext } from '@/app/context/cart-context';
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>(
-    items.map((item) => ({ ...item, selected: true }))
-  );
+  const { cart } = useCartContext();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    setCartItems(
+      cart.map((item) => ({
+        id: item.id || item.itemId,
+        itemId: item.itemId,
+        title: item.title || '',
+        category: item.category || '',
+        price: item.price || 0,
+        type: item.itemType,
+        date: item.startDate ? new Date(item.startDate) : undefined,
+        selected: true
+      }))
+    );
+  }, [cart]);
 
   return (
     <div className="flex justify-between w-full">
