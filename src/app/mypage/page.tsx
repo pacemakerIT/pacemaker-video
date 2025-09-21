@@ -1,6 +1,7 @@
 import MyList from '@/components/features/mypage/my-list';
 import MyPageWorkshopCard from '@/components/features/mypage/my-page-workshop-card';
 import { MyCard, MyWorkshopCard } from '@/types/my-card';
+import { ItemType } from '@prisma/client';
 
 export default function MyPage() {
   function formatKoreanDateTime(dateString?: string) {
@@ -43,7 +44,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Marketing',
-      type: '온라인 강의',
+      type: ItemType.VIDEO,
       purchased: true,
       totalChapters: 8,
       completedChapters: 4
@@ -53,7 +54,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Interview',
-      type: '온라인 강의',
+      type: ItemType.VIDEO,
       purchased: true,
       totalChapters: 8,
       completedChapters: 8
@@ -63,7 +64,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: '온라인 강의',
+      type: ItemType.VIDEO,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
@@ -73,7 +74,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: '온라인 강의',
+      type: ItemType.VIDEO,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
@@ -83,7 +84,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: '온라인 강의',
+      type: ItemType.VIDEO,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
@@ -96,7 +97,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Marketing',
-      type: '전자책',
+      type: ItemType.DOCUMENT,
       purchased: true,
       totalChapters: 8,
       completedChapters: 4
@@ -106,7 +107,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Interview',
-      type: '전자책',
+      type: ItemType.DOCUMENT,
       purchased: true,
       totalChapters: 8,
       completedChapters: 8
@@ -116,7 +117,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: '전자책',
+      type: ItemType.DOCUMENT,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
