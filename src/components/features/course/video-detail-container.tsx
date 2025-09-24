@@ -206,6 +206,10 @@ export default function VideoDetailContainer({
             </div>
           </div>
         </div>
+        <DetailRecommendationSection
+          title="이런분들께 추천드려요!"
+          items={recommendationItems}
+        />
         <div className="flex flex-col w-full gap-8">
           <SectionHeader title="강사 소개" />
           <div className="w-full flex gap-10">
@@ -258,10 +262,7 @@ export default function VideoDetailContainer({
             </div>
           </div>
         </div>
-        <DetailRecommendationSection
-          title="이런분들께 추천드려요!"
-          items={recommendationItems}
-        />
+
         <DetailRelatedContentSection
           title="이 컨텐츠와 함께 보면 좋아요!"
           items={cards}
