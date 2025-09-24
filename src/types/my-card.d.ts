@@ -1,3 +1,5 @@
+import { ItemType } from '@prisma/client';
+
 export interface MyCardBase {
   id: string;
   itemId: string;
@@ -17,7 +19,7 @@ export interface MyCard extends MyCardBase {
   purchased?: boolean; // TODO: May not need after fetching data from db
 
   category: string;
-  type: string;
+  type: ItemType;
 
   // Used in /mypage/page.tsx
   totalChapters?: number;
