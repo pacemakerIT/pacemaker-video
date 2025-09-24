@@ -33,12 +33,13 @@ export default function VideoList() {
   }, []);
 
   return (
-    <>
+    <section className="w-full">
       {loading ? (
-        <p>📡 비디오 불러오는 중...</p>
+        <p className="text-center">📡 비디오 불러오는 중...</p>
       ) : (
-        <>
-          <div className="flex flex-col justify-start w-full pt-12">
+        <div className="w-full max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="flex flex-col justify-center">
             <h5 className="text-pace-orange-600 text-lg">
               {'북미 취업의 A to Z'}
             </h5>
@@ -61,8 +62,10 @@ export default function VideoList() {
               </Link>
             </div>
           </div>
+
+          {/* Card Container Section */}
           {videos.length === 0 ? (
-            <p>📭 등록된 비디오가 없습니다.</p>
+            <p className="text-center">📭 등록된 비디오가 없습니다.</p>
           ) : (
             <CardContainer
               layout={'horizontal'}
@@ -70,8 +73,8 @@ export default function VideoList() {
               itemType={ItemType.VIDEO}
             />
           )}
-        </>
+        </div>
       )}
-    </>
+    </section>
   );
 }
