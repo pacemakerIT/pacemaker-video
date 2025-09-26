@@ -86,7 +86,7 @@
     "eslint-plugin-storybook": "^9.0.17",
     "husky": "^9.1.7",
     "jsdom": "^27.0.0",
-    "lint-staged": "^16.1.6",
+    "lint-staged": "^16.2.1",
     "postcss": "^8",
     "prettier": "^3.6.2",
     "prisma": "^6.16.2",
