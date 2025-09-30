@@ -46,6 +46,9 @@ export default function MainVisualForm({
     initialData?.image instanceof File ? initialData.image : null
   );
   const [link, setLink] = useState(initialData?.link || '');
+  const [linkName] = useState(initialData?.linkName || '');
+  const [tempLink, setTempLink] = useState(initialData?.link || '');
+  const [tempLinkName, setTempLinkName] = useState(initialData?.linkName || '');
 
   // 시작일 변경
   const handleStartDateChange = (date?: Date) => {
@@ -89,6 +92,41 @@ export default function MainVisualForm({
 
   // 최종 제출
   const handleSubmit = () => {
+    // 필수값 체크
+    if (!title.trim()) {
+      toast.error('비주얼 제목을 입력해주세요.');
+      return;
+    }
+
+    if (!description.trim()) {
+      toast.error('설명 문구를 입력해주세요.');
+      return;
+    }
+
+    if (!status) {
+      toast.error('공개 여부를 선택해주세요.');
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      toast.error('게시기간을 선택해주세요.');
+      return;
+    }
+
+    if (!image && !initialData?.imageUrl) {
+      toast.error('이미지를 업로드해주세요.');
+      return;
+    }
+    if (!tempLink) {
+      toast.error('링크를 등록해주세요.');
+      return;
+    }
+
+    if (!tempLinkName) {
+      toast.error('링크이름을 등록해주세요.');
+      return;
+    }
+    // 검증 통과 → 제출
     onSubmit({
       title,
       description,
@@ -98,7 +136,8 @@ export default function MainVisualForm({
       startTime,
       endTime,
       image,
-      link
+      link,
+      linkName
     });
   };
 
@@ -220,21 +259,70 @@ export default function MainVisualForm({
           <label className="text-pace-lg font-bold text-left w-[216px]">
             링크 연결
           </label>
-          <div className="flex items-center border border-pace-gray-300 rounded bg-white w-[488px]">
-            <input
-              type="text"
-              placeholder="연결 링크 입력"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              className="flex-1 p-3 pr-10 text-pace-base rounded bg-transparent outline-none"
-            />
-            <Image
-              src="/icons/link.svg"
-              alt="link"
-              width={20}
-              height={20}
-              className="mx-3 pointer-events-none"
-            />
+          <div className="w-[488px]">
+            {!link ? (
+              // 링크 없을 때 → 입력창
+              <div className="flex items-center gap-2 rounded bg-white">
+                <input
+                  type="text"
+                  placeholder="https://example.com"
+                  value={tempLink}
+                  onChange={(e) => setTempLink(e.target.value)}
+                  className="flex-1 p-3 text-pace-base rounded bg-transparent outline-none border border-pace-gray-200"
+                />
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="표시할 이름"
+                    value={tempLinkName}
+                    onChange={(e) => setTempLinkName(e.target.value)}
+                    className="w-full p-3 pr-10 text-pace-base rounded bg-transparent outline-none border border-pace-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!tempLink.trim() || !tempLinkName.trim()) {
+                        toast.error('URL과 표시할 이름을 입력해주세요.');
+                        return;
+                      }
+                      setLink(tempLink);
+                      // setLinkName(tempLinkName); // 필요하다면 수정
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <Image
+                      src="/icons/link.svg"
+                      alt="등록"
+                      width={20}
+                      height={20}
+                    />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // 등록된 링크
+              <div className="flex items-center justify-between border border-pace-gray-300 rounded bg-white px-3 py-2">
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-pace-base text-pace-blue-600 underline truncate flex-1"
+                >
+                  {linkName || link}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLink('');
+                    setTempLink('');
+                    setTempLinkName('');
+                  }}
+                  className="ml-3 text-pace-stone-500 hover:text-pace-gray-900"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

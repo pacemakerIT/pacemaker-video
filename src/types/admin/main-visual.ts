@@ -9,4 +9,5 @@ export interface MainVisual {
   image: File | string | null;
   imageUrl?: string; // 수정 시 기존 이미지
   link: string;
+  linkName: string;
 }
