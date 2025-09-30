@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import BadgeHeader from '@/components/features/mypage/badge-header';
 import MyPageCard from '@/components/features/mypage/my-page-card';
 import { MyCard } from '@/types/my-card';
+import { ItemType } from '@prisma/client';
 
 const cards = [
   {
@@ -14,7 +15,7 @@ const cards = [
     description:
       '자소서를 위한 스펙이 무엇인지와, 스펙을 쌓기 위하여 어떻게 정보를 구해야 할지 도와드릴게요.',
     category: 'Marketing',
-    type: '워크샵'
+    type: ItemType.WORKSHOP
   },
   {
     id: '2',
@@ -24,7 +25,7 @@ const cards = [
     description:
       '2~30대의 다양한 선택지를 두루 경험한 제가, 취준 일변도가 아니라 다양한 분야에서 쓰일 수 있는 스펙 쌓기부터 각종 자소서 작성 및 면접 준비까지 차근차근 준비해나가실 수 있도록 도와드리겠습니다.',
     category: 'Interview',
-    type: '온라인 강의'
+    type: ItemType.VIDEO
   },
   {
     id: '3',
@@ -33,7 +34,7 @@ const cards = [
     price: 9.99,
     description: 'test3',
     category: 'Resume',
-    type: '온라인 강의'
+    type: ItemType.VIDEO
   },
   {
     id: '4',
@@ -42,7 +43,7 @@ const cards = [
     price: 9.99,
     description: 'test3',
     category: 'Interview',
-    type: '온라인 강의'
+    type: ItemType.VIDEO
   },
   {
     id: '5',
@@ -51,7 +52,7 @@ const cards = [
     price: 9.99,
     description: 'test3',
     category: 'Resume',
-    type: '온라인 강의'
+    type: ItemType.VIDEO
   },
   {
     id: '6',
@@ -60,7 +61,7 @@ const cards = [
     price: 9.99,
     description: 'test3',
     category: 'Marketing',
-    type: '전자책'
+    type: ItemType.DOCUMENT
   }
 ];
 
