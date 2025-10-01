@@ -4,17 +4,17 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
+import { useCartContext } from '@/app/context/cart-context';
+import { useUserContext } from '@/app/context/user-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { itemCategoryLabel, itemTypeLabels } from '@/constants/labels';
+import { MyCard } from '@/types/my-card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { MyCard } from '@/types/my-card';
 import { CustomBadge } from '@/components/common/custom-badge';
 import ReviewForm from './review-form';
-import { useCartContext } from '@/app/context/cart-context';
-import { toast } from 'sonner';
-import { useUserContext } from '@/app/context/user-context';
-import { itemTypeLabels } from '@/constants/labels';
 
 export default function MyPageCard({
   itemId,
@@ -23,13 +23,13 @@ export default function MyPageCard({
   description,
   category,
   type,
+  date,
   purchased,
   totalChapters,
-  completedChapters,
-  like
+  completedChapters
 }: MyCard) {
-  const [isLiked, setIsLiked] = useState(like);
   const { addToCart } = useCartContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
 
   const { user } = useUserContext();
   const userId = user?.id;
@@ -38,6 +38,8 @@ export default function MyPageCard({
     totalChapters && completedChapters
       ? (completedChapters / totalChapters) * 100
       : 0;
+
+  const isLiked = (id: string) => favorites?.some((f) => f.itemId === id);
 
   const handleAddToCart = () => {
     if (!userId) {
@@ -48,6 +50,18 @@ export default function MyPageCard({
     addToCart(itemId, type);
   };
 
+  const toggleLike = (id: string) => {
+    if (!userId) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (isLiked(id)) {
+      removeFavorite(id);
+    } else {
+      addFavorite(id, type);
+    }
+  };
   return (
     <div className="w-full cursor-pointer font-normal">
       <Link href={`/courses/${itemId}`}>
@@ -59,12 +73,12 @@ export default function MyPageCard({
               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10"
               onClick={(e) => {
                 e.preventDefault();
-                setIsLiked(!isLiked);
+                toggleLike(itemId);
               }}
             >
               <Heart
                 className={`w-5 h-5 transition-colors duration-200 ${
-                  isLiked
+                  isLiked(itemId)
                     ? 'text-pace-orange-800 fill-pace-orange-800'
                     : 'text-pace-gray-200 hover:text-pace-orange-800'
                 }`}
@@ -86,12 +100,17 @@ export default function MyPageCard({
           <div className="w-full p-6 flex flex-col gap-4 justify-start items-start">
             <div className="w-full flex flex-col gap-2">
               <div className="w-full flex justify-between items-center text-pace-sm">
+                {date && (
+                  <p className="my-2">
+                    {date.toISOString().slice(0, 10).replace(/-/g, '.')}
+                  </p>
+                )}
                 {category && (
                   <CustomBadge
-                    variant={category}
+                    variant={itemCategoryLabel[category] ?? category}
                     className="w-fit flex justify-center items-center py-2 px-3"
                   >
-                    {category}
+                    {itemCategoryLabel[category] ?? category}
                   </CustomBadge>
                 )}
 
