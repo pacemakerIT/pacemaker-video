@@ -130,7 +130,7 @@ export default function MyPageCard({
                 <h3 className="">{title}</h3>
 
                 {!purchased ? (
-                  <span className="text-pace-xl font-bold">{`$${price}`}</span>
+                  <span className="text-pace-xl font-bold">{`$${price ?? 0}`}</span>
                 ) : null}
               </div>
               {purchased ? (

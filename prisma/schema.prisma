@@ -70,6 +70,7 @@ model Document {
   uploadDate  DateTime @default(now())
   price       Float?
   bucketUrl   String
+  category    VideoCategory?
 }
 
 model Workshop {

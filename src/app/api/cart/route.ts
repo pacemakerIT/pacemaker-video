@@ -38,7 +38,8 @@ export async function GET(req: NextRequest) {
                   id: true,
                   title: true,
                   price: true,
-                  description: true
+                  description: true,
+                  category: true
                 }
               });
               break;
@@ -120,7 +121,8 @@ export async function POST(req: NextRequest) {
               id: true,
               title: true,
               price: true,
-              description: true
+              description: true,
+              category: true
             }
           });
           break;
