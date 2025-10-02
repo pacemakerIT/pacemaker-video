@@ -82,6 +82,13 @@ async function main() {
       `Created/Updated video with id: ${video.id}, videoId: ${video.videoId}`
     );
   }
+
+  // add mock category to document
+  const result = await prisma.document.updateMany({
+    data: { category: VideoCategory.INTERVIEW } // 모든 row에 RESUME 추가
+  });
+
+  console.log(`Updated ${result.count} documents with category RESUME`);
 }
 
 main()

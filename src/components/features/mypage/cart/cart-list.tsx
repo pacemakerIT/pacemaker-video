@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { ItemType } from '@prisma/client';
 import { CartItem } from '@/types/my-card';
-import { ItemCategoryLabel, itemTypeLabels } from '@/constants/labels';
+import { itemCategoryLabel, itemTypeLabels } from '@/constants/labels';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { XIcon } from 'lucide-react';
@@ -11,7 +11,6 @@ import MyPageCard from '../my-page-card';
 import { CustomBadge } from '../../../common/custom-badge';
 import { useCartContext } from '@/app/context/cart-context';
 import { toast } from 'sonner';
-import { useUserContext } from '@/app/context/user-context';
 
 const cards = [
   {
@@ -129,11 +128,11 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
                   {item.category && (
                     <CustomBadge
                       variant={
-                        ItemCategoryLabel[item.category] ?? item.category
+                        itemCategoryLabel[item.category] ?? item.category
                       }
                       className="w-fit flex justify-center items-center py-2 px-3"
                     >
-                      {ItemCategoryLabel[item.category] ?? item.category}
+                      {itemCategoryLabel[item.category] ?? item.category}
                     </CustomBadge>
                   )}
 
