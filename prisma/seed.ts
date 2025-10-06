@@ -1,4 +1,4 @@
-import { PrismaClient, VideoCategory } from '@prisma/client';
+import { PrismaClient, VideoCategory, DocumentCategory } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -83,9 +83,9 @@ async function main() {
     );
   }
 
-  // add mock category to document
+  // add category to document
   const result = await prisma.document.updateMany({
-    data: { category: VideoCategory.INTERVIEW } // 모든 row에 RESUME 추가
+    data: { category: DocumentCategory.ACCOUNTING } // 모든 row에 ACCOUNTING 추가
   });
 
   console.log(`Updated ${result.count} documents with category RESUME`);

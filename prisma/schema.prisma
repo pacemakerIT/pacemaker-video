@@ -70,7 +70,7 @@ model Document {
   uploadDate  DateTime @default(now())
   price       Float?
   bucketUrl   String
-  category    VideoCategory?
+  category    DocumentCategory?
 }
 
 model Workshop {
@@ -169,6 +169,15 @@ enum VideoCategory {
   INTERVIEW
   RESUME
   NETWORKING
+}
+
+enum DocumentCategory {
+  MARKETING
+  IT
+  DESIGN
+  PUBLIC
+  ACCOUNTING
+  SERVICE
 }
 
 enum OrderStatus {
