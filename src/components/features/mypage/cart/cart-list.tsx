@@ -128,11 +128,11 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
                   {item.category && (
                     <CustomBadge
                       variant={
-                        itemCategoryLabel[item.category] ?? item.category
+                        itemCategoryLabel.en[item.category] ?? item.category
                       }
                       className="w-fit flex justify-center items-center py-2 px-3"
                     >
-                      {itemCategoryLabel[item.category] ?? item.category}
+                      {itemCategoryLabel.en[item.category] ?? item.category}
                     </CustomBadge>
                   )}
 
