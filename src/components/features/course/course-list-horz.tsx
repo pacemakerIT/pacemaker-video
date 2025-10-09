@@ -33,7 +33,7 @@ export default function VideoList() {
   }, []);
 
   return (
-    <section className="w-full">
+    <section className="w-full  gap-8">
       {loading ? (
         <p className="text-center">📡 비디오 불러오는 중...</p>
       ) : (
