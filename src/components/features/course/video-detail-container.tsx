@@ -110,7 +110,7 @@ export default function VideoDetailContainer({
       />
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20 pb-40">
         {contentSection && (
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 w-full">
             <SectionHeader
               subtitle={contentSection.title}
               title={contentSection.subtitle || ''}
