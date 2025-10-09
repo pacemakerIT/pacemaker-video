@@ -43,7 +43,7 @@ export default function DetailReviewsSection({
     <div className="flex w-full flex-col gap-6">
       <div className="flex justify-start items-center">
         <SectionHeader title={title} />
-        <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center justify-start gap-2 ml-4">
           <span className="text-xl font-medium">{rating} / 5</span>
           <div className="flex items-center gap-1">
             {Array.from({ length: rating }).map((_, i) => (
