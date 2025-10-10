@@ -1,21 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import { Interest } from '@prisma/client';
+import { useUserContext } from '@/app/context/user-context';
+import { itemCategoryLabel } from '@/constants/labels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-const interestsList = [
-  '이력서',
-  '인터뷰',
-  '네트워킹',
-  '마케팅',
-  '북미 공무원',
-  '재무회계',
-  '디자인',
-  'IT',
-  '서비스'
-];
 
 export default function SettingsPage() {
   const [nickname, setNickname] = useState('');
@@ -23,6 +15,18 @@ export default function SettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const { user } = useUserContext();
+
+  useEffect(() => {
+    const fetchInterests = async () => {
+      const res = await fetch(`/api/interest?userId=${user?.id}`);
+      const data = await res.json();
+      setSelectedInterests(data.interest);
+    };
+    fetchInterests();
+  }, [user]);
 
   const toggleInterest = (interest: string) => {
     setSelectedInterests((prev) =>
@@ -30,6 +34,26 @@ export default function SettingsPage() {
         ? prev.filter((i) => i !== interest)
         : [...prev, interest]
     );
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/interest', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, interests: selectedInterests })
+      });
+
+      if (!res.ok) throw new Error('Failed to update');
+
+      toast.success('Your interests have been updated successfully!');
+    } catch (err) {
+      toast.error(`Failed to update interests: ${err}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -88,7 +112,7 @@ export default function SettingsPage() {
             관심분야 변경
           </p>
           <div className="w-[800px] flex flex-wrap gap-2 justify-center">
-            {interestsList.map((interest) => (
+            {Object.values(Interest).map((interest) => (
               <button
                 key={interest}
                 onClick={() => toggleInterest(interest)}
@@ -98,12 +122,16 @@ export default function SettingsPage() {
                     : 'border-pace-stone-600 text-pace-stone-600'
                 }`}
               >
-                {interest}
+                {itemCategoryLabel.ko[interest] ?? interest}
               </button>
             ))}
           </div>
-          <Button className="w-[300px] bg-pace-orange-800 text-white rounded-full font-normal">
-            변경
+          <Button
+            className="w-[300px] bg-pace-orange-800 text-white rounded-full font-normal"
+            onClick={handleSave}
+            disabled={loading}
+          >
+            {loading ? '저장중...' : '변경'}
           </Button>
         </div>
 
