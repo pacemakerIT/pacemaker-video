@@ -1,0 +1,137 @@
+{
+  "courses": [
+    {
+      "id": "course-001",
+      "backgroundImage": "/img/video-bg.png",
+      "subtitle": "캐나다 테크기업 OOO이 선택한",
+      "title": "북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지",
+      "courseTitle": "자기소개서 작성 및 면접 준비까지 하나로!",
+      "instructor": "Heilee, Linda, Raphael. Lee",
+      "description": "실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!",
+      "price": "$999.99",
+      "reviewCount": 185,
+      "rating": 5,
+      "category": "Career Development",
+      "duration": "8시간 30분",
+      "level": "초급",
+      "language": "한국어",
+      "createdAt": "2024-01-01",
+      "updatedAt": "2024-01-15"
+    }
+  ],
+  "courseContents": [
+    {
+      "id": "content-001",
+      "courseId": "course-001",
+      "sectionTitle": "OOO가 선택한 이력서!",
+      "sectionSubtitle": "북미 개발자 이력서의 효과적인 구성과 키워드",
+      "description": "북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요..."
+    }
+  ],
+  "expandableCards": [
+    {
+      "id": "card-001",
+      "courseContentId": "content-001",
+      "title": "북미 개발자 채용 공고 사례",
+      "content": "한국과는 다른 스타일의 실제 북미 채용공고 사례를 통해, 최신 채용트렌드를 확인해봅니다.",
+      "order": 1
+    },
+    {
+      "id": "card-002",
+      "courseContentId": "content-001",
+      "title": "북미 개발자 채용 공고 분석",
+      "content": "실제 북미 지역의 채용공고를 기반으로, 해당 포지션에 적합한 이력서 전략과 핵심 키워드를 어떻게 효과적으로 반영할 수 있을지 분석합니다.",
+      "order": 2
+    },
+    {
+      "id": "card-003",
+      "courseContentId": "content-001",
+      "title": "실제 북미 개발자 취업 성공 이력서",
+      "content": "실제 북미 지역에서 최종 합격한 이력서를 보며, 채용 공고 분석 및 활용 방법을 알아봅니다.",
+      "order": 3
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "rec-001",
+      "courseId": "course-001",
+      "title": "이런분들께 추천드려요!",
+      "order": 1
+    }
+  ],
+  "recommendationItems": [
+    {
+      "id": "rec-item-001",
+      "recommendationId": "rec-001",
+      "icon": "CodeSquare",
+      "title": "북미 개발자",
+      "text": "개발 분야 취업에 관심 있으신 분",
+      "order": 1
+    },
+    {
+      "id": "rec-item-002",
+      "recommendationId": "rec-001",
+      "icon": "FileEdit",
+      "title": "북미 취업이력서",
+      "text": "작성방법이 궁금하신 분",
+      "order": 2
+    }
+  ],
+  "instructors": [
+    {
+      "id": "instructor-001",
+      "name": "Raphael. Lee",
+      "profileImage": "/img/instructor-image.png",
+      "description": "I've been managing multicultural teams for over 19 years..."
+    }
+  ],
+  "instructorCareers": [
+    {
+      "id": "career-001",
+      "instructorId": "instructor-001",
+      "period": "2019 ~",
+      "position": "Managing Director at Pacemaker",
+      "order": 1
+    },
+    {
+      "id": "career-002",
+      "instructorId": "instructor-001",
+      "period": "2015 ~ 2019",
+      "position": "Director of Operations at Metanet",
+      "order": 2
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "courseId": "course-001",
+      "profileImage": "/img/instructor-image.png",
+      "profileName": "Jay",
+      "rating": 5,
+      "reviewDate": "2024.01.15",
+      "reviewContent": "정말 유익한 강의였습니다...",
+      "order": 1
+    }
+  ],
+  "relatedContents": [
+    {
+      "id": "related-001",
+      "courseId": "course-001",
+      "title": "이 컨텐츠와 함께 보면 좋아요!",
+      "order": 1
+    }
+  ],
+  "relatedContentItems": [
+    {
+      "id": "related-item-001",
+      "relatedContentId": "related-001",
+      "itemId": "course-1",
+      "title": "React 기초부터 실전까지",
+      "price": 299,
+      "category": "Marketing",
+      "type": "course",
+      "thumbnail": "/img/course_image1.png",
+      "order": 1
+    }
+  ]
+}

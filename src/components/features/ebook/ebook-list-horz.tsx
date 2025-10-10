@@ -33,13 +33,13 @@ export default function EbookList() {
   }, []);
 
   return (
-    <section className="w-full">
+    <section className="w-full gap-8">
       {loading ? (
         <p className="text-center">📡 전자책 불러오는 중...</p>
       ) : (
-        <div className="w-full max-w-7xl mx-auto">
+        <>
           {/* Header Section */}
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-start w-full pt-12">
             <h5 className="text-pace-orange-600 text-lg">
               {'한눈에 확인하는 취업의 정석'}
             </h5>
@@ -73,7 +73,7 @@ export default function EbookList() {
               itemType={ItemType.DOCUMENT}
             />
           )}
-        </div>
+        </>
       )}
     </section>
   );

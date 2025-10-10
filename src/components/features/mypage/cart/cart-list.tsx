@@ -11,7 +11,6 @@ import MyPageCard from '../my-page-card';
 import { CustomBadge } from '../../../common/custom-badge';
 import { useCartContext } from '@/app/context/cart-context';
 import { toast } from 'sonner';
-import { useUserContext } from '@/app/context/user-context';
 
 const cards = [
   {
