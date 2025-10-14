@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { ItemType, VideoCategory } from '@prisma/client';
 import { toast } from 'sonner';
+import { useUserContext } from './user-context';
 
 export type Cart = {
   itemId: string;
@@ -30,13 +31,9 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider = ({
-  userId,
-  children
-}: {
-  userId: string;
-  children: React.ReactNode;
-}) => {
+export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useUserContext();
+  const userId = user?.id;
   const [cart, setCart] = useState<Cart[]>([]);
 
   const fetchCart = useCallback(async () => {

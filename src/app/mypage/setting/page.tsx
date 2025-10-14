@@ -1,32 +1,87 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { toast } from 'sonner';
 import { Interest } from '@prisma/client';
-import { useUserContext } from '@/app/context/user-context';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 import { itemCategoryLabel } from '@/constants/labels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const { user, isLoading, error, updateUser } = useUserContext();
+
   const [nickname, setNickname] = useState('');
+  const [loadingNickname, setLoadingNickname] = useState(false);
+
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [loadingInterest, setLoadingInterest] = useState(false);
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const { user } = useUserContext();
 
   useEffect(() => {
+    if (!user && !isLoading) {
+      toast('Please sign in');
+      return router.push('/');
+    }
+
+    if (user && user.nickname) {
+      setNickname(user.nickname);
+    }
+
     const fetchInterests = async () => {
       const res = await fetch(`/api/interest?userId=${user?.id}`);
       const data = await res.json();
       setSelectedInterests(data.interest);
     };
     fetchInterests();
-  }, [user]);
+  }, [user, isLoading, router]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <p>Error: {error}</p>;
+  if (!user) return null;
+
+  const handleSaveNickname = async () => {
+    if (!user) return;
+
+    const trimmedNickname = nickname.trim();
+    if (trimmedNickname === '') {
+      toast.error('Nickname cannot be empty');
+      return;
+    }
+    if (trimmedNickname === user.nickname) {
+      toast.info('No changes to save');
+      return;
+    }
+
+    setLoadingNickname(true);
+    try {
+      const res = await fetch('/api/user', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nickname: trimmedNickname
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to update');
+
+      const newNickName = await res.json();
+      updateUser(newNickName);
+
+      // updateUser({ nickname: trimmedNickname });
+      toast.success('Your nickname has been updated successfully!');
+    } catch (err) {
+      toast.error(`Failed to update nickname: ${err}`);
+    } finally {
+      setLoadingNickname(false);
+    }
+  };
 
   const toggleInterest = (interest: string) => {
     setSelectedInterests((prev) =>
@@ -36,9 +91,9 @@ export default function SettingsPage() {
     );
   };
 
-  const handleSave = async () => {
+  const handleSaveInterest = async () => {
     if (!user) return;
-    setLoading(true);
+    setLoadingInterest(true);
     try {
       const res = await fetch('/api/interest', {
         method: 'PUT',
@@ -52,7 +107,7 @@ export default function SettingsPage() {
     } catch (err) {
       toast.error(`Failed to update interests: ${err}`);
     } finally {
-      setLoading(false);
+      setLoadingInterest(false);
     }
   };
 
@@ -63,7 +118,8 @@ export default function SettingsPage() {
       <div className="flex flex-col justify-center items-center text-center gap-10">
         <div>
           <p className="text-pace-3xl text-pace-gray-500">
-            <span className="font-extrabold">Jamie</span> 님 안녕하세요!
+            <span className="font-extrabold">{getUserDisplayName(user)}</span>{' '}
+            님 안녕하세요!
           </p>
           <p className="text-pace-stone-600 font-medium">
             <span>2025-01-01 </span>
@@ -101,8 +157,12 @@ export default function SettingsPage() {
             className="rounded-full border border-[#777777]"
           />
 
-          <Button className="bg-pace-orange-800 rounded-full text-pace-base text-pace-white-500 font-normal">
-            변경
+          <Button
+            className="bg-pace-orange-800 rounded-full text-pace-base text-pace-white-500 font-normal"
+            onClick={handleSaveNickname}
+            disabled={loadingNickname}
+          >
+            {loadingNickname ? '저장중...' : '변경'}
           </Button>
         </div>
 
@@ -128,10 +188,10 @@ export default function SettingsPage() {
           </div>
           <Button
             className="w-[300px] bg-pace-orange-800 text-white rounded-full font-normal"
-            onClick={handleSave}
-            disabled={loading}
+            onClick={handleSaveInterest}
+            disabled={loadingInterest}
           >
-            {loading ? '저장중...' : '변경'}
+            {loadingInterest ? '저장중...' : '변경'}
           </Button>
         </div>
 
