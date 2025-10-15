@@ -47,8 +47,8 @@ model Video {
   price         Float?
   category      VideoCategory?
   thumbnail     String?
-  courseId      String?        @db.Uuid  // Course와의 관계를 위한 외래키
-  course        Course?        @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  courseId      String         @db.Uuid  // 필수로 변경: String? → String
+  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)  // onDelete: SetNull → Cascade
   watchedVideos WatchedVideo[]
 }
 

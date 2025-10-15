@@ -2,16 +2,16 @@ import VideoDetailContainer from '@/components/features/course/video-detail-cont
 
 interface VideoPageProps {
   params: Promise<{
-    videoId: string;
+    id: string;
   }>;
 }
 
 export default async function VideoPage({ params }: VideoPageProps) {
-  const { videoId } = await params;
+  const { id } = await params;
 
   return (
     <div className="min-h-screen bg-white">
-      <VideoDetailContainer videoId={videoId} />
+      <VideoDetailContainer id={id} />
     </div>
   );
 }

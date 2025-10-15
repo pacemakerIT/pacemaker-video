@@ -11,11 +11,11 @@ import Image from 'next/image';
 import { ApiResponse } from '@/types/video-detail';
 
 interface VideoDetailContainerProps {
-  videoId: string;
+  id: string;
 }
 
 export default function VideoDetailContainer({
-  videoId
+  id
 }: VideoDetailContainerProps) {
   const [data, setData] = useState<ApiResponse['data'] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ export default function VideoDetailContainer({
     const fetchVideoDetail = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/videos/detail/${videoId}`);
+        const response = await fetch(`/api/courses/detail/${id}`);
         const result: ApiResponse = await response.json();
 
         if (result.success) {
@@ -40,10 +40,10 @@ export default function VideoDetailContainer({
       }
     };
 
-    if (videoId) {
+    if (id) {
       fetchVideoDetail();
     }
-  }, [videoId]);
+  }, [id]);
 
   if (loading) {
     return (
@@ -140,6 +140,37 @@ export default function VideoDetailContainer({
             items={recommendationItems}
           />
         )}
+
+        {/* {Array.isArray(data.course.videos) && data.course.videos.length > 0 && (
+          <div className="flex flex-col w-full gap-8">
+            <SectionHeader title="강의 영상 목록" />
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+              {data.course.videos.map((v) => (
+                <div
+                  key={v.id}
+                  className="w-full p-4 rounded-lg border border-pace-gray-100 bg-white flex items-center gap-4"
+                >
+                  <div className="w-28 h-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                    <Image
+                      src={v.thumbnail || '/img/course_image1.png'}
+                      alt={v.title || 'video'}
+                      width={112}
+                      height={64}
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <span className="text-pace-base font-semibold">
+                      {v.title || '제목 없는 영상'}
+                    </span>
+                    <span className="text-pace-stone-500 text-sm">
+                      {v.price != null ? `$${v.price}` : ''}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )} */}
 
         {data.instructor && (
           <div className="flex flex-col w-full gap-8">

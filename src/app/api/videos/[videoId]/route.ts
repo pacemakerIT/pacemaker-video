@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function GET(
-  req: Request,
+  request: Request,
   { params }: { params: Promise<{ videoId: string }> }
 ) {
-  const videoId = (await params).videoId;
-
   try {
+    const { videoId } = await params;
+
     // Validate video ID format
     if (!/^[a-zA-Z0-9]+$/.test(videoId)) {
       return NextResponse.json(

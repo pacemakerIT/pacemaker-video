@@ -15,7 +15,7 @@ export default function VideoList() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const res = await fetch('/api/videos');
+        const res = await fetch('/api/courses');
         if (res.ok) {
           const data = await res.json();
           setVideos(data);
