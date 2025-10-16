@@ -1,0 +1,304 @@
+{
+  "courses": [
+    {
+      "id": "a70a7216-45fa-4d40-98a7-3c266d266f82",
+      "title": "북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지",
+      "subtitle": "캐나다 테크기업 OOO이 선택한",
+      "courseTitle": "자기소개서 작성 및 면접 준비까지 하나로!",
+      "description": "실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!",
+      "price": "$999.99",
+      "rating": 5,
+      "reviewCount": 185,
+      "category": "Career Development",
+      "duration": "8시간 30분",
+      "level": "초급",
+      "language": "한국어",
+      "backgroundImage": "/img/video-bg.png",
+      "instructorId": "1d524faa-d43b-4a36-8759-1a3396e26fae",
+      "createdAt": "2024-01-01",
+      "updatedAt": "2024-01-15",
+      "sections": [
+        {
+          "id": "1aa6a3e6-4a80-426a-8b1d-a144b019d291",
+          "type": "content",
+          "title": "OOO가 선택한 이력서!",
+          "subtitle": "북미 개발자 이력서의 효과적인 구성과 키워드",
+          "description": "북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요.",
+          "orderIndex": 1,
+          "items": [
+            {
+              "id": "a70a7216-45fa-4d40-98a7-3c266d266f82",
+              "title": "북미 개발자 채용 공고 사례",
+              "content": "한국과는 다른 스타일의 실제 북미 채용공고 사례를 통해, 최신 채용트렌드를 확인해봅니다.",
+              "icon": null,
+              "orderIndex": 1
+            },
+            {
+              "id": "5005f916-c926-4e6f-a4f5-043e27194f0b",
+              "title": "북미 개발자 채용 공고 분석",
+              "content": "실제 북미 지역의 채용공고를 기반으로, 해당 포지션에 적합한 이력서 전략과 핵심 키워드를 어떻게 효과적으로 반영할 수 있을지 분석합니다.",
+              "icon": null,
+              "orderIndex": 2
+            },
+            {
+              "id": "1d524faa-d43b-4a36-8759-1a3396e26fae",
+              "title": "실제 북미 개발자 취업 성공 이력서",
+              "content": "실제 북미 지역에서 최종 합격한 이력서를 보며, 채용 공고 분석 및 활용 방법을 알아봅니다.",
+              "icon": null,
+              "orderIndex": 3
+            }
+          ]
+        },
+        {
+          "id": "ae0dc183-7abd-4642-bf58-28f3066b65bf",
+          "type": "recommendation",
+          "title": "이런분들께 추천드려요!",
+          "subtitle": null,
+          "description": null,
+          "orderIndex": 2,
+          "items": [
+            {
+              "id": "050f8f6a-e499-4da2-a70d-579d8f96041e",
+              "title": "북미 개발자",
+              "content": "개발 분야 취업에 관심 있으신 분",
+              "icon": "CodeSquare",
+              "orderIndex": 1
+            },
+            {
+              "id": "1aa6a3e6-4a80-426a-8b1d-a144b019d291",
+              "title": "북미 취업이력서",
+              "content": "작성방법이 궁금하신 분",
+              "icon": "FileEdit",
+              "orderIndex": 2
+            }
+          ]
+        },
+        {
+          "id": "1197e1cb-c79f-492e-9680-823ffbf58295",
+          "type": "related",
+          "title": "이 컨텐츠와 함께 보면 좋아요!",
+          "subtitle": null,
+          "description": null,
+          "orderIndex": 3,
+          "items": [
+            {
+              "id": "ae0dc183-7abd-4642-bf58-28f3066b65bf",
+              "title": "React 기초부터 실전까지",
+              "content": "React의 기본 개념부터 실전 프로젝트까지",
+              "icon": null,
+              "orderIndex": 1,
+              "itemId": "course-1",
+              "price": 299,
+              "category": "Marketing",
+              "type": "course",
+              "thumbnail": "/img/course_image1.png"
+            },
+            {
+              "id": "1197e1cb-c79f-492e-9680-823ffbf58295",
+              "title": "Node.js 백엔드 개발",
+              "content": "서버 사이드 개발의 모든 것",
+              "icon": null,
+              "orderIndex": 2,
+              "itemId": "course-2",
+              "price": 399,
+              "category": "Design",
+              "type": "course",
+              "thumbnail": "/img/course_image2.png"
+            },
+            {
+              "id": "b3e68f86-db23-46e1-b9e2-e9c4d81c0d41",
+              "title": "JavaScript 완벽 가이드",
+              "content": "JavaScript의 모든 것을 한 번에",
+              "icon": null,
+              "orderIndex": 3,
+              "itemId": "ebook-1",
+              "price": 199,
+              "category": "IT",
+              "type": "ebook",
+              "thumbnail": "/img/ebook_image1.png"
+            }
+          ]
+        }
+      ],
+      "reviews": [
+        {
+          "id": "1d524faa-d43b-4a36-8759-1a3396e26fae",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Jay",
+          "rating": 5,
+          "reviewDate": "2024.01.15",
+          "reviewContent": "정말 유익한 강의였습니다. 실무에서 바로 적용할 수 있는 내용들이 많아서 도움이 많이 되었어요. 강사님의 설명도 매우 명확하고 이해하기 쉬웠습니다."
+        },
+        {
+          "id": "050f8f6a-e499-4da2-a70d-579d8f96041e",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Jay",
+          "rating": 5,
+          "reviewDate": "2024.01.12",
+          "reviewContent": "처음 배우는 분들에게도 추천하고 싶은 강의입니다. 기초부터 차근차근 설명해주셔서 따라하기 쉬웠어요."
+        },
+        {
+          "id": "1aa6a3e6-4a80-426a-8b1d-a144b019d291",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Jay",
+          "rating": 4,
+          "reviewDate": "2024.01.10",
+          "reviewContent": "프로젝트 실습 부분이 특히 좋았습니다. 이론만 배우는 게 아니라 실제로 만들어보면서 학습할 수 있어서 좋았어요."
+        },
+        {
+          "id": "ae0dc183-7abd-4642-bf58-28f3066b65bf",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Jay",
+          "rating": 5,
+          "reviewDate": "2024.01.08",
+          "reviewContent": "강의 자료가 정말 잘 정리되어 있어서 나중에 다시 보기에도 좋습니다. 강사님의 실무 경험이 잘 녹아들어 있어서 현실적인 조언도 많이 얻을 수 있었어요."
+        }
+      ]
+    },
+    {
+      "id": "5005f916-c926-4e6f-a4f5-043e27194f0b",
+      "title": "React 완전 정복: 기초부터 실전 프로젝트까지",
+      "subtitle": "실무에서 바로 써먹는",
+      "courseTitle": "React로 만드는 현대적인 웹 애플리케이션",
+      "description": "React의 핵심 개념부터 실무에서 사용하는 고급 패턴까지, 실제 프로젝트를 통해 학습해보세요!",
+      "price": "$799.99",
+      "rating": 4.8,
+      "reviewCount": 142,
+      "category": "Web Development",
+      "duration": "12시간 15분",
+      "level": "중급",
+      "language": "한국어",
+      "backgroundImage": "/img/video-bg.png",
+      "instructorId": "050f8f6a-e499-4da2-a70d-579d8f96041e",
+      "createdAt": "2024-02-01",
+      "updatedAt": "2024-02-15",
+      "sections": [
+        {
+          "id": "b3e68f86-db23-46e1-b9e2-e9c4d81c0d41",
+          "type": "content",
+          "title": "React의 핵심을 파악하자!",
+          "subtitle": "컴포넌트 기반 개발의 모든 것",
+          "description": "React는 컴포넌트 기반의 라이브러리입니다. 이 강의에서는 React의 핵심 개념들을 실제 예제를 통해 학습합니다.",
+          "orderIndex": 1,
+          "items": [
+            {
+              "id": "a70a7216-45fa-4d40-98a7-3c266d266f82",
+              "title": "JSX와 컴포넌트",
+              "content": "JSX 문법과 함수형 컴포넌트, 클래스형 컴포넌트의 차이점을 알아봅니다.",
+              "icon": null,
+              "orderIndex": 1
+            },
+            {
+              "id": "5005f916-c926-4e6f-a4f5-043e27194f0b",
+              "title": "State와 Props",
+              "content": "컴포넌트 간 데이터 전달과 상태 관리 방법을 학습합니다.",
+              "icon": null,
+              "orderIndex": 2
+            }
+          ]
+        }
+      ],
+      "reviews": [
+        {
+          "id": "1197e1cb-c79f-492e-9680-823ffbf58295",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Alice",
+          "rating": 5,
+          "reviewDate": "2024.02.10",
+          "reviewContent": "React의 핵심 개념을 정말 잘 설명해주셔서 이해하기 쉬웠습니다."
+        },
+        {
+          "id": "b3e68f86-db23-46e1-b9e2-e9c4d81c0d41",
+          "profileImage": "/img/instructor-image.png",
+          "profileName": "Bob",
+          "rating": 4,
+          "reviewDate": "2024.02.08",
+          "reviewContent": "실습 위주로 진행되어서 따라하기 좋았어요."
+        }
+      ]
+    }
+  ],
+  "instructors": [
+    {
+      "id": "1d524faa-d43b-4a36-8759-1a3396e26fae",
+      "name": "Raphael. Lee",
+      "profileImage": "/img/instructor-image.png",
+      "description": "I've been managing multicultural teams for over 19 years. And blessed to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.",
+      "careers": [
+        {
+          "id": "a70a7216-45fa-4d40-98a7-3c266d266f82",
+          "period": "2019 ~",
+          "position": "Managing Director at Pacemaker",
+          "orderIndex": 1
+        },
+        {
+          "id": "5005f916-c926-4e6f-a4f5-043e27194f0b",
+          "period": "2015 ~ 2019",
+          "position": "Director of Operations at Metanet",
+          "orderIndex": 2
+        },
+        {
+          "id": "1d524faa-d43b-4a36-8759-1a3396e26fae",
+          "period": "2009 ~ 2014",
+          "position": "Business Development Manager at People In Biz Corp.",
+          "orderIndex": 3
+        },
+        {
+          "id": "050f8f6a-e499-4da2-a70d-579d8f96041e",
+          "period": "2004 ~ 2008",
+          "position": "Purchaser at InterContinental Hotels Group",
+          "orderIndex": 4
+        }
+      ]
+    },
+    {
+      "id": "050f8f6a-e499-4da2-a70d-579d8f96041e",
+      "name": "김개발",
+      "profileImage": "/img/instructor-image.png",
+      "description": "5년간 React 개발 경험을 바탕으로 실무 중심의 강의를 제공합니다. 현대적인 웹 개발 트렌드를 반영한 실용적인 강의를 지향합니다.",
+      "careers": [
+        {
+          "id": "1aa6a3e6-4a80-426a-8b1d-a144b019d291",
+          "period": "2022 ~",
+          "position": "Senior Frontend Developer at TechCorp",
+          "orderIndex": 1
+        },
+        {
+          "id": "ae0dc183-7abd-4642-bf58-28f3066b65bf",
+          "period": "2019 ~ 2022",
+          "position": "Frontend Developer at StartupCo",
+          "orderIndex": 2
+        }
+      ]
+    }
+  ],
+  "globalRelatedItems": [
+    {
+      "id": "course-1",
+      "title": "React 기초부터 실전까지",
+      "content": "React의 기본 개념부터 실전 프로젝트까지",
+      "price": 299,
+      "category": "Marketing",
+      "type": "course",
+      "thumbnail": "/img/course_image1.png"
+    },
+    {
+      "id": "course-2",
+      "title": "Node.js 백엔드 개발",
+      "content": "서버 사이드 개발의 모든 것",
+      "price": 399,
+      "category": "Design",
+      "type": "course",
+      "thumbnail": "/img/course_image2.png"
+    },
+    {
+      "id": "ebook-1",
+      "title": "JavaScript 완벽 가이드",
+      "content": "JavaScript의 모든 것을 한 번에",
+      "price": 199,
+      "category": "IT",
+      "type": "ebook",
+      "thumbnail": "/img/ebook_image1.png"
+    }
+  ]
+}
