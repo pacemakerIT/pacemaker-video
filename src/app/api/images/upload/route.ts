@@ -11,6 +11,7 @@ export async function POST(req: Request) {
     const table = formData.get('table') as string;
     const column = formData.get('column') as string;
     const recordId = formData.get('recordId') as string;
+    const courseId = formData.get('courseId') as string | null;
 
     if (!file) {
       return NextResponse.json({ error: 'File Not Found' }, { status: 400 });
@@ -56,11 +57,18 @@ export async function POST(req: Request) {
             data: { [column]: imageUrl }
           });
         } else {
-          // 새 레코드 생성
+          // 새 레코드 생성 - courseId가 필요함
+          if (!courseId || courseId.trim() === '') {
+            return NextResponse.json(
+              { error: 'Missing courseId for new Video creation' },
+              { status: 400 }
+            );
+          }
           updatedRecord = await prisma.video.create({
             data: {
               videoId: `video_${uuid}`,
               title: '새 비디오',
+              course: { connect: { id: courseId } },
               [column]: imageUrl
             }
           });
