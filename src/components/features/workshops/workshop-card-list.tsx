@@ -42,7 +42,7 @@ export default function WorkshopCardList({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id, ItemType.WORKSHOP);
+      removeFavorite(id);
     } else {
       addFavorite(id, ItemType.WORKSHOP);
     }

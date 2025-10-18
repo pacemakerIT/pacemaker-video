@@ -1,18 +1,25 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ItemType } from '@prisma/client'; // enum import
+import { ItemType, VideoCategory } from '@prisma/client'; // enum import
 import { toast } from 'sonner';
 
 export type Favorite = {
   itemId: string;
-  itemType: ItemType; // enum 기반
+  itemType: ItemType;
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  category: VideoCategory | null;
+  startDate: Date | undefined;
+  like: boolean;
 };
 
 interface FavoriteContextType {
   favorites: Favorite[];
   addFavorite: (itemId: string, itemType: ItemType) => Promise<void>;
-  removeFavorite: (itemId: string, itemType: ItemType) => Promise<void>;
+  removeFavorite: (itemId: string) => Promise<void>;
 }
 
 const FavoriteContext = createContext<FavoriteContextType | undefined>(
@@ -46,26 +53,38 @@ export const FavoriteProvider = ({
 
   const addFavorite = async (itemId: string, itemType: ItemType) => {
     try {
-      await fetch('/api/favorites', {
+      const res = await fetch('/api/favorites', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, itemId, itemType })
       });
-      setFavorites((prev) => [...prev, { itemId, itemType }]);
+
+      if (res.status === 409) {
+        const data = await res.json();
+        toast.error(data.error);
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`Failed with status ${res.status}`);
+      }
+
+      const newItem: Favorite = await res.json();
+      setFavorites((prev) => [...prev, newItem]);
+
+      toast.success('Added to favorites!');
     } catch (err) {
       toast.error(`Failed to add favorite:${err}`);
     }
   };
 
-  const removeFavorite = async (itemId: string, itemType: ItemType) => {
+  const removeFavorite = async (itemId: string) => {
     try {
-      await fetch(
-        `/api/favorites?userId=${userId}&itemId=${itemId}&itemType=${itemType}`,
-        { method: 'DELETE' }
-      );
-      setFavorites((prev) =>
-        prev.filter((f) => !(f.itemId === itemId && f.itemType === itemType))
-      );
+      await fetch(`/api/favorites?userId=${userId}&itemId=${itemId}`, {
+        method: 'DELETE'
+      });
+      setFavorites((prev) => prev.filter((f) => !(f.itemId === itemId)));
+      toast.success('Removed from favorites!');
     } catch (err) {
       toast.error(`Failed to remove favorite:${err}`);
     }
