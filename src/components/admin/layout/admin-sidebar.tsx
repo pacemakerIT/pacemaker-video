@@ -21,7 +21,7 @@ export default function AdminSidebar() {
     <aside className="hidden md:flex flex-col w-80 h-full shrink-0 border-r bg-white">
       <nav className="flex flex-col">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
           const activeClass = isActive ? 'font-bold !text-pace-orange-700' : '';
 
           return (
