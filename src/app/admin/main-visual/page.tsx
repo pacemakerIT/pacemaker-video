@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
@@ -138,9 +139,13 @@ function VisualRow({
       <div className="flex items-center gap-6">
         {/* 버튼들 */}
         <div className="flex gap-2">
-          <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
-            수정
-          </button>
+          {/* TODO: DB 완료 후 수정 ID 추가 */}
+          <Link href="/admin/main-visual/1">
+            <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
+              수정
+            </button>
+          </Link>
+          {/* TODO: DB 완료 후 삭제 기능 추가 */}
           <button className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
             삭제
           </button>
@@ -236,6 +241,7 @@ export default function Page() {
     <div className="p-10">
       <div className="flex justify-between pb-10">
         <h1 className="text-pace-3xl font-bold">메인 비주얼 관리</h1>
+        {/* TODO: DB 완료 후 저장 기능 추가 */}
         <button className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded">
           저장
         </button>
@@ -293,12 +299,16 @@ export default function Page() {
         </div>
 
         <div className="flex items-center gap-2 justify-end pb-6">
+          {/* TODO: DB 완료 후 삭제 기능 추가 */}
           <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
             삭제
           </button>
-          <button className="w-[112px] h-[60px] bg-pace-gray-700 !text-pace-lg text-pace-white-500 rounded-[4px] flex items-center justify-center">
-            추가
-          </button>
+
+          <Link href="/admin/main-visual/new">
+            <button className="w-[112px] h-[60px] bg-pace-gray-700 !text-pace-lg text-pace-white-500 rounded-[4px] flex items-center justify-center">
+              추가
+            </button>
+          </Link>
         </div>
       </div>
     </div>
