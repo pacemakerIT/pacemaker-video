@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import SectionHeader from '../../common/section-header';
 
 interface CourseHeaderProps {
   category: string[];
@@ -39,14 +40,10 @@ export default function CourseHeader({
   };
   return (
     <>
-      <div className="flex flex-col justify-start w-full">
-        <h5 className="text-pace-orange-600 text-lg">
-          {'다양한 강의를 한 자리에서'}
-        </h5>
-        <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-          {'페이스메이커 온라인 강의'}
-        </h3>
-      </div>
+      <SectionHeader
+        subtitle="다양한 강의를 한 자리에서"
+        title="페이스메이커 온라인 강의"
+      />
       <div className="w-full flex gap-4 justify-between items-center pt-8 pb-4">
         <div className="flex gap-4">
           {category.map((categoryName) => (

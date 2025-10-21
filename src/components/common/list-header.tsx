@@ -19,7 +19,12 @@ interface ListHeaderProps {
     middle: string;
     end: string;
   };
-  slides?: { title: string; subtitle?: string; buttonText?: string }[];
+  slides?: {
+    title: string;
+    subtitle?: string;
+    buttonText?: string;
+    route?: string;
+  }[];
   autoPlayInterval?: number;
   interval?: number;
 }
