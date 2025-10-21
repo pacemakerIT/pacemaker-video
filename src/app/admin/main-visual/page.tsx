@@ -83,7 +83,9 @@ function VisualRow({
       </div>
 
       {/* 순서 */}
-      <div className="w-8 text-pace-stone-500 text-pace-sm">{index + 1}</div>
+      <div className="w-8 text-pace-stone-500 text-pace-sm text-center">
+        {index + 1}
+      </div>
 
       {/* 썸네일 */}
       <div className="w-40">
@@ -118,7 +120,7 @@ function VisualRow({
               {value === 'public' ? '공개중' : '비공개'}
             </span>
           </SelectTrigger>
-          <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md !text-pace-base">
+          <SelectContent className="bg-white border border-pace-gray-200 shadow-md rounded-md !text-pace-base">
             <SelectItem
               value="public"
               className="!text-pace-base text-pace-gray-700 font-bold"

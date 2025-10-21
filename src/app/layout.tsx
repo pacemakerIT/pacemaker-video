@@ -60,7 +60,7 @@ function CartWrapper({ children }: { children: React.ReactNode }) {
     <CartProvider userId={user?.id ?? ''}>
       <html lang="en" style={{ colorScheme: 'light' }}>
         <body>
-          <main className="container">{children}</main>
+          <main className="w-full">{children}</main>
         </body>
       </html>
     </CartProvider>
