@@ -107,10 +107,10 @@ export default function MyPageCard({
                 )}
                 {category && (
                   <CustomBadge
-                    variant={itemCategoryLabel[category] ?? category}
+                    variant={itemCategoryLabel.en[category] ?? category}
                     className="w-fit flex justify-center items-center py-2 px-3"
                   >
-                    {itemCategoryLabel[category] ?? category}
+                    {itemCategoryLabel.en[category] ?? category}
                   </CustomBadge>
                 )}
 
