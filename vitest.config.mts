@@ -6,17 +6,12 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: ['./vitest.setup.ts'],
+    pool: 'forks',
     server: {
       deps: {
         inline: ['parse5', 'jsdom']
-      }
-    },
-    pool: 'forks',
-    environmentOptions: {
-      jsdom: {
-        resources: 'usable'
       }
     }
   },
