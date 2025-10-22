@@ -45,7 +45,7 @@ export default function CourseList() {
   }, [currentCategory, allCards]);
 
   return (
-    <div className="w-[1200px] items-center mx-auto justify-center flex flex-col">
+    <div className="w-[1200px] items-center mx-auto justify-center flex flex-col ">
       {loading ? (
         <p className="p-4">📡 강의 불러오는 중...</p>
       ) : (

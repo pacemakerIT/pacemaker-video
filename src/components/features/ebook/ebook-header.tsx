@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import SectionHeader from '../../common/section-header';
 
 interface EbookHeaderProps {
   category: string[];
@@ -45,14 +46,10 @@ export default function EbookHeader({
   return (
     <>
       {/* 타이틀 */}
-      <div className="flex flex-col justify-start w-full">
-        <h5 className="text-pace-orange-600 text-lg">
-          {'필요한 정보만 쏙쏙 골라보는'}
-        </h5>
-        <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-          {'페이스메이커 전자책'}
-        </h3>
-      </div>
+      <SectionHeader
+        subtitle="필요한 정보만 쏙쏙 골라보는"
+        title="페이스메이커 전자책"
+      />
 
       {/* 카테고리 & 정렬 */}
       <div className="w-full flex gap-4 justify-between items-center pt-8 pb-4">
