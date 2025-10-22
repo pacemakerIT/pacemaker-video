@@ -7,6 +7,20 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts']
+    setupFiles: ['./vitest.setup.ts'],
+    server: {
+      deps: {
+        inline: ['parse5', 'jsdom']
+      }
+    },
+    pool: 'forks',
+    environmentOptions: {
+      jsdom: {
+        resources: 'usable'
+      }
+    }
+  },
+  define: {
+    global: 'globalThis'
   }
 });
