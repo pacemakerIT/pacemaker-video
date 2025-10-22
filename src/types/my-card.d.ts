@@ -29,6 +29,7 @@ export interface MyCard extends MyCardBase {
   description?: string;
   price?: number;
   like?: boolean;
+  date?: Date;
 }
 
 export interface MyWorkshopCard extends MyCardBase {
