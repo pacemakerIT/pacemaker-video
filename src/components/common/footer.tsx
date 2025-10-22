@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="border-t border-pace-gray-200 bg-white py-8 font-sans">
+    <footer className="border-t border-pace-orange-800 bg-white py-8 font-sans">
       <div className="container mx-auto max-w-screen-xl px-6 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
         {/* 왼쪽: 로고 + 메뉴 */}
         <div className="flex flex-col items-center md:items-start space-y-6">
