@@ -30,6 +30,7 @@ model User {
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
   Cart                  Cart[]
+  interest              Interest[]
 }
 
 model UserRole {
@@ -221,6 +222,18 @@ enum VideoCategory {
 }
 
 enum DocumentCategory {
+  MARKETING
+  IT
+  DESIGN
+  PUBLIC
+  ACCOUNTING
+  SERVICE
+}
+
+enum Interest {
+  INTERVIEW
+  RESUME
+  NETWORKING
   MARKETING
   IT
   DESIGN
