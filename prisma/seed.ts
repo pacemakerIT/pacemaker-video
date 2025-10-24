@@ -1,103 +1,267 @@
-import { PrismaClient, VideoCategory, DocumentCategory } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import courseData from '../public/json/video-detail-mock.json';
+import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
+// UUID 생성 함수 (crypto.randomUUID 사용)
+function generateUUID(): string {
+  return crypto.randomUUID();
+}
+
 async function main() {
-  // Video seed data
-  const videosData = [
+  // Instructors 생성
+  for (const instructorData of courseData.instructors) {
+    await prisma.instructor.upsert({
+      where: { id: instructorData.id },
+      update: {},
+      create: {
+        id: instructorData.id,
+        name: instructorData.name,
+        profileImage: instructorData.profileImage,
+        description: instructorData.description,
+        careers: instructorData.careers // JSON으로 저장
+      }
+    });
+  }
+
+  // Courses 생성
+  for (const courseDataItem of courseData.courses) {
+    await prisma.course.upsert({
+      where: { id: courseDataItem.id },
+      update: {},
+      create: {
+        id: courseDataItem.id,
+        title: courseDataItem.title,
+        subtitle: courseDataItem.subtitle,
+        courseTitle: courseDataItem.courseTitle,
+        description: courseDataItem.description,
+        price: courseDataItem.price,
+        rating: courseDataItem.rating,
+        reviewCount: courseDataItem.reviewCount,
+        category: courseDataItem.category,
+        duration: courseDataItem.duration,
+        level: courseDataItem.level,
+        language: courseDataItem.language,
+        backgroundImage: courseDataItem.backgroundImage,
+        instructorId: courseDataItem.instructorId,
+        createdAt: courseDataItem.createdAt,
+        updatedAt: courseDataItem.updatedAt,
+        sections: courseDataItem.sections, // JSON으로 저장
+        reviews: courseDataItem.reviews // JSON으로 저장
+      }
+    });
+
+    // 각 Course에 대한 Video 생성
+    await prisma.video.upsert({
+      where: { videoId: courseDataItem.id }, // videoId를 course의 id로 사용
+      update: {},
+      create: {
+        videoId: courseDataItem.id,
+        title: courseDataItem.title,
+        description: courseDataItem.description,
+        price: parseFloat(courseDataItem.price?.replace('$', '') || '0'),
+        category: 'INTERVIEW', // 기본값
+        thumbnail: courseDataItem.backgroundImage,
+        courseId: courseDataItem.id // Course와 연결
+      }
+    });
+  }
+
+  // GlobalRelatedItems 생성 (UUID 생성)
+  for (const itemData of courseData.globalRelatedItems) {
+    const newId = generateUUID();
+    await prisma.globalRelatedItem.upsert({
+      where: { id: newId },
+      update: {},
+      create: {
+        id: newId,
+        title: itemData.title,
+        content: itemData.content,
+        price: itemData.price,
+        category: itemData.category,
+        type: itemData.type,
+        thumbnail: itemData.thumbnail
+      }
+    });
+  }
+
+  // 1) 목업 강사 보장 (없으면 생성)
+  const mockInstructorId = randomUUID();
+  await prisma.instructor.upsert({
+    where: { id: mockInstructorId },
+    update: {},
+    create: {
+      id: mockInstructorId,
+      name: 'Mock Instructor',
+      profileImage: '/img/instructor-image.png',
+      description: '시드 데이터용 Mock 강사입니다.',
+      careers: [
+        { period: '2020 ~', position: 'Senior Instructor at PaceUP' },
+        { period: '2016 ~ 2020', position: 'Frontend Engineer at TechCorp' }
+      ]
+    }
+  });
+
+  // 2) 공통 섹션/리뷰 템플릿
+  const buildSections = (n: number) => [
     {
-      videoId: 'wistia_gitlab_interview_001',
-      title: 'GitLab 기반 자기소개서 작성법 (기초)',
-      description:
-        '2-30대 취준생을 위한 GitLab 활용 자기소개서 및 면접 준비 가이드입니다. 첫 번째 스텝을 함께하세요!',
-      price: 2800.0,
-      category: VideoCategory.RESUME
+      id: randomUUID(),
+      type: 'content',
+      title: `콘텐츠 소개 섹션 ${n}`,
+      subtitle: '핵심 내용을 한눈에',
+      description: '이 강의는 실무에서 바로 적용 가능한 내용을 담고 있습니다.',
+      orderIndex: 1,
+      items: [
+        {
+          id: randomUUID(),
+          title: '개요',
+          content: '강의 전체 개요를 설명합니다.',
+          icon: null,
+          orderIndex: 1
+        },
+        {
+          id: randomUUID(),
+          title: '핵심 주제',
+          content: '핵심 주제를 정리합니다.',
+          icon: null,
+          orderIndex: 2
+        }
+      ]
     },
     {
-      videoId: 'wistia_code_interview_001',
-      title: '코딩 면접 대비: 자신감 있는 자기소개서',
-      description:
-        '개발 직군을 위한 특화된 자기소개서 및 면접 준비 전략. 코딩 실력을 효과적으로 어필하세요.',
-      price: 2800.0,
-      category: VideoCategory.INTERVIEW
+      id: randomUUID(),
+      type: 'recommendation',
+      title: '이런 분들께 추천드려요',
+      subtitle: null,
+      description: null,
+      orderIndex: 2,
+      items: [
+        {
+          id: randomUUID(),
+          title: '초급 개발자',
+          content: '기초를 탄탄히 다지고 싶은 분',
+          icon: 'CodeSquare',
+          orderIndex: 1
+        },
+        {
+          id: randomUUID(),
+          title: '이직 준비',
+          content: '포트폴리오를 보강하고 싶은 분',
+          icon: 'FileEdit',
+          orderIndex: 2
+        }
+      ]
     },
     {
-      videoId: 'wistia_online_interview_001',
-      title: '온라인 면접 특화 자기소개서와 스피치',
-      description:
-        'JOIN US ONLINE! 비대면 면접에 최적화된 자기소개서 작성법과 전달력 높은 스피치 팁을 드립니다.',
-      price: 2800.0,
-      category: VideoCategory.INTERVIEW
-    },
-    {
-      videoId: 'wistia_gitlab_interview_002', // 고유 ID 유지
-      title: 'GitLab 활용 심화: 프로젝트 경험 어필하기',
-      description:
-        'GitLab으로 관리한 프로젝트 경험을 자기소개서와 면접에서 효과적으로 녹여내는 방법을 알려드립니다.',
-      price: 2800.0,
-      category: VideoCategory.RESUME
-    },
-    {
-      videoId: 'wistia_career_change_001',
-      title: '커리어 전환자를 위한 자기소개서 작성 비법',
-      description:
-        '새로운 분야로 도전하는 당신을 위한 맞춤형 자기소개서 및 면접 준비. 당신의 강점을 찾아드립니다.',
-      price: 2800.0,
-      category: VideoCategory.RESUME
-    },
-    {
-      videoId: 'wistia_frontend_interview_001',
-      title: '프론트엔드 개발자 면접 자기소개 완전정복',
-      description:
-        '프론트엔드 개발자 취업을 위한 자기소개서 작성부터 기술 면접까지 한번에 준비하세요.',
-      price: 2800.0,
-      category: VideoCategory.INTERVIEW
-    },
-    {
-      videoId: 'wistia_backend_interview_001',
-      title: '백엔드 개발자 면접 자기소개 핵심 전략',
-      description:
-        '백엔드 개발자로서의 역량을 어필하는 자기소개서 작성법과 면접 성공 노하우를 공유합니다.',
-      price: 2800.0,
-      category: VideoCategory.INTERVIEW
-    },
-    {
-      videoId: 'wistia_data_analyst_interview_001',
-      title: '데이터 분석가 취업 자기소개서와 포트폴리오',
-      description:
-        '데이터 분석가로 커리어를 시작하거나 이직하려는 분들을 위한 자기소개서 및 포트폴리오 구성 팁입니다.',
-      price: 2800.0,
-      category: VideoCategory.RESUME
+      id: randomUUID(),
+      type: 'related',
+      title: '함께 보면 좋은 컨텐츠',
+      subtitle: null,
+      description: null,
+      orderIndex: 3,
+      items: [
+        {
+          id: randomUUID(),
+          title: 'React 기본',
+          content: '핵심 개념 요약',
+          icon: null,
+          orderIndex: 1,
+          itemId: 'course-1',
+          price: 199,
+          category: 'IT',
+          type: 'course',
+          thumbnail: '/img/course_image1.png'
+        },
+        {
+          id: randomUUID(),
+          title: 'Node.js 입문',
+          content: '서버 사이드 시작',
+          icon: null,
+          orderIndex: 2,
+          itemId: 'course-2',
+          price: 249,
+          category: 'IT',
+          type: 'course',
+          thumbnail: '/img/course_image2.png'
+        }
+      ]
     }
   ];
 
-  for (const videoData of videosData) {
-    const video = await prisma.video.upsert({
-      where: { videoId: videoData.videoId },
-      update: videoData,
-      create: videoData
+  const buildReviews = () => [
+    {
+      id: 1,
+      profileImage: '/img/instructor-image.png',
+      profileName: 'Alice',
+      rating: 5,
+      reviewDate: '2024.03.01',
+      reviewContent: '매우 유익했습니다.'
+    },
+    {
+      id: 2,
+      profileImage: '/img/instructor-image.png',
+      profileName: 'Bob',
+      rating: 4,
+      reviewDate: '2024.03.02',
+      reviewContent: '실무에 도움됐어요.'
+    }
+  ];
+
+  // 3) 코스/비디오 7개 생성
+  for (let i = 1; i <= 7; i++) {
+    const courseId = randomUUID();
+    const title = `Mock Course ${i}`;
+    const priceStr = `${(99 + i * 10).toFixed(2)}`;
+
+    await prisma.course.upsert({
+      where: { id: courseId },
+      update: {},
+      create: {
+        id: courseId,
+        title,
+        subtitle: `부제 ${i}`,
+        courseTitle: `코스 타이틀 ${i}`,
+        description: `이 코스는 Mock 데이터 ${i} 입니다.`,
+        price: priceStr,
+        rating: 4 + (i % 2) * 0.5,
+        reviewCount: 100 + i,
+        category: 'IT',
+        duration: `${6 + i}시간`,
+        level: i % 2 === 0 ? '초급' : '중급',
+        language: '한국어',
+        backgroundImage: '/img/course_image1.png',
+        instructorId: mockInstructorId,
+        createdAt: '2024-03-01',
+        updatedAt: '2024-03-15',
+        sections: buildSections(i),
+        reviews: buildReviews()
+      }
     });
-    // eslint-disable-next-line no-console
-    console.log(
-      `Created/Updated video with id: ${video.id}, videoId: ${video.videoId}`
-    );
+
+    await prisma.video.upsert({
+      where: { videoId: courseId },
+      update: {},
+      create: {
+        videoId: courseId, // 코스와 동일한 식별자 사용
+        title: `${title} - 소개 영상`,
+        description: '코스 소개 및 커리큘럼 안내',
+        price: Number(priceStr.replace('$', '')),
+        category: 'INTERVIEW',
+        thumbnail: '/img/video-bg.png',
+        courseId: courseId // FK로 연결
+      }
+    });
   }
 
-  // add category to document
-  const result = await prisma.document.updateMany({
-    data: { category: DocumentCategory.ACCOUNTING } // 모든 row에 ACCOUNTING 추가
-  });
-
-  console.log(`Updated ${result.count} documents with category RESUME`);
+  console.log('Seed data created successfully!');
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    // eslint-disable-next-line no-console
-    console.error('Error during video/workshop seeding:', e);
-    await prisma.$disconnect();
+  .catch((e) => {
+    console.error(e);
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });

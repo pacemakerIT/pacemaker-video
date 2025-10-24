@@ -43,7 +43,7 @@ function FavoriteWrapper({ children }: { children: React.ReactNode }) {
           {/* admin 경로가 아닐 때만 공용 Header 표시 */}
           {!isAdmin && <Header />}
 
-          <main className={!isAdmin ? 'container' : ''}>{children}</main>
+          <main className={!isAdmin ? '' : ''}>{children}</main>
           <Toaster />
 
           {!isAdmin && <Footer />}

@@ -42,7 +42,7 @@ export default function DetailReviewsSection({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex justify-start items-center">
-        <SectionHeader title={title} />
+        <SectionHeader title={title} className={'!w-fit'} />
         <div className="flex items-center justify-start gap-2 ml-4">
           <span className="text-xl font-medium">{rating} / 5</span>
           <div className="flex items-center gap-1">

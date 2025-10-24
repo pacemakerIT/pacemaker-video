@@ -63,7 +63,7 @@ export default function DetailHeroSection({
       <div className="absolute inset-0 bg-black/40"></div>
       <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
-        <div className="w-[60%] flex flex-col justify-center items-start px-12 relative z-10">
+        <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
           <div className="text-white/80 text-pace-lg font-medium mb-4">
             {subtitle}
           </div>
@@ -87,7 +87,7 @@ export default function DetailHeroSection({
             </p>
             <div className="flex justify-between items-center text-pace-lg">
               <span>{priceLabel}</span>
-              <p className="text-pace-gray-500">{price}</p>
+              <p className="text-pace-gray-500">${price}</p>
             </div>
             <div className="flex gap-3 justify-between items-center">
               <Button

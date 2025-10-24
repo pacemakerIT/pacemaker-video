@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { render, screen } from '@testing-library/react';
 import MainReviewContainer from '../main-review-container';
 import React from 'react';

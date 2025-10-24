@@ -17,7 +17,14 @@ export async function GET() {
 // Create new video
 export async function POST(req: Request) {
   try {
-    const { videoId, title, description, price } = await req.json();
+    const { videoId, title, description, price, courseId } = await req.json();
+
+    if (!courseId || String(courseId).trim() === '') {
+      return NextResponse.json(
+        { error: 'courseId is required to create a Video' },
+        { status: 400 }
+      );
+    }
 
     // Check if the video already exists
     const existingVideo = await prisma.video.findUnique({
@@ -32,7 +39,13 @@ export async function POST(req: Request) {
     }
 
     const newVideo = await prisma.video.create({
-      data: { videoId, title, description, price }
+      data: {
+        videoId,
+        title,
+        description,
+        price,
+        course: { connect: { id: courseId } }
+      }
     });
 
     return NextResponse.json(newVideo, { status: 201 });
