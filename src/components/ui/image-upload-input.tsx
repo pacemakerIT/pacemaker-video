@@ -19,21 +19,22 @@ export default function ImageUploadInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
+  // props는 수정할 수 없으므로 내부에서 따로 상태로 관리
+  const [localImageUrl, setLocalImageUrl] = useState<string | null>(
+    imageUrl || null
+  );
+
   // 파일이 바뀔 때마다 미리보기 생성
   useEffect(() => {
     if (value) {
       // 새 파일이 선택된 경우 → objectURL 생성
       const url = URL.createObjectURL(value);
       setPreview(url);
-      return () => URL.revokeObjectURL(url); // 메모리 해제
+      setLocalImageUrl(null); // 새 파일 선택 시 기존 이미지 제거
+      return () => URL.revokeObjectURL(url);
     }
     setPreview(null);
   }, [value]);
-
-  // input 클릭 트리거
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
 
   // 파일 선택 시
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,8 +44,10 @@ export default function ImageUploadInput({
 
   // 파일 제거 시
   const handleRemove = () => {
-    onChange?.(null);
+    onChange?.(null); // 부모에게도 null 전달
     setPreview(null);
+    setLocalImageUrl(null); // 기존 이미지도 제거
+
     if (fileInputRef.current) {
       fileInputRef.current.value = ''; // input 초기화
     }
@@ -53,10 +56,10 @@ export default function ImageUploadInput({
   return (
     <div className="w-full">
       {/* 업로드 전 + 기존 이미지 없음 */}
-      {!value && !imageUrl ? (
+      {!value && !localImageUrl ? (
         <div
           className="flex items-center border border-pace-gray-300 rounded bg-white cursor-pointer w-full h-[48px]"
-          onClick={handleClick}
+          onClick={() => fileInputRef.current?.click()}
         >
           <span className="flex-1 px-3 text-pace-base text-pace-stone-800 truncate">
             {placeholder}
@@ -81,7 +84,7 @@ export default function ImageUploadInput({
           {/* 썸네일 (새 파일 있으면 preview, 없으면 기존 imageUrl) */}
           {(preview || imageUrl) && (
             <Image
-              src={preview || imageUrl!}
+              src={preview || localImageUrl!}
               alt="preview"
               width={159}
               height={106}
