@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useClerk } from '@clerk/nextjs';
-import { useUserContext } from '@/app/context/user-context';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,8 +31,6 @@ export default function UserDropdown() {
     };
   }, [isOpen]);
 
-  const displayName = user?.name || user?.email?.split('@')[0] || '회원';
-
   return (
     <div className="relative" ref={dropdownRef}>
       {/* 사용자 프로필 + 이름 클릭 시 드롭다운 열림 */}
@@ -42,7 +40,7 @@ export default function UserDropdown() {
       >
         <Image src="/icons/user.svg" alt="유저 아이콘" width={20} height={20} />
         <span className="text-pace-base text-pace-black-500 font-medium">
-          {displayName}
+          {getUserDisplayName(user)}
         </span>
         <span className="text-pace-base text-pace-black-500 font-normal">
           님

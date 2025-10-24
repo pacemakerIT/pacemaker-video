@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 
 const menuItems = [
   { label: '마이페이지', href: '/mypage' },
@@ -13,7 +14,9 @@ const menuItems = [
 ];
 
 export default function MyPageSidebar() {
+  const { user } = useUserContext();
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <aside className="hidden md:flex flex-col w-80 h-full shrink-0 border-r bg-white py-8">
@@ -29,6 +32,7 @@ export default function MyPageSidebar() {
           type="button"
           className="absolute -top-5 right-3"
           aria-label="환경설정"
+          onClick={() => router.push('/mypage/setting')}
         >
           <Image
             src="/icons/btn_setting.svg"
@@ -39,7 +43,9 @@ export default function MyPageSidebar() {
           />
         </button>
 
-        <h2 className="text-pace-xl text-pace-gray-500 font-bold">Jamie</h2>
+        <h2 className="text-pace-xl text-pace-gray-500 font-bold">
+          {getUserDisplayName(user)}
+        </h2>
       </div>
 
       <nav className="flex flex-col">
