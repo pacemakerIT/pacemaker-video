@@ -61,7 +61,8 @@ export default function CreateMainVisualPage() {
             endTime: '00:00',
             image: 'null', // 서버에서 URL 받는 경우는 다르게 처리
             imageUrl: '/img/ebook_image1.png', // 서버에서 받은 기존 이미지
-            link: '연결된 링크입니다'
+            link: 'https://example.com',
+            linkName: '연결된 링크입니다'
           }}
           onSubmit={handleEdit}
         />

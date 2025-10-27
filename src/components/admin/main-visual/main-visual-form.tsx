@@ -47,11 +47,11 @@ export default function MainVisualForm({
   );
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || '');
   const [link, setLink] = useState(initialData?.link || '');
-  const [linkName] = useState(initialData?.linkName || '');
+  const [linkName, setLinkName] = useState(initialData?.linkName || '');
   const [tempLink, setTempLink] = useState(initialData?.link || '');
   const [tempLinkName, setTempLinkName] = useState(initialData?.linkName || '');
 
-  // 🔹추가: 에러 상태 관리
+  // 추가: 에러 상태 관리
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
@@ -68,6 +68,20 @@ export default function MainVisualForm({
       toast.error('시작일은 종료일보다 앞서야 합니다.');
       return;
     }
+
+    // 날짜가 같은 경우 시간 비교도 함께 확인
+    if (
+      date &&
+      endDate &&
+      startTime &&
+      endTime &&
+      date.getTime() === endDate.getTime()
+    ) {
+      if (startTime > endTime) {
+        toast.error('시작시간은 종료시간보다 앞서야 합니다.');
+        return;
+      }
+    }
     setStartDate(date);
   };
 
@@ -77,6 +91,20 @@ export default function MainVisualForm({
       toast.error('종료일은 시작일보다 뒤여야 합니다.');
       return;
     }
+    // 날짜가 같은 경우 시간 비교도 함께 확인
+    if (
+      startDate &&
+      date &&
+      startTime &&
+      endTime &&
+      startDate.getTime() === date.getTime()
+    ) {
+      if (endTime < startTime) {
+        toast.error('종료시간은 시작시간보다 뒤여야 합니다.');
+        return;
+      }
+    }
+
     setEndDate(date);
   };
 
@@ -335,7 +363,8 @@ export default function MainVisualForm({
                         }));
                         return;
                       }
-                      setLink(tempLinkName);
+                      setLink(tempLink);
+                      setLinkName(tempLinkName);
                     }}
                     className="absolute right-3 top-1/2 -translate-y-1/2"
                   >
