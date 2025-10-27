@@ -11,17 +11,6 @@ vi.mock('@clerk/nextjs', () => ({
   useAuth: () => mockUseAuth()
 }));
 
-// next/image mocking
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: Record<string, unknown>) => {
-    // priority 속성 제거
-    const { ...restProps } = props;
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt="" {...restProps} />;
-  }
-}));
-
 describe('MainReviewContainer', () => {
   beforeEach(() => {
     // 기본적으로 로그인하지 않은 상태로 설정

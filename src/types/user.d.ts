@@ -3,6 +3,7 @@ export interface User {
   clerkId: string;
   email: string;
   name: string | null;
+  nickname: string | null;
   image: string | null;
   roleId: string;
   isSubscribed: boolean;

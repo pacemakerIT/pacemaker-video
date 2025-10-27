@@ -1,8 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ItemType, VideoCategory } from '@prisma/client'; // enum import
+import { ItemType, VideoCategory } from '@prisma/client';
 import { toast } from 'sonner';
+import { useUserContext } from './user-context';
 
 export type Favorite = {
   itemId: string;
@@ -27,12 +28,12 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(
 );
 
 export const FavoriteProvider = ({
-  userId,
   children
 }: {
-  userId: string;
   children: React.ReactNode;
 }) => {
+  const { user } = useUserContext();
+  const userId = user?.id;
   const [favorites, setFavorites] = useState<Favorite[]>([]);
 
   useEffect(() => {
