@@ -12,14 +12,15 @@ export default function WorkshopList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const fetchWorkshops = async () => {
       try {
-        const res = await fetch('/api/videos');
+        const res = await fetch('/api/workshops');
         if (res.ok) {
           const data = await res.json();
-          setWorkshops(data);
+          // API returns { workshops: [...], count: ... }
+          setWorkshops(data.workshops || []);
         } else {
-          toast('Failed to fetch videos');
+          toast('Failed to fetch workshops');
         }
       } catch (error) {
         toast(`Failed to connect server: ${error}`);
@@ -28,15 +29,15 @@ export default function WorkshopList() {
       }
     };
 
-    fetchVideos();
+    fetchWorkshops();
   }, []);
 
   return (
-    <>
+    <section className="w-full gap-8">
       {loading ? (
-        <p>📡 워크샵 불러오는 중...</p>
+        <p className="text-center">📡 워크샵 불러오는 중...</p>
       ) : (
-        <>
+        <div className="flex flex-col w-full max-w-7xl mx-auto gap-8">
           <div className="flex flex-col justify-start w-full pt-12">
             <h5 className="text-pace-orange-600 text-lg">
               {'다양한 테마로 만나는'}
@@ -61,15 +62,15 @@ export default function WorkshopList() {
             </div>
           </div>
           {workshops.length === 0 ? (
-            <p>📭 등록된 비디오가 없습니다.</p>
+            <p>📭 등록된 워크샵이 없습니다.</p>
           ) : (
             <ImageOverlayCardContainer
               layout={'horizontal'}
               cards={workshops}
             />
           )}
-        </>
+        </div>
       )}
-    </>
+    </section>
   );
 }

@@ -6,7 +6,11 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts']
+    environment: 'happy-dom', // Switch from jsdom to happy-dom
+    setupFiles: ['./vitest.setup.ts'],
+    pool: 'forks'
+  },
+  define: {
+    global: 'globalThis'
   }
 });
