@@ -23,6 +23,7 @@ model User {
   lastLoginAt           DateTime?
   clerkId               String                 @unique
   roleId                String                 @default("USER")
+  interest              Interest[]
   role                  UserRole               @relation(fields: [roleId], references: [id])
   watchedVideos         WatchedVideo[]
   orders                Order[]
@@ -30,7 +31,6 @@ model User {
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
   Cart                  Cart[]
-  interest              Interest[]
 }
 
 model UserRole {
@@ -48,6 +48,8 @@ model Video {
   price         Float?
   category      VideoCategory?
   thumbnail     String?
+  courseId      String         @db.Uuid
+  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
   watchedVideos WatchedVideo[]
 }
 
@@ -64,11 +66,11 @@ model WatchedVideo {
 }
 
 model Document {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId  String   @unique
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId  String            @unique
   title       String?
   description String?
-  uploadDate  DateTime @default(now())
+  uploadDate  DateTime          @default(now())
   price       Float?
   bucketUrl   String
   category    DocumentCategory?
@@ -159,6 +161,48 @@ model Cart {
   @@unique([userId, itemType, itemId])
 }
 
+model Course {
+  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title           String
+  subtitle        String?
+  courseTitle     String?
+  description     String?
+  price           String?
+  rating          Float?
+  reviewCount     Int?
+  category        String?
+  duration        String?
+  level           String?
+  language        String?
+  backgroundImage String?
+  instructorId    String     @db.Uuid
+  createdAt       String?
+  updatedAt       String?
+  sections        Json?
+  reviews         Json?
+  instructor      Instructor @relation(fields: [instructorId], references: [id])
+  videos          Video[]
+}
+
+model Instructor {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  profileImage String?
+  description  String?
+  careers      Json?
+  courses      Course[]
+}
+
+model GlobalRelatedItem {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  content   String
+  price     Float
+  category  String
+  type      String
+  thumbnail String?
+}
+
 enum WorkshopStatus {
   RECRUITING
   CLOSED
@@ -205,4 +249,6 @@ enum ItemType {
   VIDEO
   DOCUMENT
   WORKSHOP
+  COURSE
+  EBOOK
 }

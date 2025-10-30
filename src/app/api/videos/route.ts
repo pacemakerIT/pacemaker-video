@@ -17,7 +17,21 @@ export async function GET() {
 // Create new video
 export async function POST(req: Request) {
   try {
-    const { videoId, title, description, price } = await req.json();
+    const body = await req.json();
+    const { videoId, title, description, price, courseId } = body;
+
+    if (!courseId || String(courseId).trim() === '') {
+      return NextResponse.json(
+        { error: 'courseId is required to create a Video' },
+        { status: 400 }
+      );
+    }
+    if (!courseId || typeof courseId !== 'string') {
+      return NextResponse.json(
+        { error: 'courseId is required and must be a string' },
+        { status: 400 }
+      );
+    }
 
     // Check if the video already exists
     const existingVideo = await prisma.video.findUnique({
@@ -31,22 +45,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // The VideoCreateInput type expects a 'course' field (relation).
-    // Here, you need to ensure you include the required 'course' when creating a video.
-    // For demonstration purposes, let's assume a 'courseId' is provided in the request body.
-
-    const { courseId } = await req.json();
-
     const newVideo = await prisma.video.create({
       data: {
         videoId,
         title,
         description,
         price,
-        course: {
-          connect: { id: courseId }
-        }
-      }
+        courseId
+      } as import('@prisma/client').Prisma.VideoUncheckedCreateInput
     });
 
     return NextResponse.json(newVideo, { status: 201 });

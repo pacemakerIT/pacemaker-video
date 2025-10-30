@@ -3,12 +3,24 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), react()],
+  plugins: [
+    tsconfigPaths(),
+    react({
+      babel: {
+        plugins: ['styled-jsx/babel']
+      }
+    })
+  ],
   test: {
     globals: true,
-    environment: 'happy-dom', // Switch from jsdom to happy-dom
-    setupFiles: ['./vitest.setup.ts'],
-    pool: 'forks'
+    environment: 'happy-dom',
+    setupFiles: ['./vitest.setup.tsx'],
+    pool: 'forks',
+    server: {
+      deps: {
+        inline: ['parse5', 'jsdom']
+      }
+    }
   },
   define: {
     global: 'globalThis'
