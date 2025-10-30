@@ -49,6 +49,8 @@ model Video {
   price         Float?
   category      VideoCategory?
   thumbnail     String?
+  courseId      String         @db.Uuid  // 필수로 변경: String? → String
+  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)  // onDelete: SetNull → Cascade
   watchedVideos WatchedVideo[]
 }
 
@@ -160,6 +162,53 @@ model Cart {
   @@unique([userId, itemType, itemId])
 }
 
+
+// JSON 데이터 구조에 맞는 3개 테이블 추가
+model Course {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title           String
+  subtitle        String?
+  courseTitle     String?
+  description     String?
+  price           String?  // "$999.99" 형태
+  rating          Float?
+  reviewCount     Int?
+  category        String?
+  duration        String?
+  level           String?
+  language        String?
+  backgroundImage String?
+  instructorId    String   @db.Uuid
+  createdAt       String?  // "2024-01-01" 형태
+  updatedAt       String?
+  // JSON의 sections와 reviews를 JSON 필드로 저장
+  sections        Json?    // sections 배열을 JSON으로 저장
+  reviews         Json?    // reviews 배열을 JSON으로 저장
+  instructor      Instructor @relation(fields: [instructorId], references: [id])
+  videos          Video[]   // Course에 속한 Video들
+}
+
+model Instructor {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  profileImage  String?
+  description   String?
+  // JSON의 careers를 JSON 필드로 저장
+  careers       Json?    // careers 배열을 JSON으로 저장
+  courses       Course[]
+}
+
+model GlobalRelatedItem {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  content   String
+  price     Float
+  category  String
+  type      String   // "course", "ebook"
+  thumbnail String?
+}
+
+
 enum WorkshopStatus {
   RECRUITING
   CLOSED
@@ -206,4 +255,8 @@ enum ItemType {
   VIDEO
   DOCUMENT
   WORKSHOP
+  COURSE
+  EBOOK
 }
+
+
