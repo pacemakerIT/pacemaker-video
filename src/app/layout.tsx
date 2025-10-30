@@ -31,9 +31,7 @@ export default function RootLayoutWrapper({
                 <FavoriteProvider>
                   {!isAdmin && <Header />}
 
-                  <main className={!isAdmin ? 'container' : ''}>
-                    {children}
-                  </main>
+                  <main className={!isAdmin ? '' : ''}>{children}</main>
                   <Toaster />
 
                   {!isAdmin && <Footer />}
