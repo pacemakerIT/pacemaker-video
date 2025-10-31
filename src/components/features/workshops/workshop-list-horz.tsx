@@ -32,9 +32,9 @@ export default function WorkshopList() {
   }, []);
 
   return (
-    <>
+    <section className="w-full gap-8">
       {loading ? (
-        <p>📡 워크샵 불러오는 중...</p>
+        <p className="text-center">📡 워크샵 불러오는 중...</p>
       ) : (
         <>
           <div className="flex flex-col justify-start w-full pt-12">
@@ -70,6 +70,6 @@ export default function WorkshopList() {
           )}
         </>
       )}
-    </>
+    </section>
   );
 }
