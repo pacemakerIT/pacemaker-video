@@ -20,7 +20,7 @@ export default function VideoList() {
           const data = await res.json();
           setVideos(data);
         } else {
-          toast('Failed to fetch videos');
+          toast('Failed to fetch courses');
         }
       } catch (error) {
         toast(`Failed to connect server: ${error}`);
@@ -37,13 +37,13 @@ export default function VideoList() {
       {loading ? (
         <p className="text-center">📡 비디오 불러오는 중...</p>
       ) : (
-        <div className="w-full max-w-7xl mx-auto">
+        <div className="flex flex-col w-full max-w-7xl mx-auto gap-8">
           {/* Header Section */}
           <div className="flex flex-col justify-center">
             <h5 className="text-pace-orange-600 text-lg">
               {'북미 취업의 A to Z'}
             </h5>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center ">
               <h3 className="text-pace-black-500 text-pace-3xl font-bold">
                 {'페이스메이커 온라인 강의'}
               </h3>

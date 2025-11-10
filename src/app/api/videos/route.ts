@@ -17,11 +17,18 @@ export async function GET() {
 // Create new video
 export async function POST(req: Request) {
   try {
-    const { videoId, title, description, price, courseId } = await req.json();
+    const body = await req.json();
+    const { videoId, title, description, price, courseId } = body;
 
     if (!courseId || String(courseId).trim() === '') {
       return NextResponse.json(
         { error: 'courseId is required to create a Video' },
+        { status: 400 }
+      );
+    }
+    if (!courseId || typeof courseId !== 'string') {
+      return NextResponse.json(
+        { error: 'courseId is required and must be a string' },
         { status: 400 }
       );
     }
@@ -44,8 +51,8 @@ export async function POST(req: Request) {
         title,
         description,
         price,
-        course: { connect: { id: courseId } }
-      }
+        courseId
+      } as import('@prisma/client').Prisma.VideoUncheckedCreateInput
     });
 
     return NextResponse.json(newVideo, { status: 201 });

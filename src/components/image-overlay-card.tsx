@@ -27,7 +27,7 @@ export default function ImageOverlayCard({
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
       <Link href={`/courses/${itemId}`}>
-        <div className="w-[384px] bg-white rounded-lg hover:shadow-xl dark:bg-gray-950 relative overflow-hidden group">
+        <div className="w-[384px] bg-white rounded-lg dark:bg-gray-950 relative overflow-hidden group transition-transform duration-300 hover:scale-105">
           <button
             role="button"
             aria-label="like"
@@ -50,7 +50,7 @@ export default function ImageOverlayCard({
             <Image
               src={randomImage}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover"
               alt="courses img"
               data-testid="card-image"
             />
