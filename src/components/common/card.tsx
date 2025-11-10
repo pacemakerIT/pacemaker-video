@@ -103,8 +103,8 @@ export default function Card({
                   {categoryMap[category] || category}
                 </CustomBadge>
               )}
-              <div className="w-full flex justify-between items-center">
-                <h3 className="text-2xl font-semibold pace-gray-500">
+              <div className="w-full flex justify-between gap-2 items-center">
+                <h3 className="text-2xl font-semibold pace-gray-500 h-9 overflow-hidden text-ellipsis whitespace-nowrap">
                   {title}
                 </h3>
                 <span className="text-[28px] font-bold">{`$${price}`}</span>
