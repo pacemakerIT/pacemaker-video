@@ -16,6 +16,7 @@ model User {
   email                 String                 @unique
   name                  String?
   image                 String?
+  nickname              String?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   isSubscribed          Boolean                @default(false)
@@ -23,7 +24,6 @@ model User {
   lastLoginAt           DateTime?
   clerkId               String                 @unique
   roleId                String                 @default("USER")
-  interest              Interest[]
   role                  UserRole               @relation(fields: [roleId], references: [id])
   watchedVideos         WatchedVideo[]
   orders                Order[]
@@ -31,78 +31,79 @@ model User {
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
   Cart                  Cart[]
+  interest              Interest[]
 }
 
 model UserRole {
-  id    String @id
-  label String
-  users User[]
+  id                    String                 @id
+  label                 String
+  users                 User[]
 }
 
 model Video {
-  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  videoId       String         @unique
-  title         String?
-  description   String?
-  uploadDate    DateTime       @default(now())
-  price         Float?
-  category      VideoCategory?
-  thumbnail     String?
-  courseId      String         @db.Uuid
-  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  watchedVideos WatchedVideo[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  videoId               String                 @unique
+  title                 String?
+  description           String?
+  uploadDate            DateTime               @default(now())
+  price                 Float?
+  category              VideoCategory?
+  thumbnail             String?
+  courseId              String                 @db.Uuid
+  course                Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  watchedVideos         WatchedVideo[]
 }
 
 model WatchedVideo {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
-  watchedAt DateTime @default(now())
-  progress  Float
-  videoId   String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String                 @db.Uuid
+  watchedAt             DateTime               @default(now())
+  progress              Float
+  videoId               String                 @db.Uuid
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video                 Video                  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
 }
 
 model Document {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId  String            @unique
-  title       String?
-  description String?
-  uploadDate  DateTime          @default(now())
-  price       Float?
-  bucketUrl   String
-  category    DocumentCategory?
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId            String                 @unique
+  title                 String?
+  description           String?
+  uploadDate            DateTime               @default(now())
+  price                 Float?
+  bucketUrl             String
+  category              DocumentCategory?
 }
 
 model Workshop {
-  id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title         String
-  description   String?
-  startDate     DateTime
-  endDate       DateTime
-  price         Float?
-  locationOrUrl String?
-  status        WorkshopStatus         @default(RECRUITING)
-  instructorId  String                 @db.Uuid
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
-  thumbnail     String?
-  instructor    User                   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
-  registrations WorkshopRegistration[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                 String
+  description           String?
+  startDate             DateTime
+  endDate               DateTime
+  price                 Float?
+  locationOrUrl         String?
+  status                WorkshopStatus         @default(RECRUITING)
+  instructorId          String                 @db.Uuid
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  thumbnail             String?
+  instructor            User                   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
+  registrations         WorkshopRegistration[]
 }
 
 model WorkshopRegistration {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId       String   @db.Uuid
-  workshopId   String   @db.Uuid
-  registeredAt DateTime @default(now())
-  attended     Boolean  @default(false)
-  orderId      String?  @db.Uuid
-  order        Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workshop     Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String                 @db.Uuid
+  workshopId            String                 @db.Uuid
+  registeredAt          DateTime               @default(now())
+  attended              Boolean                @default(false)
+  orderId               String?                @db.Uuid
+  order                 Order?                 @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workshop              Workshop               @relation(fields: [workshopId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workshopId])
 }
@@ -123,84 +124,85 @@ model Order {
 }
 
 model OrderItem {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId         String   @db.Uuid
-  priceAtPurchase Float
-  quantity        Int      @default(1)
-  itemId          String
-  itemType        ItemType
-  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId               String                 @db.Uuid
+  priceAtPurchase       Float
+  quantity              Int                    @default(1)
+  itemId                String
+  itemType              ItemType
+  order                 Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
-  createdAt DateTime @default(now())
-  itemId    String
-  itemType  ItemType
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String                 @db.Uuid
+  createdAt             DateTime               @default(now())
+  itemId                String
+  itemType              ItemType
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemType, itemId])
 }
 
 model Image {
-  id        String   @id @default(uuid())
-  fileName  String
-  url       String
-  createdAt DateTime @default(now())
+  id                    String                 @id @default(uuid())
+  fileName              String
+  url                   String
+  createdAt             DateTime               @default(now())
 }
 
 model Cart {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
-  createdAt DateTime @default(now())
-  itemId    String
-  itemType  ItemType
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                String                 @db.Uuid
+  createdAt             DateTime               @default(now())
+  itemId                String
+  itemType              ItemType
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, itemType, itemId])
 }
 
+// JSON 데이터 구조에 맞는 3개 테이블 추가
 model Course {
-  id              String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title           String
-  subtitle        String?
-  courseTitle     String?
-  description     String?
-  price           String?
-  rating          Float?
-  reviewCount     Int?
-  category        String?
-  duration        String?
-  level           String?
-  language        String?
-  backgroundImage String?
-  instructorId    String     @db.Uuid
-  createdAt       String?
-  updatedAt       String?
-  sections        Json?
-  reviews         Json?
-  instructor      Instructor @relation(fields: [instructorId], references: [id])
-  videos          Video[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                 String
+  subtitle              String?
+  courseTitle           String?
+  description           String?
+  price                 String?                // "$999.99" 형태
+  rating                Float?
+  reviewCount           Int?
+  category              String?
+  duration              String?
+  level                 String?
+  language              String?
+  backgroundImage       String?
+  instructorId          String                 @db.Uuid
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  sections              Json?                  // sections 배열을 JSON으로 저장
+  reviews               Json?                  // reviews 배열을 JSON으로 저장
+  instructor            Instructor             @relation(fields: [instructorId], references: [id])
+  videos                Video[]                // Course에 속한 Video들
 }
 
 model Instructor {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String
-  profileImage String?
-  description  String?
-  careers      Json?
-  courses      Course[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String
+  profileImage          String?
+  description           String?
+  careers               Json?                  // careers 배열을 JSON으로 저장
+  courses               Course[]
 }
 
 model GlobalRelatedItem {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title     String
-  content   String
-  price     Float
-  category  String
-  type      String
-  thumbnail String?
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                 String
+  content               String
+  price                 Float
+  category              String
+  type                  String                 // "course", "ebook"
+  thumbnail             String?
 }
 
 enum WorkshopStatus {
