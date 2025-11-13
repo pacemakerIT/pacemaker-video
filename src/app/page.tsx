@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import WorkshopList from '@/components/features/workshops/workshop-list-horz';
 import MainReviewContainer from '@/components/main-review-container';
 import EbookList from '@/components/features/ebook/ebook-list-horz';
+import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 
 export default async function Home() {
   return (
@@ -55,9 +56,7 @@ export default async function Home() {
           <Button className="h-12 bg-white text-pace-orange-600 border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal ">
             {'온라인 강의 둘러보기'}
           </Button>
-          <Button className="h-12 bg-pace-orange-600 text-white border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal ">
-            {'로그인하고 강의 듣기'}
-          </Button>
+          <LoginOrListenButton />
         </div>
         <VideoList />
         <EbookList />
