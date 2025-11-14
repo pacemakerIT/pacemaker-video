@@ -116,7 +116,7 @@ describe('Card', () => {
 
     await waitFor(() => {
       const link = screen.getByTestId('card-link');
-      expect(link).toHaveAttribute('href', '/courses/1');
+      expect(link).toHaveAttribute('href', '/courses/1'); // 경로 수정
     });
   });
 

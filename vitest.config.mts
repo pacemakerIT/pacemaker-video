@@ -13,7 +13,16 @@ export default defineConfig({
   ],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./vitest.setup.tsx']
+    environment: 'happy-dom',
+    setupFiles: ['./vitest.setup.tsx'],
+    pool: 'forks',
+    server: {
+      deps: {
+        inline: ['parse5', 'jsdom']
+      }
+    }
+  },
+  define: {
+    global: 'globalThis'
   }
 });
