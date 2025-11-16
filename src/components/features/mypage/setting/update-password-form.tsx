@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useClerk, useUser } from '@clerk/nextjs';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -13,6 +14,10 @@ export default function UpdatePasswordForm() {
   const confirmRef = useRef<HTMLInputElement | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const { signOut } = useClerk();
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,27 +66,56 @@ export default function UpdatePasswordForm() {
       </p>
 
       <div className="flex flex-col gap-2">
-        <Input
-          type="password"
-          autoComplete="current-password"
-          placeholder="현재 비밀번호를 입력하세요"
-          ref={currentRef}
-          className="rounded-full border-pace-stone-650"
-        />
-        <Input
-          type="password"
-          autoComplete="new-password"
-          placeholder="새 비밀번호를 입력하세요"
-          ref={newRef}
-          className="rounded-full border-pace-stone-650"
-        />
-        <Input
-          type="password"
-          autoComplete="new-password"
-          placeholder="새 비밀번호를 다시 입력하세요"
-          ref={confirmRef}
-          className="rounded-full border-pace-stone-650"
-        />
+        <div className="relative">
+          <Input
+            type={showCurrentPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            placeholder="현재 비밀번호를 입력하세요"
+            ref={currentRef}
+            className="rounded-full border-pace-stone-650 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-pace-gray-500 hover:text-pace-gray-700"
+          >
+            {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <Input
+            type={showNewPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            placeholder="새 비밀번호를 입력하세요"
+            ref={newRef}
+            className="rounded-full border-pace-stone-650 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-pace-gray-500 hover:text-pace-gray-700"
+          >
+            {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <Input
+            type={showConfirmPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            placeholder="새 비밀번호를 다시 입력하세요"
+            ref={confirmRef}
+            className="rounded-full border-pace-stone-650 pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-pace-gray-500 hover:text-pace-gray-700"
+          >
+            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
       </div>
 
       <Button
