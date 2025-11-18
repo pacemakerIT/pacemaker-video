@@ -15,8 +15,8 @@
       "language": "한국어",
       "backgroundImage": "/img/video-bg.png",
       "instructorId": "1d524faa-d43b-4a36-8759-1a3396e26fae",
-      "createdAt": "2024-01-01",
-      "updatedAt": "2024-01-15",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-15T00:00:00.000Z",
       "sections": [
         {
           "id": "1aa6a3e6-4a80-426a-8b1d-a144b019d291",
@@ -170,8 +170,8 @@
       "language": "한국어",
       "backgroundImage": "/img/video-bg.png",
       "instructorId": "050f8f6a-e499-4da2-a70d-579d8f96041e",
-      "createdAt": "2024-02-01",
-      "updatedAt": "2024-02-15",
+      "createdAt": "2024-02-01T00:00:00.000Z",
+      "updatedAt": "2024-02-15T00:00:00.000Z",
       "sections": [
         {
           "id": "b3e68f86-db23-46e1-b9e2-e9c4d81c0d41",
