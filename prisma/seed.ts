@@ -232,8 +232,8 @@ async function main() {
         language: '한국어',
         backgroundImage: '/img/course_image1.png',
         instructorId: mockInstructorId,
-        createdAt: '2024-03-01',
-        updatedAt: '2024-03-15',
+        createdAt: '2024-03-01T00:00:00.000Z',
+        updatedAt: '2024-03-15T00:00:00.000Z',
         sections: buildSections(i),
         reviews: buildReviews()
       }

@@ -9,6 +9,7 @@ import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 import { itemCategoryLabel } from '@/constants/labels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import UpdatePasswordForm from '@/components/features/mypage/setting/update-password-form';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -19,10 +20,6 @@ export default function SettingsPage() {
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [loadingInterest, setLoadingInterest] = useState(false);
-
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -74,7 +71,6 @@ export default function SettingsPage() {
       const newNickName = await res.json();
       updateUser(newNickName);
 
-      // updateUser({ nickname: trimmedNickname });
       toast.success('Your nickname has been updated successfully!');
     } catch (err) {
       toast.error(`Failed to update nickname: ${err}`);
@@ -196,38 +192,7 @@ export default function SettingsPage() {
         </div>
 
         {/* 비밀번호 변경 */}
-        <div className="w-[300px] flex flex-col  gap-4">
-          <p className="font-medium text-pace-gray-500 text-[20px]">
-            비밀번호 변경
-          </p>
-          <div className="flex flex-col gap-2">
-            <Input
-              type="password"
-              autoComplete="new-password"
-              placeholder="현재 비밀번호를 입력하세요"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="rounded-full border-pace-stone-650"
-            />
-            <Input
-              type="password"
-              placeholder="새 비밀번호를 입력하세요"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="rounded-full border-pace-stone-650"
-            />
-            <Input
-              type="password"
-              placeholder="새 비밀번호를 다시 입력하세요"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="rounded-full border-pace-stone-650"
-            />
-          </div>
-          <Button className="bg-pace-orange-800 text-white rounded-full">
-            변경
-          </Button>
-        </div>
+        <UpdatePasswordForm />
       </div>
     </section>
   );
