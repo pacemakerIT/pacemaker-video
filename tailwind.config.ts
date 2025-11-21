@@ -50,6 +50,7 @@ const config: Config = {
         'pace-purple': { 500: '#9F5BE7' },
         'pace-sand': { 500: '#E3CFBC' },
         'pace-stone': {
+          100: '#FAFAFA',
           200: '#F0F0F0',
           500: '#666666',
           550: '#EEEEEE',
