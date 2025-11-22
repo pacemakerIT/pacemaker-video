@@ -3,6 +3,7 @@
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import TimeInput from '@/components/ui/admin/time-input';
 import Textarea from '@/components/ui/admin/textarea';
+import Input from '@/components/ui/admin/input';
 
 type Props = {
   title: string;
@@ -45,12 +46,11 @@ export default function CourseDetailSection({
           강의 제목
         </label>
         <div className="flex flex-col flex-1">
-          <input
+          <Input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="타이틀명 입력"
-            className="border border-pace-gray-300 rounded p-3"
           />
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function CourseDetailSection({
             value={intro}
             onChange={(e) => setIntro(e.target.value)}
             placeholder="강의 소개 입력"
-            className="h-[200px]" // 필요 시 높이 지정 가능
+            className="h-[200px]"
           />
         </div>
       </div>
@@ -76,12 +76,11 @@ export default function CourseDetailSection({
           동영상 링크
         </label>
         <div className="flex flex-col flex-1">
-          <input
+          <Input
             type="text"
             value={videoLink}
             onChange={(e) => setVideoLink(e.target.value)}
             placeholder="링크 입력"
-            className="border border-pace-gray-300 rounded p-3"
           />
         </div>
       </div>
@@ -96,15 +95,16 @@ export default function CourseDetailSection({
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-pace-gray-500 font-bold">
               $
             </span>
-            <input
+            <Input
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="입력"
               inputMode="numeric"
-              className="w-[240px] h-[48px] border border-pace-gray-300 rounded p-3 pl-9"
+              className="w-[240px] h-[48px] pl-9"
             />
           </div>
+
           <TimeInput value={time} onChange={setTime} placeholder="시간 선택" />
         </div>
       </div>

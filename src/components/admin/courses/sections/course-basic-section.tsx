@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
+import PaceSelect from '@/components/ui/admin/select';
 import { Checkbox } from '@/components/ui/admin/checkbox';
 
 type Props = {
@@ -27,39 +22,45 @@ export default function CourseBasicSection({
 }: Props) {
   return (
     <div className="flex items-center gap-10">
+      {/* 카테고리 선택 */}
       <div className="flex items-center gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold">
           카테고리 선택
         </label>
         <div className="flex flex-col flex-1">
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-[240px] h-[48px] border border-pace-gray-300 rounded px-3 text-pace-stone-500 font-normal">
-              {category || '선택'}
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md !text-pace-base font-normal">
-              <SelectItem value="인터뷰">인터뷰</SelectItem>
-              <SelectItem value="이력서">이력서</SelectItem>
-              <SelectItem value="네트워킹">네트워킹</SelectItem>
-            </SelectContent>
-          </Select>
+          <PaceSelect
+            value={category}
+            onChange={setCategory}
+            width="w-[240px]"
+            placeholder="선택"
+            options={[
+              { value: '인터뷰', label: '인터뷰' },
+              { value: '이력서', label: '이력서' },
+              { value: '네트워킹', label: '네트워킹' }
+            ]}
+          />
         </div>
       </div>
 
+      {/* 공개 여부 */}
       <div className="flex items-center gap-3">
         <label className="w-[100px] text-left text-pace-lg font-bold">
           공개여부
         </label>
-        <Select value={isPublic} onValueChange={setIsPublic}>
-          <SelectTrigger className="w-[240px] h-[48px] border border-pace-gray-300 rounded px-3 text-pace-stone-500 font-normal">
-            {isPublic || '선택'}
-          </SelectTrigger>
-          <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md !text-pace-base font-normal">
-            <SelectItem value="공개">공개</SelectItem>
-            <SelectItem value="비공개">비공개</SelectItem>
-          </SelectContent>
-        </Select>
+
+        <PaceSelect
+          value={isPublic}
+          onChange={setIsPublic}
+          width="w-[240px]"
+          placeholder="선택"
+          options={[
+            { value: '공개', label: '공개' },
+            { value: '비공개', label: '비공개' }
+          ]}
+        />
       </div>
 
+      {/* 메인에 표시 */}
       <div className="flex items-center gap-3">
         <label className="w-[100px] text-left text-pace-lg font-bold">
           메인에 표시

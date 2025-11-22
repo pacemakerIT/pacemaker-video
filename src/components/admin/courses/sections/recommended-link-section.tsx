@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import AddButton from '@/components/ui/admin/add-button';
+import Input from '@/components/ui/admin/input';
 
 type LinkItem = {
   url: string;
@@ -55,14 +56,14 @@ export default function RecommendedLinkSection({
 
           <div className="flex flex-col flex-1 gap-2 rounded">
             <div className="flex items-center gap-3">
-              {/* 첫 번째 input - 링크 URL + 링크 아이콘 */}
+              {/* URL Input + Icon */}
               <div className="relative flex-1">
-                <input
+                <Input
                   type="text"
                   placeholder="https://example.com"
                   value={link.url}
                   onChange={(e) => handleLinkChange(i, 'url', e.target.value)}
-                  className="w-full border border-pace-gray-300 rounded p-3 pr-10"
+                  className="w-full pr-10"
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                   <Image
@@ -75,14 +76,14 @@ export default function RecommendedLinkSection({
                 </div>
               </div>
 
-              {/* 두 번째 input - 표시 이름 + ✕ 버튼 */}
+              {/* Name Input + X button */}
               <div className="relative flex-1">
-                <input
+                <Input
                   type="text"
                   placeholder="표시할 이름"
                   value={link.name}
                   onChange={(e) => handleLinkChange(i, 'name', e.target.value)}
-                  className="w-full border border-pace-gray-300 rounded p-3 pr-8"
+                  className="w-full pr-8"
                 />
                 {links.length > 1 && (
                   <button

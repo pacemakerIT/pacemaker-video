@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AddButton from '@/components/ui/admin/add-button';
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import Textarea from '@/components/ui/admin/textarea';
+import Input from '@/components/ui/admin/input';
 
 type Career = {
   startDate: string;
@@ -44,31 +45,30 @@ export default function InstructorSection() {
 
         {/* 오른쪽 강사 입력 영역 */}
         <div className="flex flex-col flex-1 gap-6">
-          {/* 이름 */}
+          {/* 이름 — Input 공통 컴포넌트 적용 */}
           <div className="flex items-center gap-4">
             <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
               강사 이름
             </label>
-            <input
+            <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="강사 이름 입력"
-              className="flex-1 border border-pace-gray-300 rounded p-3"
+              className="flex-1"
             />
           </div>
 
-          {/* 소개 내용 */}
+          {/* 소개 내용 — textarea 그대로 유지 */}
           <div className="flex items-center gap-4">
             <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
-              강사 소개 <p />
-              내용
+              강사 소개 <p /> 내용
             </label>
             <Textarea
               value={intro}
               onChange={(e) => setIntro(e.target.value)}
               placeholder="강의 소개 내용 입력"
-              className="flex-1 h-[200px]" // 필요 시 높이 지정 가능
+              className="flex-1 h-[200px]"
             />
           </div>
 
@@ -116,6 +116,7 @@ export default function InstructorSection() {
               </div>
             </div>
           ))}
+
           <AddButton label="이력 추가" onClick={handleAddCareer} />
 
           {/* 강사 사진 업로드 */}
@@ -129,9 +130,7 @@ export default function InstructorSection() {
               placeholder="파일 선택"
               onChange={(file) => {
                 setPhoto(file);
-                if (file) {
-                  setPhotoUrl(URL.createObjectURL(file));
-                }
+                if (file) setPhotoUrl(URL.createObjectURL(file));
               }}
             />
           </div>

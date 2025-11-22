@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import AddButton from '@/components/ui/admin/add-button';
 import Textarea from '@/components/ui/admin/textarea';
+import Input from '@/components/ui/admin/input';
 
 export default function SectionList() {
   const [sections, setSections] = useState([{ title: '', content: '' }]);
@@ -39,12 +40,13 @@ export default function SectionList() {
               <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
                 섹션 {index + 1} 제목
               </label>
-              <input
+
+              <Input
                 type="text"
                 value={section.title}
                 onChange={(e) => handleChange(index, 'title', e.target.value)}
                 placeholder={`섹션 ${index + 1} 제목 입력`}
-                className="flex-1 border border-pace-gray-300 rounded p-3"
+                className="flex-1"
               />
             </div>
 
@@ -53,11 +55,12 @@ export default function SectionList() {
               <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
                 섹션 {index + 1} 내용
               </label>
+
               <Textarea
                 value={section.content}
                 onChange={(e) => handleChange(index, 'content', e.target.value)}
                 placeholder={`섹션 ${index + 1} 내용 입력`}
-                className="flex-1 h-[200px]" // 필요 시 높이 지정 가능
+                className="flex-1 h-[200px]"
               />
             </div>
           </div>
