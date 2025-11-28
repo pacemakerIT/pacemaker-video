@@ -20,8 +20,9 @@ type PaceSelectProps = {
   width?: string;
   className?: string;
 
-  /** ⭐ value마다 스타일 다르게 주기 위한 맵 */
+  /** value마다 스타일 다르게 주기 위한 맵 */
   valueClassMap?: Record<string, string>;
+  disabled?: boolean;
 };
 
 export default function PaceSelect({
@@ -31,7 +32,8 @@ export default function PaceSelect({
   placeholder = '선택',
   width = 'w-[216px]',
   className = '',
-  valueClassMap = {} // 기본값
+  valueClassMap = {}, // 기본값
+  disabled = false
 }: PaceSelectProps) {
   // 현재 value에 해당하는 스타일 찾기
   const appliedClass =
@@ -41,7 +43,7 @@ export default function PaceSelect({
       : 'text-pace-gray-700 font-medium'); // 기본
 
   return (
-    <ShadSelect value={value} onValueChange={onChange}>
+    <ShadSelect value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
         className={`${width} h-[48px] px-3 border border-gray-300 rounded bg-white !text-pace-base ${className}`}
       >

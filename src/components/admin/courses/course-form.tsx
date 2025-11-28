@@ -1,3 +1,4 @@
+// main visual form 처럼 유효성 검사 추가하기 (CourseDetailSection 부터) -> 에러 확인하기 -> 미리보기 어떻게 할지 구상??
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +12,7 @@ import CourseBasicSection from '@/components/admin/courses/sections/course-basic
 import CourseDetailSection from '@/components/admin/courses/sections/course-detail-section';
 import CourseVisualSection from '@/components/admin/courses/sections/course-visual-section';
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
+import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
 type CourseData = {
   category: string;
@@ -26,7 +28,19 @@ type CourseData = {
   visualTitle: string;
   visualTitle2: string;
   recommended: string[];
-  instructors: number[];
+  sections: { title: string; content: string }[];
+  instructors: {
+    name: string;
+    intro: string;
+    careers: {
+      startDate: string;
+      endDate: string;
+      isCurrent: boolean;
+      description: string;
+    }[];
+    photo: File | null;
+    photoUrl: string;
+  }[];
   links: {
     url: string;
     name: string;
@@ -49,30 +63,155 @@ export default function CourseForm() {
     visualTitle: '',
     visualTitle2: '',
     recommended: [],
-    instructors: [0],
+    sections: [{ title: '', content: '' }],
+    instructors: [
+      {
+        name: '',
+        intro: '',
+        careers: [
+          {
+            startDate: '',
+            endDate: '',
+            description: '',
+            isCurrent: false
+          }
+        ],
+        photo: null,
+        photoUrl: ''
+      }
+    ],
     links: [{ url: '', name: '', errors: {} }]
   });
+
+  // 에러 상태
+  const [errors, setErrors] = useState<CourseFormErrors>({});
+
+  // 제출 함수
+  const handleSubmit = () => {
+    const newErrors: CourseFormErrors = {};
+
+    if (!courseData.category) newErrors.category = '카테고리를 선택해주세요.';
+    if (!courseData.isPublic) newErrors.isPublic = '공개 여부를 선택해주세요.';
+    if (!courseData.title.trim()) newErrors.title = '강의 제목을 입력해주세요.';
+    if (!courseData.intro.trim()) newErrors.intro = '강의 소개를 입력해주세요.';
+    if (!courseData.videoLink.trim())
+      newErrors.videoLink = '동영상 링크를 입력해주세요.';
+    if (!courseData.price.trim()) newErrors.price = '가격을 입력해주세요.';
+    if (!courseData.time.trim()) newErrors.time = '강의 시간을 입력해주세요.';
+
+    if (!courseData.thumbnail && !courseData.thumbnailUrl)
+      newErrors.thumbnail = '썸네일 이미지를 업로드해주세요.';
+
+    if (!courseData.visualTitle.trim())
+      newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
+    if (!courseData.visualTitle2.trim())
+      newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
+
+    const hasInvalidLink = courseData.links.some(
+      (l) => !l.url.trim() || !l.name.trim()
+    );
+    if (hasInvalidLink) newErrors.links = '링크와 이름을 모두 입력해주세요.';
+
+    if (courseData.recommended.length === 0) {
+      newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
+    }
+
+    // Sections Validation
+    const sectionErrors = courseData.sections.map((section) => {
+      const errors: { title?: string; content?: string } = {};
+      if (!section.title.trim()) errors.title = '섹션 제목을 입력해주세요.';
+      if (!section.content.trim()) errors.content = '섹션 내용을 입력해주세요.';
+      return Object.keys(errors).length > 0 ? errors : {};
+    });
+
+    if (sectionErrors.some((err) => Object.keys(err).length > 0)) {
+      newErrors.sections = sectionErrors;
+    }
+
+    // Instructors Validation
+    const instructorErrors = courseData.instructors.map((inst) => {
+      const errors: {
+        name?: string;
+        intro?: string;
+        careers?: {
+          startDate?: string;
+          endDate?: string;
+          isCurrent?: boolean;
+          description?: string;
+        }[];
+        photo?: string;
+      } = {};
+
+      if (!inst.name.trim()) errors.name = '강사 이름을 입력해주세요.';
+      if (!inst.intro.trim()) errors.intro = '강사 소개를 입력해주세요.';
+      if (!inst.photo && !inst.photoUrl)
+        errors.photo = '강사 사진을 업로드해주세요.';
+
+      const careerErrors = inst.careers.map((career) => {
+        const cErrors: {
+          startDate?: string;
+          endDate?: string;
+          isCurrent?: boolean;
+          description?: string;
+        } = {};
+        if (!career.startDate.trim())
+          cErrors.startDate = '시작일을 입력해주세요.';
+        if (!career.isCurrent && !career.endDate.trim())
+          cErrors.endDate = '종료일을 입력해주세요.';
+        if (!career.description.trim())
+          cErrors.description = '이력 내용을 입력해주세요.';
+        return Object.keys(cErrors).length > 0 ? cErrors : {};
+      });
+
+      if (careerErrors.some((err) => Object.keys(err).length > 0)) {
+        errors.careers = careerErrors;
+      }
+
+      return Object.keys(errors).length > 0 ? errors : {};
+    });
+
+    if (instructorErrors.some((err) => Object.keys(err).length > 0)) {
+      newErrors.instructors = instructorErrors;
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('필수 입력 항목을 확인해주세요.');
+      return;
+    }
+
+    toast.success('등록 완료!');
+  };
 
   const updateCourseData = <K extends keyof CourseData>(
     key: K,
     value: CourseData[K]
   ) => {
     setCourseData((prev) => ({ ...prev, [key]: value }));
+    if (errors[key as keyof CourseFormErrors]) {
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
+    }
   };
 
   const handleAddInstructor = () => {
     updateCourseData('instructors', [
       ...courseData.instructors,
-      courseData.instructors.length
+      {
+        name: '',
+        intro: '',
+        careers: [
+          {
+            startDate: '',
+            endDate: '',
+            description: '',
+            isCurrent: false
+          }
+        ],
+        photo: null,
+        photoUrl: ''
+      }
     ]);
-  };
-
-  const handleSubmit = () => {
-    if (!courseData.title.trim() || !courseData.intro.trim()) {
-      toast.error('필수 입력 항목을 모두 채워주세요.');
-      return;
-    }
-    toast.success('등록 완료!');
   };
 
   return (
@@ -80,11 +219,18 @@ export default function CourseForm() {
       {/* 카테고리 / 공개여부 / 메인표시 */}
       <CourseBasicSection
         category={courseData.category}
-        setCategory={(v) => updateCourseData('category', v)}
+        setCategory={(v) => {
+          updateCourseData('category', v);
+          setErrors((prev) => ({ ...prev, category: undefined }));
+        }}
         isPublic={courseData.isPublic}
-        setIsPublic={(v) => updateCourseData('isPublic', v)}
+        setIsPublic={(v) => {
+          updateCourseData('isPublic', v);
+          setErrors((prev) => ({ ...prev, isPublic: undefined }));
+        }}
         showOnMain={courseData.showOnMain}
         setShowOnMain={(v) => updateCourseData('showOnMain', v)}
+        errors={errors}
       />
 
       {/* 강의 정보 */}
@@ -103,6 +249,7 @@ export default function CourseForm() {
         setThumbnail={(v) => updateCourseData('thumbnail', v)}
         thumbnailUrl={courseData.thumbnailUrl}
         setThumbnailUrl={(v) => updateCourseData('thumbnailUrl', v)}
+        errors={errors}
       />
 
       {/* 비주얼 타이틀 */}
@@ -111,21 +258,36 @@ export default function CourseForm() {
         setVisualTitle={(v) => updateCourseData('visualTitle', v)}
         visualTitle2={courseData.visualTitle2}
         setVisualTitle2={(v) => updateCourseData('visualTitle2', v)}
+        errors={errors}
       />
 
       {/* 추천드려요 */}
       <RecommendedSelect
         maxSelect={2}
         onChange={(v) => updateCourseData('recommended', v)}
+        error={errors.recommended}
       />
 
       {/* 섹션 리스트 */}
-      <SectionList />
+      <SectionList
+        value={courseData.sections}
+        onChange={(v) => updateCourseData('sections', v)}
+        errors={errors.sections}
+      />
 
       {/* 강사소개 섹션 */}
       <div className="flex flex-col gap-6">
-        {courseData.instructors.map((_, i) => (
-          <InstructorSection key={i} />
+        {courseData.instructors.map((instructor, i) => (
+          <InstructorSection
+            key={i}
+            value={instructor}
+            onChange={(updatedInstructor) => {
+              const newInstructors = [...courseData.instructors];
+              newInstructors[i] = updatedInstructor;
+              updateCourseData('instructors', newInstructors);
+            }}
+            error={errors.instructors?.[i]}
+          />
         ))}
         <div className="flex justify-end">
           <AddButton label="강사 추가" onClick={handleAddInstructor} />
@@ -133,7 +295,10 @@ export default function CourseForm() {
       </div>
 
       {/* 추천 컨텐츠 링크 */}
-      <RecommendedLinkSection onChange={(v) => updateCourseData('links', v)} />
+      <RecommendedLinkSection
+        onChange={(v) => updateCourseData('links', v)}
+        error={errors.links}
+      />
 
       {/* 버튼 */}
       <CourseActionButtons onSubmit={handleSubmit} />

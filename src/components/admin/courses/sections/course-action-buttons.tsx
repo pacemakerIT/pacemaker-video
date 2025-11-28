@@ -15,7 +15,7 @@ export default function CourseActionButtons({
 }: Props) {
   return (
     <div className="flex justify-between items-center border-t border-pace-gray-200 pt-10">
-      {/* 왼쪽: 미리보기 */}
+      {/* 왼쪽: TODO: 미리보기 - Course Database 구현 후 적용 필요 */}
       <button
         type="button"
         onClick={onPreview}
