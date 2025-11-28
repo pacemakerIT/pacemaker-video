@@ -82,7 +82,8 @@ export default function ImageUploadInput({
         // 업로드 후 or 기존 이미지 표시
         <div className="flex items-center bg-white p-2 gap-3">
           {/* 썸네일 (새 파일 있으면 preview, 없으면 기존 imageUrl) */}
-          {(preview || imageUrl) && (
+          {(preview && preview !== '') ||
+          (localImageUrl && localImageUrl !== '') ? (
             <Image
               src={preview || localImageUrl!}
               alt="preview"
@@ -90,7 +91,7 @@ export default function ImageUploadInput({
               height={106}
               className="rounded object-cover border border-pace-gray-200"
             />
-          )}
+          ) : null}
           {/* 파일명 or 기존 이미지 텍스트 */}
           <span className="flex-1 text-pace-sm text-pace-gray-700 truncate">
             {value ? value.name : '기존 이미지'}

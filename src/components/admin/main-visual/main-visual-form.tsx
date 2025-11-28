@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
 import DateInput from '@/components/ui/date-input';
-import TimeInput from '@/components/ui/time-input';
-import ImageUploadInput from '@/components/ui/image-upload-input';
+import TimeInput from '@/components/ui/admin/time-input';
+import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import {
   Select,
   SelectTrigger,
@@ -14,6 +14,7 @@ import {
   SelectItem
 } from '@/components/ui/select';
 import { MainVisual } from '@/types/admin/main-visual';
+import Textarea from '@/components/ui/admin/textarea';
 
 type MainVisualFormProps = {
   initialData?: Partial<MainVisual>; // 수정 시 초기값
@@ -197,14 +198,14 @@ export default function MainVisualForm({
             설명 문구<span className="text-pace-orange-500 ml-1">*</span>
           </label>
           <div className="flex flex-col flex-1">
-            <textarea
+            <Textarea
               placeholder="설명문구 입력"
               value={description}
               onChange={(e) => {
                 setDescription(e.target.value);
                 setErrors((prev) => ({ ...prev, description: undefined }));
               }}
-              className="border border-pace-gray-300 rounded p-3 h-[120px]"
+              className="h-[200px]" // 필요 시 높이 지정 가능
             />
             {errors.description && (
               <p className="text-pace-orange-500 text-sm mt-1">
