@@ -4,12 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
+import PaceSelect from '@/components/ui/admin/select';
+
 import {
   DndContext,
   closestCenter,
@@ -132,33 +128,20 @@ function VisualRow({
 
       {/* 공개 여부 */}
       <div className="w-32">
-        <Select value={value} onValueChange={setValue}>
-          <SelectTrigger className="w-[124px] h-[48px] px-3 border border-gray-300 rounded !text-pace-base">
-            <span
-              className={
-                value === 'public'
-                  ? 'text-pace-gray-700 font-bold'
-                  : 'text-pace-stone-500 font-normal'
-              }
-            >
-              {value === 'public' ? '공개중' : '비공개'}
-            </span>
-          </SelectTrigger>
-          <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md !text-pace-base">
-            <SelectItem
-              value="public"
-              className="!text-pace-base text-pace-gray-700 font-bold"
-            >
-              공개중
-            </SelectItem>
-            <SelectItem
-              value="private"
-              className="!text-pace-base text-pace-stone-500 font-normal"
-            >
-              비공개
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <PaceSelect
+          value={value}
+          onChange={setValue}
+          width="w-[124px]"
+          options={[
+            { value: 'public', label: '공개중' },
+            { value: 'private', label: '비공개' }
+          ]}
+          valueClassMap={{
+            public: 'text-pace-gray-700 font-bold',
+            private: 'text-pace-stone-500 font-normal',
+            '': 'text-pace-stone-500 font-normal'
+          }}
+        />
       </div>
 
       {/* 액션 */}
@@ -383,43 +366,17 @@ export default function Page() {
           </div>
 
           {/* 오른쪽: 카테고리 필터 (CourseHeader 스타일) */}
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger
-              className={`w-[145px] h-[48px] px-3 border border-pace-gray-200 rounded !text-pace-base ${
-                categoryFilter === 'TOTAL'
-                  ? 'text-pace-gray-700 font-bold'
-                  : 'text-pace-stone-500 font-normal'
-              }`}
-            >
-              <span>{getKoreanCategory(categoryFilter)}</span>
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-pace-gray-200 shadow-md rounded-md !text-pace-base">
-              <SelectItem
-                className="!text-pace-base text-pace-gray-700 font-bold"
-                value="TOTAL"
-              >
-                전체 카테고리
-              </SelectItem>
-              <SelectItem
-                className="!text-pace-base text-pace-gray-700"
-                value="INTERVIEW"
-              >
-                인터뷰
-              </SelectItem>
-              <SelectItem
-                className="!text-pace-base text-pace-gray-700"
-                value="RESUME"
-              >
-                이력서
-              </SelectItem>
-              <SelectItem
-                className="!text-pace-base text-pace-gray-700"
-                value="NETWORKING"
-              >
-                네트워킹
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <PaceSelect
+            value={categoryFilter}
+            onChange={setCategoryFilter}
+            width="w-[145px]"
+            options={[
+              { value: 'TOTAL', label: '전체 카테고리' },
+              { value: 'INTERVIEW', label: '인터뷰' },
+              { value: 'RESUME', label: '이력서' },
+              { value: 'NETWORKING', label: '네트워킹' }
+            ]}
+          />
         </div>
 
         <div className="w-full pb-7">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/admin/checkbox';
+import RequiredMark from '@/components/ui/admin/required-mark';
 
 type RecommendedSelectProps = {
   maxSelect?: number;
@@ -10,8 +11,9 @@ type RecommendedSelectProps = {
 
 export default function RecommendedSelect({
   maxSelect = 2,
-  onChange
-}: RecommendedSelectProps) {
+  onChange,
+  error
+}: RecommendedSelectProps & { error?: string }) {
   const options = [
     'IT 개발',
     '공무원',
@@ -41,31 +43,39 @@ export default function RecommendedSelect({
   };
 
   return (
-    <div className="flex items-start items-center gap-6">
-      {/* 라벨 */}
-      <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-        추천드려요 이미지 선택
-      </label>
-
-      {/* 체크박스 리스트 */}
-      {options.map((option) => (
-        <label
-          key={option}
-          className="flex items-center gap-2 cursor-pointer whitespace-nowrap"
-        >
-          <Checkbox
-            checked={selected.includes(option)}
-            onCheckedChange={() => handleSelect(option)}
-            className="w-6 h-6"
-          />
-          <span className="text-pace-base text-pace-stone-500">{option}</span>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-start items-center gap-6">
+        {/* 라벨 */}
+        <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
+          추천드려요 이미지 선택
+          <RequiredMark />
         </label>
-      ))}
 
-      {/* 안내 문구 */}
-      <span className="text-pace-orange-500 pace-text-sm whitespace-nowrap">
-        * 최대 2개까지 선택 가능
-      </span>
+        {/* 체크박스 리스트 */}
+        {options.map((option) => (
+          <label
+            key={option}
+            className="flex items-center gap-2 cursor-pointer whitespace-nowrap"
+          >
+            <Checkbox
+              checked={selected.includes(option)}
+              onCheckedChange={() => handleSelect(option)}
+              className="w-6 h-6"
+            />
+            <span className="text-pace-base text-pace-stone-500">{option}</span>
+          </label>
+        ))}
+
+        {/* 안내 문구 */}
+        <span className="text-pace-orange-500 pace-text-sm whitespace-nowrap">
+          * 최대 2개까지 선택 가능
+        </span>
+      </div>
+      {error && (
+        <div className="pl-[240px]">
+          <p className="text-pace-orange-500 text-sm">{error}</p>
+        </div>
+      )}
     </div>
   );
 }
