@@ -1,4 +1,3 @@
-// main visual form 처럼 유효성 검사 추가하기 (CourseDetailSection 부터) -> 에러 확인하기 -> 미리보기 어떻게 할지 구상??
 'use client';
 
 import { useState } from 'react';

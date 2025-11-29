@@ -4,6 +4,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { Checkbox } from '@/components/ui/admin/checkbox';
 import ErrorText from '@/components/ui/admin/error-text';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
+import RequiredMark from '@/components/ui/admin/required-mark';
 
 type Props = {
   category: string;
@@ -29,7 +30,8 @@ export default function CourseBasicSection({
       {/* 카테고리 선택 */}
       <div className="flex items-center gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold">
-          카테고리 선택<span className="text-pace-orange-500 ml-1">*</span>
+          카테고리 선택
+          <RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <PaceSelect
@@ -52,7 +54,8 @@ export default function CourseBasicSection({
       {/* 공개 여부 */}
       <div className="flex items-center gap-3">
         <label className="w-[100px] text-left text-pace-lg font-bold">
-          공개여부<span className="text-pace-orange-500 ml-1">*</span>
+          공개여부
+          <RequiredMark />
         </label>
 
         <div className="flex flex-col">

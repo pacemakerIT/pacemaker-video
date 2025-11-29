@@ -3,6 +3,7 @@
 import AddButton from '@/components/ui/admin/add-button';
 import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
+import RequiredMark from '@/components/ui/admin/required-mark';
 
 type Section = {
   title: string;
@@ -53,6 +54,7 @@ export default function SectionList({
                 <div className="flex items-center gap-4">
                   <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
                     섹션 {index + 1} 제목
+                    <RequiredMark />
                   </label>
 
                   <Input
@@ -77,6 +79,7 @@ export default function SectionList({
                 <div className="flex items-start gap-4">
                   <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
                     섹션 {index + 1} 내용
+                    <RequiredMark />
                   </label>
 
                   <Textarea

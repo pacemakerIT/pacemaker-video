@@ -6,6 +6,9 @@ import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
 import { Checkbox } from '@/components/ui/admin/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { toast } from 'sonner';
+
+import RequiredMark from '@/components/ui/admin/required-mark';
 
 type Career = {
   startDate: string;
@@ -59,6 +62,35 @@ export default function InstructorSection({
     val: string | boolean
   ) => {
     const updatedCareers = [...value.careers];
+    const currentCareer = updatedCareers[index];
+
+    // Validate date range when changing endDate
+    if (key === 'endDate' && typeof val === 'string') {
+      const startYear = parseInt(currentCareer.startDate);
+      const endYear = parseInt(val);
+
+      if (currentCareer.startDate && val && endYear < startYear) {
+        toast.error('종료 연도는 시작 연도보다 이전일 수 없습니다.');
+        return; // Don't update if invalid
+      }
+    }
+
+    // Validate date range when changing startDate
+    if (key === 'startDate' && typeof val === 'string') {
+      const startYear = parseInt(val);
+      const endYear = parseInt(currentCareer.endDate);
+
+      if (
+        val &&
+        currentCareer.endDate &&
+        !currentCareer.isCurrent &&
+        endYear < startYear
+      ) {
+        toast.error('시작 연도는 종료 연도보다 이후일 수 없습니다.');
+        return; // Don't update if invalid
+      }
+    }
+
     updatedCareers[index] = { ...updatedCareers[index], [key]: val };
     onChange({ ...value, careers: updatedCareers });
   };
@@ -78,7 +110,8 @@ export default function InstructorSection({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-4">
                 <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
-                  강사 이름<span className="text-pace-orange-500 ml-1">*</span>
+                  강사 이름
+                  <RequiredMark />
                 </label>
                 <Input
                   type="text"
@@ -100,7 +133,7 @@ export default function InstructorSection({
               <div className="flex items-center gap-4">
                 <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
                   강사 소개 <p /> 내용
-                  <span className="text-pace-orange-500 ml-1">*</span>
+                  <RequiredMark />
                 </label>
                 <Textarea
                   value={value.intro}
@@ -124,7 +157,7 @@ export default function InstructorSection({
                 <div className="flex items-center gap-4">
                   <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
                     이력 내용
-                    <span className="text-pace-orange-500 ml-1">*</span>
+                    <RequiredMark />
                   </label>
                   <div className="flex items-center gap-3 flex-1">
                     <label className="w-[30px] text-pace-base text-pace-stone-500">
@@ -209,7 +242,8 @@ export default function InstructorSection({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-4">
                 <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
-                  강사 사진<span className="text-pace-orange-500 ml-1">*</span>
+                  강사 사진
+                  <RequiredMark />
                 </label>
                 <ImageUploadInput
                   value={value.photo}

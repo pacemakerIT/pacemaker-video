@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/admin/checkbox';
+import RequiredMark from '@/components/ui/admin/required-mark';
 
 type RecommendedSelectProps = {
   maxSelect?: number;
@@ -47,6 +48,7 @@ export default function RecommendedSelect({
         {/* 라벨 */}
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
           추천드려요 이미지 선택
+          <RequiredMark />
         </label>
 
         {/* 체크박스 리스트 */}

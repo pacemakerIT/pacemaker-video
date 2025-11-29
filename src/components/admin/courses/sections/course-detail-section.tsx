@@ -7,6 +7,8 @@ import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
+import RequiredMark from '@/components/ui/admin/required-mark';
+
 type Props = {
   title: string;
   setTitle: (v: string) => void;
@@ -47,7 +49,8 @@ export default function CourseDetailSection({
       {/* 강의 제목 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          강의 제목<span className="text-pace-orange-500 ml-1">*</span>
+          강의 제목
+          <RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <Input
@@ -63,7 +66,8 @@ export default function CourseDetailSection({
       {/* 강의 소개 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          강의 소개 내용<span className="text-pace-orange-500 ml-1">*</span>
+          강의 소개 내용
+          <RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <Textarea
@@ -79,7 +83,8 @@ export default function CourseDetailSection({
       {/* 동영상 링크 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          동영상 링크<span className="text-pace-orange-500 ml-1">*</span>
+          동영상 링크
+          <RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <Input
@@ -95,7 +100,8 @@ export default function CourseDetailSection({
       {/* 금액 / 강의 시간 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          금액 / 강의 시간<span className="text-pace-orange-500 ml-1">*</span>
+          금액 / 강의 시간
+          <RequiredMark />
         </label>
         <div className="flex gap-6 flex-wrap">
           <div className="flex flex-col">
@@ -130,7 +136,7 @@ export default function CourseDetailSection({
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
           썸네일 이미지 업로드
-          <span className="text-pace-orange-500 ml-1">*</span>
+          <RequiredMark />
         </label>
         <div className="flex flex-col gap-2 flex-1">
           <ImageUploadInput

@@ -5,6 +5,8 @@ import Image from 'next/image';
 import AddButton from '@/components/ui/admin/add-button';
 import Input from '@/components/ui/admin/input';
 
+import RequiredMark from '@/components/ui/admin/required-mark';
+
 type LinkItem = {
   url: string;
   name: string;
@@ -54,7 +56,7 @@ export default function RecommendedLinkSection({
           <div key={i} className="flex items-start gap-6">
             <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
               추천 컨텐츠 링크 연결
-              <span className="text-pace-orange-500 ml-1">*</span>
+              <RequiredMark />
             </label>
 
             <div className="flex flex-col flex-1 gap-2 rounded">

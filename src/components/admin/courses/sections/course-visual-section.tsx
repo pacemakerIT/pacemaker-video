@@ -4,6 +4,8 @@ import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
+import RequiredMark from '@/components/ui/admin/required-mark';
+
 type Props = {
   visualTitle: string;
   setVisualTitle: (v: string) => void;
@@ -24,7 +26,7 @@ export default function CourseVisualSection({
       {/* 비주얼 타이틀 1 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          비주얼 타이틀 1<span className="text-pace-orange-500 ml-1">*</span>
+          비주얼 타이틀 1<RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <Input
@@ -40,7 +42,7 @@ export default function CourseVisualSection({
       {/* 비주얼 타이틀 2 */}
       <div className="flex items-start gap-6">
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          비주얼 타이틀 2<span className="text-pace-orange-500 ml-1">*</span>
+          비주얼 타이틀 2<RequiredMark />
         </label>
         <div className="flex flex-col flex-1">
           <Input
