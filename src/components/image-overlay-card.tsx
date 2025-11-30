@@ -24,6 +24,8 @@ export default function ImageOverlayCard({
     return images[randomIndex];
   }, []);
 
+  const displayTitle = title || '';
+
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
       <Link href={`/courses/${itemId}`}>
@@ -64,7 +66,9 @@ export default function ImageOverlayCard({
                   </p>
                 )}
                 <div className="flex justify-between items-center max-w-72 ">
-                  <h3 className="text-xl font-semibold text-white">{title}</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    {displayTitle}
+                  </h3>
                 </div>
                 <p className="line-clamp-2 text-white/90 font-normal">
                   일정 | 2025.05.20

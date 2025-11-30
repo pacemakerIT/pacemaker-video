@@ -1,5 +1,13 @@
 'use client';
-import { FileEdit, CodeSquare } from 'lucide-react';
+import {
+  FileEdit,
+  CodeSquare,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  CirclePlay
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
@@ -9,6 +17,7 @@ import DetailRelatedContentSection from '../../common/detail-related-content-sec
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import Image from 'next/image';
 import { ApiResponse } from '@/types/video-detail';
+import { WistiaPlayer } from '@wistia/wistia-player-react';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -20,6 +29,23 @@ export default function VideoDetailContainer({
   const [data, setData] = useState<ApiResponse['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedMediaId, setSelectedMediaId] = useState<string>('');
+  const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(
+    new Set()
+  );
+
+  const toggleSession = (sessionId: string) => {
+    setExpandedSessions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sessionId)) {
+        newSet.delete(sessionId);
+      } else {
+        newSet.add(sessionId);
+      }
+      return newSet;
+    });
+  };
 
   useEffect(() => {
     const fetchVideoDetail = async () => {
@@ -30,6 +56,11 @@ export default function VideoDetailContainer({
 
         if (result.success) {
           setData(result.data);
+          // Set the first video as the selected media
+          const firstSection = result.data.course.sections[0];
+          if (firstSection && firstSection.videos.length > 0) {
+            setSelectedMediaId(firstSection.videos[0].videoId);
+          }
         } else {
           setError(result.message || '데이터를 불러오는데 실패했습니다.');
         }
@@ -69,36 +100,108 @@ export default function VideoDetailContainer({
     );
   }
 
-  // 섹션별로 데이터 분리
-  const contentSection = data.course.sections.find(
-    (section) => section.type === 'content'
-  );
-  const recommendationSection = data.course.sections.find(
-    (section) => section.type === 'recommendation'
-  );
-  const relatedSection = data.course.sections.find(
-    (section) => section.type === 'related'
-  );
+  // Mock Data
+  const mockContentItems = [
+    {
+      id: '1',
+      title: '북미 개발자 채용 공고 사례',
+      content:
+        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.'
+    },
+    {
+      id: '2',
+      title: '북미 개발자 채용 공고 분석',
+      content:
+        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.'
+    },
+    {
+      id: '3',
+      title: '실제 북미 개발자 취업 성공 이력서',
+      content:
+        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
+    }
+  ];
 
-  // 아이콘 매핑
-  const iconMap = {
-    CodeSquare,
-    FileEdit
-  };
+  const mockRecommendationItems = [
+    {
+      icon: CodeSquare,
+      title: '북미 개발자',
+      text: '개발 분야 취업에 관심 있으신 분'
+    },
+    {
+      icon: FileEdit,
+      title: '북미 취업이력서',
+      text: '작성방법이 궁금하신 분'
+    }
+  ];
 
-  // 추천 아이템에 아이콘 컴포넌트 추가
-  const recommendationItems =
-    recommendationSection?.items.map((item) => ({
-      ...item,
-      icon: iconMap[item.icon as keyof typeof iconMap] || CodeSquare,
-      text: item.content || ''
-    })) || [];
+  const mockRelatedItems = [
+    {
+      id: 1,
+      itemId: 'course-2',
+      title: '실리콘밸리 엔지니어의 커리어 로드맵',
+      price: 45000,
+      category: 'CAREER'
+    },
+    {
+      id: 2,
+      itemId: 'course-3',
+      title: '영문 이메일/비즈니스 영어 마스터',
+      price: 30000,
+      category: 'ENGLISH'
+    },
+    {
+      id: 3,
+      itemId: 'course-4',
+      title: '북미 연봉 협상 가이드',
+      price: 25000,
+      category: 'CAREER'
+    }
+  ];
+
+  const mockReviews = [
+    {
+      id: 1,
+      profileImage: '/img/user1.png',
+      profileName: 'Sarah Kim',
+      rating: 5,
+      reviewDate: '2023.10.15',
+      reviewContent:
+        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+    },
+    {
+      id: 2,
+      profileImage: '/img/user2.png',
+      profileName: 'Michael Lee',
+      rating: 4.5,
+      reviewDate: '2023.11.02',
+      reviewContent:
+        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+    },
+    {
+      id: 3,
+      profileImage: '/img/user3.png',
+      profileName: 'Emily Park',
+      rating: 5,
+      reviewDate: '2023.11.20',
+      reviewContent:
+        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+    }
+  ];
 
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
+      {!isPlaylistOpen && (
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(true)}
+          className="fixed right-0 top-[40%] h-20 z-40 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition hover:bg-pace-gray-50"
+        >
+          <ChevronLeft className="h-5 w-5 text-pace-base" />
+        </button>
+      )}
       <DetailHeroSection
         backgroundImage={data.course.backgroundImage}
-        subtitle={data.course.subtitle}
         title={data.course.title}
         courseTitle={data.course.courseTitle}
         instructor={data.instructor?.name || 'Unknown'}
@@ -108,76 +211,42 @@ export default function VideoDetailContainer({
         instructorLabel="강사"
         priceLabel="금액"
       />
+      <div className="w-full flex gap-6 max-w-[1200px]">
+        <div className="w-full aspect-video overflow-hidden rounded-lg border border-pace-gray-100 bg-black">
+          <WistiaPlayer mediaId={selectedMediaId} />
+        </div>
+      </div>
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20 pb-40">
-        {contentSection && (
-          <div className="flex flex-col gap-8 w-full">
-            <SectionHeader
-              subtitle={contentSection.title}
-              title={contentSection.subtitle || ''}
-            />
-            <div className="w-full flex gap-8">
-              <div className="w-[60%]">
-                <p className="text-pace-stone-500 leading-relaxed">
-                  {contentSection.description}
-                </p>
-              </div>
-              <div className="w-[40%]">
-                <ExpandableCards
-                  items={contentSection.items.map((item) => ({
-                    id: item.id,
-                    title: item.title,
-                    content: item.content
-                  }))}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {recommendationSection && (
-          <DetailRecommendationSection
-            title={recommendationSection.title}
-            items={recommendationItems}
+        <div className="flex flex-col gap-8 w-full">
+          <SectionHeader
+            subtitle={'강의는 이렇게 진행돼요!'}
+            title={data.course.title || ''}
           />
-        )}
-
-        {/* {Array.isArray(data.course.videos) && data.course.videos.length > 0 && (
-          <div className="flex flex-col w-full gap-8">
-            <SectionHeader title="강의 영상 목록" />
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.course.videos.map((v) => (
-                <div
-                  key={v.id}
-                  className="w-full p-4 rounded-lg border border-pace-gray-100 bg-white flex items-center gap-4"
-                >
-                  <div className="w-28 h-16 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                    <Image
-                      src={v.thumbnail || '/img/course_image1.png'}
-                      alt={v.title || 'video'}
-                      width={112}
-                      height={64}
-                    />
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <span className="text-pace-base font-semibold">
-                      {v.title || '제목 없는 영상'}
-                    </span>
-                    <span className="text-pace-stone-500 text-sm">
-                      {v.price != null ? `$${v.price}` : ''}
-                    </span>
-                  </div>
-                </div>
-              ))}
+          <div className="w-full flex gap-8">
+            <div className="w-[60%]">
+              <p className="text-pace-stone-500 leading-relaxed">
+                {data.course.description}
+              </p>
+            </div>
+            <div className="w-[40%]">
+              <ExpandableCards items={mockContentItems} />
             </div>
           </div>
-        )} */}
+        </div>
+
+        <DetailRecommendationSection
+          title={'이런분들께 추천드려요!'}
+          items={mockRecommendationItems}
+        />
 
         {data.instructor && (
           <div className="flex flex-col w-full gap-8">
             <SectionHeader title="강사 소개" />
             <div className="w-full flex gap-10">
-              <div className="w-[70%]">
-                <h3>{data.instructor.name}</h3>
+              <div className="w-[70%] gap-6">
+                <h3 className="font-semibold text-[20px]">
+                  {data.instructor.name}
+                </h3>
                 <p className="text-pace-stone-500 leading-relaxed">
                   {data.instructor.description}
                 </p>
@@ -207,27 +276,115 @@ export default function VideoDetailContainer({
           </div>
         )}
 
-        {relatedSection && (
-          <DetailRelatedContentSection
-            title={relatedSection.title}
-            items={relatedSection.items.map((item) => ({
-              id: parseInt(item.id.replace('related-item-', '')),
-              itemId: item.itemId || '',
-              title: item.title,
-              price: item.price || 0,
-              category: item.category || '',
-              type: item.type || '',
-              thumbnail: item.thumbnail || ''
-            }))}
-          />
-        )}
+        <DetailRelatedContentSection
+          title={'이 컨텐츠와 함께 보면 좋아요!'}
+          items={mockRelatedItems}
+        />
 
         <DetailReviewsSection
           title="강의 후기"
-          reviews={data.course.reviews}
+          reviews={mockReviews}
           rating={data.course.rating}
           reviewCount={data.course.reviewCount}
         />
+      </div>
+      <div
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
+          isPlaylistOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(false)}
+          className={`relative top-[40%] z-40 h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50 ${
+            isPlaylistOpen
+              ? 'opacity-100 translate-x-0'
+              : 'opacity-0 translate-x-full'
+          }`}
+        >
+          <ChevronRight className="h-5 w-5 text-pace-base" />
+        </button>
+        <div
+          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ease-in-out ${
+            isPlaylistOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          role="presentation"
+          onClick={() => setIsPlaylistOpen(false)}
+        />
+        <aside
+          className={`relative h-full w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
+            isPlaylistOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex flex-col gap-2">
+              {data.course.sections.map((section) => {
+                const isExpanded = expandedSessions.has(section.id);
+                return (
+                  <div
+                    key={section.id}
+                    className="border border-pace-gray-100 rounded-lg overflow-hidden bg-white"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSession(section.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-pace-gray-50 transition-colors"
+                    >
+                      <span className="text-sm font-semibold text-gray-900">
+                        {section.title}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
+                      )}
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'max-h-[1000px] opacity-100'
+                          : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
+                        {section.videos.map((video) => {
+                          const isActive = video.videoId === selectedMediaId;
+                          return (
+                            <button
+                              key={video.videoId}
+                              type="button"
+                              onClick={() => {
+                                setSelectedMediaId(video.videoId);
+                                setIsPlaylistOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
+                                isActive
+                                  ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
+                                  : 'hover:bg-white text-pace-stone-700'
+                              }`}
+                            >
+                              <div
+                                className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
+                                  isActive ? 'bg-pace-base' : 'bg-pace-gray-300'
+                                }`}
+                              />
+                              <span className="text-sm font-medium truncate w-full">
+                                {video.title}
+                              </span>
+                              <CirclePlay className="h-4 w-4" />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

@@ -8,15 +8,24 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const course = await prisma.course.findUnique({
+    const courseData = await prisma.course.findUnique({
       where: { id },
       include: {
         instructor: true,
-        videos: true
+        videos: true,
+        sectionsRel: {
+          include: {
+            items: true,
+            videos: true
+          },
+          orderBy: {
+            orderIndex: 'asc'
+          }
+        }
       }
     });
 
-    if (!course) {
+    if (!courseData) {
       return NextResponse.json(
         {
           success: false,
@@ -26,6 +35,19 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    // DB 구조를 Frontend 구조로 변환
+    const course = {
+      ...courseData,
+      sections: courseData.sectionsRel.map((section) => ({
+        ...section,
+        type: 'content', // Frontend 요구사항에 맞춰 기본값 설정
+        items: section.items.map((item) => ({
+          ...item,
+          icon: null // SectionItem에 icon이 없으므로 null 처리
+        }))
+      }))
+    };
 
     return NextResponse.json(
       {

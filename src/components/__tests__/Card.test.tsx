@@ -56,7 +56,7 @@ vi.mock('next/link', () => ({
 describe('Card', () => {
   const mockCard: OnlineCards = {
     id: '1',
-    title: 'Test Course',
+    courseTitle: 'Test Course',
     price: 49.99,
     description: 'Test Description',
     category: 'INTERVIEW',
