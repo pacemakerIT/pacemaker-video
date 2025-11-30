@@ -3,27 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
-
-type UserRow = {
-  id: number;
-  name: string;
-  email: string;
-  image: string;
-  createdAt: string;
-  role: 'admin' | 'user' | 'instructor';
-  selected: boolean;
-  purchases?: {
-    lectures: number;
-    ebooks: number;
-    workshops: number;
-  };
-};
+import PaceSelect from '@/components/ui/admin/select';
+import { UserRow } from '@/types/admin/user';
 
 function UserTableRow({
   user,
@@ -90,40 +71,21 @@ function UserTableRow({
 
       {/* 회원 등급 */}
       <div>
-        <Select
+        <PaceSelect
           value={user.role}
-          onValueChange={(value) => onRoleChange(user.id, value)}
-        >
-          <SelectTrigger className="w-[124px] h-12 px-3 border border-gray-300 rounded !text-pace-base">
-            <span className="text-pace-gray-700">
-              {user.role === 'admin'
-                ? '관리자'
-                : user.role === 'instructor'
-                  ? '강사'
-                  : '정회원'}
-            </span>
-          </SelectTrigger>
-          <SelectContent className="bg-white border border-pace-gray-200 shadow-md rounded-md !text-pace-base">
-            <SelectItem
-              value="admin"
-              className="!text-pace-base text-pace-gray-700"
-            >
-              관리자
-            </SelectItem>
-            <SelectItem
-              value="instructor"
-              className="!text-pace-base text-pace-gray-700"
-            >
-              강사
-            </SelectItem>
-            <SelectItem
-              value="user"
-              className="!text-pace-base text-pace-gray-700"
-            >
-              일반 사용자
-            </SelectItem>
-          </SelectContent>
-        </Select>
+          onChange={(value) => onRoleChange(user.id, value)}
+          width="w-[124px]"
+          options={[
+            { value: 'admin', label: '관리자' },
+            { value: 'instructor', label: '강사' },
+            { value: 'user', label: '정회원' }
+          ]}
+          valueClassMap={{
+            public: 'text-pace-gray-700 font-bold',
+            private: 'text-pace-stone-500 font-normal',
+            '': 'text-pace-stone-500 font-normal'
+          }}
+        />
       </div>
 
       <div>
@@ -271,50 +233,22 @@ export default function Page() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Select
+            <PaceSelect
               value={roleFilter}
-              onValueChange={(value) =>
-                setRoleFilter(value as typeof roleFilter)
-              }
-            >
-              <SelectTrigger className="w-[118px] h-12 p-3 border border-gray-300 rounded !text-pace-sm">
-                <span className="text-pace-gray-700 font-semibold text-pace-base">
-                  {roleFilter === 'all'
-                    ? '전체 회원'
-                    : roleFilter === 'admin'
-                      ? '관리자'
-                      : roleFilter === 'instructor'
-                        ? '강사'
-                        : '정회원'}
-                </span>
-              </SelectTrigger>
-              <SelectContent className="bg-white border border-pace-gray-200 shadow-md rounded-md !text-pace-sm">
-                <SelectItem
-                  value="all"
-                  className="!text-pace-sm text-pace-gray-700"
-                >
-                  전체
-                </SelectItem>
-                <SelectItem
-                  value="admin"
-                  className="!text-pace-sm text-pace-gray-700"
-                >
-                  관리자
-                </SelectItem>
-                <SelectItem
-                  value="instructor"
-                  className="!text-pace-sm text-pace-gray-700"
-                >
-                  강사
-                </SelectItem>
-                <SelectItem
-                  value="user"
-                  className="!text-pace-sm text-pace-gray-700"
-                >
-                  일반 사용자
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={(value) => setRoleFilter(value as typeof roleFilter)}
+              width="w-[124px]"
+              options={[
+                { value: 'all', label: '전체 회원' },
+                { value: 'admin', label: '관리자' },
+                { value: 'instructor', label: '강사' },
+                { value: 'user', label: '정회원' }
+              ]}
+              valueClassMap={{
+                public: 'text-pace-gray-700 font-bold',
+                private: 'text-pace-stone-500 font-normal',
+                '': 'text-pace-stone-500 font-normal'
+              }}
+            />
           </div>
         </div>
 
