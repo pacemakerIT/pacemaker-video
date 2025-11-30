@@ -9,16 +9,16 @@ import Image from 'next/image';
 import { ItemType } from '@prisma/client';
 
 export default function VideoList() {
-  const [videos, setVideos] = useState<OnlineCards[]>([]);
+  const [courses, setCourses] = useState<OnlineCards[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const fetchCourses = async () => {
       try {
         const res = await fetch('/api/courses');
         if (res.ok) {
           const data = await res.json();
-          setVideos(data);
+          setCourses(data);
         } else {
           toast('Failed to fetch courses');
         }
@@ -29,13 +29,13 @@ export default function VideoList() {
       }
     };
 
-    fetchVideos();
+    fetchCourses();
   }, []);
 
   return (
     <section className="w-full  gap-8">
       {loading ? (
-        <p className="text-center">📡 비디오 불러오는 중...</p>
+        <p className="text-center">📡 코스 불러오는 중...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl mx-auto gap-8">
           {/* Header Section */}
@@ -64,12 +64,12 @@ export default function VideoList() {
           </div>
 
           {/* Card Container Section */}
-          {videos.length === 0 ? (
+          {courses.length === 0 ? (
             <p className="text-center">📭 등록된 비디오가 없습니다.</p>
           ) : (
             <CardContainer
               layout={'horizontal'}
-              cards={videos}
+              cards={courses}
               itemType={ItemType.VIDEO}
             />
           )}

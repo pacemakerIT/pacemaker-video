@@ -1,105 +1,3 @@
-// Single-table 구조 타입 정의
-export interface SingleTableCourse {
-  id: string;
-  title: string;
-  subtitle: string;
-  courseTitle: string;
-  description: string;
-  price: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  duration: string;
-  level: string;
-  language: string;
-  backgroundImage: string;
-  createdAt: string;
-  updatedAt: string;
-
-  // 단일 값들 (평면적)
-  instructorName: string;
-  instructorProfileImage: string;
-  instructorDescription: string;
-  sectionTitle: string;
-  sectionSubtitle: string;
-  sectionDescription: string;
-  recommendationTitle: string;
-  reviewTitle: string;
-  relatedContentTitle: string;
-
-  // 배열 데이터들
-  instructorCareers: CareerItem[];
-  expandableCards: ExpandableCard[];
-  recommendationItems: RecommendationItem[];
-  relatedContentItems: RelatedContentItem[];
-  reviews: Review[];
-}
-
-// Six-table 구조 타입 정의
-export interface SixTableCourse {
-  id: string;
-  title: string;
-  subtitle: string;
-  courseTitle: string;
-  description: string;
-  price: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  duration: string;
-  level: string;
-  language: string;
-  backgroundImage: string;
-  instructorId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface SixTableInstructor {
-  id: string;
-  name: string;
-  profileImage: string;
-  description: string;
-}
-
-export interface SixTableCourseSection {
-  id: string;
-  courseId: string;
-  type: string;
-  title: string;
-  subtitle: string | null;
-  description: string | null;
-  orderIndex: number;
-  items: SixTableSectionItem[];
-}
-
-export interface SixTableSectionItem {
-  id: string;
-  sectionId: string;
-  title: string;
-  content: string;
-  icon: string | null;
-  orderIndex: number;
-  itemId?: string;
-  price?: number;
-  category?: string;
-  type?: string;
-  thumbnail?: string;
-}
-
-export interface SixTableApiResponse {
-  success: boolean;
-  data: {
-    course: SixTableCourse;
-    instructor: SixTableInstructor | null;
-    instructorCareers: CareerItem[];
-    sections: SixTableCourseSection[];
-    reviews: Review[];
-  };
-  error?: string;
-  message?: string;
-}
-
 // 공통 타입들
 export interface CareerItem {
   period: string;
@@ -139,24 +37,17 @@ export interface Review {
 }
 
 // API 응답 타입들
-export interface SingleTableApiResponse {
-  success: boolean;
-  data: SingleTableCourse;
-  error?: string;
-  message?: string;
-}
 
 // Three-table 구조 타입 정의
 export interface Course {
   id: string;
   title: string;
-  subtitle: string;
   courseTitle: string;
   description: string;
   price: string;
   rating: number;
   reviewCount: number;
-  category: string;
+  category: 'INTERVIEW' | 'RESUME' | 'NETWORKING' | null;
   duration: string;
   level: string;
   language: string;
@@ -165,17 +56,27 @@ export interface Course {
   createdAt: string;
   updatedAt: string;
   sections: Section[];
-  reviews: Review[];
+  videos: Video[];
+}
+
+export interface Video {
+  id: string;
+  videoId: string;
+  title: string | null;
+  description: string | null;
+  price: number | null;
+  thumbnail: string | null;
+  category: string | null;
 }
 
 export interface Section {
   id: string;
   type: string;
   title: string;
-  subtitle: string | null;
   description: string | null;
   orderIndex: number;
   items: SectionItem[];
+  videos: Video[];
 }
 
 export interface SectionItem {
@@ -197,16 +98,6 @@ export interface Instructor {
   profileImage: string;
   description: string;
   careers: CareerItem[];
-}
-
-export interface GlobalRelatedItem {
-  id: string;
-  title: string;
-  content: string;
-  price: number;
-  category: string;
-  type: string;
-  thumbnail: string;
 }
 
 export interface ApiResponse {
