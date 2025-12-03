@@ -26,7 +26,9 @@ export default function RecommendedLinkSection({
   ]);
 
   const handleAddRecommendlink = () => {
-    setLinks((prev) => [...prev, { url: '', name: '', errors: {} }]);
+    const newLinks = [...links, { url: '', name: '', errors: {} }];
+    setLinks(newLinks);
+    onChange?.(newLinks);
   };
 
   const handleLinkChange = (
