@@ -27,7 +27,11 @@ type CourseData = {
   visualTitle: string;
   visualTitle2: string;
   recommended: string[];
-  sections: { title: string; content: string }[];
+  sections: {
+    title: string;
+    content: string;
+    videos: { title: string; link: string }[];
+  }[];
   instructors: {
     name: string;
     intro: string;
@@ -62,7 +66,7 @@ export default function CourseForm() {
     visualTitle: '',
     visualTitle2: '',
     recommended: [],
-    sections: [{ title: '', content: '' }],
+    sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
     instructors: [
       {
         name: '',
