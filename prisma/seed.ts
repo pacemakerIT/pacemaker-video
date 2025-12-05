@@ -10,9 +10,9 @@ const COURSE_DESC =
 const TITLE = '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
 
 const COURSE_THUMBNAILS = [
-  '/img/gitlab.png',
-  '/img/join-us-online.png',
-  '/img/code-editor.png'
+  '/img/course_image1.png',
+  '/img/course_image2.png',
+  '/img/course_image3.png'
 ];
 
 const COURSE_CATEGORIES = ['INTERVIEW', 'RESUME', 'NETWORKING'];
