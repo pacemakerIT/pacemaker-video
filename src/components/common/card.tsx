@@ -29,6 +29,7 @@ interface CardProps extends OnlineCards {
 
 export default function Card({
   id,
+  courseTitle,
   title,
   price,
   description,
@@ -58,6 +59,8 @@ export default function Card({
         return '/'; // fallback
     }
   };
+
+  const displayTitle = courseTitle || title || '';
 
   return (
     <div className="cursor-pointer">
@@ -105,7 +108,7 @@ export default function Card({
               )}
               <div className="w-full flex justify-between gap-2 items-center">
                 <h3 className="text-2xl font-semibold pace-gray-500 h-9 overflow-hidden text-ellipsis whitespace-nowrap">
-                  {title}
+                  {displayTitle}
                 </h3>
                 <span className="text-[28px] font-bold">{`$${price}`}</span>
               </div>
