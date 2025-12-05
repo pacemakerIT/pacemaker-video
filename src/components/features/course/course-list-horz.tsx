@@ -37,7 +37,7 @@ export default function VideoList() {
       {loading ? (
         <p className="text-center">📡 비디오 불러오는 중...</p>
       ) : (
-        <div className="flex flex-col w-full max-w-7xl mx-auto gap-8">
+        <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
           <div className="flex flex-col justify-center">
             <h5 className="text-pace-orange-600 text-lg">
