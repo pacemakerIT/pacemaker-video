@@ -92,18 +92,18 @@ export default function RecommendedLinkSection({
                     onChange={(e) =>
                       handleLinkChange(i, 'name', e.target.value)
                     }
-                    className="w-full pr-8"
+                    className="w-full"
                   />
-                  {links.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveLink(i)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-pace-stone-500 hover:text-pace-gray-900"
-                    >
-                      ✕
-                    </button>
-                  )}
                 </div>
+                {links.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLink(i)}
+                    className="text-pace-orange-500 hover:text-pace-orange-600 flex-shrink-0"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
               {/* 에러 메시지 */}
