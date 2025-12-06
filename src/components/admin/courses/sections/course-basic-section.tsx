@@ -28,8 +28,8 @@ export default function CourseBasicSection({
   return (
     <div className="flex items-center gap-10">
       {/* 카테고리 선택 */}
-      <div className="flex items-center gap-6">
-        <label className="w-[216px] text-left text-pace-lg font-bold">
+      <div className="flex items-start gap-6">
+        <label className="w-[216px] text-left text-pace-lg font-bold h-[48px] flex items-center">
           카테고리 선택
           <RequiredMark />
         </label>
@@ -52,8 +52,8 @@ export default function CourseBasicSection({
       </div>
 
       {/* 공개 여부 */}
-      <div className="flex items-center gap-3">
-        <label className="w-[100px] text-left text-pace-lg font-bold">
+      <div className="flex items-start gap-3">
+        <label className="w-[100px] text-left text-pace-lg font-bold h-[48px] flex items-center">
           공개여부
           <RequiredMark />
         </label>
