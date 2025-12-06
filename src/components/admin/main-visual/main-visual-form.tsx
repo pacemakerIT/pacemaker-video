@@ -7,19 +7,16 @@ import Link from 'next/link';
 import DateInput from '@/components/ui/date-input';
 import TimeInput from '@/components/ui/admin/time-input';
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
+import PaceSelect from '@/components/ui/admin/select';
 import { MainVisual } from '@/types/admin/main-visual';
 import Textarea from '@/components/ui/admin/textarea';
+import Input from '@/components/ui/admin/input';
+import ErrorText from '@/components/ui/admin/error-text';
 
 type MainVisualFormProps = {
-  initialData?: Partial<MainVisual>; // 수정 시 초기값
-  mode: 'create' | 'edit'; // 등록/수정 모드
-  onSubmit: (data: MainVisual) => void; // any 대신 MainVisual 타입 사용
+  initialData?: Partial<MainVisual>;
+  mode: 'create' | 'edit';
+  onSubmit: (data: MainVisual) => void;
 };
 
 export default function MainVisualForm({
@@ -174,7 +171,7 @@ export default function MainVisualForm({
             비주얼 제목<span className="text-pace-orange-500 ml-1">*</span>
           </label>
           <div className="flex flex-col flex-1">
-            <input
+            <Input
               type="text"
               placeholder="타이틀명 입력"
               value={title}
@@ -182,13 +179,8 @@ export default function MainVisualForm({
                 setTitle(e.target.value);
                 setErrors((prev) => ({ ...prev, title: undefined }));
               }}
-              className="border border-pace-gray-300 rounded p-3"
             />
-            {errors.title && (
-              <p className="text-pace-orange-500 text-sm mt-1">
-                {errors.title}
-              </p>
-            )}
+            <ErrorText message={errors.title} />
           </div>
         </div>
 
@@ -205,13 +197,9 @@ export default function MainVisualForm({
                 setDescription(e.target.value);
                 setErrors((prev) => ({ ...prev, description: undefined }));
               }}
-              className="h-[200px]" // 필요 시 높이 지정 가능
+              className="h-[200px]"
             />
-            {errors.description && (
-              <p className="text-pace-orange-500 text-sm mt-1">
-                {errors.description}
-              </p>
-            )}
+            <ErrorText message={errors.description} />
           </div>
         </div>
 
@@ -220,49 +208,23 @@ export default function MainVisualForm({
           <label className="w-[216px] text-pace-lg font-bold text-left">
             공개 여부<span className="text-pace-orange-500 ml-1">*</span>
           </label>
+
           <div className="flex flex-col flex-1">
-            <Select
+            <PaceSelect
               value={status}
-              onValueChange={(value) => {
-                setStatus(value as '' | 'public' | 'private');
+              onChange={(v) => {
+                setStatus(v as '' | 'public' | 'private');
                 setErrors((prev) => ({ ...prev, status: undefined }));
               }}
-            >
-              <SelectTrigger className="w-[216px] h-[48px] px-3 border border-gray-300 rounded bg-white !text-pace-base">
-                <span
-                  className={
-                    status === ''
-                      ? 'text-pace-stone-500 font-normal'
-                      : 'text-pace-gray-700 font-bold'
-                  }
-                >
-                  {status === ''
-                    ? '선택'
-                    : status === 'public'
-                      ? '공개중'
-                      : '비공개'}
-                </span>
-              </SelectTrigger>
-              <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md !text-pace-base">
-                <SelectItem
-                  value="public"
-                  className="!text-pace-base text-pace-gray-700 font-bold"
-                >
-                  공개중
-                </SelectItem>
-                <SelectItem
-                  value="private"
-                  className="!text-pace-base text-pace-stone-500 font-normal"
-                >
-                  비공개
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.status && (
-              <p className="text-pace-orange-500 text-sm mt-1">
-                {errors.status}
-              </p>
-            )}
+              width="w-[216px]"
+              placeholder="선택"
+              options={[
+                { value: 'public', label: '공개중' },
+                { value: 'private', label: '비공개' }
+              ]}
+            />
+
+            <ErrorText message={errors.status} />
           </div>
         </div>
 
@@ -287,11 +249,7 @@ export default function MainVisualForm({
               />
               <TimeInput value={endTime} onChange={handleEndTimeChange} />
             </div>
-            {errors.period && (
-              <p className="text-pace-orange-500 text-sm mt-1">
-                {errors.period}
-              </p>
-            )}
+            <ErrorText message={errors.period} />
           </div>
         </div>
 
@@ -304,7 +262,7 @@ export default function MainVisualForm({
             <ImageUploadInput
               placeholder="파일 선택"
               value={image}
-              imageUrl={imageUrl} // local state로 변경
+              imageUrl={imageUrl}
               onChange={(file) => {
                 setImage(file);
                 setErrors((prev) => ({ ...prev, image: undefined }));
@@ -314,11 +272,8 @@ export default function MainVisualForm({
                 }
               }}
             />
-            {errors.image && (
-              <p className="text-pace-orange-500 text-sm mt-1">
-                {errors.image}
-              </p>
-            )}
+
+            <ErrorText message={errors.image} />
           </div>
         </div>
 
@@ -327,10 +282,11 @@ export default function MainVisualForm({
           <label className="text-pace-lg font-bold text-left w-[216px]">
             링크 연결<span className="text-pace-orange-500 ml-1">*</span>
           </label>
+
           <div className="flex flex-col flex-1">
             {!link ? (
               <div className="flex items-center gap-2 rounded bg-white">
-                <input
+                <Input
                   type="text"
                   placeholder="https://example.com"
                   value={tempLink}
@@ -338,10 +294,11 @@ export default function MainVisualForm({
                     setTempLink(e.target.value);
                     setErrors((prev) => ({ ...prev, link: undefined }));
                   }}
-                  className="flex-1 p-3 text-pace-base rounded bg-transparent outline-none border border-pace-gray-200"
+                  className="flex-1 border border-pace-gray-200"
                 />
+
                 <div className="relative flex-1">
-                  <input
+                  <Input
                     type="text"
                     placeholder="표시할 이름"
                     value={tempLinkName}
@@ -349,7 +306,7 @@ export default function MainVisualForm({
                       setTempLinkName(e.target.value);
                       setErrors((prev) => ({ ...prev, linkName: undefined }));
                     }}
-                    className="w-full p-3 pr-10 text-pace-base rounded bg-transparent outline-none border border-pace-gray-200"
+                    className="w-full pr-10 border border-pace-gray-200"
                   />
                   <button
                     type="button"
@@ -401,20 +358,9 @@ export default function MainVisualForm({
                 </button>
               </div>
             )}
-            {(errors.link || errors.linkName) && (
-              <div className="flex flex-col">
-                {errors.link && (
-                  <p className="text-pace-orange-500 text-sm mt-1">
-                    {errors.link}
-                  </p>
-                )}
-                {errors.linkName && (
-                  <p className="text-pace-orange-500 text-sm mt-1">
-                    {errors.linkName}
-                  </p>
-                )}
-              </div>
-            )}
+
+            <ErrorText message={errors.link} />
+            <ErrorText message={errors.linkName} />
           </div>
         </div>
       </div>
