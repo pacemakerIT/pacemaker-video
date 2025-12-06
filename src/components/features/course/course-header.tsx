@@ -42,7 +42,7 @@ export default function CourseHeader({
     <>
       <SectionHeader
         subtitle="다양한 강의를 한 자리에서"
-        title="페이스메이커 온라인 강의"
+        title="페이스메이커 온라인 코스"
       />
       <div className="w-full flex gap-4 justify-between items-center pt-8 pb-4">
         <div className="flex gap-4">

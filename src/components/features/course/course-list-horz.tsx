@@ -8,7 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ItemType } from '@prisma/client';
 
-export default function VideoList() {
+export default function CourseList() {
   const [courses, setCourses] = useState<OnlineCards[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,12 +65,12 @@ export default function VideoList() {
 
           {/* Card Container Section */}
           {courses.length === 0 ? (
-            <p className="text-center">📭 등록된 비디오가 없습니다.</p>
+            <p className="text-center">📭 등록된 코스가 없습니다.</p>
           ) : (
             <CardContainer
               layout={'horizontal'}
               cards={courses}
-              itemType={ItemType.VIDEO}
+              itemType={ItemType.COURSE}
             />
           )}
         </div>
