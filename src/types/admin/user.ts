@@ -1,10 +1,16 @@
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  INSTRUCTOR = 'INSTRUCTOR'
+}
+
 export interface UserRow {
-  id: number;
+  id: string;
   name: string;
   email: string;
   image: string;
   createdAt: string;
-  role: 'admin' | 'user' | 'instructor';
+  role: UserRole;
   selected: boolean;
   purchases?: {
     lectures: number;

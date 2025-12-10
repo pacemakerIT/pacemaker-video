@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { UserRow, UserRole } from '@/types/admin/user';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
-import { UserRow } from '@/types/admin/user';
+import { getUsers } from './actions';
+import { toast } from 'sonner';
 
 function UserTableRow({
   user,
@@ -14,8 +16,8 @@ function UserTableRow({
 }: {
   user: UserRow;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
-  onRoleChange: (id: number, role: string) => void;
+  toggleRow: (id: string, checked: boolean) => void;
+  onRoleChange: (id: string, role: string) => void;
 }) {
   return (
     <div className="flex items-center border-b border-pace-gray-100 text-pace-base text-pace-gray-500 h-[120px] pl-6 gap-x-6">
@@ -50,7 +52,7 @@ function UserTableRow({
               {user.createdAt} 가입
             </span>
           </p>
-          {user.role !== 'admin' && user.purchases && (
+          {user.role !== UserRole.ADMIN && user.purchases && (
             <p className="text-pace-sm text-pace-stone-500 pt-2">
               강의
               <span className="font-bold pl-2 pr-4">
@@ -76,9 +78,9 @@ function UserTableRow({
           onChange={(value) => onRoleChange(user.id, value)}
           width="w-[124px]"
           options={[
-            { value: 'admin', label: '관리자' },
-            { value: 'instructor', label: '강사' },
-            { value: 'user', label: '정회원' }
+            { value: UserRole.ADMIN, label: '관리자' },
+            { value: UserRole.INSTRUCTOR, label: '강사' },
+            { value: UserRole.USER, label: '정회원' }
           ]}
           valueClassMap={{
             public: 'text-pace-gray-700 font-bold',
@@ -98,80 +100,31 @@ function UserTableRow({
 }
 
 export default function Page() {
-  const [users, setUsers] = useState<UserRow[]>([
-    {
-      id: 1,
-      name: '김철수',
-      email: 'chulsoo.kim@example.com',
-      image: '/img/default-profile.png',
-      createdAt: '2025.01.15',
-      role: 'admin',
-      selected: false
-    },
-    {
-      id: 2,
-      name: '이영희',
-      email: 'younghee.lee@example.com',
-      image: '/img/default-profile.png',
-      createdAt: '2025.02.20',
-      role: 'instructor',
-      selected: false,
-      purchases: {
-        lectures: 12,
-        ebooks: 5,
-        workshops: 3
-      }
-    },
-    {
-      id: 3,
-      name: '박민수',
-      email: 'minsoo.park@example.com',
-      image: '/img/default-profile.png',
-      createdAt: '2025.03.10',
-      role: 'user',
-      selected: false,
-      purchases: {
-        lectures: 8,
-        ebooks: 3,
-        workshops: 1
-      }
-    },
-    {
-      id: 4,
-      name: '정수진',
-      email: 'soojin.jung@example.com',
-      image: '/img/default-profile.png',
-      createdAt: '2025.04.05',
-      role: 'user',
-      selected: false,
-      purchases: {
-        lectures: 15,
-        ebooks: 7,
-        workshops: 4
-      }
-    },
-    {
-      id: 5,
-      name: '최동욱',
-      email: 'dongwook.choi@example.com',
-      image: '/img/default-profile.png',
-      createdAt: '2025.05.12',
-      role: 'instructor',
-      selected: false,
-      purchases: {
-        lectures: 20,
-        ebooks: 10,
-        workshops: 6
-      }
-    }
-  ]);
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
+  const ITEMS_PER_PAGE = 10;
 
-  const [roleFilter, setRoleFilter] = useState<
-    'all' | 'admin' | 'user' | 'instructor'
-  >('all');
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { users: data, total } = await getUsers(
+          currentPage,
+          ITEMS_PER_PAGE,
+          roleFilter
+        );
+        setUsers(data);
+        setTotalUsers(total);
+      } catch (error) {
+        toast(`Failed to fetch users: ${error}`);
+      }
+    };
+    fetchUsers();
+  }, [currentPage, roleFilter]);
 
   // 개별 Row 선택 토글
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean) => {
     setUsers((prev) =>
       prev.map((user) =>
         user.id === id ? { ...user, selected: checked } : user
@@ -185,19 +138,19 @@ export default function Page() {
   };
 
   // 역할 변경 핸들러
-  const handleRoleChange = (id: number, role: string) => {
+  const handleRoleChange = (id: string, role: string) => {
     setUsers((prev) =>
       prev.map((user) =>
-        user.id === id ? { ...user, role: role as UserRow['role'] } : user
+        user.id === id ? { ...user, role: role as UserRole } : user
       )
     );
   };
 
-  // 역할 필터링
-  const filteredUsers =
-    roleFilter === 'all'
-      ? users
-      : users.filter((user) => user.role === roleFilter);
+  // 역할 필터 변경 핸들러 (페이지 리셋)
+  const handleRoleFilterChange = (value: string) => {
+    setRoleFilter(value as typeof roleFilter);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
   return (
     <div className="p-10">
@@ -235,13 +188,13 @@ export default function Page() {
           <div className="flex items-center gap-2">
             <PaceSelect
               value={roleFilter}
-              onChange={(value) => setRoleFilter(value as typeof roleFilter)}
+              onChange={handleRoleFilterChange}
               width="w-[124px]"
               options={[
                 { value: 'all', label: '전체 회원' },
-                { value: 'admin', label: '관리자' },
-                { value: 'instructor', label: '강사' },
-                { value: 'user', label: '정회원' }
+                { value: UserRole.ADMIN, label: '관리자' },
+                { value: UserRole.INSTRUCTOR, label: '강사' },
+                { value: UserRole.USER, label: '정회원' }
               ]}
               valueClassMap={{
                 public: 'text-pace-gray-700 font-bold',
@@ -263,18 +216,67 @@ export default function Page() {
           </div>
 
           {/* 데이터 Rows */}
-          {filteredUsers.map((user, index) => (
+          {users.map((user, index) => (
             <UserTableRow
               key={user.id}
               user={user}
-              index={index}
+              index={(currentPage - 1) * ITEMS_PER_PAGE + index}
               toggleRow={toggleRow}
               onRoleChange={handleRoleChange}
             />
           ))}
         </div>
 
-        <div className="flex items-center gap-2 justify-end pb-6">
+        <div className="relative flex items-center justify-end pb-10">
+          {/* Pagination */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="w-2 h-2 flex items-center justify-center rounded hover:bg-pace-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Image
+                src="/icons/chevron-left.svg"
+                alt="Previous"
+                width={16}
+                height={16}
+              />
+            </button>
+            {Array.from(
+              { length: Math.ceil(totalUsers / ITEMS_PER_PAGE) },
+              (_, i) => i + 1
+            ).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-8 h-8 flex items-center justify-center rounded text-pace-base ${
+                  currentPage === page
+                    ? 'text-pace-orange-800 font-bold'
+                    : 'hover:bg-pace-gray-100 text-pace-stone-500'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(totalUsers / ITEMS_PER_PAGE))
+                )
+              }
+              disabled={currentPage === Math.ceil(totalUsers / ITEMS_PER_PAGE)}
+              className="w-2 h-2 flex items-center justify-center rounded hover:bg-pace-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Image
+                src="/icons/chevron-right.svg"
+                alt="Next"
+                width={16}
+                height={16}
+              />
+            </button>
+          </div>
+
+          {/* Delete Button */}
           {/* TODO: DB 완료 후 삭제 기능 추가 */}
           <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
             삭제
