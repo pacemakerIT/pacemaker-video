@@ -32,13 +32,15 @@ vi.mock('@/components/common/list-header', () => ({
   )
 }));
 
-vi.mock('@/components/CourseHeader', () => ({
+vi.mock('@/components/features/course/course-header', () => ({
   default: ({
     category,
-    currentCategory
+    currentCategory,
+    setCurrentCategory
   }: {
     category: string[];
     currentCategory: string;
+    setCurrentCategory: (category: string) => void;
   }) => (
     <div>
       <h5 className="text-pace-orange-600 text-lg">
@@ -56,6 +58,7 @@ vi.mock('@/components/CourseHeader', () => ({
               ? 'text-pace-orange-600'
               : 'text-pace-stone-600'
           }
+          onClick={() => setCurrentCategory(cat)}
         >
           {cat}
         </div>
