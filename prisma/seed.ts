@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { ItemType, PrismaClient } from '@prisma/client';
 import courseData from '../public/json/video-detail-mock.json';
 import { randomUUID } from 'crypto';
 
@@ -252,6 +252,125 @@ async function main() {
         courseId: courseId // FK로 연결
       }
     });
+  }
+
+  // 4) Ensure UserRoles exist
+  console.log('Creating user roles...');
+  await prisma.userRole.upsert({
+    where: { id: 'ADMIN' },
+    update: {},
+    create: { id: 'ADMIN', label: 'ADMIN' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'INSTRUCTOR' },
+    update: {},
+    create: { id: 'INSTRUCTOR', label: 'INSTRUCTOR' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'USER' },
+    update: {},
+    create: { id: 'USER', label: 'USER' }
+  });
+
+  // 5) 30명의 User 생성 with random roles
+  console.log('Generating 30 users with random roles...');
+  const itemTypes = ['COURSE', 'EBOOK', 'WORKSHOP'];
+
+  for (let i = 1; i <= 30; i++) {
+    const userId = randomUUID();
+    const email = `user${i}@example.com`;
+    const name = `User ${i}`;
+    const nickname = `Nick${i}`;
+
+    // Random role selection with weighted distribution
+    // ADMIN: ~10%, INSTRUCTOR: ~20%, USER: ~70%
+    let roleId;
+    const roleRandom = Math.random();
+    if (roleRandom < 0.1) {
+      roleId = 'ADMIN';
+    } else if (roleRandom < 0.3) {
+      roleId = 'INSTRUCTOR';
+    } else {
+      roleId = 'USER';
+    }
+
+    await prisma.user.upsert({
+      where: { email },
+      update: {
+        image: null
+      },
+      create: {
+        id: userId,
+        email,
+        name,
+        nickname,
+        image: null,
+        clerkId: `clerk_user_${i}`,
+        roleId: roleId,
+        isSubscribed: i % 3 === 0, // 1/3 probability
+        createdAt: new Date(
+          Date.now() - Math.floor(Math.random() * 10000000000)
+        ), // Random past date
+        lastLoginAt: new Date()
+      }
+    });
+
+    // Create random orders for non-admin users
+    if (roleId !== 'ADMIN') {
+      // Generate 1-5 random orders per user
+      const numOrders = Math.floor(Math.random() * 5) + 1;
+
+      for (let j = 0; j < numOrders; j++) {
+        const orderId = randomUUID();
+        const orderItems: Array<{
+          itemType: string;
+          itemId: string;
+          priceAtPurchase: number;
+          quantity: number;
+        }> = [];
+
+        // Generate 1-3 items per order
+        const numItems = Math.floor(Math.random() * 3) + 1;
+        let totalAmount = 0;
+
+        for (let k = 0; k < numItems; k++) {
+          const itemType =
+            itemTypes[Math.floor(Math.random() * itemTypes.length)];
+          const price = Math.floor(Math.random() * 200) + 50; // Random price between 50-250
+          const quantity = 1;
+
+          orderItems.push({
+            itemType,
+            itemId: randomUUID(),
+            priceAtPurchase: price,
+            quantity
+          });
+
+          totalAmount += price * quantity;
+        }
+
+        // Create order with items
+        await prisma.order.create({
+          data: {
+            id: orderId,
+            userId: userId,
+            totalAmount,
+            status: 'COMPLETED',
+            orderedAt: new Date(
+              Date.now() - Math.floor(Math.random() * 10000000000)
+            ),
+            items: {
+              create: orderItems.map((item) => ({
+                itemType: item.itemType as ItemType,
+                itemId: item.itemId,
+                priceAtPurchase: item.priceAtPurchase,
+                quantity: item.quantity
+              }))
+            }
+          }
+        });
+      }
+    }
   }
 
   console.log('Seed data created successfully!');
