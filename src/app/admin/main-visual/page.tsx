@@ -4,12 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
+import PaceSelect from '@/components/ui/admin/select';
 
 import {
   DndContext,
@@ -108,33 +103,21 @@ function VisualRow({
 
       {/* 공개 여부 */}
       <div className="w-32">
-        <Select value={value} onValueChange={setValue}>
-          <SelectTrigger className="w-[124px] h-[48px] px-3 border border-gray-300 rounded !text-pace-base">
-            <span
-              className={
-                value === 'public'
-                  ? 'text-pace-gray-700 font-bold'
-                  : 'text-pace-stone-500 font-normal'
-              }
-            >
-              {value === 'public' ? '공개중' : '비공개'}
-            </span>
-          </SelectTrigger>
-          <SelectContent className="bg-white border border-pace-gray-200 shadow-md rounded-md !text-pace-base">
-            <SelectItem
-              value="public"
-              className="!text-pace-base text-pace-gray-700 font-bold"
-            >
-              공개중
-            </SelectItem>
-            <SelectItem
-              value="private"
-              className="!text-pace-base text-pace-stone-500 font-normal"
-            >
-              비공개
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <PaceSelect
+          value={value}
+          onChange={setValue}
+          width="w-[124px]"
+          placeholder="선택"
+          options={[
+            { value: 'public', label: '공개중' },
+            { value: 'private', label: '비공개' }
+          ]}
+          valueClassMap={{
+            public: 'text-pace-gray-700 font-bold',
+            private: 'text-pace-stone-500 font-normal',
+            '': 'text-pace-stone-500 font-normal'
+          }}
+        />
       </div>
 
       {/* 액션 */}

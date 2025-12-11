@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -55,14 +54,47 @@ export function Footer() {
         <div className="flex flex-col items-end space-y-6">
           {/* 소셜 아이콘만 따로 */}
           <div className="flex space-x-4">
-            <a href="https://facebook.com/globalpacemaker" aria-label="Facebook" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
-              <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+            <a
+              href="https://facebook.com/globalpacemaker"
+              aria-label="Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-75"
+            >
+              <Image
+                src="/icons/facebook.svg"
+                alt="Facebook"
+                width={24}
+                height={24}
+              />
             </a>
-            <a href="https://www.youtube.com/@pacemaker340" aria-label="YouTube" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
-              <Image src="/icons/youtube.svg" alt="YouTube" width={24} height={24} />
+            <a
+              href="https://www.youtube.com/@pacemaker340"
+              aria-label="YouTube"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-75"
+            >
+              <Image
+                src="/icons/youtube.svg"
+                alt="YouTube"
+                width={24}
+                height={24}
+              />
             </a>
-            <a href="https://www.instagram.com/pacemaker_career/" aria-label="Instagram" target="_blank" rel="noopener noreferrer" className="hover:opacity-75">
-              <Image src="/icons/instagram.svg" alt="Instagram" width={24} height={24} />
+            <a
+              href="https://www.instagram.com/pacemaker_career/"
+              aria-label="Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-75"
+            >
+              <Image
+                src="/icons/instagram.svg"
+                alt="Instagram"
+                width={24}
+                height={24}
+              />
             </a>
           </div>
 

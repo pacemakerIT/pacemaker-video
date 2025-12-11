@@ -48,11 +48,16 @@ export function CustomBadge({
   variant,
   ...props
 }: CustomBadgeProps) {
+  // Normalize variant to capitalize first letter (case-insensitive)
+  const normalizedVariant = variant
+    ? variant.charAt(0).toUpperCase() + variant.slice(1).toLowerCase()
+    : undefined;
+
   return (
     <Badge
       className={cn(
         customBadgeVariants({
-          variant: variant as
+          variant: normalizedVariant as
             | 'Interview'
             | 'Resume'
             | 'Networking'
