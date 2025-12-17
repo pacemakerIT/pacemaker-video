@@ -100,9 +100,6 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.15"
   },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "lint-staged": {
     "*.js": [
       "prettier --write .",
