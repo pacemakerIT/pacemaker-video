@@ -1,7 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "../node_modules/.prisma/client"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -37,7 +36,7 @@ model User {
   taughtWorkshops       Workshop[]             @relation("InstructorWorkshops")
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
-  Cart                  Cart[]
+  cart                  Cart[]
   interest              Interest[]
 }
 
