@@ -38,6 +38,7 @@ model User {
   favorites             Favorite[]
   cart                  Cart[]
   interest              Interest[]
+  reviews               Review[]
 }
 
 model UserRole {
@@ -246,8 +247,24 @@ model Course {
 
   videos       Video[]       @relation("CourseToVideos")
   sectionsRel  Section[]
+  reviews      Review[]
 }
 
+model Review {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  courseId  String   @db.Uuid
+  rating    Float
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId])
+  @@index([userId])
+}
 
 model Section {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
