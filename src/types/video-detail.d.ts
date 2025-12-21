@@ -57,6 +57,18 @@ export interface Course {
   updatedAt: string;
   sections: Section[];
   videos: Video[];
+  reviews: ApiReview[];
+}
+
+export interface ApiReview {
+  id: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+  user: {
+    name: string | null;
+    image: string | null;
+  } | null;
 }
 
 export interface Video {
