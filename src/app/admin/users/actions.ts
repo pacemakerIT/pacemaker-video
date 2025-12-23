@@ -80,3 +80,98 @@ export async function getUsers(
 
   return { users: mappedUsers, total };
 }
+
+export interface OrderDetail {
+  id: string;
+  orderedAt: string;
+  totalAmount: number;
+  status: string;
+  items: Array<{
+    itemId: string;
+    itemType: string;
+    itemTitle: string;
+  }>;
+}
+
+export async function getUserOrders(userId: string): Promise<OrderDetail[]> {
+  const orders = await prisma.order.findMany({
+    where: {
+      userId: userId
+    },
+    include: {
+      items: true
+    },
+    orderBy: {
+      orderedAt: 'desc'
+    }
+  });
+
+  // Fetch titles for all items
+  const ordersWithTitles = await Promise.all(
+    orders.map(async (order) => {
+      const itemsWithTitles = await Promise.all(
+        order.items.map(async (item) => {
+          let itemTitle = 'Unknown Item';
+
+          try {
+            switch (item.itemType) {
+              case 'VIDEO': {
+                const video = await prisma.video.findUnique({
+                  where: { id: item.itemId }
+                });
+                itemTitle = video?.title || 'Unknown Video';
+                break;
+              }
+              case 'COURSE': {
+                const course = await prisma.course.findUnique({
+                  where: { id: item.itemId }
+                });
+                itemTitle = course?.title || 'Unknown Course';
+                break;
+              }
+              case 'DOCUMENT':
+              case 'EBOOK': {
+                const document = await prisma.document.findUnique({
+                  where: { id: item.itemId }
+                });
+                itemTitle = document?.title || 'Unknown Document';
+                break;
+              }
+              case 'WORKSHOP': {
+                const workshop = await prisma.workshop.findUnique({
+                  where: { id: item.itemId }
+                });
+                itemTitle = workshop?.title || 'Unknown Workshop';
+                break;
+              }
+            }
+          } catch (error) {
+            console.error(
+              `Failed to fetch title for ${item.itemType} ${item.itemId}:`,
+              error
+            );
+          }
+
+          return {
+            itemId: item.itemId,
+            itemType: item.itemType,
+            itemTitle: itemTitle
+          };
+        })
+      );
+
+      return {
+        id: order.id,
+        orderedAt: order.orderedAt
+          .toISOString()
+          .split('T')[0]
+          .replace(/-/g, '.'),
+        totalAmount: order.totalAmount,
+        status: order.status,
+        items: itemsWithTitles
+      };
+    })
+  );
+
+  return ordersWithTitles;
+}
