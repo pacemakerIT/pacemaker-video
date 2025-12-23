@@ -32,7 +32,7 @@ export default function Card({
   courseTitle,
   title,
   price,
-  description,
+  summary,
   category,
   itemType,
   thumbnail,
@@ -114,7 +114,7 @@ export default function Card({
               </div>
             </div>
             <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
-              {description}
+              {summary}
             </p>
             <Button
               variant="link"

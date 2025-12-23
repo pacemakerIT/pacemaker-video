@@ -58,7 +58,7 @@ describe('Card', () => {
     id: '1',
     courseTitle: 'Test Course',
     price: 49.99,
-    description: 'Test Description',
+    summary: 'Test Description',
     category: 'INTERVIEW',
     itemId: 'video1',
     uploadDate: new Date('2024-03-20'),

@@ -52,6 +52,9 @@ export interface Course {
   level: string;
   language: string;
   backgroundImage: string;
+  promoText: string | null;
+  summary: string | null;
+  detailTitle: string | null;
   instructorId: string;
   createdAt: string;
   updatedAt: string;

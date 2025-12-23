@@ -5,7 +5,8 @@ import {
   ChevronRight,
   ChevronUp,
   ChevronDown,
-  CirclePlay
+  CirclePlay,
+  ChevronLeft
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SectionHeader from '../../common/section-header';
@@ -162,9 +163,10 @@ export default function VideoDetailContainer({
       <DetailHeroSection
         title={data.course.title}
         courseTitle={data.course.courseTitle}
-        description={data.course.description}
+        subtitle={data.course.promoText || undefined}
+        description={data.course.summary || data.course.description}
         price={data.course.price}
-        instructor={data.instructor?.name || '패이스메이커'}
+        instructor={data.instructor?.name || '페이스메이커'}
         backgroundImage={data.course.backgroundImage}
       />
 
@@ -175,24 +177,13 @@ export default function VideoDetailContainer({
               mediaId={selectedMediaId}
               id="wistia-player-container-1"
             />
-            <button
-              onClick={() => setIsPlaylistOpen(true)}
-              className="absolute top-4 right-4 z-10 bg-white/90 px-4 py-2 rounded-lg font-medium hover:bg-white transition-colors flex items-center gap-2 shadow-md"
-            >
-              <div className="flex flex-col gap-[3px]">
-                <span className="w-4 h-0.5 bg-black"></span>
-                <span className="w-4 h-0.5 bg-black"></span>
-                <span className="w-4 h-0.5 bg-black"></span>
-              </div>
-              목차
-            </button>
           </div>
         )}
 
         <div className="flex flex-col gap-8">
           <SectionHeader
             subtitle="강의는 이렇게 진행돼요!"
-            title={data.course.title || '강의 제목'}
+            title={data.course.detailTitle || '강의 제목'}
           />
           <div className="flex gap-4">
             <div className="text-pace-stone-500 whitespace-pre-wrap">
@@ -228,6 +219,18 @@ export default function VideoDetailContainer({
           reviewCount={data.course.reviewCount}
         />
       </div>
+
+      {/* Playlist Toggle Button (Floating) */}
+      {!isPlaylistOpen && (
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(true)}
+          className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
+        >
+          <ChevronLeft className="h-5 w-5 text-pace-base" />
+        </button>
+      )}
+
       <div
         className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
           isPlaylistOpen

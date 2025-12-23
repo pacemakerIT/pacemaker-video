@@ -14,12 +14,14 @@ import CourseVisualSection from '@/components/admin/courses/sections/course-visu
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
-type CourseData = {
+export type CourseData = {
   category: string;
   isPublic: string;
   showOnMain: boolean;
   title: string;
   intro: string;
+  processTitle: string;
+  processContent: string;
   videoLink: string;
   price: string;
   time: string;
@@ -52,40 +54,48 @@ type CourseData = {
   }[];
 };
 
-export default function CourseForm() {
-  const [courseData, setCourseData] = useState<CourseData>({
-    category: '',
-    isPublic: '',
-    showOnMain: false,
-    title: '',
-    intro: '',
-    videoLink: '',
-    price: '',
-    time: '',
-    thumbnail: null,
-    thumbnailUrl: '',
-    visualTitle: '',
-    visualTitle2: '',
-    recommended: [],
-    sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
-    instructors: [
-      {
-        name: '',
-        intro: '',
-        careers: [
-          {
-            startDate: '',
-            endDate: '',
-            description: '',
-            isCurrent: false
-          }
-        ],
-        photo: null,
-        photoUrl: ''
-      }
-    ],
-    links: [{ url: '', name: '', errors: {} }]
-  });
+type Props = {
+  initialData?: CourseData;
+};
+
+export default function CourseForm({ initialData }: Props) {
+  const [courseData, setCourseData] = useState<CourseData>(
+    initialData || {
+      category: '',
+      isPublic: '',
+      showOnMain: false,
+      title: '',
+      intro: '',
+      processTitle: '',
+      processContent: '',
+      videoLink: '',
+      price: '',
+      time: '',
+      thumbnail: null,
+      thumbnailUrl: '',
+      visualTitle: '',
+      visualTitle2: '',
+      recommended: [],
+      sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
+      instructors: [
+        {
+          name: '',
+          intro: '',
+          careers: [
+            {
+              startDate: '',
+              endDate: '',
+              description: '',
+              isCurrent: false
+            }
+          ],
+          photo: null,
+          photoUrl: ''
+        }
+      ],
+      links: [{ url: '', name: '', errors: {} }]
+    }
+  );
 
   // 에러 상태
   const [errors, setErrors] = useState<CourseFormErrors>({});
@@ -248,6 +258,10 @@ export default function CourseForm() {
         setTitle={(v) => updateCourseData('title', v)}
         intro={courseData.intro}
         setIntro={(v) => updateCourseData('intro', v)}
+        processTitle={courseData.processTitle}
+        setProcessTitle={(v) => updateCourseData('processTitle', v)}
+        processContent={courseData.processContent}
+        setProcessContent={(v) => updateCourseData('processContent', v)}
         videoLink={courseData.videoLink}
         setVideoLink={(v) => updateCourseData('videoLink', v)}
         price={courseData.price}
@@ -273,6 +287,7 @@ export default function CourseForm() {
       {/* 추천드려요 */}
       <RecommendedSelect
         maxSelect={2}
+        value={courseData.recommended}
         onChange={(v) => updateCourseData('recommended', v)}
         error={errors.recommended}
       />
@@ -325,6 +340,7 @@ export default function CourseForm() {
 
       {/* 추천 컨텐츠 링크 */}
       <RecommendedLinkSection
+        value={courseData.links}
         onChange={(v) => updateCourseData('links', v)}
         error={errors.links}
       />

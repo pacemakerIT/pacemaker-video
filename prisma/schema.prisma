@@ -238,6 +238,10 @@ model Course {
   level           String?
   language        String?
   backgroundImage String?
+  promoText       String? // Hero Left Small Subtitle
+  summary         String? // Hero Card Description (short text)
+  detailTitle     String? // Content Section Header
+
 
   instructorId String   @db.Uuid
   createdAt    DateTime @default(now())

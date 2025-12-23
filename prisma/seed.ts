@@ -6,9 +6,17 @@ const prisma = new PrismaClient();
 
 const COURSE_TITLE = '자기소개서 작성 및 면접 준비까지 하늘로!';
 const COURSE_DESC =
-  '2~30대 디지털 산업계의 개발자 직종과, 해외 웹/모바일이 아닌 다양한 분야에서 스킬을 다룬 내용으로 구성한 자기소개서 작성 및 면접 준비까지 전문네가 제공하는 컨텐츠입니다.';
+  '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!';
 
-const TITLE = '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
+const LONG_DESCRIPTION = `북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요. 그만큼 기업들은 더 신중하게, 해당 포지션을 정말 잘 이해하고 있는 지원자를 찾고 있죠.
+
+한국과는 조금 다른 북미식 채용공고의 특징, 어떻게 읽고 준비해야 할지 막막하셨다면, 실제 캐나다 기업에 최종 합격한 페이스메이커 개발자의 영문 이력서를 통해 채용공고 분석부터 이력서에 반영하는 방법까지 함께 살펴보세요!`;
+
+const TITLE =
+  '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지';
+
+const DETAIL_TITLE =
+  '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
 
 const COURSE_THUMBNAILS = [
   '/img/course_image1.png',
@@ -77,7 +85,10 @@ async function main() {
         id: courseId,
         title: TITLE,
         courseTitle: COURSE_TITLE,
-        description: COURSE_DESC,
+        description: LONG_DESCRIPTION,
+        promoText: '캐나다 테크기업 OOO이 선택한',
+        summary: COURSE_DESC,
+        detailTitle: DETAIL_TITLE,
         price: '2800',
         rating: 5,
         reviewCount: 1500,
