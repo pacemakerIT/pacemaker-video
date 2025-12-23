@@ -14,6 +14,10 @@ type Props = {
   setTitle: (v: string) => void;
   intro: string;
   setIntro: (v: string) => void;
+  processTitle: string;
+  setProcessTitle: (v: string) => void;
+  processContent: string;
+  setProcessContent: (v: string) => void;
   videoLink: string;
   setVideoLink: (v: string) => void;
   price: string;
@@ -32,6 +36,10 @@ export default function CourseDetailSection({
   setTitle,
   intro,
   setIntro,
+  processTitle,
+  setProcessTitle,
+  processContent,
+  setProcessContent,
   videoLink,
   setVideoLink,
   price,
@@ -77,6 +85,36 @@ export default function CourseDetailSection({
             className="h-[200px]"
           />
           <ErrorText message={errors?.intro} />
+        </div>
+      </div>
+
+      {/* 강의 진행 제목 */}
+      <div className="flex items-start gap-6">
+        <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
+          강의 진행 제목
+        </label>
+        <div className="flex flex-col flex-1">
+          <Input
+            type="text"
+            value={processTitle}
+            onChange={(e) => setProcessTitle(e.target.value)}
+            placeholder="강의 진행 제목 입력"
+          />
+        </div>
+      </div>
+
+      {/* 강의 진행 내용 */}
+      <div className="flex items-start gap-6">
+        <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
+          강의 진행 내용
+        </label>
+        <div className="flex flex-col flex-1">
+          <Textarea
+            value={processContent}
+            onChange={(e) => setProcessContent(e.target.value)}
+            placeholder="강의 진행 내용 입력"
+            className="h-[200px]"
+          />
         </div>
       </div>
 

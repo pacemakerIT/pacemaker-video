@@ -149,7 +149,7 @@ function VisualRow({
         {/* 버튼들 */}
         <div className="flex gap-2">
           {/* TODO: DB 완료 후 수정 ID 추가 */}
-          <Link href="/admin/main-visual/1">
+          <Link href="/admin/courses/1">
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>

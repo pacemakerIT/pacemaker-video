@@ -6,11 +6,13 @@ import RequiredMark from '@/components/ui/admin/required-mark';
 
 type RecommendedSelectProps = {
   maxSelect?: number;
+  value?: string[];
   onChange?: (selected: string[]) => void;
 };
 
 export default function RecommendedSelect({
   maxSelect = 2,
+  value,
   onChange,
   error
 }: RecommendedSelectProps & { error?: string }) {
@@ -25,20 +27,24 @@ export default function RecommendedSelect({
     '서비스'
   ];
 
-  const [selected, setSelected] = useState<string[]>([]);
+  const [localSelected, setLocalSelected] = useState<string[]>([]);
+  const effectiveSelected = value !== undefined ? value : localSelected;
 
   const handleSelect = (option: string) => {
     let updated: string[] = [];
-    if (selected.includes(option)) {
-      updated = selected.filter((item) => item !== option);
+    if (effectiveSelected.includes(option)) {
+      updated = effectiveSelected.filter((item) => item !== option);
     } else {
-      if (selected.length >= maxSelect) {
+      if (effectiveSelected.length >= maxSelect) {
         alert(`최대 ${maxSelect}개까지만 선택 가능합니다.`);
         return;
       }
-      updated = [...selected, option];
+      updated = [...effectiveSelected, option];
     }
-    setSelected(updated);
+
+    if (value === undefined) {
+      setLocalSelected(updated);
+    }
     onChange?.(updated);
   };
 
@@ -58,7 +64,7 @@ export default function RecommendedSelect({
             className="flex items-center gap-2 cursor-pointer whitespace-nowrap"
           >
             <Checkbox
-              checked={selected.includes(option)}
+              checked={effectiveSelected.includes(option)}
               onCheckedChange={() => handleSelect(option)}
               className="w-6 h-6"
             />

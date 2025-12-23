@@ -63,12 +63,12 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.1.1",
+    "@chromatic-com/storybook": "^4.1.3",
     "@eslint/eslintrc": "^3.3.3",
     "@next/eslint-plugin-next": "^15.5.6",
     "@storybook/addon-designs": "^10.0.2",
     "@storybook/addon-docs": "^9.1.13",
-    "@storybook/nextjs": "^9.1.10",
+    "@storybook/nextjs": "^9.1.16",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -81,8 +81,9 @@
     "@typescript-eslint/parser": "^8.45.0",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9.38.0",
+    "eslint": "^9.39.2",
     "eslint-config-next": "^15.5.6",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-storybook": "^9.1.15",
     "happy-dom": "^20.0.8",
@@ -90,9 +91,9 @@
     "jsdom": "^27.0.0",
     "lint-staged": "^16.2.7",
     "postcss": "^8",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.4",
     "prisma": "^6.18.0",
-    "storybook": "^9.1.7",
+    "storybook": "^9.1.17",
     "tailwindcss": "^3.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
@@ -117,5 +118,8 @@
   "validate-branch-name": {
     "pattern": "^(main){1}$|^(chore|hotfix)\\/([\\/\\w\\-\\d]+)$|^(\\w+-\\d+)\\/([\\w\\-\\d]+)$",
     "errorMsg": "Please follow standard branch name, rename branch using: git branch -m <oldname> <newname>"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
