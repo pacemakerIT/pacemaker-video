@@ -26,7 +26,7 @@ export default function EbookDetailContainer({
   courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
   description = '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!',
-  price = '$999.99',
+  price = '999.99',
   reviewCount = 185,
   rating = 5
 }: EbookDetailContainerProps) {
