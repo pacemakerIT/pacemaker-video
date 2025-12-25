@@ -118,5 +118,8 @@
   "validate-branch-name": {
     "pattern": "^(main){1}$|^(chore|hotfix)\\/([\\/\\w\\-\\d]+)$|^(\\w+-\\d+)\\/([\\w\\-\\d]+)$",
     "errorMsg": "Please follow standard branch name, rename branch using: git branch -m <oldname> <newname>"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

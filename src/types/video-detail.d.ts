@@ -52,11 +52,26 @@ export interface Course {
   level: string;
   language: string;
   backgroundImage: string;
+  promoText: string | null;
+  summary: string | null;
+  detailTitle: string | null;
   instructorId: string;
   createdAt: string;
   updatedAt: string;
   sections: Section[];
   videos: Video[];
+  reviews: ApiReview[];
+}
+
+export interface ApiReview {
+  id: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+  user: {
+    name: string | null;
+    image: string | null;
+  } | null;
 }
 
 export interface Video {

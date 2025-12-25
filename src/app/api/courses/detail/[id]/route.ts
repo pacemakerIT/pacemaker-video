@@ -21,6 +21,19 @@ export async function GET(
           orderBy: {
             orderIndex: 'asc'
           }
+        },
+        reviews: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
         }
       }
     });
