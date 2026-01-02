@@ -29,6 +29,7 @@ type Row = {
   description: string;
   price: number;
   purchaseCount: number;
+  likes: number;
   status: '공개중' | '비공개' | string;
   thumbnail: string;
   selected: boolean;
@@ -113,6 +114,9 @@ function VisualRow({
             <span className="font-semibold">${row.price.toLocaleString()}</span>
           </span>
           <span>
+            찜 <span className="font-semibold">{row.likes}</span>
+          </span>
+          <span>
             구매 <span className="font-semibold">{row.purchaseCount}</span>
           </span>
         </div>
@@ -185,6 +189,7 @@ export default function AdminEbooksPage() {
         '이것은 긴 설명 텍스트입니다. UI에서 2줄 이상이 되면 말줄임표(...)로 표시되어야 합니다. 확인을 위해 텍스트를 아주 길게 작성하고 있습니다. 강의 내용에 대한 상세한 설명이 여기에 들어갑니다. 사용자가 내용을 파악할 수 있도록 충분한 정보를 제공하지만, 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 아무랜덤 단어가 들어갑니다. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요.',
       price: 999,
       purchaseCount: 123,
+      likes: 999,
       status: '공개중',
       selected: true
     },
@@ -197,6 +202,7 @@ export default function AdminEbooksPage() {
         '강의 내용입니다. 강의 내용입니다. 강의 내용입니다. 강의 내용입니다.',
       price: 999,
       purchaseCount: 123,
+      likes: 999,
       status: '공개중',
       selected: true
     },
@@ -208,6 +214,7 @@ export default function AdminEbooksPage() {
       description: '강의 내용입니다...',
       price: 999,
       purchaseCount: 123,
+      likes: 999,
       status: '공개중',
       selected: true
     },
@@ -219,6 +226,7 @@ export default function AdminEbooksPage() {
       description: '이것은 비공개 항목입니다.',
       price: 500,
       purchaseCount: 0,
+      likes: 5,
       status: '비공개',
       selected: false
     }
