@@ -27,8 +27,7 @@ type Row = {
   id: number;
   title: string;
   description: string;
-  price: string;
-  originalPrice?: number;
+  price: number;
   purchaseCount: number;
   status: '공개중' | '비공개' | string;
   thumbnail: string;
@@ -110,12 +109,8 @@ function VisualRow({
         </p>
         <div className="flex items-center gap-4 text-pace-sm text-pace-gray-700 mt-1">
           <span>
-            금액 <span className="font-semibold">{row.price}</span>
-            {row.originalPrice && (
-              <span className="text-pace-stone-400 font-normal ml-2 line-through">
-                ₩ {row.originalPrice.toLocaleString()}
-              </span>
-            )}
+            금액{' '}
+            <span className="font-semibold">${row.price.toLocaleString()}</span>
           </span>
           <span>
             구매 <span className="font-semibold">{row.purchaseCount}</span>
@@ -188,8 +183,7 @@ export default function AdminEbooksPage() {
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '이것은 긴 설명 텍스트입니다. UI에서 2줄 이상이 되면 말줄임표(...)로 표시되어야 합니다. 확인을 위해 텍스트를 아주 길게 작성하고 있습니다. 강의 내용에 대한 상세한 설명이 여기에 들어갑니다. 사용자가 내용을 파악할 수 있도록 충분한 정보를 제공하지만, 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 아무랜덤 단어가 들어갑니다. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요.',
-      price: '$999',
-      originalPrice: 999,
+      price: 999,
       purchaseCount: 123,
       status: '공개중',
       selected: true
@@ -201,8 +195,7 @@ export default function AdminEbooksPage() {
       title: '자기소개서 작성 및 면접 준비까지 하나로! (2)',
       description:
         '강의 내용입니다. 강의 내용입니다. 강의 내용입니다. 강의 내용입니다.',
-      price: '$999',
-      originalPrice: 999,
+      price: 999,
       purchaseCount: 123,
       status: '공개중',
       selected: true
@@ -213,8 +206,7 @@ export default function AdminEbooksPage() {
       thumbnail: '/img/course_image1.png',
       title: '자기소개서 작성 및 면접 준비까지 하나로! (3)',
       description: '강의 내용입니다...',
-      price: '$999',
-      originalPrice: 999,
+      price: 999,
       purchaseCount: 123,
       status: '공개중',
       selected: true
@@ -225,7 +217,7 @@ export default function AdminEbooksPage() {
       thumbnail: '/img/course_image1.png',
       title: '비공개 테스트 항목',
       description: '이것은 비공개 항목입니다.',
-      price: '$500',
+      price: 500,
       purchaseCount: 0,
       status: '비공개',
       selected: false
