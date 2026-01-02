@@ -36,6 +36,13 @@ type Row = {
   category: string;
 };
 
+const CATEGORY_MAP: Record<string, string> = {
+  TOTAL: '전체 카테고리',
+  INTERVIEW: '인터뷰',
+  RESUME: '이력서',
+  NETWORKING: '네트워킹'
+};
+
 // Sortable Row Component
 function VisualRow({
   row,
@@ -160,7 +167,6 @@ function VisualRow({
           {...listeners}
           className="cursor-move flex items-center p-2 hover:bg-gray-100 rounded"
         >
-          {/* Reusing the menu icon from courses page */}
           <Image
             src="/icons/menu.svg"
             alt="drag handle"
@@ -256,25 +262,12 @@ export default function AdminEbooksPage() {
     }
   };
 
-  // Filter Logic
-  const getKoreanCategory = (categoryName: string) => {
-    switch (categoryName) {
-      case 'TOTAL':
-        return '전체 카테고리';
-      case 'INTERVIEW':
-        return '인터뷰';
-      case 'RESUME':
-        return '이력서';
-      case 'NETWORKING':
-        return '네트워킹';
-      default:
-        return categoryName;
-    }
-  };
-
   const filteredRows = rows.filter((row) => {
     if (categoryFilter === 'TOTAL') return true;
-    return getKoreanCategory(categoryFilter) === row.category;
+    return (
+      CATEGORY_MAP[categoryFilter] === row.category ||
+      row.category === categoryFilter
+    );
   });
 
   return (
@@ -341,18 +334,26 @@ export default function AdminEbooksPage() {
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
+            {/* 
+              Important: SortableContext must know about the items currently being rendered.
+              We pass the IDs of filteredRows to ensure physics work if we drag filtered items.
+            */}
             <SortableContext
-              items={rows.map((r) => r.id)}
+              items={filteredRows.map((r) => r.id)}
               strategy={verticalListSortingStrategy}
             >
-              {filteredRows.map((row, index) => (
-                <VisualRow
-                  key={row.id}
-                  row={row}
-                  index={index}
-                  toggleRow={toggleRow}
-                />
-              ))}
+              {filteredRows.map((row) => {
+                const index = rows.findIndex((r) => r.id === row.id);
+
+                return (
+                  <VisualRow
+                    key={row.id}
+                    row={row}
+                    index={index}
+                    toggleRow={toggleRow}
+                  />
+                );
+              })}
             </SortableContext>
           </DndContext>
         </div>
