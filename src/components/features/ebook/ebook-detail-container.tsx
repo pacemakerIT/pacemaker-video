@@ -110,12 +110,12 @@ export default function EbookDetailContainer({
   const recommendationItems = [
     {
       icon: CodeSquare,
-      title: '북미 개발자',
+      label: '북미 개발자',
       text: '개발 분야 취업에 관심 있으신 분'
     },
     {
       icon: FileEdit,
-      title: '북미 취업이력서',
+      label: '북미 취업이력서',
       text: '작성방법이 궁금하신 분'
     }
   ];
