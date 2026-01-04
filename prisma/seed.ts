@@ -98,6 +98,7 @@ async function main() {
         language: '한국어',
         backgroundImage: thumbnail,
         instructorId,
+        targetAudienceTypes: ['IT', 'GOVERNMENT'],
 
         sectionsRel: {
           create: SECTION_TITLES.map((sectionName, idx) => ({
@@ -115,6 +116,31 @@ async function main() {
       where: { courseId },
       orderBy: { orderIndex: 'asc' }
     });
+
+    // 각 Section에 상세 설명 Item 생성
+    const SECTION_CONTENT_MAP: Record<string, string> = {
+      '북미 개발자 채용 공고 사례':
+        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.',
+      '북미 개발자 채용 공고 분석':
+        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.',
+      '실제 북미 개발자 취업 성공 이력서':
+        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
+    };
+
+    for (const section of sections) {
+      const content = SECTION_CONTENT_MAP[section.title];
+      if (content) {
+        await prisma.sectionItem.create({
+          data: {
+            id: randomUUID(),
+            sectionId: section.id,
+            title: section.title,
+            content: content,
+            orderIndex: 1
+          }
+        });
+      }
+    }
 
     // 각 Section에 Video 4개씩 생성
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {

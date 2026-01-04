@@ -1,12 +1,21 @@
 'use client';
 import {
-  FileEdit,
-  CodeSquare,
   ChevronRight,
   ChevronUp,
   ChevronDown,
   CirclePlay,
-  ChevronLeft
+  ChevronLeft,
+  CodeXml,
+  FileSignature,
+  HelpCircle,
+  Code2,
+  Users,
+  BarChart3,
+  Palette,
+  FileText,
+  MessageSquare,
+  Share2,
+  Heart
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SectionHeader from '../../common/section-header';
@@ -99,40 +108,50 @@ export default function VideoDetailContainer({
     );
   }
 
-  // Mock Data
-  const mockContentItems = [
-    {
-      id: '1',
-      title: '북미 개발자 채용 공고 사례',
-      content:
-        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.'
-    },
-    {
-      id: '2',
-      title: '북미 개발자 채용 공고 분석',
-      content:
-        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.'
-    },
-    {
-      id: '3',
-      title: '실제 북미 개발자 취업 성공 이력서',
-      content:
-        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
-    }
-  ];
+  // Dynamic content items from database
+  const contentItems =
+    data.course.sections.flatMap((section) =>
+      section.items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        content: item.content
+      }))
+    ) || [];
 
-  const mockRecommendationItems = [
-    {
-      icon: CodeSquare,
-      title: '북미 개발자',
-      text: '개발 분야 취업에 관심 있으신 분'
-    },
-    {
-      icon: FileEdit,
-      title: '북미 취업이력서',
-      text: '작성방법이 궁금하신 분'
+  // Icon mapping for recommendation items
+  const getIcon = (iconName: string | null) => {
+    switch (iconName) {
+      case 'CodeXml':
+        return CodeXml;
+      case 'FileSignature':
+        return FileSignature;
+      case 'Code2':
+        return Code2;
+      case 'Users':
+        return Users;
+      case 'BarChart3':
+        return BarChart3;
+      case 'Palette':
+        return Palette;
+      case 'FileText':
+        return FileText;
+      case 'MessageSquare':
+        return MessageSquare;
+      case 'Share2':
+        return Share2;
+      case 'Heart':
+        return Heart;
+      default:
+        return HelpCircle;
     }
-  ];
+  };
+
+  const recommendationItems =
+    data.course.targetAudiences?.map((item) => ({
+      icon: getIcon(item.icon),
+      label: item.label,
+      text: item.content
+    })) || [];
 
   const mockRelatedItems = [
     {
@@ -189,11 +208,11 @@ export default function VideoDetailContainer({
             <div className="text-pace-stone-500 whitespace-pre-wrap">
               {data.course.description || '강의 설명이 없습니다.'}
             </div>
-            <ExpandableCards items={mockContentItems} />
+            <ExpandableCards items={contentItems} />
           </div>
         </div>
 
-        <DetailRecommendationSection items={mockRecommendationItems} />
+        <DetailRecommendationSection items={recommendationItems} />
 
         <DetailRelatedContentSection
           title={'이 컨텐츠와 함께 보면 좋아요!'}
