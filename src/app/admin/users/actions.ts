@@ -24,8 +24,7 @@ export async function getUsers(
           include: {
             items: true
           }
-        },
-        workshopRegistrations: true
+        }
       },
       orderBy: {
         createdAt: 'desc'
@@ -40,6 +39,7 @@ export async function getUsers(
     // Calculate purchase counts
     let lectures = 0;
     let ebooks = 0;
+    let workshops = 0;
 
     user.orders.forEach((order) => {
       order.items.forEach((item) => {
@@ -47,11 +47,11 @@ export async function getUsers(
           lectures++;
         } else if (item.itemType === 'DOCUMENT' || item.itemType === 'EBOOK') {
           ebooks++;
+        } else if (item.itemType === 'WORKSHOP') {
+          workshops++;
         }
       });
     });
-
-    const workshops = user.workshopRegistrations.length;
 
     // Map role
     const role: UserRole = user.role.id as UserRole;
@@ -146,9 +146,8 @@ export async function getUserOrders(userId: string): Promise<OrderDetail[]> {
               }
             }
           } catch (error) {
-            console.error(
-              `Failed to fetch title for ${item.itemType} ${item.itemId}:`,
-              error
+            throw new Error(
+              `Failed to fetch title for ${item.itemType} ${item.itemId}: ${error instanceof Error ? error.message : 'Unknown error'}`
             );
           }
 
