@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import SectionList from '@/components/admin/courses/sections/section-list';
 import RecommendedSelect from '@/components/admin/courses/sections/recommended-select';
 import InstructorSection from '@/components/admin/courses/sections/instructor-section';
+import ExpandableCards from '@/components/common/expandable-cards';
 import AddButton from '@/components/ui/admin/add-button';
 import RecommendedLinkSection from '@/components/admin/courses/sections/recommended-link-section';
 import CourseBasicSection from '@/components/admin/courses/sections/course-basic-section';
@@ -13,12 +14,14 @@ import CourseVisualSection from '@/components/admin/courses/sections/course-visu
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
-type CourseData = {
+export type CourseData = {
   category: string;
   isPublic: string;
   showOnMain: boolean;
   title: string;
   intro: string;
+  processTitle: string;
+  processContent: string;
   videoLink: string;
   price: string;
   time: string;
@@ -51,40 +54,48 @@ type CourseData = {
   }[];
 };
 
-export default function CourseForm() {
-  const [courseData, setCourseData] = useState<CourseData>({
-    category: '',
-    isPublic: '',
-    showOnMain: false,
-    title: '',
-    intro: '',
-    videoLink: '',
-    price: '',
-    time: '',
-    thumbnail: null,
-    thumbnailUrl: '',
-    visualTitle: '',
-    visualTitle2: '',
-    recommended: [],
-    sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
-    instructors: [
-      {
-        name: '',
-        intro: '',
-        careers: [
-          {
-            startDate: '',
-            endDate: '',
-            description: '',
-            isCurrent: false
-          }
-        ],
-        photo: null,
-        photoUrl: ''
-      }
-    ],
-    links: [{ url: '', name: '', errors: {} }]
-  });
+type Props = {
+  initialData?: CourseData;
+};
+
+export default function CourseForm({ initialData }: Props) {
+  const [courseData, setCourseData] = useState<CourseData>(
+    initialData || {
+      category: '',
+      isPublic: '',
+      showOnMain: false,
+      title: '',
+      intro: '',
+      processTitle: '',
+      processContent: '',
+      videoLink: '',
+      price: '',
+      time: '',
+      thumbnail: null,
+      thumbnailUrl: '',
+      visualTitle: '',
+      visualTitle2: '',
+      recommended: [],
+      sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
+      instructors: [
+        {
+          name: '',
+          intro: '',
+          careers: [
+            {
+              startDate: '',
+              endDate: '',
+              description: '',
+              isCurrent: false
+            }
+          ],
+          photo: null,
+          photoUrl: ''
+        }
+      ],
+      links: [{ url: '', name: '', errors: {} }]
+    }
+  );
 
   // 에러 상태
   const [errors, setErrors] = useState<CourseFormErrors>({});
@@ -217,6 +228,11 @@ export default function CourseForm() {
     ]);
   };
 
+  const handleDeleteInstructor = (index: number) => {
+    const newInstructors = courseData.instructors.filter((_, i) => i !== index);
+    updateCourseData('instructors', newInstructors);
+  };
+
   return (
     <div className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16">
       {/* 카테고리 / 공개여부 / 메인표시 */}
@@ -242,6 +258,10 @@ export default function CourseForm() {
         setTitle={(v) => updateCourseData('title', v)}
         intro={courseData.intro}
         setIntro={(v) => updateCourseData('intro', v)}
+        processTitle={courseData.processTitle}
+        setProcessTitle={(v) => updateCourseData('processTitle', v)}
+        processContent={courseData.processContent}
+        setProcessContent={(v) => updateCourseData('processContent', v)}
         videoLink={courseData.videoLink}
         setVideoLink={(v) => updateCourseData('videoLink', v)}
         price={courseData.price}
@@ -267,6 +287,7 @@ export default function CourseForm() {
       {/* 추천드려요 */}
       <RecommendedSelect
         maxSelect={2}
+        value={courseData.recommended}
         onChange={(v) => updateCourseData('recommended', v)}
         error={errors.recommended}
       />
@@ -279,26 +300,47 @@ export default function CourseForm() {
       />
 
       {/* 강사소개 섹션 */}
-      <div className="flex flex-col gap-6">
-        {courseData.instructors.map((instructor, i) => (
-          <InstructorSection
-            key={i}
-            value={instructor}
-            onChange={(updatedInstructor) => {
-              const newInstructors = [...courseData.instructors];
-              newInstructors[i] = updatedInstructor;
-              updateCourseData('instructors', newInstructors);
-            }}
-            error={errors.instructors?.[i]}
-          />
-        ))}
-        <div className="flex justify-end">
-          <AddButton label="강사 추가" onClick={handleAddInstructor} />
+      <div className="flex flex-col gap-2">
+        <div className="flex items-start gap-6">
+          <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
+            강사 소개
+          </label>
+          <div className="flex-1 flex flex-col gap-6">
+            <ExpandableCards
+              items={courseData.instructors.map((instructor, i) => ({
+                id: i.toString(),
+                title: instructor.name || `강사 ${i + 1}`,
+                content: (
+                  <InstructorSection
+                    value={instructor}
+                    onChange={(updatedInstructor) => {
+                      const newInstructors = [...courseData.instructors];
+                      newInstructors[i] = updatedInstructor;
+                      updateCourseData('instructors', newInstructors);
+                    }}
+                    error={errors.instructors?.[i]}
+                  />
+                )
+              }))}
+              expandLabel="수정"
+              collapseLabel="닫기"
+              className="max-w-none mx-0"
+              onDelete={
+                courseData.instructors.length > 1
+                  ? (id) => handleDeleteInstructor(parseInt(id))
+                  : undefined
+              }
+            />
+            <div className="flex justify-end">
+              <AddButton label="강사 추가" onClick={handleAddInstructor} />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 추천 컨텐츠 링크 */}
       <RecommendedLinkSection
+        value={courseData.links}
         onChange={(v) => updateCourseData('links', v)}
         error={errors.links}
       />
