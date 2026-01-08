@@ -153,30 +153,6 @@ export default function VideoDetailContainer({
       text: item.content
     })) || [];
 
-  const mockRelatedItems = [
-    {
-      id: 1,
-      itemId: 'course-2',
-      title: '실리콘밸리 엔지니어의 커리어 로드맵',
-      price: 45000,
-      category: 'CAREER'
-    },
-    {
-      id: 2,
-      itemId: 'course-3',
-      title: '영문 이메일/비즈니스 영어 마스터',
-      price: 30000,
-      category: 'ENGLISH'
-    },
-    {
-      id: 3,
-      itemId: 'course-4',
-      title: '북미 연봉 협상 가이드',
-      price: 25000,
-      category: 'CAREER'
-    }
-  ];
-
   return (
     <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
@@ -216,7 +192,7 @@ export default function VideoDetailContainer({
 
         <DetailRelatedContentSection
           title={'이 컨텐츠와 함께 보면 좋아요!'}
-          items={mockRelatedItems}
+          items={data.course.relatedCourses || []}
         />
 
         <DetailReviewsSection
