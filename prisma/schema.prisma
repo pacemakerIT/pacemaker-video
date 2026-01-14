@@ -100,6 +100,18 @@ model Document {
   price       Float?
   bucketUrl   String
   category    DocumentCategory?
+  thumbnail   String?
+
+  isPublic       Boolean        @default(false)
+
+  // New fields for UI
+  subTitle       String?
+  subDescription String?
+  isMain         Boolean        @default(false)
+  visualTitle1   String?
+  visualTitle2   String?
+
+  tableOfContents      Json?
 }
 
 /**
