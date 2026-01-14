@@ -5,27 +5,27 @@ import { cn } from '@/lib/utils';
 const customBadgeVariants = cva(badgeVariants(), {
   variants: {
     variant: {
-      Interview:
+      INTERVIEW:
         'border-transparent bg-pace-blue-500 !text-pace-sm text-pace-white-500 font-light',
-      Resume:
+      RESUME:
         'border-transparent bg-pace-purple-500 !text-pace-sm text-pace-white-500 font-light',
-      Networking:
+      NETWORKING:
         'border-transparent bg-pace-yellow-500 !text-pace-sm text-pace-white-500 font-light',
-      Marketing:
+      MARKETING:
         'border-transparent bg-pace-orange-700 !text-pace-sm text-pace-white-500 font-light',
-      Design:
+      DESIGN:
         'border-transparent bg-pace-pink-500 !text-pace-sm text-pace-white-500 font-light',
-      Public:
+      PUBLIC:
         'border-transparent bg-pace-mint-600 !text-pace-sm text-pace-white-500 font-light',
       IT: 'border-transparent bg-pace-blue-700 !text-pace-sm text-pace-white-500 font-light',
-      Accounting:
+      ACCOUNTING:
         'border-transparent bg-pace-navy-500 !text-pace-sm text-pace-white-500 font-light',
-      Service:
+      SERVICE:
         'border-transparent bg-pace-teal-500 !text-pace-sm text-pace-white-500 font-light'
     }
   },
   defaultVariants: {
-    variant: 'Interview'
+    variant: 'INTERVIEW'
   }
 });
 
@@ -48,25 +48,23 @@ export function CustomBadge({
   variant,
   ...props
 }: CustomBadgeProps) {
-  // Normalize variant to capitalize first letter (case-insensitive)
-  const normalizedVariant = variant
-    ? variant.charAt(0).toUpperCase() + variant.slice(1).toLowerCase()
-    : undefined;
+  // Normalize variant to uppercase to match cva keys
+  const normalizedVariant = variant?.toUpperCase();
 
   return (
     <Badge
       className={cn(
         customBadgeVariants({
           variant: normalizedVariant as
-            | 'Interview'
-            | 'Resume'
-            | 'Networking'
-            | 'Marketing'
-            | 'Design'
-            | 'Public'
+            | 'INTERVIEW'
+            | 'RESUME'
+            | 'NETWORKING'
+            | 'MARKETING'
+            | 'DESIGN'
+            | 'PUBLIC'
             | 'IT'
-            | 'Accounting'
-            | 'Service'
+            | 'ACCOUNTING'
+            | 'SERVICE'
         }),
         className
       )}
