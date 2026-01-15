@@ -212,30 +212,6 @@ export default function VideoDetailContainer({
       text: item.content
     })) || [];
 
-  const mockRelatedItems = [
-    {
-      id: 1,
-      itemId: 'course-2',
-      title: 'Resume & Interview Essentials',
-      price: 2800,
-      category: 'Interview'
-    },
-    {
-      id: 2,
-      itemId: 'course-3',
-      title: 'Resume & Interview Essentials',
-      price: 2800,
-      category: 'Networking'
-    },
-    {
-      id: 3,
-      itemId: 'course-4',
-      title: 'Resume & Interview Essentials',
-      price: 2800,
-      category: 'Resume'
-    }
-  ];
-
   return (
     <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
@@ -282,8 +258,8 @@ export default function VideoDetailContainer({
         <DetailRecommendationSection items={recommendationItems} />
 
         <DetailRelatedContentSection
-          title={'You May Also Like'}
-          items={mockRelatedItems}
+          title={'이 컨텐츠와 함께 보면 좋아요!'}
+          items={data.course.relatedCourses || []}
         />
 
         <DetailReviewsSection
