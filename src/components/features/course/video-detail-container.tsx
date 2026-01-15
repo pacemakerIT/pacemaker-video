@@ -174,8 +174,35 @@ export default function VideoDetailContainer({
         {selectedMediaId && (
           <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
             <WistiaPlayer
-              mediaId={selectedMediaId}
-              id="wistia-player-container-1"
+              mediaId={(() => {
+                const validWistiaIds = [
+                  '32ktrbrf3j',
+                  'a74mrwu4wi',
+                  '30q7n48g4f',
+                  '342jss6yh5',
+                  'z1fxq584qr',
+                  '7350d06e13',
+                  '26sk4lmiix',
+                  '9ya5adzoen',
+                  'g9tdlp0rre',
+                  'c8ss0suilx',
+                  'b0767e8ebb',
+                  'e4a27b971d'
+                ];
+
+                if (selectedMediaId && selectedMediaId.length <= 12)
+                  return selectedMediaId;
+
+                // Use last char of UUID for better uniform distribution
+                // (UUIDs are hex, 0-15. Our pool is 12. Modulo 12 covers most.)
+                const lastChar = selectedMediaId.slice(-1);
+                const hash = parseInt(lastChar, 16);
+                // If NaN (unlikely), fallback to 0
+                const index = isNaN(hash) ? 0 : hash;
+
+                return validWistiaIds[index % validWistiaIds.length];
+              })()}
+              id={`wistia-player-${selectedMediaId}`}
             />
           </div>
         )}
