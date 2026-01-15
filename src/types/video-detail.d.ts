@@ -61,6 +61,8 @@ export interface Course {
   sections: Section[];
   videos: Video[];
   reviews: ApiReview[];
+  targetAudienceTypes: string[];
+  targetAudiences: CourseTargetAudience[];
 }
 
 export interface ApiReview {
@@ -86,7 +88,6 @@ export interface Video {
 
 export interface Section {
   id: string;
-  type: string;
   title: string;
   description: string | null;
   orderIndex: number;
@@ -105,6 +106,14 @@ export interface SectionItem {
   category?: string;
   type?: string;
   thumbnail?: string;
+}
+
+export interface CourseTargetAudience {
+  type: string;
+  title: string;
+  content: string;
+  icon: string | null;
+  label: string;
 }
 
 export interface Instructor {

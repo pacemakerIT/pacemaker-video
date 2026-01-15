@@ -1,12 +1,21 @@
 'use client';
 import {
-  FileEdit,
-  CodeSquare,
   ChevronRight,
   ChevronUp,
   ChevronDown,
   CirclePlay,
-  ChevronLeft
+  ChevronLeft,
+  CodeXml,
+  FileSignature,
+  HelpCircle,
+  Code2,
+  Users,
+  BarChart3,
+  Palette,
+  FileText,
+  MessageSquare,
+  Share2,
+  Heart
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SectionHeader from '../../common/section-header';
@@ -158,40 +167,50 @@ export default function VideoDetailContainer({
     );
   }
 
-  // Mock Data
-  const mockContentItems = [
-    {
-      id: '1',
-      title: 'Developer Job Posting Examples',
-      content:
-        'We cover detailed methods for writing North American-style resumes. From selecting keywords that pass the ATS (Applicant Tracking System) to using action verbs that effectively appeal to your experience, you can learn it all.'
-    },
-    {
-      id: '2',
-      title: 'Analyzing Developer Job Postings',
-      content:
-        'We cover essential technical interview topics such as data structures and algorithms. You can gain practical sense through analysis of actual questions from big tech companies and model answers.'
-    },
-    {
-      id: '3',
-      title: 'Resume Examples from Hired Developers',
-      content:
-        'Learn how to logically explain your experience using the STAR technique. We provide answer strategies for each major evaluation item, such as leadership, conflict resolution, and teamwork.'
-    }
-  ];
+  // Dynamic content items from database
+  const contentItems =
+    data.course.sections.flatMap((section) =>
+      section.items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        content: item.content
+      }))
+    ) || [];
 
-  const mockRecommendationItems = [
-    {
-      icon: CodeSquare,
-      title: 'IT / Software Development',
-      text: 'For those who want to work as developers'
-    },
-    {
-      icon: FileEdit,
-      title: 'Resume',
-      text: 'For those who want to improve their resumes'
+  // Icon mapping for recommendation items
+  const getIcon = (iconName: string | null) => {
+    switch (iconName) {
+      case 'CodeXml':
+        return CodeXml;
+      case 'FileSignature':
+        return FileSignature;
+      case 'Code2':
+        return Code2;
+      case 'Users':
+        return Users;
+      case 'BarChart3':
+        return BarChart3;
+      case 'Palette':
+        return Palette;
+      case 'FileText':
+        return FileText;
+      case 'MessageSquare':
+        return MessageSquare;
+      case 'Share2':
+        return Share2;
+      case 'Heart':
+        return Heart;
+      default:
+        return HelpCircle;
     }
-  ];
+  };
+
+  const recommendationItems =
+    data.course.targetAudiences?.map((item) => ({
+      icon: getIcon(item.icon),
+      label: item.label,
+      text: item.content
+    })) || [];
 
   const mockRelatedItems = [
     {
@@ -237,35 +256,8 @@ export default function VideoDetailContainer({
         {selectedMediaId && (
           <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
             <WistiaPlayer
-              mediaId={(() => {
-                const validWistiaIds = [
-                  '32ktrbrf3j',
-                  'a74mrwu4wi',
-                  '30q7n48g4f',
-                  '342jss6yh5',
-                  'z1fxq584qr',
-                  '7350d06e13',
-                  '26sk4lmiix',
-                  '9ya5adzoen',
-                  'g9tdlp0rre',
-                  'c8ss0suilx',
-                  'b0767e8ebb',
-                  'e4a27b971d'
-                ];
-
-                if (selectedMediaId && selectedMediaId.length <= 12)
-                  return selectedMediaId;
-
-                // Use last char of UUID for better uniform distribution
-                // (UUIDs are hex, 0-15. Our pool is 12. Modulo 12 covers most.)
-                const lastChar = selectedMediaId.slice(-1);
-                const hash = parseInt(lastChar, 16);
-                // If NaN (unlikely), fallback to 0
-                const index = isNaN(hash) ? 0 : hash;
-
-                return validWistiaIds[index % validWistiaIds.length];
-              })()}
-              id={`wistia-player-${selectedMediaId}`}
+              mediaId={selectedMediaId}
+              id="wistia-player-container-1"
             />
           </div>
         )}
@@ -283,11 +275,11 @@ export default function VideoDetailContainer({
               {data.course.description ||
                 'Detailed course description not available.'}
             </div>
-            <ExpandableCards items={mockContentItems} />
+            <ExpandableCards items={contentItems} />
           </div>
         </div>
 
-        <DetailRecommendationSection items={mockRecommendationItems} />
+        <DetailRecommendationSection items={recommendationItems} />
 
         <DetailRelatedContentSection
           title={'You May Also Like'}
