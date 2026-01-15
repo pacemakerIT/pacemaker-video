@@ -64,7 +64,7 @@ describe('Card', () => {
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
     purchasedVideos: [],
-    itemType: ItemType.VIDEO
+    itemType: ItemType.COURSE
   };
 
   beforeEach(() => {

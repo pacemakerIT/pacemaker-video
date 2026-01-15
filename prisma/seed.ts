@@ -151,7 +151,26 @@ async function main() {
 
         await prisma.video.create({
           data: {
-            videoId: isFirstVideo ? '32ktrbrf3j' : randomUUID(),
+            videoId: (() => {
+              // Helper to generate a UUID that maps to a specific index in the frontend
+              // Frontend logic: parseInt(uuid.slice(-1), 16) % 12
+              const generateMappedUUID = (targetIndex: number) => {
+                let uuid = randomUUID();
+                while (parseInt(uuid.slice(-1), 16) % 12 !== targetIndex) {
+                  uuid = randomUUID();
+                }
+                return uuid;
+              };
+
+              // Map videos sequentially:
+              // Video 1 -> Index 0 ('32ktrbrf3j')
+              // Video 2 -> Index 1
+              // Video 3 -> Index 2
+              // Video 4 -> Index 3
+              // This ensures the first video is always '32ktrbrf3j' as requested.
+              const targetIndex = (s - 1) % 12;
+              return generateMappedUUID(targetIndex);
+            })(),
             title: `Session ${s}`,
             description: null,
             price: null,
