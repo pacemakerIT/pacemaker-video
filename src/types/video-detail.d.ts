@@ -24,7 +24,7 @@ export interface RelatedContentItem {
   price: number;
   category: string;
   type: string;
-  thumbnail: string;
+  thumbnail: string | null;
 }
 
 export interface Review {
@@ -63,6 +63,17 @@ export interface Course {
   reviews: ApiReview[];
   targetAudienceTypes: string[];
   targetAudiences: CourseTargetAudience[];
+  relatedCourses: RelatedCourse[];
+}
+
+export interface RelatedCourse {
+  id: string;
+  itemId: string;
+  title: string;
+  price: number;
+  category: string;
+  type: string;
+  thumbnail: string | null;
 }
 
 export interface ApiReview {
