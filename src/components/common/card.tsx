@@ -49,7 +49,7 @@ export default function Card({
 
   const getLinkPath = () => {
     switch (itemType) {
-      case ItemType.VIDEO:
+      case ItemType.COURSE:
         return `/courses/${id}`;
       case ItemType.DOCUMENT:
         return `/ebooks/${id}`;

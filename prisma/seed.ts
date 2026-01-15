@@ -125,7 +125,26 @@ async function main() {
 
         await prisma.video.create({
           data: {
-            videoId: isFirstVideo ? '32ktrbrf3j' : randomUUID(),
+            videoId: (() => {
+              // Helper to generate a UUID that maps to a specific index in the frontend
+              // Frontend logic: parseInt(uuid.slice(-1), 16) % 12
+              const generateMappedUUID = (targetIndex: number) => {
+                let uuid = randomUUID();
+                while (parseInt(uuid.slice(-1), 16) % 12 !== targetIndex) {
+                  uuid = randomUUID();
+                }
+                return uuid;
+              };
+
+              // Map videos sequentially:
+              // Video 1 -> Index 0 ('32ktrbrf3j')
+              // Video 2 -> Index 1
+              // Video 3 -> Index 2
+              // Video 4 -> Index 3
+              // This ensures the first video is always '32ktrbrf3j' as requested.
+              const targetIndex = (s - 1) % 12;
+              return generateMappedUUID(targetIndex);
+            })(),
             title: `Session ${s}`,
             description: null,
             price: null,
@@ -270,23 +289,58 @@ async function main() {
         '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
     },
     {
-      rating: 4.5,
+      rating: 5,
+      content:
+        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+    },
+    {
+      rating: 4,
       content:
         '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
     },
     {
+      rating: 4,
+      content:
+        '전반적으로 좋은 강의였습니다. 다만 일부 내용이 조금 빠르게 진행되어서 아쉬웠어요.'
+    },
+    {
       rating: 5,
       content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+        '북미 취업 준비하면서 가장 도움이 많이 된 강의입니다. 실제 합격 사례를 보여주셔서 더 신뢰가 갔어요.'
+    },
+    {
+      rating: 3,
+      content:
+        '내용은 괜찮았지만, 기대했던 것보다는 기초적인 내용이 많았습니다. 경력자분들에게는 조금 아쉬울 수 있어요.'
+    },
+    {
+      rating: 4,
+      content:
+        '이력서 피드백 예시가 정말 유용했습니다. 실제로 적용해보니 면접 콜백이 늘었어요!'
+    },
+    {
+      rating: 2,
+      content:
+        '강의 내용 자체는 좋지만 영상 화질이 좀 아쉬웠고, 자막이 없어서 집중하기 어려웠습니다.'
+    },
+    {
+      rating: 5,
+      content:
+        '캐나다 취업에 성공했습니다! 이 강의에서 배운 네트워킹 전략이 결정적이었어요. 감사합니다!'
+    },
+    {
+      rating: 3,
+      content: '유익한 정보가 많았지만 가격 대비 분량이 조금 짧게 느껴졌습니다.'
     }
   ];
 
   if (users.length > 0 && courses.length > 0) {
     for (const course of courses) {
-      // Add 3 reviews per course to match mock data count
-      for (let i = 0; i < 3; i++) {
+      // Add 10 reviews per course with diverse ratings
+      const reviewRatings: number[] = [];
+      for (let i = 0; i < reviewContents.length; i++) {
         const user = users[i % users.length]; // Cycle through users
-        const reviewData = reviewContents[i % reviewContents.length];
+        const reviewData = reviewContents[i];
 
         await prisma.review.create({
           data: {
@@ -300,7 +354,19 @@ async function main() {
             )
           }
         });
+        reviewRatings.push(reviewData.rating);
       }
+
+      // Update course with actual review count and average rating
+      const avgRating =
+        reviewRatings.reduce((a, b) => a + b, 0) / reviewRatings.length;
+      await prisma.course.update({
+        where: { id: course.id },
+        data: {
+          reviewCount: reviewRatings.length,
+          rating: Math.round(avgRating * 10) / 10 // Round to 1 decimal place
+        }
+      });
     }
   }
 
