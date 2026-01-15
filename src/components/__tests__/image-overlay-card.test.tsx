@@ -8,7 +8,7 @@ const mockCard: OnlineCards = {
   id: '1',
   title: 'Card 1',
   price: 0,
-  description: '',
+  summary: '',
   category: ItemType.WORKSHOP,
   itemId: 'video1',
   uploadDate: new Date(),
