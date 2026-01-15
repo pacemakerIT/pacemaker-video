@@ -162,34 +162,34 @@ export default function VideoDetailContainer({
   const mockContentItems = [
     {
       id: '1',
-      title: '북미 개발자 채용 공고 사례',
+      title: 'Developer Job Posting Examples',
       content:
-        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.'
+        'We cover detailed methods for writing North American-style resumes. From selecting keywords that pass the ATS (Applicant Tracking System) to using action verbs that effectively appeal to your experience, you can learn it all.'
     },
     {
       id: '2',
-      title: '북미 개발자 채용 공고 분석',
+      title: 'Analyzing Developer Job Postings',
       content:
-        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.'
+        'We cover essential technical interview topics such as data structures and algorithms. You can gain practical sense through analysis of actual questions from big tech companies and model answers.'
     },
     {
       id: '3',
-      title: '실제 북미 개발자 취업 성공 이력서',
+      title: 'Resume Examples from Hired Developers',
       content:
-        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
+        'Learn how to logically explain your experience using the STAR technique. We provide answer strategies for each major evaluation item, such as leadership, conflict resolution, and teamwork.'
     }
   ];
 
   const mockRecommendationItems = [
     {
       icon: CodeSquare,
-      title: '북미 개발자',
-      text: '개발 분야 취업에 관심 있으신 분'
+      title: 'IT / Software Development',
+      text: 'For those who want to work as developers'
     },
     {
       icon: FileEdit,
-      title: '북미 취업이력서',
-      text: '작성방법이 궁금하신 분'
+      title: 'Resume',
+      text: 'For those who want to improve their resumes'
     }
   ];
 
@@ -197,23 +197,23 @@ export default function VideoDetailContainer({
     {
       id: 1,
       itemId: 'course-2',
-      title: '실리콘밸리 엔지니어의 커리어 로드맵',
-      price: 45000,
-      category: 'CAREER'
+      title: 'Resume & Interview Essentials',
+      price: 2800,
+      category: 'Interview'
     },
     {
       id: 2,
       itemId: 'course-3',
-      title: '영문 이메일/비즈니스 영어 마스터',
-      price: 30000,
-      category: 'ENGLISH'
+      title: 'Resume & Interview Essentials',
+      price: 2800,
+      category: 'Networking'
     },
     {
       id: 3,
       itemId: 'course-4',
-      title: '북미 연봉 협상 가이드',
-      price: 25000,
-      category: 'CAREER'
+      title: 'Resume & Interview Essentials',
+      price: 2800,
+      category: 'Resume'
     }
   ];
 
@@ -230,7 +230,7 @@ export default function VideoDetailContainer({
         onAddToCart={handleAddToCart}
         onToggleLike={handleToggleLike}
         isLiked={isLiked}
-        buttonText={isInCart ? '장바구니 이동' : '장바구니 담기'}
+        buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
       />
 
       <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
@@ -272,12 +272,16 @@ export default function VideoDetailContainer({
 
         <div className="flex flex-col gap-8">
           <SectionHeader
-            subtitle="강의는 이렇게 진행돼요!"
-            title={data.course.detailTitle || '강의 제목'}
+            subtitle="How the Course Works"
+            title={
+              data.course.detailTitle ||
+              'Step by Step: From a Strong Developer Resume to Interviews'
+            }
           />
           <div className="flex gap-4">
             <div className="text-pace-stone-500 whitespace-pre-wrap">
-              {data.course.description || '강의 설명이 없습니다.'}
+              {data.course.description ||
+                'Detailed course description not available.'}
             </div>
             <ExpandableCards items={mockContentItems} />
           </div>
@@ -286,12 +290,12 @@ export default function VideoDetailContainer({
         <DetailRecommendationSection items={mockRecommendationItems} />
 
         <DetailRelatedContentSection
-          title={'이 컨텐츠와 함께 보면 좋아요!'}
+          title={'You May Also Like'}
           items={mockRelatedItems}
         />
 
         <DetailReviewsSection
-          title="강의 후기"
+          title="Student Reviews"
           reviews={
             data.course.reviews?.map((review) => ({
               id: review.id,
