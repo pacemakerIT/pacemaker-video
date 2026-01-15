@@ -6,9 +6,17 @@ const prisma = new PrismaClient();
 
 const COURSE_TITLE = '자기소개서 작성 및 면접 준비까지 하늘로!';
 const COURSE_DESC =
-  '2~30대 디지털 산업계의 개발자 직종과, 해외 웹/모바일이 아닌 다양한 분야에서 스킬을 다룬 내용으로 구성한 자기소개서 작성 및 면접 준비까지 전문네가 제공하는 컨텐츠입니다.';
+  '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!';
 
-const TITLE = '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
+const LONG_DESCRIPTION = `북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요. 그만큼 기업들은 더 신중하게, 해당 포지션을 정말 잘 이해하고 있는 지원자를 찾고 있죠.
+
+한국과는 조금 다른 북미식 채용공고의 특징, 어떻게 읽고 준비해야 할지 막막하셨다면, 실제 캐나다 기업에 최종 합격한 페이스메이커 개발자의 영문 이력서를 통해 채용공고 분석부터 이력서에 반영하는 방법까지 함께 살펴보세요!`;
+
+const TITLE =
+  '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지';
+
+const DETAIL_TITLE =
+  '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
 
 const COURSE_THUMBNAILS = [
   '/img/course_image1.png',
@@ -43,12 +51,22 @@ async function main() {
       id: instructorId,
       name: 'Raphael. Lee',
       profileImage: '/img/instructor-image.png',
-      description: 'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+      description:
+        'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
         { period: '2019 ~', position: 'Managing Director at Pacemaker' },
-        { period: '2015 ~ 2019', position: 'Director of Operations at Metanet' },
-        { period: '2009 ~ 2014', position: 'Business Development Manager at People In Biz Corp.' },
-        { period: '2004 ~ 2008', position: 'Purchaser at InterContinental Hotels Group' }
+        {
+          period: '2015 ~ 2019',
+          position: 'Director of Operations at Metanet'
+        },
+        {
+          period: '2009 ~ 2014',
+          position: 'Business Development Manager at People In Biz Corp.'
+        },
+        {
+          period: '2004 ~ 2008',
+          position: 'Purchaser at InterContinental Hotels Group'
+        }
       ]
     }
   });
@@ -58,7 +76,8 @@ async function main() {
     const courseId = randomUUID();
 
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
-    const categoryString = COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
+    const categoryString =
+      COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
 
     // Course 생성
     await prisma.course.create({
@@ -66,7 +85,10 @@ async function main() {
         id: courseId,
         title: TITLE,
         courseTitle: COURSE_TITLE,
-        description: COURSE_DESC,
+        description: LONG_DESCRIPTION,
+        promoText: '캐나다 테크기업 OOO이 선택한',
+        summary: COURSE_DESC,
+        detailTitle: DETAIL_TITLE,
         price: '2800',
         rating: 5,
         reviewCount: 1500,
@@ -103,7 +125,26 @@ async function main() {
 
         await prisma.video.create({
           data: {
-            videoId: isFirstVideo ? '32ktrbrf3j' : randomUUID(),
+            videoId: (() => {
+              // Helper to generate a UUID that maps to a specific index in the frontend
+              // Frontend logic: parseInt(uuid.slice(-1), 16) % 12
+              const generateMappedUUID = (targetIndex: number) => {
+                let uuid = randomUUID();
+                while (parseInt(uuid.slice(-1), 16) % 12 !== targetIndex) {
+                  uuid = randomUUID();
+                }
+                return uuid;
+              };
+
+              // Map videos sequentially:
+              // Video 1 -> Index 0 ('32ktrbrf3j')
+              // Video 2 -> Index 1
+              // Video 3 -> Index 2
+              // Video 4 -> Index 3
+              // This ensures the first video is always '32ktrbrf3j' as requested.
+              const targetIndex = (s - 1) % 12;
+              return generateMappedUUID(targetIndex);
+            })(),
             title: `Session ${s}`,
             description: null,
             price: null,
@@ -233,6 +274,99 @@ async function main() {
           }
         });
       }
+    }
+  }
+
+  // 6) Create Mock Reviews for Courses
+  console.log('Creating mock reviews...');
+  const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
+  const courses = await prisma.course.findMany();
+
+  const reviewContents = [
+    {
+      rating: 5,
+      content:
+        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+    },
+    {
+      rating: 5,
+      content:
+        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+    },
+    {
+      rating: 4,
+      content:
+        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+    },
+    {
+      rating: 4,
+      content:
+        '전반적으로 좋은 강의였습니다. 다만 일부 내용이 조금 빠르게 진행되어서 아쉬웠어요.'
+    },
+    {
+      rating: 5,
+      content:
+        '북미 취업 준비하면서 가장 도움이 많이 된 강의입니다. 실제 합격 사례를 보여주셔서 더 신뢰가 갔어요.'
+    },
+    {
+      rating: 3,
+      content:
+        '내용은 괜찮았지만, 기대했던 것보다는 기초적인 내용이 많았습니다. 경력자분들에게는 조금 아쉬울 수 있어요.'
+    },
+    {
+      rating: 4,
+      content:
+        '이력서 피드백 예시가 정말 유용했습니다. 실제로 적용해보니 면접 콜백이 늘었어요!'
+    },
+    {
+      rating: 2,
+      content:
+        '강의 내용 자체는 좋지만 영상 화질이 좀 아쉬웠고, 자막이 없어서 집중하기 어려웠습니다.'
+    },
+    {
+      rating: 5,
+      content:
+        '캐나다 취업에 성공했습니다! 이 강의에서 배운 네트워킹 전략이 결정적이었어요. 감사합니다!'
+    },
+    {
+      rating: 3,
+      content: '유익한 정보가 많았지만 가격 대비 분량이 조금 짧게 느껴졌습니다.'
+    }
+  ];
+
+  if (users.length > 0 && courses.length > 0) {
+    for (const course of courses) {
+      // Add 10 reviews per course with diverse ratings
+      const reviewRatings: number[] = [];
+      for (let i = 0; i < reviewContents.length; i++) {
+        const user = users[i % users.length]; // Cycle through users
+        const reviewData = reviewContents[i];
+
+        await prisma.review.create({
+          data: {
+            userId: user.id,
+            courseId: course.id,
+            rating: reviewData.rating,
+            content: reviewData.content,
+            // Random date within last 3 months
+            createdAt: new Date(
+              Date.now() - Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000)
+            )
+          }
+        });
+        reviewRatings.push(reviewData.rating);
+      }
+
+      // Update course with actual review count and average rating
+      const avgRating =
+        reviewRatings.reduce((a, b) => a + b, 0) / reviewRatings.length;
+      await prisma.course.update({
+        where: { id: course.id },
+        data: {
+          reviewCount: reviewRatings.length,
+          rating: Math.round(avgRating * 10) / 10 // Round to 1 decimal place
+        }
+      });
     }
   }
 

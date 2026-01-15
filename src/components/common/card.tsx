@@ -32,7 +32,7 @@ export default function Card({
   courseTitle,
   title,
   price,
-  description,
+  summary,
   category,
   itemType,
   thumbnail,
@@ -49,7 +49,7 @@ export default function Card({
 
   const getLinkPath = () => {
     switch (itemType) {
-      case ItemType.VIDEO:
+      case ItemType.COURSE:
         return `/courses/${id}`;
       case ItemType.DOCUMENT:
         return `/ebooks/${id}`;
@@ -114,7 +114,7 @@ export default function Card({
               </div>
             </div>
             <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
-              {description}
+              {summary}
             </p>
             <Button
               variant="link"

@@ -6,7 +6,7 @@ export interface OnlineCards {
   //videoId: string;
   courseTitle?: string;
   title?: string;
-  description: string;
+  summary: string;
   uploadDate: Date;
   price: number;
   category: string;
