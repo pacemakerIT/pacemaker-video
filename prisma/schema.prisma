@@ -313,7 +313,6 @@ model GlobalRelatedItem {
 enum WorkshopStatus {
   RECRUITING
   CLOSED
-  ONGOING
   COMPLETED
   HIDDEN
 }
