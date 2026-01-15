@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
+import { TargetAudienceType } from '@prisma/client';
 
 export async function GET(
   request: Request,
@@ -52,14 +54,23 @@ export async function GET(
     // DB 구조를 Frontend 구조로 변환
     const course = {
       ...courseData,
-      sections: courseData.sectionsRel.map((section) => ({
+      sections: (courseData.sectionsRel || []).map((section) => ({
         ...section,
-        type: 'content', // Frontend 요구사항에 맞춰 기본값 설정
-        items: section.items.map((item) => ({
+        items: (section.items || []).map((item) => ({
           ...item,
-          icon: null // SectionItem에 icon이 없으므로 null 처리
+          icon: item.icon || null
         }))
-      }))
+      })),
+      targetAudiences: (courseData.targetAudienceTypes || []).map((type) => {
+        const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
+        return {
+          type,
+          title: mapping?.title || type,
+          content: mapping?.content || '',
+          icon: mapping?.icon || null,
+          label: mapping?.label || type
+        };
+      })
     };
 
     return NextResponse.json(
