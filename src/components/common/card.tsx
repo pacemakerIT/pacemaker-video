@@ -63,7 +63,7 @@ export default function Card({
         // Fallback to COURSE if type is undefined, though it should be passed
         await addFavorite(id, itemType || ItemType.COURSE);
       }
-    } catch (e) {
+    } catch {
       // Failed to toggle like
     }
   };

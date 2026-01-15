@@ -62,7 +62,7 @@ export default function VideoDetailContainer({
       } else {
         await removeFavorite(id);
       }
-    } catch (e) {
+    } catch {
       alert('오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
@@ -88,7 +88,7 @@ export default function VideoDetailContainer({
       if (confirmMove) {
         router.push('/mypage/cart');
       }
-    } catch (e) {
+    } catch {
       alert('장에구니 담기에 실패했습니다.');
     }
   };
