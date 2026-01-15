@@ -261,9 +261,10 @@ model Course {
 
   instructor Instructor @relation(fields: [instructorId], references: [id])
 
-  videos       Video[]       @relation("CourseToVideos")
-  sectionsRel  Section[]
-  reviews      Review[]
+  videos          Video[]                @relation("CourseToVideos")
+  sectionsRel     Section[]
+  reviews         Review[]
+  targetAudienceTypes TargetAudienceType[]
 }
 
 model Review {
@@ -304,6 +305,7 @@ model SectionItem {
   sectionId  String @db.Uuid
   title      String
   content    String
+  icon       String?
   orderIndex Int
 
   section Section @relation("SectionToItem", fields: [sectionId], references: [id], onDelete: Cascade)
@@ -319,6 +321,7 @@ model Instructor {
   careers      Json?
   courses      Course[]
 }
+
 
 /**
  * ==========================
@@ -396,4 +399,15 @@ enum ItemType {
   WORKSHOP
   COURSE
   EBOOK
+}
+
+enum TargetAudienceType {
+  IT
+  GOVERNMENT
+  FINANCE
+  DESIGN
+  RESUME
+  INTERVIEW
+  NETWORKING
+  SERVICE
 }
