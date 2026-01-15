@@ -24,7 +24,7 @@ export interface RelatedContentItem {
   price: number;
   category: string;
   type: string;
-  thumbnail: string;
+  thumbnail: string | null;
 }
 
 export interface Review {
@@ -61,6 +61,19 @@ export interface Course {
   sections: Section[];
   videos: Video[];
   reviews: ApiReview[];
+  targetAudienceTypes: string[];
+  targetAudiences: CourseTargetAudience[];
+  relatedCourses: RelatedCourse[];
+}
+
+export interface RelatedCourse {
+  id: string;
+  itemId: string;
+  title: string;
+  price: number;
+  category: string;
+  type: string;
+  thumbnail: string | null;
 }
 
 export interface ApiReview {
@@ -86,7 +99,6 @@ export interface Video {
 
 export interface Section {
   id: string;
-  type: string;
   title: string;
   description: string | null;
   orderIndex: number;
@@ -105,6 +117,14 @@ export interface SectionItem {
   category?: string;
   type?: string;
   thumbnail?: string;
+}
+
+export interface CourseTargetAudience {
+  type: string;
+  title: string;
+  content: string;
+  icon: string | null;
+  label: string;
 }
 
 export interface Instructor {
