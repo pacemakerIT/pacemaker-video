@@ -47,7 +47,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setCart([]);
+      return;
+    }
 
     fetchCart();
   }, [userId, fetchCart]);

@@ -37,7 +37,10 @@ export const FavoriteProvider = ({
   const [favorites, setFavorites] = useState<Favorite[]>([]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setFavorites([]);
+      return;
+    }
 
     const fetchFavorites = async () => {
       try {
