@@ -1,4 +1,4 @@
-import { ItemType, PrismaClient } from '@prisma/client';
+import { ItemType, PrismaClient, WorkshopCategory } from '@prisma/client';
 import courseData from '../public/json/video-detail-mock.json';
 import { randomUUID } from 'crypto';
 
@@ -43,12 +43,22 @@ async function main() {
       id: instructorId,
       name: 'Raphael. Lee',
       profileImage: '/img/instructor-image.png',
-      description: 'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+      description:
+        'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
         { period: '2019 ~', position: 'Managing Director at Pacemaker' },
-        { period: '2015 ~ 2019', position: 'Director of Operations at Metanet' },
-        { period: '2009 ~ 2014', position: 'Business Development Manager at People In Biz Corp.' },
-        { period: '2004 ~ 2008', position: 'Purchaser at InterContinental Hotels Group' }
+        {
+          period: '2015 ~ 2019',
+          position: 'Director of Operations at Metanet'
+        },
+        {
+          period: '2009 ~ 2014',
+          position: 'Business Development Manager at People In Biz Corp.'
+        },
+        {
+          period: '2004 ~ 2008',
+          position: 'Purchaser at InterContinental Hotels Group'
+        }
       ]
     }
   });
@@ -58,7 +68,8 @@ async function main() {
     const courseId = randomUUID();
 
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
-    const categoryString = COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
+    const categoryString =
+      COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
 
     // Course 생성
     await prisma.course.create({
@@ -234,6 +245,29 @@ async function main() {
         });
       }
     }
+  }
+
+  // 워크샵 카테고리에 데이터 추가
+  const categories = Object.values(WorkshopCategory);
+
+  // 2. 현재 DB에 있는 모든 Workshop 조회
+  const workshops = await prisma.workshop.findMany({
+    select: { id: true }
+  });
+
+  console.log(`${workshops.length}개의 데이터를 업데이트 중...`);
+
+  // 3. 루프를 돌며 랜덤 카테고리 할당
+  for (const workshop of workshops) {
+    const randomCategory =
+      categories[Math.floor(Math.random() * categories.length)];
+
+    await prisma.workshop.update({
+      where: { id: workshop.id },
+      data: {
+        category: randomCategory
+      }
+    });
   }
 
   console.log('🎉 Seed data created successfully!');
