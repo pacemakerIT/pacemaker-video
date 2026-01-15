@@ -10,7 +10,7 @@ export type Favorite = {
   itemType: ItemType;
   id: string;
   title: string;
-  price: number;
+  price: number | string;
   description: string;
   category: VideoCategory | null;
   startDate: Date | undefined;
