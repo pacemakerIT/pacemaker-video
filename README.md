@@ -15,7 +15,7 @@ This is a [Next.js](https://nextjs.org) project using the App Router and TypeScr
 ### Prerequisites
 
 - [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
-- Node.js v20.19 (will be automatically set using nvm)
+- Node.js v22.22 (will be automatically set using nvm)
 - npm
 
 ### Installation
