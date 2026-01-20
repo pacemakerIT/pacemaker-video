@@ -34,14 +34,23 @@ const SECTION_TITLES = [
 ];
 
 async function main() {
-  console.log('🧹 기존 Seed 데이터 제거 중…');
+  // 운영 환경(Supabase) 체크: DATABASE_URL에 supabase 주소가 포함되어 있으면 데이터 삭제 중단
+  const isSupabase =
+    process.env.DATABASE_URL?.includes('supabase.com') ||
+    process.env.DATABASE_URL?.includes('pooler.supabase.com');
 
-  await prisma.video.deleteMany({});
-  await prisma.sectionItem.deleteMany({});
-  await prisma.section.deleteMany({});
-  await prisma.course.deleteMany({});
+  if (isSupabase) {
+    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜁니다.');
+  } else {
+    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
+    await prisma.video.deleteMany({});
+    await prisma.sectionItem.deleteMany({});
+    await prisma.section.deleteMany({});
+    await prisma.course.deleteMany({});
+    console.log('✨ 기존 데이터 삭제 완료.');
+  }
 
-  console.log('✨ 기존 데이터 삭제 완료, 새로운 시드 생성 시작…');
+  console.log('🚀 새로운 시드 생성 시작…');
   // 1) Mock Instructor 생성
   const instructorId = randomUUID();
   await prisma.instructor.upsert({
@@ -152,24 +161,12 @@ async function main() {
         await prisma.video.create({
           data: {
             videoId: (() => {
-              // Helper to generate a UUID that maps to a specific index in the frontend
-              // Frontend logic: parseInt(uuid.slice(-1), 16) % 12
-              const generateMappedUUID = (targetIndex: number) => {
-                let uuid = randomUUID();
-                while (parseInt(uuid.slice(-1), 16) % 12 !== targetIndex) {
-                  uuid = randomUUID();
-                }
-                return uuid;
-              };
-
-              // Map videos sequentially:
-              // Video 1 -> Index 0 ('32ktrbrf3j')
-              // Video 2 -> Index 1
-              // Video 3 -> Index 2
-              // Video 4 -> Index 3
-              // This ensures the first video is always '32ktrbrf3j' as requested.
-              const targetIndex = (s - 1) % 12;
-              return generateMappedUUID(targetIndex);
+              // 첫 번째 코스의 첫 번째 섹션의 첫 번째 비디오만 실제 Wistia ID 사용
+              if (i === 1 && sectionIdx === 0 && s === 1) {
+                return '32ktrbrf3j';
+              }
+              // 나머지는 중복되지 않도록 고유한 더미 ID 생성 (@unique 제약 조건 대응)
+              return `vidx-${i}-${sectionIdx}-${s}-${randomUUID().slice(0, 8)}`;
             })(),
             title: `Session ${s}`,
             description: null,
@@ -202,8 +199,43 @@ async function main() {
     create: { id: 'USER', label: 'USER' }
   });
 
-  // 5) 30명의 User 생성 with random roles
-  console.log('Generating 30 users with random roles...');
+  // 5) 고정 테스트 계정 생성 (Admin, User)
+  console.log('Generating stable test accounts...');
+  const stableUsers = [
+    {
+      id: '87921304-7f86-4398-9e22-420170acdb03',
+      email: 'admin@paceupcareer.com',
+      clerkId: 'user_38K4nsQvRHKpUo2ORvKpSCEAEWs',
+      roleId: 'ADMIN'
+    },
+    {
+      id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
+      email: 'user@paceupcareer.com',
+      clerkId: 'user_38K5898TBktdhW31nKDhgXUwZVF',
+      roleId: 'USER'
+    }
+  ];
+
+  for (const u of stableUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {
+        clerkId: u.clerkId,
+        roleId: u.roleId
+      },
+      create: {
+        id: u.id,
+        email: u.email,
+        clerkId: u.clerkId,
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+      }
+    });
+  }
+
+  // 6) 30명의 추가 User 생성 with random roles
+  console.log('Generating 30 additional users with random roles...');
   const itemTypes = ['COURSE', 'EBOOK', 'WORKSHOP'];
 
   for (let i = 1; i <= 30; i++) {
