@@ -23,17 +23,17 @@ export default function CourseHeader({
   sortBy,
   setSortBy
 }: CourseHeaderProps) {
-  // 카테고리 한글 매핑 함수
-  const getKoreanCategory = (categoryName: string) => {
+  // 카테고리 표시 매핑 함수
+  const getDisplayCategory = (categoryName: string) => {
     switch (categoryName) {
       case 'TOTAL':
-        return '전체';
+        return 'All';
       case 'INTERVIEW':
-        return '인터뷰';
+        return 'Interview';
       case 'RESUME':
-        return '이력서';
+        return 'Resume';
       case 'NETWORKING':
-        return '네트워킹';
+        return 'Networking';
       default:
         return categoryName;
     }
@@ -41,8 +41,8 @@ export default function CourseHeader({
   return (
     <>
       <SectionHeader
-        subtitle="다양한 강의를 한 자리에서"
-        title="페이스메이커 온라인 코스"
+        subtitle="Explore Our Programs"
+        title="Pacemaker Online Courses"
       />
       <div className="w-full flex gap-4 justify-between items-center pt-8 pb-4">
         <div className="flex gap-4">
@@ -60,7 +60,7 @@ export default function CourseHeader({
                 setCurrentCategory(categoryName);
               }}
             >
-              {getKoreanCategory(categoryName)}
+              {getDisplayCategory(categoryName)}
             </Badge>
           ))}
         </div>

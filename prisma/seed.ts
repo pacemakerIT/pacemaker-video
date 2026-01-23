@@ -4,19 +4,19 @@ import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
-const COURSE_TITLE = '자기소개서 작성 및 면접 준비까지 하늘로!';
+const COURSE_TITLE = 'From Resume Writing to Interview Prep, All in One!';
 const COURSE_DESC =
-  '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!';
+  'Analyze the structure and expressions North American recruiters look for in developer resumes, based on actual successful resumes!';
 
-const LONG_DESCRIPTION = `북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요. 그만큼 기업들은 더 신중하게, 해당 포지션을 정말 잘 이해하고 있는 지원자를 찾고 있죠.
+const LONG_DESCRIPTION = `To get a job as a developer in North America, the ability to read and understand job postings is just as important as coding skills. Especially these days, as development productivity increases thanks to AI, the number of developer job postings in North America has decreased by about 35% over the past five years. As a result, companies are looking more carefully for candidates who truly understand the position.
 
-한국과는 조금 다른 북미식 채용공고의 특징, 어떻게 읽고 준비해야 할지 막막하셨다면, 실제 캐나다 기업에 최종 합격한 페이스메이커 개발자의 영문 이력서를 통해 채용공고 분석부터 이력서에 반영하는 방법까지 함께 살펴보세요!`;
+If you were unsure how to read and prepare for North American job postings, which are slightly different from those in Korea, join us as we look at everything from job posting analysis to reflecting it in your resume through the English resume of a Pacemaker developer who was finally accepted by a Canadian company!`;
 
 const TITLE =
-  '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지';
+  'The Standard for North American Employment: From Differentiated Resumes to Job-Winning Interviews';
 
 const DETAIL_TITLE =
-  '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
+  'Preparing Step-by-Step for North American Developer Jobs: From Differentiated Resumes to Interviews';
 
 const COURSE_THUMBNAILS = [
   '/img/course_image1.png',
@@ -28,9 +28,9 @@ const COURSE_CATEGORIES = ['INTERVIEW', 'RESUME', 'NETWORKING'];
 
 // Section Titles
 const SECTION_TITLES = [
-  '북미 개발자 채용 공고 사례',
-  '북미 개발자 채용 공고 분석',
-  '실제 북미 개발자 취업 성공 이력서'
+  'Case Studies of North American Developer Job Postings',
+  'Analysis of North American Developer Job Postings',
+  'Actual Successful Resumes for North American Developer Jobs'
 ];
 
 async function main() {
@@ -95,16 +95,16 @@ async function main() {
         title: TITLE,
         courseTitle: COURSE_TITLE,
         description: LONG_DESCRIPTION,
-        promoText: '캐나다 테크기업 OOO이 선택한',
+        promoText: 'Selected by Canadian Tech Company OOO',
         summary: COURSE_DESC,
         detailTitle: DETAIL_TITLE,
         price: '2800',
         rating: 5,
         reviewCount: 1500,
         category: categoryString as 'INTERVIEW' | 'RESUME' | 'NETWORKING',
-        duration: '7시간',
-        level: '중급',
-        language: '한국어',
+        duration: '7 Hours',
+        level: 'Intermediate',
+        language: 'English',
         backgroundImage: thumbnail,
         instructorId,
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
@@ -128,12 +128,12 @@ async function main() {
 
     // 각 Section에 상세 설명 Item 생성
     const SECTION_CONTENT_MAP: Record<string, string> = {
-      '북미 개발자 채용 공고 사례':
-        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.',
-      '북미 개발자 채용 공고 분석':
-        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.',
-      '실제 북미 개발자 취업 성공 이력서':
-        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
+      'Case Studies of North American Developer Job Postings':
+        'Covers the North American style of resume writing in detail. Learn everything from keyword selection to pass ATS (Applicant Tracking Systems) to using action verbs to effectively showcase experiences.',
+      'Analysis of North American Developer Job Postings':
+        'Covers essential technical interview topics such as data structures and algorithms. Gain practical experience through analysis of past questions from big tech companies and model answers.',
+      'Actual Successful Resumes for North American Developer Jobs':
+        'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
     };
 
     for (const section of sections) {
@@ -344,17 +344,17 @@ async function main() {
     {
       rating: 5,
       content:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+        "It was a huge help in writing my resume. Especially the ATS-related tips were content I hadn't heard anywhere else!"
     },
     {
       rating: 4.5,
       content:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+        'I was at a loss for interview prep, but I gained confidence thanks to this lecture. The mock interview questions were very similar to the actual ones.'
     },
     {
       rating: 5,
       content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+        "The advice coming from the instructor's experience was impressive. I highly recommend it to those preparing for overseas employment."
     }
   ];
 
