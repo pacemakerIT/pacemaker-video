@@ -15,7 +15,7 @@ interface DetailRecommendationSectionProps {
 }
 
 export default function DetailRecommendationSection({
-  title = '이런분들께 추천드려요!',
+  title = 'Recommended For',
   items = []
 }: DetailRecommendationSectionProps) {
   return (

@@ -41,7 +41,7 @@ const MainReviewContainer = () => {
           {userId ? (
             <Link href="/courses">
               <button className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition">
-                강의 보러가기
+                Explore Courses
               </button>
             </Link>
           ) : (
@@ -49,7 +49,7 @@ const MainReviewContainer = () => {
               onClick={() => setIsSignInModalOpen(true)}
               className="h-[66px] text-pace-lg rounded-full px-6 py-2 bg-white text-pace-orange-600 font-medium w-[234px] shadow hover:bg-orange-100 transition"
             >
-              로그인 하고 강의 듣기
+              Log In to Start Learning
             </button>
           )}
         </div>
