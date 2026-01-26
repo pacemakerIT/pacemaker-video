@@ -55,9 +55,9 @@ export interface Course {
   promoText: string | null;
   summary: string | null;
   detailTitle: string | null;
-  instructorId: string;
   createdAt: string;
   updatedAt: string;
+  instructors: Instructor[];
   sections: Section[];
   videos: Video[];
   reviews: ApiReview[];
@@ -140,6 +140,7 @@ export interface ApiResponse {
   data: {
     course: Course;
     instructor: Instructor | null;
+    instructors: Instructor[];
   };
   error?: string;
   message?: string;

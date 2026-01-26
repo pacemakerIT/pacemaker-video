@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
 import { TargetAudienceType } from '@prisma/client';
+import { Course, CareerItem } from '@/types/video-detail';
 
 export async function GET(
   request: Request,
@@ -10,10 +11,11 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const courseData = await prisma.course.findUnique({
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const courseData = (await prisma.course.findUnique({
       where: { id },
       include: {
-        instructor: true,
+        instructors: true,
         videos: true,
         sectionsRel: {
           include: {
@@ -38,7 +40,7 @@ export async function GET(
           }
         }
       }
-    });
+    })) as any;
 
     if (!courseData) {
       return NextResponse.json(
@@ -66,7 +68,7 @@ export async function GET(
       const moreCourses = await prisma.course.findMany({
         where: {
           // 이미 가져온 강의들과 현재 강의를 제외해야 함
-          id: { notIn: [id, ...relatedCoursesData.map((c) => c.id)] }
+          id: { notIn: [id, ...relatedCoursesData.map((c: any) => c.id)] }
         },
         take: 3 - relatedCoursesData.length,
         orderBy: { createdAt: 'desc' }
@@ -75,26 +77,39 @@ export async function GET(
     }
 
     // DB 구조를 Frontend 구조로 변환
-    const course = {
+    const course: Course = {
       ...courseData,
-      sections: (courseData.sectionsRel || []).map((section) => ({
+      createdAt: courseData.createdAt.toISOString(),
+      updatedAt: courseData.updatedAt.toISOString(),
+      courseTitle: courseData.courseTitle || '',
+      description: courseData.description || '',
+      price: courseData.price || '0',
+      rating: courseData.rating || 0,
+      reviewCount: courseData.reviewCount || 0,
+      duration: courseData.duration || '',
+      level: courseData.level || '',
+      language: courseData.language || '',
+      backgroundImage: courseData.backgroundImage || '',
+      sections: (courseData.sectionsRel || []).map((section: any) => ({
         ...section,
-        items: (section.items || []).map((item) => ({
+        items: (section.items || []).map((item: any) => ({
           ...item,
           icon: item.icon || null
         }))
       })),
-      targetAudiences: (courseData.targetAudienceTypes || []).map((type) => {
-        const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
-        return {
-          type,
-          title: mapping?.title || type,
-          content: mapping?.content || '',
-          icon: mapping?.icon || null,
-          label: mapping?.label || type
-        };
-      }),
-      relatedCourses: relatedCoursesData.map((relatedCourse) => ({
+      targetAudiences: (courseData.targetAudienceTypes || []).map(
+        (type: any) => {
+          const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
+          return {
+            type,
+            title: mapping?.title || type,
+            content: mapping?.content || '',
+            icon: mapping?.icon || null,
+            label: mapping?.label || type
+          };
+        }
+      ),
+      relatedCourses: relatedCoursesData.map((relatedCourse: any) => ({
         id: relatedCourse.id,
         itemId: relatedCourse.id, // itemId seems redundant but kept for type signature matching if needed
         title: relatedCourse.title,
@@ -102,15 +117,43 @@ export async function GET(
         category: relatedCourse.category || 'GENERAL',
         type: 'course',
         thumbnail: relatedCourse.backgroundImage
+      })),
+      instructors: (courseData.instructors || []).map((inst: any) => ({
+        ...inst,
+        profileImage: inst.profileImage || '/img/instructor-image.png',
+        description: inst.description || '',
+        careers: (inst.careers as unknown as CareerItem[]) || []
+      })),
+      videos: (courseData.videos || []).map((v: any) => ({
+        ...v,
+        title: v.title || '',
+        description: v.description || '',
+        price: v.price || 0,
+        thumbnail: v.thumbnail || '',
+        category: v.category || ''
+      })),
+      reviews: (courseData.reviews || []).map((r: any) => ({
+        id: r.id,
+        rating: r.rating,
+        content: r.content,
+        createdAt: r.createdAt.toISOString(),
+        user: r.user
+          ? {
+              name: r.user.name || null,
+              image: r.user.image || null
+            }
+          : null
       }))
     };
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     return NextResponse.json(
       {
         success: true,
         data: {
-          course,
-          instructor: course.instructor
+          course: course,
+          instructor: course.instructors?.[0] || null,
+          instructors: course.instructors || []
         }
       },
       { status: 200 }

@@ -80,6 +80,30 @@ async function main() {
     }
   });
 
+  const instructorId2 = randomUUID();
+  await prisma.instructor.upsert({
+    where: { id: instructorId2 },
+    update: {},
+    create: {
+      id: instructorId2,
+      name: 'Sarah. Kim',
+      profileImage: '/img/instructor-image.png',
+      description:
+        'Technical Lead with over 12 years of experience in full-stack development. Specializing in cloud architecture and distributed systems. Passionate about mentoring junior developers and building scalable web applications.',
+      careers: [
+        { period: '2021 ~', position: 'Senior Instructor at Pacemaker' },
+        {
+          period: '2018 ~ 2021',
+          position: 'Tech Lead at Global Solutions'
+        },
+        {
+          period: '2014 ~ 2018',
+          position: 'Senior Software Engineer at Tech Corp'
+        }
+      ]
+    }
+  });
+
   // 2) Course 6개 생성
   for (let i = 1; i <= 6; i++) {
     const courseId = randomUUID();
@@ -106,7 +130,9 @@ async function main() {
         level: 'Intermediate',
         language: 'English',
         backgroundImage: thumbnail,
-        instructorId,
+        instructors: {
+          connect: [{ id: instructorId }, { id: instructorId2 }]
+        },
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
 
         sectionsRel: {
