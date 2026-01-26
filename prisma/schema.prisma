@@ -112,6 +112,8 @@ model Document {
   visualTitle2   String?
 
   tableOfContents      Json?
+  targetAudience       TargetAudienceType[] @default([])
+  recommendedLinks     Json?
 }
 
 /**
