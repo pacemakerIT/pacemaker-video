@@ -120,11 +120,11 @@ describe('Card', () => {
     });
   });
 
-  it('renders "자세히 보기" button', async () => {
+  it('renders "View detail" button', async () => {
     render(<Card {...mockCard} />);
 
     await waitFor(() => {
-      const button = screen.getByText('자세히 보기');
+      const button = screen.getByText('View detail');
       expect(button).toBeDefined();
       expect(button).toHaveClass('text-pace-orange-650');
     });

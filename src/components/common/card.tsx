@@ -151,7 +151,7 @@ export default function Card({
               variant="link"
               className="!text-pace-lg text-pace-orange-650 p-0 h-5"
             >
-              {`자세히 보기`}
+              {`View detail`}
               <ArrowRight width={20} height={20} />
             </Button>
           </div>

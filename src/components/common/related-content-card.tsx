@@ -80,7 +80,7 @@ export default function RelatedContentCard({
 
           <div className="w-full flex justify-start">
             <div className="text-[#E86642] font-normal p-0 inline-flex items-center gap-2">
-              {`자세히 보기`}
+              {`View detail`}
               <Image
                 src="/icons/arrow-right.svg"
                 alt="View Details"
