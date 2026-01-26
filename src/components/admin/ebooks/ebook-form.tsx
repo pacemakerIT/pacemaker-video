@@ -30,7 +30,6 @@ export type EbookData = {
   sections: {
     title: string;
     content: string;
-    videos: { title: string; link: string }[];
   }[];
   links: {
     url: string;
@@ -61,7 +60,7 @@ export default function EbookForm({ initialData }: Props) {
       visualTitle: '',
       visualTitle2: '',
       recommended: [],
-      sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
+      sections: [{ title: '', content: '' }],
       links: [{ url: '', name: '', errors: {} }]
     }
   );

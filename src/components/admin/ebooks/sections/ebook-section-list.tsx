@@ -6,15 +6,9 @@ import Input from '@/components/ui/admin/input';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import ExpandableCards from '@/components/common/expandable-cards';
 
-type Video = {
-  title: string;
-  link: string;
-};
-
 type Section = {
   title: string;
   content: string;
-  videos: Video[];
 };
 
 type SectionListProps = {
@@ -30,7 +24,7 @@ export default function EbookSectionList({
 }: SectionListProps) {
   // 목차 추가
   const handleAddSection = () => {
-    onChange([...value, { title: '', content: '', videos: [] }]);
+    onChange([...value, { title: '', content: '' }]);
   };
 
   // 입력 변경
@@ -41,34 +35,6 @@ export default function EbookSectionList({
   ) => {
     const updated = [...value];
     updated[index] = { ...updated[index], [field]: val };
-    onChange(updated);
-  };
-
-  // 비디오 추가
-  const handleAddVideo = (sectionIndex: number) => {
-    const updated = [...value];
-    updated[sectionIndex].videos.push({ title: '', link: '' });
-    onChange(updated);
-  };
-
-  // 비디오 입력 변경
-  const handleVideoChange = (
-    sectionIndex: number,
-    videoIndex: number,
-    field: 'title' | 'link',
-    val: string
-  ) => {
-    const updated = [...value];
-    updated[sectionIndex].videos[videoIndex][field] = val;
-    onChange(updated);
-  };
-
-  // 비디오 삭제
-  const handleDeleteVideo = (sectionIndex: number, videoIndex: number) => {
-    const updated = [...value];
-    updated[sectionIndex].videos = updated[sectionIndex].videos.filter(
-      (_, i) => i !== videoIndex
-    );
     onChange(updated);
   };
 
@@ -142,74 +108,6 @@ export default function EbookSectionList({
                       </p>
                     )}
                   </div>
-
-                  {/* 비디오 리스트 (첫 번째 목차가 아닐 때만 노출) */}
-                  {index > 0 && (
-                    <>
-                      {section.videos?.map((video, vIndex) => (
-                        <div key={vIndex} className="flex flex-col gap-2 mt-2">
-                          <div className="flex items-start gap-4">
-                            <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
-                              영상 {vIndex + 1}
-                            </label>
-
-                            <div className="flex-1 flex flex-col gap-2">
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="text"
-                                  value={video.title}
-                                  onChange={(e) =>
-                                    handleVideoChange(
-                                      index,
-                                      vIndex,
-                                      'title',
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder={`영상 ${vIndex + 1} 제목 입력`}
-                                  className="w-full"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleDeleteVideo(index, vIndex)
-                                  }
-                                  className="text-pace-orange-500 hover:text-pace-orange-600 flex-shrink-0"
-                                >
-                                  ✕
-                                </button>
-                              </div>
-                              <div className="flex gap-2">
-                                <Input
-                                  type="text"
-                                  value={video.link}
-                                  onChange={(e) =>
-                                    handleVideoChange(
-                                      index,
-                                      vIndex,
-                                      'link',
-                                      e.target.value
-                                    )
-                                  }
-                                  placeholder="링크 입력"
-                                  className="flex-1"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      {/* 영상 링크 추가 버튼 (항상 하단에 표시) */}
-                      <div className="flex justify-end">
-                        <AddButton
-                          label="영상 링크 추가"
-                          onClick={() => handleAddVideo(index)}
-                          className="whitespace-nowrap"
-                        />
-                      </div>
-                    </>
-                  )}
                 </div>
               )
             }))}

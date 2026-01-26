@@ -22,8 +22,7 @@ const MOCK_EBOOK_DATA: EbookData = {
   sections: [
     {
       title: '북미 개발자 채용 공고 사례',
-      content: '이번 영상에서는...',
-      videos: []
+      content: '이번 영상에서는...'
     }
   ],
   links: [{ url: 'https://example.com', name: '참고 링크', errors: {} }]
