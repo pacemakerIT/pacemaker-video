@@ -13,7 +13,10 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const selectedItem = cartItems.filter((item) => item.selected);
-  const subtotal = selectedItem.reduce((acc, item) => acc + item.price, 0);
+  const subtotal = selectedItem.reduce(
+    (acc, item) => acc + (Number(item.price) || 0),
+    0
+  );
   const discount = 20;
   const tax = subtotal * 0.13;
   const total = subtotal - discount + tax;

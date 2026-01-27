@@ -9,6 +9,7 @@ import LanguageDropdown from './language-drop-down';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useCartContext } from '@/app/context/cart-context';
 
 function NavItem({
   href,
@@ -34,6 +35,7 @@ function NavItem({
 }
 
 export function Header() {
+  const { cart } = useCartContext();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -90,9 +92,8 @@ export function Header() {
               className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
             >
               <div className="relative">
-                {/* TO-DO: 장바구니 DB 연결 */}
                 <div className="w-5 h-5 bg-pace-orange-600 text-white text-pace-2xs rounded-full flex items-center justify-center leading-none">
-                  0
+                  {cart.length}
                 </div>
               </div>
               장바구니
