@@ -235,7 +235,7 @@ async function main() {
             content: '자주 나오는 질문 베스트 10'
           }
         ],
-        targetAudience:
+        targetAudienceTypes:
           i % 2 === 0
             ? [audienceTypes[0], audienceTypes[1]]
             : [audienceTypes[2], audienceTypes[3]],
