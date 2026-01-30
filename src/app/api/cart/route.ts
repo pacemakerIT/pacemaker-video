@@ -55,6 +55,18 @@ export async function GET(req: NextRequest) {
                 }
               });
               break;
+            case ItemType.COURSE:
+              item = await prisma.course.findUnique({
+                where: { id: cart.itemId },
+                select: {
+                  id: true,
+                  title: true,
+                  price: true,
+                  description: true,
+                  category: true
+                }
+              });
+              break;
           }
         } catch (error) {
           return NextResponse.json(
@@ -135,6 +147,18 @@ export async function POST(req: NextRequest) {
               price: true,
               description: true,
               startDate: true
+            }
+          });
+          break;
+        case ItemType.COURSE:
+          item = await prisma.course.findUnique({
+            where: { id: newCart.itemId },
+            select: {
+              id: true,
+              title: true,
+              price: true,
+              description: true,
+              category: true
             }
           });
           break;

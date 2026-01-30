@@ -1,7 +1,6 @@
 'use client';
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useState } from 'react';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
@@ -13,6 +12,7 @@ interface DetailHeroSectionProps {
   price?: string;
   onAddToCart?: () => void;
   onToggleLike?: (isLiked: boolean) => void;
+  isLiked?: boolean;
   buttonText?: string;
   instructorLabel?: string;
   priceLabel?: string;
@@ -28,17 +28,14 @@ export default function DetailHeroSection({
   price = '$999.99',
   onAddToCart,
   onToggleLike,
+  isLiked = false,
   buttonText = '장바구니 담기',
   instructorLabel = '강사',
   priceLabel = '금액'
 }: DetailHeroSectionProps) {
-  const [isLiked, setIsLiked] = useState(false);
-
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
-    const newLikedState = !isLiked;
-    setIsLiked(newLikedState);
-    onToggleLike?.(newLikedState);
+    onToggleLike?.(!isLiked);
   };
 
   const handleAddToCart = () => {
@@ -87,7 +84,14 @@ export default function DetailHeroSection({
             </p>
             <div className="flex justify-between items-center text-pace-lg">
               <span>{priceLabel}</span>
-              <p className="text-pace-gray-500">${price}</p>
+              <p className="text-pace-gray-500">
+                $
+                {typeof price === 'number'
+                  ? (price as number).toLocaleString()
+                  : Number(
+                      String(price).replace(/[^0-9.]/g, '')
+                    ).toLocaleString()}
+              </p>
             </div>
             <div className="flex gap-3 justify-between items-center">
               <Button
