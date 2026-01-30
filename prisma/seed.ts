@@ -1,5 +1,10 @@
-import { ItemType, PrismaClient } from '@prisma/client';
-import courseData from '../public/json/video-detail-mock.json';
+/* eslint-disable no-console */
+import {
+  ItemType,
+  PrismaClient,
+  DocumentCategory,
+  TargetAudienceType
+} from '@prisma/client';
 import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
@@ -47,6 +52,7 @@ async function main() {
     await prisma.sectionItem.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
+    await prisma.document.deleteMany({});
     console.log('✨ 기존 데이터 삭제 완료.');
   }
 
@@ -155,9 +161,6 @@ async function main() {
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
       for (let s = 1; s <= 4; s++) {
-        // 첫 번째 코스의 첫 번째 섹션의 첫 번째 비디오는 특정 ID 사용
-        const isFirstVideo = i === 1 && sectionIdx === 0 && s === 1;
-
         await prisma.video.create({
           data: {
             videoId: (() => {
@@ -179,6 +182,75 @@ async function main() {
         });
       }
     }
+  }
+
+  // 3) Document 4개 생성
+  console.log('Generating dummy documents...');
+  const documentCategories: DocumentCategory[] = [
+    'MARKETING',
+    'IT',
+    'DESIGN',
+    'SERVICE'
+  ];
+  const audienceTypes: TargetAudienceType[] = [
+    'IT',
+    'NETWORKING',
+    'DESIGN',
+    'SERVICE'
+  ];
+
+  for (let i = 1; i <= 4; i++) {
+    const category = documentCategories[(i - 1) % documentCategories.length];
+
+    await prisma.document.create({
+      data: {
+        documentId: `doc-${i}-${randomUUID().slice(0, 8)}`,
+        title: `북미 취업 성공을 위한 ${category} 가이드북 Vol.${i}`,
+        description: `이 가이드북은 ${category} 분야 북미 취업을 희망하는 분들을 위해 제작되었습니다. 실제 합격 사례와 핵심 전략을 담고 있습니다.`,
+        price: 15000 + i * 1000,
+        bucketUrl: `https://example-bucket.s3.amazonaws.com/documents/guide-${i}.pdf`,
+        category: category,
+        thumbnail: COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length],
+        isPublic: true,
+        subTitle: `${category} 커리어 성장을 위한 필수 지침서`,
+        subDescription:
+          '현직자들의 생생한 노하우와 유용한 꿀팁을 한 단계씩 따라해보세요.',
+        isMain: i <= 2,
+        visualTitle1: `꿈꾸던 ${category} 커리어,`,
+        visualTitle2: '이제 현실이 됩니다',
+        tableOfContents: [
+          {
+            section: 'Chapter 1',
+            title: '시장 트렌드 분석',
+            content: '현재 북미 시장의 흐름'
+          },
+          {
+            section: 'Chapter 2',
+            title: '이력서 커스텀',
+            content: '나만의 강점 부각하기'
+          },
+          {
+            section: 'Chapter 3',
+            title: '실전 답변 전략',
+            content: '자주 나오는 질문 베스트 10'
+          }
+        ],
+        targetAudienceTypes:
+          i % 2 === 0
+            ? [audienceTypes[0], audienceTypes[1]]
+            : [audienceTypes[2], audienceTypes[3]],
+        recommendedLinks: [
+          {
+            name: '관련 무료 워크샵 신청하기',
+            url: 'https://example.com/workshop'
+          },
+          {
+            name: '오픈 카톡방 참여 (비번: 1234)',
+            url: 'https://open.kakao.com/o/example'
+          }
+        ]
+      }
+    });
   }
 
   // 4) Ensure UserRoles exist
