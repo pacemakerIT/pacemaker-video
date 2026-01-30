@@ -32,6 +32,7 @@ import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -58,10 +59,53 @@ export default function VideoDetailContainer({
   const isLiked = favorites.some((f) => f.itemId === id);
   const isInCart = cart.some((c) => c.itemId === id);
 
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    showCancel: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    showCancel: true
+  });
+
+  const showAlert = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm: () => {},
+      showCancel: false
+    });
+  };
+
+  const showConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm,
+      showCancel: true
+    });
+  };
+
   const handleToggleLike = async (nextState: boolean) => {
     if (!isSignedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/sign-in');
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
       return;
     }
 
@@ -72,14 +116,19 @@ export default function VideoDetailContainer({
         await removeFavorite(id);
       }
     } catch {
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
+      showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
   const handleAddToCart = async () => {
     if (!isSignedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/sign-in');
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
       return;
     }
 
@@ -91,14 +140,15 @@ export default function VideoDetailContainer({
     try {
       await addToCart(id, ItemType.COURSE);
 
-      const confirmMove = window.confirm(
-        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?'
+      showConfirm(
+        '장바구니 담기 완료',
+        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?',
+        () => {
+          router.push('/mypage/cart');
+        }
       );
-      if (confirmMove) {
-        router.push('/mypage/cart');
-      }
     } catch {
-      alert('장에구니 담기에 실패했습니다.');
+      showAlert('오류 발생', '장바구니 담기에 실패했습니다.');
     }
   };
 
@@ -391,6 +441,17 @@ export default function VideoDetailContainer({
           </div>
         </aside>
       </div>
+
+      <ConfirmModal
+        isOpen={modalConfig.isOpen}
+        onOpenChange={(open) =>
+          setModalConfig((prev) => ({ ...prev, isOpen: open }))
+        }
+        title={modalConfig.title}
+        description={modalConfig.description}
+        onConfirm={modalConfig.onConfirm}
+        showCancel={modalConfig.showCancel}
+      />
     </div>
   );
 }
