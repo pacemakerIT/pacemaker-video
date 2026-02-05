@@ -59,8 +59,8 @@ export default function RelatedContentCard({
           />
         </div>
 
-        <div className="w-full p-6 flex flex-col justify-start items-start">
-          <div className="w-full flex flex-col gap-3">
+        <div className="w-full p-6 flex flex-col justify-start items-start gap-4">
+          <div className="w-full flex flex-col gap-4">
             <div className="w-full flex justify-between items-center text-pace-sm">
               {category && (
                 <CustomBadge
@@ -72,7 +72,7 @@ export default function RelatedContentCard({
               )}
             </div>
 
-            <div className="w-full flex justify-between items-center text-pace-gray-500">
+            <div className="w-full flex justify-between items-start text-pace-gray-500">
               <h3 className="text-pace-base">{title}</h3>
               <span className="text-pace-xl font-bold">{`$${price}`}</span>
             </div>

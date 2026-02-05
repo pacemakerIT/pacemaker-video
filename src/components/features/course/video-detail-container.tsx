@@ -1,12 +1,21 @@
 'use client';
 import {
-  FileEdit,
-  CodeSquare,
   ChevronRight,
   ChevronUp,
   ChevronDown,
+  CirclePlay,
   ChevronLeft,
-  CirclePlay
+  CodeXml,
+  FileSignature,
+  HelpCircle,
+  Code2,
+  Users,
+  BarChart3,
+  Palette,
+  FileText,
+  MessageSquare,
+  Share2,
+  Heart
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import SectionHeader from '../../common/section-header';
@@ -15,7 +24,6 @@ import DetailHeroSection from '../../common/detail-hero-section';
 import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
-import Image from 'next/image';
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 
@@ -100,194 +108,124 @@ export default function VideoDetailContainer({
     );
   }
 
-  // Mock Data
-  const mockContentItems = [
-    {
-      id: '1',
-      title: '북미 개발자 채용 공고 사례',
-      content:
-        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.'
-    },
-    {
-      id: '2',
-      title: '북미 개발자 채용 공고 분석',
-      content:
-        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.'
-    },
-    {
-      id: '3',
-      title: '실제 북미 개발자 취업 성공 이력서',
-      content:
-        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
-    }
-  ];
+  // Dynamic content items from database
+  const contentItems =
+    data.course.sections.flatMap((section) =>
+      section.items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        content: item.content
+      }))
+    ) || [];
 
-  const mockRecommendationItems = [
-    {
-      icon: CodeSquare,
-      title: '북미 개발자',
-      text: '개발 분야 취업에 관심 있으신 분'
-    },
-    {
-      icon: FileEdit,
-      title: '북미 취업이력서',
-      text: '작성방법이 궁금하신 분'
+  // Icon mapping for recommendation items
+  const getIcon = (iconName: string | null) => {
+    switch (iconName) {
+      case 'CodeXml':
+        return CodeXml;
+      case 'FileSignature':
+        return FileSignature;
+      case 'Code2':
+        return Code2;
+      case 'Users':
+        return Users;
+      case 'BarChart3':
+        return BarChart3;
+      case 'Palette':
+        return Palette;
+      case 'FileText':
+        return FileText;
+      case 'MessageSquare':
+        return MessageSquare;
+      case 'Share2':
+        return Share2;
+      case 'Heart':
+        return Heart;
+      default:
+        return HelpCircle;
     }
-  ];
+  };
 
-  const mockRelatedItems = [
-    {
-      id: 1,
-      itemId: 'course-2',
-      title: '실리콘밸리 엔지니어의 커리어 로드맵',
-      price: 45000,
-      category: 'CAREER'
-    },
-    {
-      id: 2,
-      itemId: 'course-3',
-      title: '영문 이메일/비즈니스 영어 마스터',
-      price: 30000,
-      category: 'ENGLISH'
-    },
-    {
-      id: 3,
-      itemId: 'course-4',
-      title: '북미 연봉 협상 가이드',
-      price: 25000,
-      category: 'CAREER'
-    }
-  ];
-
-  const mockReviews = [
-    {
-      id: 1,
-      profileImage: '/img/user1.png',
-      profileName: 'Sarah Kim',
-      rating: 5,
-      reviewDate: '2023.10.15',
-      reviewContent:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
-    },
-    {
-      id: 2,
-      profileImage: '/img/user2.png',
-      profileName: 'Michael Lee',
-      rating: 4.5,
-      reviewDate: '2023.11.02',
-      reviewContent:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
-    },
-    {
-      id: 3,
-      profileImage: '/img/user3.png',
-      profileName: 'Emily Park',
-      rating: 5,
-      reviewDate: '2023.11.20',
-      reviewContent:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
-    }
-  ];
+  const recommendationItems =
+    data.course.targetAudiences?.map((item) => ({
+      icon: getIcon(item.icon),
+      label: item.label,
+      text: item.content
+    })) || [];
 
   return (
-    <div className="w-full flex flex-col justify-between items-center gap-20">
-      {!isPlaylistOpen && (
-        <button
-          type="button"
-          onClick={() => setIsPlaylistOpen(true)}
-          className="fixed right-0 top-[40%] h-20 z-40 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition hover:bg-pace-gray-50"
-        >
-          <ChevronLeft className="h-5 w-5 text-pace-base" />
-        </button>
-      )}
+    <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
-        backgroundImage={data.course.backgroundImage}
         title={data.course.title}
         courseTitle={data.course.courseTitle}
-        instructor={data.instructor?.name || 'Unknown'}
-        description={data.course.description}
+        subtitle={data.course.promoText || undefined}
+        description={data.course.summary || data.course.description}
         price={data.course.price}
-        buttonText="장바구니 담기"
-        instructorLabel="강사"
-        priceLabel="금액"
+        instructor={data.instructor?.name || '페이스메이커'}
+        backgroundImage={data.course.backgroundImage}
       />
-      <div className="w-full flex gap-6 max-w-[1200px]">
-        <div className="w-full aspect-video overflow-hidden rounded-lg border border-pace-gray-100 bg-black">
-          <WistiaPlayer mediaId={selectedMediaId} />
-        </div>
-      </div>
-      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20 pb-40">
-        <div className="flex flex-col gap-8 w-full">
-          <SectionHeader
-            subtitle={'강의는 이렇게 진행돼요!'}
-            title={data.course.title || ''}
-          />
-          <div className="w-full flex gap-8">
-            <div className="w-[60%]">
-              <p className="text-pace-stone-500 leading-relaxed">
-                {data.course.description}
-              </p>
-            </div>
-            <div className="w-[40%]">
-              <ExpandableCards items={mockContentItems} />
-            </div>
-          </div>
-        </div>
 
-        <DetailRecommendationSection
-          title={'이런분들께 추천드려요!'}
-          items={mockRecommendationItems}
-        />
-
-        {data.instructor && (
-          <div className="flex flex-col w-full gap-8">
-            <SectionHeader title="강사 소개" />
-            <div className="w-full flex gap-10">
-              <div className="w-[70%] gap-6">
-                <h3 className="font-semibold text-[20px]">
-                  {data.instructor.name}
-                </h3>
-                <p className="text-pace-stone-500 leading-relaxed">
-                  {data.instructor.description}
-                </p>
-                <div className="mt-6">
-                  <h4 className="text-pace-base font-regular mb-4">이력</h4>
-                  <table className="w-full">
-                    <tbody className="text-pace-stone-500">
-                      {data.instructor.careers.map((careerItem, index) => (
-                        <tr key={index}>
-                          <td className="py-1 pr-4">{careerItem.period}</td>
-                          <td className="py-1">{careerItem.position}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="w-[30%]">
-                <Image
-                  src={data.instructor.profileImage}
-                  alt="instructor"
-                  width={360}
-                  height={360}
-                />
-              </div>
-            </div>
+      <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
+        {selectedMediaId && (
+          <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
+            <WistiaPlayer
+              mediaId={selectedMediaId}
+              id="wistia-player-container-1"
+            />
           </div>
         )}
 
+        <div className="flex flex-col gap-8">
+          <SectionHeader
+            subtitle="강의는 이렇게 진행돼요!"
+            title={data.course.detailTitle || '강의 제목'}
+          />
+          <div className="flex gap-4">
+            <div className="text-pace-stone-500 whitespace-pre-wrap">
+              {data.course.description || '강의 설명이 없습니다.'}
+            </div>
+            <ExpandableCards items={contentItems} />
+          </div>
+        </div>
+
+        <DetailRecommendationSection items={recommendationItems} />
+
         <DetailRelatedContentSection
           title={'이 컨텐츠와 함께 보면 좋아요!'}
-          items={mockRelatedItems}
+          items={data.course.relatedCourses || []}
         />
 
         <DetailReviewsSection
           title="강의 후기"
-          reviews={mockReviews}
+          reviews={
+            data.course.reviews?.map((review) => ({
+              id: review.id,
+              profileImage: review.user?.image || '/img/user1.png',
+              profileName: review.user?.name || '익명',
+              rating: review.rating,
+              reviewDate: new Date(review.createdAt)
+                .toISOString()
+                .split('T')[0]
+                .replace(/-/g, '.'),
+              reviewContent: review.content
+            })) || []
+          }
           rating={data.course.rating}
           reviewCount={data.course.reviewCount}
         />
       </div>
+
+      {/* Playlist Toggle Button (Floating) */}
+      {!isPlaylistOpen && (
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(true)}
+          className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
+        >
+          <ChevronLeft className="h-5 w-5 text-pace-base" />
+        </button>
+      )}
+
       <div
         className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
           isPlaylistOpen
