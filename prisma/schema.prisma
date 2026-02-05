@@ -131,6 +131,7 @@ model Workshop {
   price         Float?
   locationOrUrl String?
   status        WorkshopStatus @default(RECRUITING)
+  category      WorkshopCategory?
 
   instructorId String @db.Uuid
   instructor   User   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
@@ -352,6 +353,7 @@ enum WorkshopStatus {
   CLOSED
   ONGOING
   COMPLETED
+  HIDDEN
 }
 
 enum CourseCategory {
@@ -373,6 +375,12 @@ enum DocumentCategory {
   PUBLIC
   ACCOUNTING
   SERVICE
+}
+
+enum WorkshopCategory {
+  INTERVIEW
+  RESUME
+  NETWORKING
 }
 
 enum Interest {
