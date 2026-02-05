@@ -20,6 +20,7 @@ interface DetailHeroSectionProps {
 
 export default function DetailHeroSection({
   backgroundImage = '/img/video-bg.png',
+  subtitle,
   title = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
   courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
@@ -64,7 +65,7 @@ export default function DetailHeroSection({
         {/* 왼쪽 60% - 부제목과 제목 */}
         <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
           <div className="text-white/80 text-pace-lg font-medium mb-4">
-            {'강의는 이렇게 진행돼요!'}
+            {subtitle}
           </div>
           <h1 className="text-white text-5xl font-bold leading-tight">
             {title}

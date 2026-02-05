@@ -26,7 +26,7 @@ export default function EbookDetailContainer({
   courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
   description = '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!',
-  price = '$999.99',
+  price = '999.99',
   reviewCount = 185,
   rating = 5
 }: EbookDetailContainerProps) {
@@ -110,12 +110,12 @@ export default function EbookDetailContainer({
   const recommendationItems = [
     {
       icon: CodeSquare,
-      title: '북미 개발자',
+      label: '북미 개발자',
       text: '개발 분야 취업에 관심 있으신 분'
     },
     {
       icon: FileEdit,
-      title: '북미 취업이력서',
+      label: '북미 취업이력서',
       text: '작성방법이 궁금하신 분'
     }
   ];
@@ -123,25 +123,31 @@ export default function EbookDetailContainer({
   // 카드 데이터 정의
   const cards = [
     {
-      id: 1,
+      id: '1',
       itemId: 'course-1',
       title: 'React 기초부터 실전까지',
       price: 299,
-      category: 'Marketing'
+      category: 'Marketing',
+      type: 'course',
+      thumbnail: null
     },
     {
-      id: 2,
+      id: '2',
       itemId: 'course-2',
       title: 'Node.js 백엔드 개발',
       price: 399,
-      category: 'Design'
+      category: 'Design',
+      type: 'course',
+      thumbnail: null
     },
     {
-      id: 3,
+      id: '3',
       itemId: 'ebook-1',
       title: 'JavaScript 완벽 가이드',
       price: 199,
-      category: 'IT'
+      category: 'IT',
+      type: 'ebook',
+      thumbnail: null
     }
   ];
 
