@@ -1,10 +1,9 @@
-import { ItemType, PrismaClient, WorkshopCategory } from '@prisma/client';
-import courseData from '../public/json/video-detail-mock.json';
 /* eslint-disable no-console */
 import {
   ItemType,
   PrismaClient,
   DocumentCategory,
+  WorkshopCategory,
   TargetAudienceType
 } from '@prisma/client';
 import { randomUUID } from 'crypto';
