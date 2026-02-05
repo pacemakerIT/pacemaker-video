@@ -27,6 +27,14 @@ import DetailRecommendationSection from '../../common/detail-recommendation-sect
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselApi
+} from '@/components/ui/carousel';
+import Image from 'next/image';
+
 interface VideoDetailContainerProps {
   id: string;
 }
@@ -42,6 +50,22 @@ export default function VideoDetailContainer({
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(
     new Set()
   );
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const toggleSession = (sessionId: string) => {
     setExpandedSessions((prev) => {
@@ -161,7 +185,7 @@ export default function VideoDetailContainer({
         subtitle={data.course.promoText || undefined}
         description={data.course.summary || data.course.description}
         price={data.course.price}
-        instructor={data.instructor?.name || '페이스메이커'}
+        instructor={data.instructors?.[0]?.name || '페이스메이커'}
         backgroundImage={data.course.backgroundImage}
       />
 
@@ -187,6 +211,74 @@ export default function VideoDetailContainer({
             <ExpandableCards items={contentItems} />
           </div>
         </div>
+
+        {data.instructors && data.instructors.length > 0 && (
+          <div className="flex flex-col w-full gap-8">
+            <SectionHeader title="Instructor Introduction" />
+            <Carousel setApi={setApi} className="w-full">
+              <CarouselContent>
+                {data.instructors.map((instructor, idx) => (
+                  <CarouselItem key={instructor.id || idx}>
+                    <div className="w-full flex gap-10">
+                      <div className="w-[70%] gap-6">
+                        <h3 className="font-semibold text-[20px]">
+                          {instructor.name}
+                        </h3>
+                        <p className="text-pace-stone-500 leading-relaxed">
+                          {instructor.description}
+                        </p>
+                        <div className="mt-6">
+                          <h4 className="text-pace-base font-regular mb-4">
+                            Career
+                          </h4>
+                          <table className="w-full">
+                            <tbody className="text-pace-stone-500">
+                              {instructor.careers.map((careerItem, index) => (
+                                <tr key={index}>
+                                  <td className="py-1 pr-4">
+                                    {careerItem.period}
+                                  </td>
+                                  <td className="py-1">
+                                    {careerItem.position}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div className="w-[30%]">
+                        <Image
+                          src={instructor.profileImage}
+                          alt="instructor"
+                          width={360}
+                          height={360}
+                        />
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+
+            {count > 1 && (
+              <div className="flex justify-center gap-6 mt-4">
+                {Array.from({ length: count }).map((_, i) => (
+                  <button
+                    key={i}
+                    className={`w-4 h-4 rounded-full transition-all ${
+                      current === i
+                        ? 'bg-pace-orange-600'
+                        : 'bg-pace-gray-100 hover:bg-pace-orange-600'
+                    }`}
+                    onClick={() => api?.scrollTo(i)}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <DetailRecommendationSection items={recommendationItems} />
 
