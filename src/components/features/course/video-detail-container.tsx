@@ -185,7 +185,10 @@ export default function VideoDetailContainer({
         subtitle={data.course.promoText || undefined}
         description={data.course.summary || data.course.description}
         price={data.course.price}
-        instructor={data.instructors?.[0]?.name || '페이스메이커'}
+        instructor={
+          data.instructors?.map((inst) => inst.name).join(', ') ||
+          '페이스메이커'
+        }
         backgroundImage={data.course.backgroundImage}
       />
 
