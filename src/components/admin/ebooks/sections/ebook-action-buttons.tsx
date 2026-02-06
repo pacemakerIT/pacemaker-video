@@ -12,7 +12,7 @@ type Props = {
 export default function EbookActionButtons({
   onSubmit,
   onPreview,
-  cancelHref = '/admin/courses',
+  cancelHref = '/admin/ebooks',
   submitLabel = '수정'
 }: Props) {
   return (
