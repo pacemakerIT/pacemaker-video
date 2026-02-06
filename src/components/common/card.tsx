@@ -1,11 +1,15 @@
+'use client';
+
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import { ArrowRight, Heart } from 'lucide-react';
 import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState } from 'react';
 import { ItemType } from '@prisma/client';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 // CustomBadge를 쓰는 쪽에서 category 영문 → 한글 변환
 // (영문 페이지는 매핑 교체로 재사용 가능, CustomBadge 수정 불필요)
@@ -38,7 +42,31 @@ export default function Card({
   thumbnail,
   imageUrl
 }: CardProps) {
-  const [isLiked, setIsLiked] = useState(false);
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+
+  const isLiked = favorites.some((f) => f.itemId === id);
+
+  const handleToggleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isSignedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/sign-in');
+      return;
+    }
+
+    try {
+      if (isLiked) {
+        await removeFavorite(id);
+      } else {
+        // Fallback to COURSE if type is undefined, though it should be passed
+        await addFavorite(id, itemType || ItemType.COURSE);
+      }
+    } catch {
+      // Failed to toggle like
+    }
+  };
 
   // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
   const imageSrc = thumbnail
@@ -71,10 +99,7 @@ export default function Card({
             role="button"
             aria-label="like"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsLiked(!isLiked);
-            }}
+            onClick={handleToggleLike}
           >
             <Heart
               className={`w-5 h-5 transition-colors duration-200 ${
@@ -110,7 +135,13 @@ export default function Card({
                 <h3 className="text-2xl font-semibold pace-gray-500 h-9 overflow-hidden text-ellipsis whitespace-nowrap">
                   {displayTitle}
                 </h3>
-                <span className="text-[28px] font-bold">{`$${price}`}</span>
+                <span className="text-[28px] font-bold">{`$${
+                  typeof price === 'number'
+                    ? price.toLocaleString()
+                    : Number(
+                        String(price).replace(/[^0-9.]/g, '')
+                      ).toLocaleString()
+                }`}</span>
               </div>
             </div>
             <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
