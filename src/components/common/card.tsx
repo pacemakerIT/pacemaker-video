@@ -32,10 +32,7 @@ export default function Card({
   imageUrl
 }: CardProps) {
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
-  const { isSignedIn } = 
-        
-        
-        ();
+  const { isSignedIn } = useUser();
   const router = useRouter();
 
   const isLiked = favorites.some((f) => f.itemId === id);
