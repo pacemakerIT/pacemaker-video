@@ -54,7 +54,7 @@ export default function CardContainer({
   // 왼쪽 화살표: 첫 번째 카드가 완전히 보일 때부터 표시
   const showLeftButton = currentIndex > 0;
   // 오른쪽 화살표: 마지막 카드가 중앙 2개 카드 영역의 2번째 위치에 완전히 보일 때까지 표시
-  const showRightButton = currentIndex < cards.length - 1;
+  const showRightButton = currentIndex < cards.length - 2;
 
   return (
     <div className="relative w-full">
