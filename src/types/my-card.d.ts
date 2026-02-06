@@ -9,7 +9,7 @@ export interface MyCardBase {
 // Added selected property for the cart list in /mypage/cart
 export interface CartItem extends MyCardBase {
   category: string;
-  price: number;
+  price: number | string;
   type: string;
   date?: Date;
   selected?: boolean;
@@ -27,7 +27,7 @@ export interface MyCard extends MyCardBase {
 
   // Used in You Might Also Like in /mypage/cart/page.tsx and /mypage/favorites
   description?: string;
-  price?: number;
+  price?: number | string;
   like?: boolean;
   date?: Date;
 }

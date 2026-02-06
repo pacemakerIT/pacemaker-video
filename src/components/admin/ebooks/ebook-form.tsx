@@ -40,9 +40,10 @@ export type EbookData = {
 
 type Props = {
   initialData?: EbookData;
+  submitLabel?: string;
 };
 
-export default function EbookForm({ initialData }: Props) {
+export default function EbookForm({ initialData, submitLabel }: Props) {
   const [ebookData, setEbookData] = useState<EbookData>(
     initialData || {
       category: '',
@@ -202,7 +203,11 @@ export default function EbookForm({ initialData }: Props) {
       />
 
       {/* Actions */}
-      <EbookActionButtons onSubmit={handleSubmit} cancelHref="/admin/ebooks" />
+      <EbookActionButtons
+        onSubmit={handleSubmit}
+        cancelHref="/admin/ebooks"
+        submitLabel={submitLabel}
+      />
     </div>
   );
 }
