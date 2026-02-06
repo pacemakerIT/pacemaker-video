@@ -6,12 +6,14 @@ type Props = {
   onSubmit: () => void;
   onPreview?: () => void;
   cancelHref?: string;
+  submitLabel?: string;
 };
 
 export default function EbookActionButtons({
   onSubmit,
   onPreview,
-  cancelHref = '/admin/courses'
+  cancelHref = '/admin/ebooks',
+  submitLabel = '수정'
 }: Props) {
   return (
     <div className="flex justify-between items-center border-t border-pace-gray-200 pt-10">
@@ -39,7 +41,7 @@ export default function EbookActionButtons({
           onClick={onSubmit}
           className="w-[112px] h-[60px] rounded bg-pace-gray-700 text-white hover:bg-pace-gray-800"
         >
-          수정
+          {submitLabel}
         </button>
       </div>
     </div>

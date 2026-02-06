@@ -27,13 +27,12 @@ import DetailRecommendationSection from '../../common/detail-recommendation-sect
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselApi
-} from '@/components/ui/carousel';
-import Image from 'next/image';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useCartContext } from '@/app/context/cart-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { ItemType } from '@prisma/client';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -42,6 +41,9 @@ interface VideoDetailContainerProps {
 export default function VideoDetailContainer({
   id
 }: VideoDetailContainerProps) {
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+
   const [data, setData] = useState<ApiResponse['data'] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,22 +52,105 @@ export default function VideoDetailContainer({
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(
     new Set()
   );
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    if (!api) {
+  const { cart, addToCart } = useCartContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+
+  const isLiked = favorites.some((f) => f.itemId === id);
+  const isInCart = cart.some((c) => c.itemId === id);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    showCancel: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    showCancel: true
+  });
+
+  const showAlert = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm: () => {},
+      showCancel: false
+    });
+  };
+
+  const showConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm,
+      showCancel: true
+    });
+  };
+
+  const handleToggleLike = async (nextState: boolean) => {
+    if (!isSignedIn) {
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
       return;
     }
 
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap());
+    try {
+      if (nextState) {
+        await addFavorite(id, ItemType.COURSE);
+      } else {
+        await removeFavorite(id);
+      }
+    } catch {
+      showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');
+    }
+  };
 
-    api.on('select', () => {
-      setCurrent(api.selectedScrollSnap());
-    });
-  }, [api]);
+  const handleAddToCart = async () => {
+    if (!isSignedIn) {
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
+      return;
+    }
+
+    if (isInCart) {
+      router.push('/mypage/cart');
+      return;
+    }
+
+    try {
+      await addToCart(id, ItemType.COURSE);
+
+      showConfirm(
+        '장바구니 담기 완료',
+        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?',
+        () => {
+          router.push('/mypage/cart');
+        }
+      );
+    } catch {
+      showAlert('오류 발생', '장바구니 담기에 실패했습니다.');
+    }
+  };
 
   const toggleSession = (sessionId: string) => {
     setExpandedSessions((prev) => {
@@ -190,6 +275,10 @@ export default function VideoDetailContainer({
           '페이스메이커'
         }
         backgroundImage={data.course.backgroundImage}
+        onAddToCart={handleAddToCart}
+        onToggleLike={handleToggleLike}
+        isLiked={isLiked}
+        buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
       />
 
       <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
@@ -204,12 +293,16 @@ export default function VideoDetailContainer({
 
         <div className="flex flex-col gap-8">
           <SectionHeader
-            subtitle="강의는 이렇게 진행돼요!"
-            title={data.course.detailTitle || '강의 제목'}
+            subtitle="How the Course Works"
+            title={
+              data.course.detailTitle ||
+              'Step by Step: From a Strong Developer Resume to Interviews'
+            }
           />
           <div className="flex gap-4">
             <div className="text-pace-stone-500 whitespace-pre-wrap">
-              {data.course.description || '강의 설명이 없습니다.'}
+              {data.course.description ||
+                'Detailed course description not available.'}
             </div>
             <ExpandableCards items={contentItems} />
           </div>
@@ -291,7 +384,7 @@ export default function VideoDetailContainer({
         />
 
         <DetailReviewsSection
-          title="강의 후기"
+          title="Student Reviews"
           reviews={
             data.course.reviews?.map((review) => ({
               id: review.id,
@@ -419,6 +512,17 @@ export default function VideoDetailContainer({
           </div>
         </aside>
       </div>
+
+      <ConfirmModal
+        isOpen={modalConfig.isOpen}
+        onOpenChange={(open) =>
+          setModalConfig((prev) => ({ ...prev, isOpen: open }))
+        }
+        title={modalConfig.title}
+        description={modalConfig.description}
+        onConfirm={modalConfig.onConfirm}
+        showCancel={modalConfig.showCancel}
+      />
     </div>
   );
 }

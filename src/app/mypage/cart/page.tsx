@@ -16,7 +16,10 @@ export default function CartPage() {
         itemId: item.itemId,
         title: item.title || '',
         category: item.category || '',
-        price: item.price || 0,
+        price:
+          typeof item.price === 'string'
+            ? parseFloat(item.price.replace(/[^0-9.-]+/g, ''))
+            : Number(item.price) || 0,
         type: item.itemType,
         date: item.startDate ? new Date(item.startDate) : undefined,
         selected: true
