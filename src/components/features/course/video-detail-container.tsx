@@ -33,6 +33,13 @@ import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
 import ConfirmModal from '@/components/common/confirm-modal';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselApi
+} from '@/components/ui/carousel';
+import Image from 'next/image';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -52,6 +59,22 @@ export default function VideoDetailContainer({
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(
     new Set()
   );
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   const { cart, addToCart } = useCartContext();
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
