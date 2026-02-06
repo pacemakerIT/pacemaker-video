@@ -16,7 +16,7 @@ export type Cart = {
   itemType: ItemType;
   id: string;
   title: string;
-  price: number;
+  price: number | string;
   description: string;
   category: VideoCategory | null;
   startDate: Date;
@@ -47,7 +47,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setCart([]);
+      return;
+    }
 
     fetchCart();
   }, [userId, fetchCart]);
