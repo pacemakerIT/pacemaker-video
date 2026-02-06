@@ -69,23 +69,35 @@ model WatchedVideo {
 }
 
 model Document {
-  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId      String            @unique
-  title           String?
-  description     String?
-  uploadDate      DateTime          @default(now())
-  price           Float?
-  bucketUrl       String
-  category        DocumentCategory?
-  thumbnail       String?
-  isPublic        Boolean           @default(false)
-  subTitle        String?
-  subDescription  String?
-  isMain          Boolean           @default(false)
-  visualTitle1    String?
-  visualTitle2    String?
-  tableOfContents Json?
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId  String            @unique
+  title       String?
+  description String?
+  uploadDate  DateTime          @default(now())
+  price       Float?
+  bucketUrl   String
+  category    DocumentCategory?
+  thumbnail   String?
+
+  isPublic       Boolean        @default(false)
+
+  // New fields for UI
+  subTitle       String?
+  subDescription String?
+  isMain         Boolean        @default(false)
+  visualTitle1   String?
+  visualTitle2   String?
+
+  tableOfContents      Json?
+  targetAudienceTypes  TargetAudienceType[] @default([])
+  recommendedLinks     Json?
 }
+
+/**
+ * ==========================
+ * WORKSHOP
+ * ===========================
+ */
 
 model Workshop {
   id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -95,12 +107,16 @@ model Workshop {
   endDate       DateTime
   price         Float?
   locationOrUrl String?
-  status        WorkshopStatus         @default(RECRUITING)
-  instructorId  String                 @db.Uuid
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
-  thumbnail     String?
-  instructor    User                   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
+  status        WorkshopStatus @default(RECRUITING)
+  category      WorkshopCategory?
+
+  instructorId String @db.Uuid
+  instructor   User   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  thumbnail String?
+
   registrations WorkshopRegistration[]
 }
 
@@ -272,6 +288,7 @@ enum WorkshopStatus {
   CLOSED
   ONGOING
   COMPLETED
+  HIDDEN
 }
 
 enum CourseCategory {
@@ -293,6 +310,12 @@ enum DocumentCategory {
   PUBLIC
   ACCOUNTING
   SERVICE
+}
+
+enum WorkshopCategory {
+  INTERVIEW
+  RESUME
+  NETWORKING
 }
 
 enum Interest {

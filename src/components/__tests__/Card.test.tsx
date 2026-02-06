@@ -11,6 +11,42 @@ import {
 import Card from '../common/card';
 import { OnlineCards } from '@/types/online';
 import { ItemType } from '@prisma/client';
+import React from 'react';
+
+// Mock context hooks
+const mockAddFavorite = vi.fn();
+const mockRemoveFavorite = vi.fn();
+const mockAddToCart = vi.fn();
+
+vi.mock('@/app/context/favorite-context', () => ({
+  useFavoriteContext: () => ({
+    favorites: [],
+    addFavorite: mockAddFavorite,
+    removeFavorite: mockRemoveFavorite
+  })
+}));
+
+vi.mock('@/app/context/cart-context', () => ({
+  useCartContext: () => ({
+    cart: [],
+    addToCart: mockAddToCart
+  })
+}));
+
+// Mock Clerk
+vi.mock('@clerk/nextjs', () => ({
+  useUser: () => ({
+    isSignedIn: true,
+    user: { id: 'user_1' }
+  })
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}));
 
 // Mock next/image
 vi.mock('next/image', () => ({
@@ -185,10 +221,7 @@ describe('Card', () => {
     // Click the button
     fireEvent.click(likeButton);
 
-    // Wait for state change
-    await waitFor(() => {
-      expect(heartIcon).toHaveClass('text-pace-orange-800');
-      expect(heartIcon).toHaveClass('fill-pace-orange-800');
-    });
+    // Verify mock call
+    expect(mockAddFavorite).toHaveBeenCalledWith('1', ItemType.COURSE);
   });
 });

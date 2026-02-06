@@ -13,7 +13,7 @@ export async function GET(
     const courseData = await prisma.course.findUnique({
       where: { id },
       include: {
-        instructor: true,
+        instructors: true,
         videos: true,
         sectionsRel: {
           include: {
@@ -110,7 +110,8 @@ export async function GET(
         success: true,
         data: {
           course,
-          instructor: course.instructor
+          instructor: courseData.instructors[0] || null,
+          instructors: courseData.instructors
         }
       },
       { status: 200 }
