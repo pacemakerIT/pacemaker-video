@@ -448,6 +448,7 @@ async function main() {
         category: randomCategory
       }
     });
+  }
   // 6) Create Mock Reviews for Courses
   console.log('Creating mock reviews...');
   const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
@@ -505,4 +506,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-}
