@@ -37,7 +37,7 @@ describe('MainReviewContainer', () => {
   it('renders the login button when user is not signed in', () => {
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /로그인 하고 강의 듣기/i })
+      screen.getByRole('button', { name: /Log In to Start Learning/i })
     ).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('MainReviewContainer', () => {
 
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /강의 보러가기/i })
+      screen.getByRole('button', { name: /Explore Courses/i })
     ).toBeInTheDocument();
   });
 });

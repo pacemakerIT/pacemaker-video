@@ -14,7 +14,8 @@ interface WorkshopFilterProps {
 const FILTERS: { label: string; value: FilterKey }[] = [
   { label: '전체', value: '전체' },
   { label: '모집중', value: WorkshopStatus.RECRUITING },
-  { label: '모집완료', value: WorkshopStatus.ONGOING },
+  { label: '모집완료', value: WorkshopStatus.CLOSED },
+  { label: '진행중', value: WorkshopStatus.ONGOING },
   { label: '진행완료', value: WorkshopStatus.COMPLETED }
 ];
 
