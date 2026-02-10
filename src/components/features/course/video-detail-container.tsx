@@ -32,7 +32,7 @@ import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
-import Image from 'next/image';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -59,10 +59,53 @@ export default function VideoDetailContainer({
   const isLiked = favorites.some((f) => f.itemId === id);
   const isInCart = cart.some((c) => c.itemId === id);
 
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    showCancel: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    showCancel: true
+  });
+
+  const showAlert = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm: () => {},
+      showCancel: false
+    });
+  };
+
+  const showConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm,
+      showCancel: true
+    });
+  };
+
   const handleToggleLike = async (nextState: boolean) => {
     if (!isSignedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/sign-in');
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
       return;
     }
 
@@ -73,14 +116,19 @@ export default function VideoDetailContainer({
         await removeFavorite(id);
       }
     } catch {
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
+      showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
   const handleAddToCart = async () => {
     if (!isSignedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/sign-in');
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
       return;
     }
 
@@ -92,14 +140,15 @@ export default function VideoDetailContainer({
     try {
       await addToCart(id, ItemType.COURSE);
 
-      const confirmMove = window.confirm(
-        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?'
+      showConfirm(
+        '장바구니 담기 완료',
+        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?',
+        () => {
+          router.push('/mypage/cart');
+        }
       );
-      if (confirmMove) {
-        router.push('/mypage/cart');
-      }
     } catch {
-      alert('장에구니 담기에 실패했습니다.');
+      showAlert('오류 발생', '장바구니 담기에 실패했습니다.');
     }
   };
 
@@ -328,107 +377,115 @@ export default function VideoDetailContainer({
           </button>
         )}
 
-        <div
-          className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
+      <div
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
+          isPlaylistOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(false)}
+          className={`relative top-[40%] z-40 h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50 ${
             isPlaylistOpen
-              ? 'opacity-100 pointer-events-auto'
-              : 'opacity-0 pointer-events-none'
+              ? 'opacity-100 translate-x-0'
+              : 'opacity-0 translate-x-full'
           }`}
         >
-          <button
-            type="button"
-            onClick={() => setIsPlaylistOpen(false)}
-            className={`relative top-[40%] z-40 h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50 ${
-              isPlaylistOpen
-                ? 'opacity-100 translate-x-0'
-                : 'opacity-0 translate-x-full'
-            }`}
-          >
-            <ChevronRight className="h-5 w-5 text-pace-base" />
-          </button>
-          <div
-            className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ease-in-out ${
-              isPlaylistOpen ? 'opacity-100' : 'opacity-0'
-            }`}
-            role="presentation"
-            onClick={() => setIsPlaylistOpen(false)}
-          />
-          <aside
-            className={`relative h-full w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
-              isPlaylistOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
-          >
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              <div className="flex flex-col gap-2">
-                {data.course.sections.map((section) => {
-                  const isExpanded = expandedSessions.has(section.id);
-                  return (
-                    <div
-                      key={section.id}
-                      className="border border-pace-gray-100 rounded-lg overflow-hidden bg-white"
+          <ChevronRight className="h-5 w-5 text-pace-base" />
+        </button>
+        <div
+          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ease-in-out ${
+            isPlaylistOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          role="presentation"
+          onClick={() => setIsPlaylistOpen(false)}
+        />
+        <aside
+          className={`relative h-full w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
+            isPlaylistOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex flex-col gap-2">
+              {data.course.sections.map((section) => {
+                const isExpanded = expandedSessions.has(section.id);
+                return (
+                  <div
+                    key={section.id}
+                    className="border border-pace-gray-100 rounded-lg overflow-hidden bg-white"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleSession(section.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-pace-gray-50 transition-colors"
                     >
-                      <button
-                        type="button"
-                        onClick={() => toggleSession(section.id)}
-                        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-pace-gray-50 transition-colors"
-                      >
-                        <span className="text-sm font-semibold text-gray-900">
-                          {section.title}
-                        </span>
-                        {isExpanded ? (
-                          <ChevronUp className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                        )}
-                      </button>
-                      <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                          isExpanded
-                            ? 'max-h-[1000px] opacity-100'
-                            : 'max-h-0 opacity-0'
-                        }`}
-                      >
-                        <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
-                          {section.videos.map((video) => {
-                            const isActive = video.videoId === selectedMediaId;
-                            return (
-                              <button
-                                key={video.videoId}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedMediaId(video.videoId);
-                                  setIsPlaylistOpen(false);
-                                }}
-                                className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
-                                  isActive
-                                    ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
-                                    : 'hover:bg-white text-pace-stone-700'
+                      <span className="text-sm font-semibold text-gray-900">
+                        {section.title}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
+                      )}
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        isExpanded
+                          ? 'max-h-[1000px] opacity-100'
+                          : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
+                        {section.videos.map((video) => {
+                          const isActive = video.videoId === selectedMediaId;
+                          return (
+                            <button
+                              key={video.videoId}
+                              type="button"
+                              onClick={() => {
+                                setSelectedMediaId(video.videoId);
+                                setIsPlaylistOpen(false);
+                              }}
+                              className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
+                                isActive
+                                  ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
+                                  : 'hover:bg-white text-pace-stone-700'
+                              }`}
+                            >
+                              <div
+                                className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
+                                  isActive ? 'bg-pace-base' : 'bg-pace-gray-300'
                                 }`}
-                              >
-                                <div
-                                  className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
-                                    isActive
-                                      ? 'bg-pace-base'
-                                      : 'bg-pace-gray-300'
-                                  }`}
-                                />
-                                <span className="text-sm font-medium truncate w-full">
-                                  {video.title}
-                                </span>
-                                <CirclePlay className="h-4 w-4" />
-                              </button>
-                            );
-                          })}
-                        </div>
+                              />
+                              <span className="text-sm font-medium truncate w-full">
+                                {video.title}
+                              </span>
+                              <CirclePlay className="h-4 w-4" />
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
-          </aside>
-        </div>
+          </div>
+        </aside>
       </div>
+
+      <ConfirmModal
+        isOpen={modalConfig.isOpen}
+        onOpenChange={(open) =>
+          setModalConfig((prev) => ({ ...prev, isOpen: open }))
+        }
+        title={modalConfig.title}
+        description={modalConfig.description}
+        onConfirm={modalConfig.onConfirm}
+        showCancel={modalConfig.showCancel}
+      />
     </div>
   );
 }
