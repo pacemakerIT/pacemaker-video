@@ -18,14 +18,6 @@ const mockAddFavorite = vi.fn();
 const mockRemoveFavorite = vi.fn();
 const mockAddToCart = vi.fn();
 
-vi.mock('@/app/context/favorite-context', () => ({
-  useFavoriteContext: () => ({
-    favorites: [],
-    addFavorite: mockAddFavorite,
-    removeFavorite: mockRemoveFavorite
-  })
-}));
-
 vi.mock('@/app/context/cart-context', () => ({
   useCartContext: () => ({
     cart: [],
@@ -89,28 +81,8 @@ vi.mock('next/link', () => ({
   )
 }));
 
-// Mock next/navigation
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn()
-  })
-}));
-
-// Mock @clerk/nextjs
-vi.mock('@clerk/nextjs', () => ({
-  useUser: () => ({
-    isSignedIn: true,
-    user: { id: 'user1' }
-  })
-}));
-
 import { Favorite } from '@/app/context/favorite-context';
 
-// ... (other code)
-
-// Mock useFavoriteContext
-const mockAddFavorite = vi.fn();
-const mockRemoveFavorite = vi.fn();
 const mockFavorites: Favorite[] = [];
 
 vi.mock('@/app/context/favorite-context', () => ({
