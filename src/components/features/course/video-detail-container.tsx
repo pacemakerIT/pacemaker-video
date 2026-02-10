@@ -18,6 +18,7 @@ import {
   Heart
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -365,17 +366,18 @@ export default function VideoDetailContainer({
             })) || []
           }
           rating={data.course.rating}
-          reviewCount={data.course.reviewCount}
         />
-        {isSignedIn && !isPlaylistOpen && (
-          <button
-            type="button"
-            onClick={() => setIsPlaylistOpen(true)}
-            className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
-          >
-            <ChevronLeft className="h-5 w-5 text-pace-base" />
-          </button>
-        )}
+      </div>
+
+      {isSignedIn && !isPlaylistOpen && (
+        <button
+          type="button"
+          onClick={() => setIsPlaylistOpen(true)}
+          className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
+        >
+          <ChevronLeft className="h-5 w-5 text-pace-base" />
+        </button>
+      )}
 
       <div
         className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
