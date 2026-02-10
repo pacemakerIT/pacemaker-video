@@ -13,10 +13,10 @@ export default async function Home() {
         slides={[
           {
             title:
-              'Build the skills to launch your career abroad.\nExperience, resumes, and interviews — all in one place.',
+              'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
             subtitle:
-              'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step supported.',
-            buttonText: 'Explore Programs'
+              'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+            buttonText: 'Explore programs'
           },
           {
             title: 'Ready to take the next step?'
@@ -49,12 +49,12 @@ export default async function Home() {
         </h1>
         <span className="font-light text-pace-sm text-center whitespace-pre-line leading-[140%]">
           {
-            'Not sure where to start your career abroad?\nPacemaker offers online programs across IT, Graphic Design, UI/UX, and more\nfeaturing real stories from mentors who’ve secured roles in the field.\n\nWherever you are, you don’t have to do it alone.\nStart your career journey with Pacemaker.'
+            'Why a mentor-led career journey?\nMentors with real-world experience in North America will act as\nguides to shorten the months of fear and structure you.\n\nFrom one individual to a full community,\nthe mentor community is here for you.'
           }
         </span>
         <div className="flex justify-center items-center gap-4">
           <Button className="h-12 bg-white text-pace-orange-600 border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal ">
-            {'Browse Online Courses'}
+            {'Explore programs'}
           </Button>
           <LoginOrListenButton />
         </div>
