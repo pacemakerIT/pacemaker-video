@@ -89,6 +89,38 @@ vi.mock('next/link', () => ({
   )
 }));
 
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}));
+
+// Mock @clerk/nextjs
+vi.mock('@clerk/nextjs', () => ({
+  useUser: () => ({
+    isSignedIn: true,
+    user: { id: 'user1' }
+  })
+}));
+
+import { Favorite } from '@/app/context/favorite-context';
+
+// ... (other code)
+
+// Mock useFavoriteContext
+const mockAddFavorite = vi.fn();
+const mockRemoveFavorite = vi.fn();
+const mockFavorites: Favorite[] = [];
+
+vi.mock('@/app/context/favorite-context', () => ({
+  useFavoriteContext: () => ({
+    favorites: mockFavorites,
+    addFavorite: mockAddFavorite,
+    removeFavorite: mockRemoveFavorite
+  })
+}));
+
 describe('Card', () => {
   const mockCard: OnlineCards = {
     id: '1',
@@ -221,7 +253,15 @@ describe('Card', () => {
     // Click the button
     fireEvent.click(likeButton);
 
-    // Verify mock call
-    expect(mockAddFavorite).toHaveBeenCalledWith('1', ItemType.COURSE);
+    // Wait for state change
+    await waitFor(() => {
+      // Since we are mocking the context and it doesn't update the favorites list automatically,
+      // the visual state won't change in this unit test unless we re-render with new mocks.
+      // Instead, we verify that the addFavorite function was called.
+      expect(mockAddFavorite).toHaveBeenCalledWith(
+        mockCard.id,
+        mockCard.itemType
+      );
+    });
   });
 });
