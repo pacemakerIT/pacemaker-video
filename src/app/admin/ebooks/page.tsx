@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { itemCategoryLabel } from '@/constants/labels';
 
 import {
   DndContext,
@@ -24,7 +25,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 type Row = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   price: number;
@@ -36,12 +37,7 @@ type Row = {
   category: string;
 };
 
-const CATEGORY_MAP: Record<string, string> = {
-  TOTAL: '전체 카테고리',
-  INTERVIEW: '인터뷰',
-  RESUME: '이력서',
-  NETWORKING: '네트워킹'
-};
+const CATEGORY_MAP = itemCategoryLabel.en;
 
 // Sortable Row Component
 function VisualRow({
@@ -51,7 +47,7 @@ function VisualRow({
 }: {
   row: Row;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
+  toggleRow: (id: string, checked: boolean) => void;
 }) {
   const [value, setValue] = useState(
     row.status === '공개중' ? 'public' : 'private'
@@ -95,7 +91,7 @@ function VisualRow({
 
       {/* Category */}
       <div className="w-32 text-pace-stone-500 text-pace-sm text-center">
-        {row.category}
+        {CATEGORY_MAP[row.category.toUpperCase()] || row.category}
       </div>
 
       {/* Thumbnail */}
@@ -187,8 +183,8 @@ export default function AdminEbooksPage() {
   // Mock Data
   const [rows, setRows] = useState<Row[]>([
     {
-      id: 1,
-      category: '네트워킹',
+      id: '1',
+      category: 'NETWORKING',
       thumbnail: '/img/course_image1.png', // Ensure this image exists, or use a placeholder
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
@@ -200,8 +196,8 @@ export default function AdminEbooksPage() {
       selected: true
     },
     {
-      id: 2,
-      category: '네트워킹',
+      id: '2',
+      category: 'NETWORKING',
       thumbnail: '/img/course_image1.png',
       title: '자기소개서 작성 및 면접 준비까지 하나로! (2)',
       description:
@@ -213,8 +209,8 @@ export default function AdminEbooksPage() {
       selected: true
     },
     {
-      id: 3,
-      category: '네트워킹',
+      id: '3',
+      category: 'NETWORKING',
       thumbnail: '/img/course_image1.png',
       title: '자기소개서 작성 및 면접 준비까지 하나로! (3)',
       description: '강의 내용입니다...',
@@ -225,8 +221,8 @@ export default function AdminEbooksPage() {
       selected: true
     },
     {
-      id: 4,
-      category: '네트워킹',
+      id: '4',
+      category: 'NETWORKING',
       thumbnail: '/img/course_image1.png',
       title: '비공개 테스트 항목',
       description: '이것은 비공개 항목입니다.',
@@ -243,7 +239,7 @@ export default function AdminEbooksPage() {
     useSensor(KeyboardSensor)
   );
 
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, selected: checked } : row))
     );
@@ -308,10 +304,10 @@ export default function AdminEbooksPage() {
             onChange={setCategoryFilter}
             width="w-[145px]"
             options={[
-              { value: 'TOTAL', label: '전체 카테고리' },
-              { value: 'INTERVIEW', label: '인터뷰' },
-              { value: 'RESUME', label: '이력서' },
-              { value: 'NETWORKING', label: '네트워킹' }
+              { value: 'TOTAL', label: itemCategoryLabel.en.TOTAL },
+              { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
+              { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
+              { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
             ]}
           />
         </div>

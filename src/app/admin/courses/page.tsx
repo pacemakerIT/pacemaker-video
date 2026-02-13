@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { itemCategoryLabel } from '@/constants/labels';
+import { toast } from 'sonner';
 
 import {
   DndContext,
@@ -22,9 +24,12 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useNavigationBlocker } from '@/components/admin/common/navigation-blocker-context';
+
+const CATEGORY_LABELS = itemCategoryLabel.en;
 
 type Row = {
-  id: number;
+  id: string;
   title: string; // 강의제목
   description: string; // 강의내용
   price: string; // 금액
@@ -33,22 +38,23 @@ type Row = {
   status: '공개중' | '비공개' | string;
   thumbnail: string;
   selected: boolean; // 선택 여부 필드 추가
-  category: string; // 카테고리 필드 추가
+  category: string; // 카테고리 필드 추가 (Enum 키값)
 };
 
 // Sortable Row
 function VisualRow({
   row,
   index,
-  toggleRow
+  toggleRow,
+  onStatusChange
 }: {
   row: Row;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
+  toggleRow: (id: string, checked: boolean) => void;
+  onStatusChange: (id: string, status: string) => void;
 }) {
-  const [value, setValue] = useState(
-    row.status === '공개중' ? 'public' : 'private'
-  );
+  const { attemptNavigation } = useNavigationBlocker();
+  const value = row.status === '공개중' ? 'public' : 'private';
 
   const {
     attributes,
@@ -88,18 +94,24 @@ function VisualRow({
 
       {/* 카테고리 */}
       <div className="w-32 text-pace-stone-500 text-pace-sm text-center">
-        {row.category}
+        {CATEGORY_LABELS[row.category as keyof typeof CATEGORY_LABELS] ||
+          row.category}
       </div>
 
       {/* 썸네일 */}
-      <div className="w-40">
-        <Image
-          src={row.thumbnail}
-          alt={row.title}
-          width={159}
-          height={106}
-          className="rounded object-cover"
-        />
+      <div className="w-40 relative h-[106px]">
+        {row.thumbnail ? (
+          <Image
+            src={row.thumbnail}
+            alt={row.title}
+            fill
+            className="rounded object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* 강의제목 + 세부 정보 */}
@@ -108,8 +120,10 @@ function VisualRow({
         <p className="font-medium text-pace-base pb-2">{row.title}</p>
 
         {/* 강의내용 */}
-        <p className="text-pace-sm text-pace-stone-500 pb-1">
-          {row.description}
+        <p className="text-pace-sm text-pace-stone-500 pb-1 line-clamp-2">
+          {row.description.length > 110
+            ? `${row.description.slice(0, 110)}...`
+            : row.description}
         </p>
 
         {/* 금액 / 찜 / 구매 */}
@@ -130,7 +144,9 @@ function VisualRow({
       <div className="w-32">
         <PaceSelect
           value={value}
-          onChange={setValue}
+          onChange={(val) => {
+            onStatusChange(row.id, val === 'public' ? '공개중' : '비공개');
+          }}
           width="w-[124px]"
           options={[
             { value: 'public', label: '공개중' },
@@ -149,7 +165,13 @@ function VisualRow({
         {/* 버튼들 */}
         <div className="flex gap-2">
           {/* TODO: DB 완료 후 수정 ID 추가 */}
-          <Link href="/admin/courses/1">
+          <Link
+            href={`/admin/courses/${row.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              attemptNavigation(`/admin/courses/${row.id}`);
+            }}
+          >
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>
@@ -178,129 +200,43 @@ function VisualRow({
 
 export default function Page() {
   const [categoryFilter, setCategoryFilter] = useState('TOTAL');
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 한글 매핑 함수 (CourseHeader와 동일 스타일)
-  const getKoreanCategory = (categoryName: string) => {
-    switch (categoryName) {
-      case 'TOTAL':
-        return '전체 카테고리';
-      case 'INTERVIEW':
-        return '인터뷰';
-      case 'RESUME':
-        return '이력서';
-      case 'NETWORKING':
-        return '네트워킹';
-      default:
-        return categoryName;
-    }
-  };
+  const { isBlocked, setBlocked, attemptNavigation } = useNavigationBlocker();
 
-  const [rows, setRows] = useState<Row[]>([
-    {
-      id: 1,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '네트워킹'
-    },
-    {
-      id: 2,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '인터뷰'
-    },
-    {
-      id: 3,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '이력서'
-    },
-    {
-      id: 4,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '네트워킹'
-    },
-    {
-      id: 5,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '인터뷰'
-    },
-    {
-      id: 6,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '네트워킹'
-    },
-    {
-      id: 7,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '네트워킹'
-    },
-    {
-      id: 8,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
-      price: '$999',
-      likes: 999,
-      purchases: 123,
-      status: '공개중',
-      thumbnail: '/img/course_image1.png',
-      selected: false,
-      category: '네트워킹'
+  // 브라우저 탭 닫기/새로고침 방지
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isBlocked) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isBlocked]);
+
+  const fetchCourses = useCallback(async () => {
+    try {
+      const res = await fetch('/api/courses');
+      if (res.ok) {
+        const data = await res.json();
+        setRows(data);
+        setBlocked(false); // 초기화 시 변경상태 해제
+      } else {
+        toast('Failed to fetch courses');
+      }
+    } catch (error) {
+      toast(`Failed to connect server: ${error}`);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, [setBlocked]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -308,7 +244,7 @@ export default function Page() {
   );
 
   // 개별 Row 선택 토글
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, selected: checked } : row))
     );
@@ -319,27 +255,74 @@ export default function Page() {
     setRows((prev) => prev.map((row) => ({ ...row, selected: checked })));
   };
 
+  const handleStatusChange = (id: string, status: string) => {
+    setRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, status } : row))
+    );
+    setBlocked(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const selectedRows = rows.filter((row) => row.selected);
+
+      if (selectedRows.length === 0) {
+        toast.info('저장할 항목을 선택해주세요.');
+        return;
+      }
+
+      const updates = selectedRows.map((row) => ({
+        id: row.id,
+        status: row.status
+      }));
+
+      const res = await fetch('/api/courses', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ updates })
+      });
+
+      if (res.ok) {
+        toast.success('저장되었습니다.');
+        await fetchCourses();
+        setBlocked(false); // 저장 완료 시 변경상태 해제
+      } else {
+        const errorData = await res.json();
+        toast.error(`저장 실패: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch {
+      toast.error('저장 중 오류가 발생했습니다.');
+    }
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = rows.findIndex((row) => row.id === active.id);
       const newIndex = rows.findIndex((row) => row.id === over.id);
       setRows((items) => arrayMove(items, oldIndex, newIndex));
+      setBlocked(true);
     }
   };
 
   // 카테고리별로 필터링된 rows
   const filteredRows = rows.filter((row) => {
     if (categoryFilter === 'TOTAL') return true; // 전체 보기
-    return getKoreanCategory(categoryFilter) === row.category;
+    return row.category === categoryFilter;
   });
+
+  if (loading) return <div className="p-10">강의 목록 불러오는 중...</div>;
 
   return (
     <div className="p-10">
       <div className="flex justify-between pb-10">
         <h1 className="text-pace-3xl font-bold">온라인 강의 관리</h1>
-        {/* TODO: DB 완료 후 저장 기능 추가 */}
-        <button className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded">
+        <button
+          onClick={handleSave}
+          className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded hover:bg-pace-orange-900 transition-colors"
+        >
           저장
         </button>
       </div>
@@ -354,13 +337,20 @@ export default function Page() {
         {/* 전체 선택 & 전체 카테고리 */}
         <div className="pt-6 pb-6 flex items-center justify-between">
           {/* 왼쪽: 전체선택 */}
-          <div className="flex items-center">
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={() => {
+              const allSelected =
+                rows.length > 0 && rows.every((row) => row.selected);
+              toggleAll(!allSelected);
+            }}
+          >
             <Checkbox
-              checked={rows.every((row) => row.selected)}
+              checked={rows.length > 0 && rows.every((row) => row.selected)}
               onCheckedChange={(checked) => toggleAll(!!checked)}
               className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
             />
-            <span className="ml-2 text-pace-sm text-pace-gray-700">
+            <span className="ml-2 text-pace-sm text-pace-gray-700 select-none">
               전체선택
             </span>
           </div>
@@ -371,10 +361,10 @@ export default function Page() {
             onChange={setCategoryFilter}
             width="w-[145px]"
             options={[
-              { value: 'TOTAL', label: '전체 카테고리' },
-              { value: 'INTERVIEW', label: '인터뷰' },
-              { value: 'RESUME', label: '이력서' },
-              { value: 'NETWORKING', label: '네트워킹' }
+              { value: 'TOTAL', label: itemCategoryLabel.en.TOTAL },
+              { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
+              { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
+              { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
             ]}
           />
         </div>
@@ -406,6 +396,7 @@ export default function Page() {
                   row={row}
                   index={index}
                   toggleRow={toggleRow}
+                  onStatusChange={handleStatusChange}
                 />
               ))}
             </SortableContext>
@@ -419,7 +410,13 @@ export default function Page() {
             삭제
           </button>
 
-          <Link href="/admin/courses/new">
+          <Link
+            href="/admin/courses/new"
+            onClick={(e) => {
+              e.preventDefault();
+              attemptNavigation('/admin/courses/new');
+            }}
+          >
             <button className="w-[112px] h-[60px] bg-pace-gray-700 !text-pace-lg text-pace-white-500 rounded-[4px] flex items-center justify-center">
               추가
             </button>
