@@ -10,19 +10,18 @@ import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
-const COURSE_TITLE = 'From Resume Writing to Interview Prep, All in One!';
+const COURSE_TITLE = 'From Differentiated Resumes to Confident Interviews';
 const COURSE_DESC =
-  'Analyze the structure and expressions North American recruiters look for in developer resumes, based on actual successful resumes!';
+  'Learn how recruiters evaluate resumes and interviews, based on real hiring examples from Canadian companies.';
+const LONG_DESCRIPTION = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
 
-const LONG_DESCRIPTION = `To get a job as a developer in North America, the ability to read and understand job postings is just as important as coding skills. Especially these days, as development productivity increases thanks to AI, the number of developer job postings in North America has decreased by about 35% over the past five years. As a result, companies are looking more carefully for candidates who truly understand the position.
-
-If you were unsure how to read and prepare for North American job postings, which are slightly different from those in Korea, join us as we look at everything from job posting analysis to reflecting it in your resume through the English resume of a Pacemaker developer who was finally accepted by a Canadian company!`;
+If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
 const TITLE =
-  'The Standard for North American Employment: From Differentiated Resumes to Job-Winning Interviews';
+  'From Differentiated Resumes to Confident Interviews';
 
 const DETAIL_TITLE =
-  'Preparing Step-by-Step for North American Developer Jobs: From Differentiated Resumes to Interviews';
+  'Step by Step: From a Strong Developer Resume to Interviews';
 
 const COURSE_THUMBNAILS = [
   '/img/course_image1.png',
@@ -46,7 +45,7 @@ async function main() {
     process.env.DATABASE_URL?.includes('pooler.supabase.com');
 
   if (isSupabase) {
-    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜁니다.');
+    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜅니다.');
   } else {
     console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
     await prisma.video.deleteMany({});
@@ -68,7 +67,7 @@ async function main() {
       name: 'Raphael. Lee',
       profileImage: '/img/instructor-image.png',
       description:
-        'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+        'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
         { period: '2019 ~', position: 'Managing Director at Pacemaker' },
         {
@@ -102,7 +101,7 @@ async function main() {
         title: TITLE,
         courseTitle: COURSE_TITLE,
         description: LONG_DESCRIPTION,
-        promoText: 'Selected by Canadian Tech Company OOO',
+        promoText: 'Chosen by Professionals',
         summary: COURSE_DESC,
         detailTitle: DETAIL_TITLE,
         price: '2800',
