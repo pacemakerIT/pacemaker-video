@@ -9,7 +9,7 @@ export default function CoursesPage() {
         title={
           'Build a strong foundation\nfor your career abroad with Pacemaker'
         }
-        buttonText="Explore Courses"
+        buttonText="Explore courses"
         height={'h-[370px]'}
         gradientColors={{
           start: '#A8DBFF60',
