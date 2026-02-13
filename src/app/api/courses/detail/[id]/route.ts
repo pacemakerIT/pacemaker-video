@@ -13,7 +13,7 @@ export async function GET(
     const courseData = await prisma.course.findUnique({
       where: { id },
       include: {
-        instructor: true,
+        instructors: true,
         videos: true,
         sectionsRel: {
           include: {
@@ -102,7 +102,8 @@ export async function GET(
         category: relatedCourse.category || 'GENERAL',
         type: 'course',
         thumbnail: relatedCourse.backgroundImage
-      }))
+      })),
+      instructors: courseData.instructors || []
     };
 
     return NextResponse.json(
@@ -110,7 +111,7 @@ export async function GET(
         success: true,
         data: {
           course,
-          instructor: course.instructor
+          instructors: course.instructors
         }
       },
       { status: 200 }
