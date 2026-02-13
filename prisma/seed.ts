@@ -3,6 +3,7 @@ import {
   ItemType,
   PrismaClient,
   DocumentCategory,
+  WorkshopCategory,
   TargetAudienceType
 } from '@prisma/client';
 import { randomUUID } from 'crypto';
@@ -407,6 +408,27 @@ async function main() {
     }
   }
 
+  // 워크샵 카테고리에 데이터 추가
+  const categories = Object.values(WorkshopCategory);
+
+  // 2. 현재 DB에 있는 모든 Workshop 조회
+  const workshops = await prisma.workshop.findMany({
+    select: { id: true }
+  });
+
+  console.log(`${workshops.length}개의 데이터를 업데이트 중...`);
+
+  // 3. 루프를 돌며 랜덤 카테고리 할당
+  for (const workshop of workshops) {
+    const randomCategory =
+      categories[Math.floor(Math.random() * categories.length)];
+
+    await prisma.workshop.update({
+      where: { id: workshop.id },
+      data: {
+        category: randomCategory
+      }
+    });
   // 6) Create Mock Reviews for Courses
   console.log('Creating mock reviews...');
   const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
@@ -464,3 +486,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+}
