@@ -256,6 +256,7 @@ model Course {
   promoText       String? // Hero Left Small Subtitle
   summary         String? // Hero Card Description (short text)
   detailTitle     String? // Content Section Header
+  isPublic        Boolean @default(false)
 
 
   instructorId String   @db.Uuid
