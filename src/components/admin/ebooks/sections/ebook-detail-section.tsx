@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
@@ -18,11 +19,8 @@ type Props = {
   setProcessContent: (v: string) => void;
   price: string;
   setPrice: (v: string) => void;
-  thumbnail: File | null;
-  setThumbnail: (file: File | null) => void;
   thumbnailUrl: string;
   setThumbnailUrl: (v: string) => void;
-  setFile: (file: File | null) => void;
   fileUrl: string;
   setFileUrl: (v: string) => void;
   errors?: EbookFormErrors;
@@ -39,15 +37,78 @@ export default function EbookDetailSection({
   setProcessContent,
   price,
   setPrice,
-  thumbnail,
-  setThumbnail,
   thumbnailUrl,
   setThumbnailUrl,
-  setFile,
   fileUrl,
   setFileUrl,
   errors
 }: Props) {
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [fileUploading, setFileUploading] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  // 파일 선택 즉시 업로드 → URL 저장
+  const uploadToServer = async (
+    file: File,
+    onSuccess: (url: string) => void,
+    onError?: (msg: string) => void
+  ) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch('/api/ebooks/upload-file', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+
+    if (res.ok && data.url) {
+      onSuccess(data.url);
+    } else {
+      onError?.(data.error || '업로드에 실패했습니다.');
+    }
+  };
+
+  const handleThumbnailChange = async (file: File | null) => {
+    if (!file) {
+      setThumbnailUrl('');
+      return;
+    }
+    setThumbnailUploading(true);
+    try {
+      await uploadToServer(file, setThumbnailUrl);
+    } catch {
+      // noop
+    } finally {
+      setThumbnailUploading(false);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFileUploading(true);
+    setFileUploadError(null);
+    setUploadedFileName(null);
+
+    try {
+      await uploadToServer(
+        file,
+        (url) => {
+          setFileUrl(url);
+          setUploadedFileName(file.name);
+        },
+        (msg) => setFileUploadError(msg)
+      );
+    } catch {
+      setFileUploadError('네트워크 오류가 발생했습니다.');
+    } finally {
+      setFileUploading(false);
+    }
+  };
+
   return (
     <>
       {/* 전자책 제목 */}
@@ -131,15 +192,24 @@ export default function EbookDetailSection({
                   file:bg-pace-gray-100 file:text-pace-gray-700
                   hover:file:bg-pace-gray-200
                 "
-              onChange={(e) => {
-                const f = e.target.files?.[0] || null;
-                setFile(f);
-                if (f) setFileUrl(f.name);
-              }}
+              disabled={fileUploading}
+              onChange={handleFileChange}
             />
+            {fileUploading && (
+              <span className="text-sm text-pace-gray-500 whitespace-nowrap">
+                업로드 중...
+              </span>
+            )}
           </div>
-          {fileUrl && (
-            <p className="text-sm text-gray-500 mt-1">현재 파일: {fileUrl}</p>
+          {(uploadedFileName || fileUrl) && !fileUploading && (
+            <p className="text-sm text-pace-blue-600 mt-1 truncate">
+              ✓ {uploadedFileName ?? fileUrl}
+            </p>
+          )}
+          {fileUploadError && (
+            <p className="text-sm text-pace-orange-500 mt-1">
+              {fileUploadError}
+            </p>
           )}
           <ErrorText message={errors?.file} />
         </div>
@@ -178,15 +248,14 @@ export default function EbookDetailSection({
           <RequiredMark />
         </label>
         <div className="flex flex-col gap-2 flex-1">
+          {thumbnailUploading && (
+            <p className="text-sm text-pace-gray-500">업로드 중...</p>
+          )}
           <ImageUploadInput
-            value={thumbnail}
+            value={null}
             imageUrl={thumbnailUrl}
             placeholder="파일 선택"
-            onChange={(file) => {
-              setThumbnail(file);
-              if (file) setThumbnailUrl(URL.createObjectURL(file));
-              else setThumbnailUrl('');
-            }}
+            onChange={handleThumbnailChange}
           />
           <ErrorText message={errors?.thumbnail} />
         </div>

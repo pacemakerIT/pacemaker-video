@@ -95,6 +95,17 @@ export async function POST(req: Request) {
           });
         }
         break;
+      case 'Document':
+        if (recordId && recordId.trim() !== '') {
+          updatedRecord = await prisma.document.update({
+            where: { id: recordId },
+            data: { [column]: imageUrl }
+          });
+        } else {
+          // recordId 없이 URL만 반환 (ebook 신규 등록 시)
+          updatedRecord = null;
+        }
+        break;
       default:
         return NextResponse.json(
           { error: 'Invalid table name' },
