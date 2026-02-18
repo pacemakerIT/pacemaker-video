@@ -448,55 +448,55 @@ async function main() {
         category: randomCategory
       }
     });
-  }
-  // 6) Create Mock Reviews for Courses
-  console.log('Creating mock reviews...');
-  const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
-  const courses = await prisma.course.findMany();
+    // 6) Create Mock Reviews for Courses
+    console.log('Creating mock reviews...');
+    const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
+    const courses = await prisma.course.findMany();
 
-  const reviewContents = [
-    {
-      rating: 5,
-      content:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
-    },
-    {
-      rating: 4.5,
-      content:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
-    },
-    {
-      rating: 5,
-      content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
-    }
-  ];
+    const reviewContents = [
+      {
+        rating: 5,
+        content:
+          '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+      },
+      {
+        rating: 4.5,
+        content:
+          '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+      },
+      {
+        rating: 5,
+        content:
+          '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+      }
+    ];
 
-  if (users.length > 0 && courses.length > 0) {
-    for (const course of courses) {
-      // Add 3 reviews per course to match mock data count
-      for (let i = 0; i < 3; i++) {
-        const user = users[i % users.length]; // Cycle through users
-        const reviewData = reviewContents[i % reviewContents.length];
+    if (users.length > 0 && courses.length > 0) {
+      for (const course of courses) {
+        // Add 3 reviews per course to match mock data count
+        for (let i = 0; i < 3; i++) {
+          const user = users[i % users.length]; // Cycle through users
+          const reviewData = reviewContents[i % reviewContents.length];
 
-        await prisma.review.create({
-          data: {
-            userId: user.id,
-            courseId: course.id,
-            rating: reviewData.rating,
-            content: reviewData.content,
-            // Random date within last 3 months
-            createdAt: new Date(
-              Date.now() - Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000)
-            )
-          }
-        });
+          await prisma.review.create({
+            data: {
+              userId: user.id,
+              courseId: course.id,
+              rating: reviewData.rating,
+              content: reviewData.content,
+              // Random date within last 3 months
+              createdAt: new Date(
+                Date.now() -
+                  Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000)
+              )
+            }
+          });
+        }
       }
     }
-  }
 
-  console.log('🎉 Seed data created successfully!');
-}
+    console.log('🎉 Seed data created successfully!');
+  }
 
 main()
   .catch((e) => {
@@ -506,3 +506,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+}

@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  getEbooks,
+  deleteEbook,
+  updateEbookStatuses,
+  EbookWithStats
+} from '@/lib/actions/ebook-actions';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 
@@ -24,7 +30,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 
 type Row = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   price: number;
@@ -38,6 +44,12 @@ type Row = {
 
 const CATEGORY_MAP: Record<string, string> = {
   TOTAL: '전체 카테고리',
+  MARKETING: '마케팅',
+  IT: 'IT/개발',
+  DESIGN: '디자인',
+  PUBLIC: '공공',
+  ACCOUNTING: '회계',
+  SERVICE: '서비스',
   INTERVIEW: '인터뷰',
   RESUME: '이력서',
   NETWORKING: '네트워킹'
@@ -47,15 +59,30 @@ const CATEGORY_MAP: Record<string, string> = {
 function VisualRow({
   row,
   index,
-  toggleRow
+  toggleRow,
+  onDelete
 }: {
   row: Row;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
+  toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
+  onDelete?: (id: string) => void;
 }) {
   const [value, setValue] = useState(
     row.status === '공개중' ? 'public' : 'private'
   );
+
+  useEffect(() => {
+    setValue(row.status === '공개중' ? 'public' : 'private');
+  }, [row.status]);
+
+  const handleStatusChange = (newValue: string) => {
+    setValue(newValue);
+    toggleRow(
+      row.id,
+      row.selected,
+      newValue === 'public' ? '공개중' : '비공개'
+    );
+  };
 
   const {
     attributes,
@@ -83,7 +110,7 @@ function VisualRow({
       <div className="w-8">
         <Checkbox
           checked={row.selected}
-          onCheckedChange={(checked) => toggleRow(row.id, !!checked)}
+          onCheckedChange={(checked) => toggleRow(row.id, !!checked, undefined)}
           className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
         />
       </div>
@@ -133,7 +160,7 @@ function VisualRow({
       <div className="w-32">
         <PaceSelect
           value={value}
-          onChange={setValue}
+          onChange={handleStatusChange}
           width="w-[124px]"
           options={[
             { value: 'public', label: '공개' },
@@ -157,7 +184,10 @@ function VisualRow({
             </button>
           </Link>
           {/* Delete Button */}
-          <button className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={() => onDelete?.(row.id)}
+            className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center hover:bg-gray-50"
+          >
             삭제
           </button>
         </div>
@@ -184,68 +214,91 @@ function VisualRow({
 export default function AdminEbooksPage() {
   const [categoryFilter, setCategoryFilter] = useState('TOTAL');
 
-  // Mock Data
-  const [rows, setRows] = useState<Row[]>([
-    {
-      id: 1,
-      category: '네트워킹',
-      thumbnail: '/img/course_image1.png', // Ensure this image exists, or use a placeholder
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      description:
-        '이것은 긴 설명 텍스트입니다. UI에서 2줄 이상이 되면 말줄임표(...)로 표시되어야 합니다. 확인을 위해 텍스트를 아주 길게 작성하고 있습니다. 강의 내용에 대한 상세한 설명이 여기에 들어갑니다. 사용자가 내용을 파악할 수 있도록 충분한 정보를 제공하지만, 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 아무랜덤 단어가 들어갑니다. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 리스트 뷰에서는 공간 절약을 위해 잘려서 보여야 합니다. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요. 줄바꿈 처리가 잘 되는지 확인해 보세요.',
-      price: 999,
-      purchaseCount: 123,
-      likes: 999,
-      status: '공개중',
-      selected: true
-    },
-    {
-      id: 2,
-      category: '네트워킹',
-      thumbnail: '/img/course_image1.png',
-      title: '자기소개서 작성 및 면접 준비까지 하나로! (2)',
-      description:
-        '강의 내용입니다. 강의 내용입니다. 강의 내용입니다. 강의 내용입니다.',
-      price: 999,
-      purchaseCount: 123,
-      likes: 999,
-      status: '공개중',
-      selected: true
-    },
-    {
-      id: 3,
-      category: '네트워킹',
-      thumbnail: '/img/course_image1.png',
-      title: '자기소개서 작성 및 면접 준비까지 하나로! (3)',
-      description: '강의 내용입니다...',
-      price: 999,
-      purchaseCount: 123,
-      likes: 999,
-      status: '공개중',
-      selected: true
-    },
-    {
-      id: 4,
-      category: '네트워킹',
-      thumbnail: '/img/course_image1.png',
-      title: '비공개 테스트 항목',
-      description: '이것은 비공개 항목입니다.',
-      price: 500,
-      purchaseCount: 0,
-      likes: 5,
-      status: '비공개',
-      selected: false
+  // State to track rows
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const documents = await getEbooks();
+      const mappedRows: Row[] = documents.map((doc: EbookWithStats) => ({
+        id: doc.id,
+        category: doc.category || '',
+        thumbnail: doc.thumbnail || '/img/ebook-default.png',
+        title: doc.title || '제목 없음',
+        description: doc.description || '',
+        price: doc.price || 0,
+        purchaseCount: doc.purchaseCount || 0,
+        likes: doc.likes || 0,
+        status: doc.isPublic ? '공개중' : '비공개',
+        selected: false
+      }));
+      setRows(mappedRows);
+    } catch (error) {
+      console.error('Failed to fetch ebooks:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleSave = async () => {
+    // Identify modified statuses
+    const updates = rows.map((r) => ({
+      id: r.id,
+      isPublic: r.status === '공개중'
+    }));
+
+    try {
+      await updateEbookStatuses(updates);
+      alert('저장되었습니다.');
+      fetchData(); // Refresh
+    } catch (error) {
+      console.error('Save failed:', error);
+      alert('저장에 실패했습니다.');
+    }
+  };
+
+  const handleDelete = async (id?: string) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      if (id) {
+        await deleteEbook(id);
+      } else {
+        // Batch delete
+        const selectedIds = rows.filter((r) => r.selected).map((r) => r.id);
+        if (selectedIds.length === 0) return;
+        await Promise.all(selectedIds.map((sid) => deleteEbook(sid)));
+      }
+      fetchData();
+    } catch (error) {
+      console.error('Delete failed:', error);
+      alert('삭제에 실패했습니다.');
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
 
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean, newStatus?: string) => {
     setRows((prev) =>
-      prev.map((row) => (row.id === id ? { ...row, selected: checked } : row))
+      prev.map((row) => {
+        if (row.id === id) {
+          return {
+            ...row,
+            selected: checked,
+            status: newStatus !== undefined ? newStatus : row.status
+          };
+        }
+        return row;
+      })
     );
   };
 
@@ -266,9 +319,14 @@ export default function AdminEbooksPage() {
     if (categoryFilter === 'TOTAL') return true;
     return (
       CATEGORY_MAP[categoryFilter] === row.category ||
-      row.category === categoryFilter
+      row.category === categoryFilter ||
+      (categoryFilter !== 'TOTAL' && row.category?.includes(categoryFilter))
     );
   });
+
+  if (loading) {
+    return <div className="p-10">Loading...</div>;
+  }
 
   return (
     <div className="p-10">
@@ -276,7 +334,10 @@ export default function AdminEbooksPage() {
       <div className="flex justify-between pb-10">
         <h1 className="text-pace-3xl font-bold">전자책 관리</h1>
         <div className="flex gap-2">
-          <button className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded">
+          <button
+            onClick={handleSave}
+            className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded hover:bg-pace-orange-900 transition-colors"
+          >
             저장
           </button>
         </div>
@@ -309,9 +370,12 @@ export default function AdminEbooksPage() {
             width="w-[145px]"
             options={[
               { value: 'TOTAL', label: '전체 카테고리' },
-              { value: 'INTERVIEW', label: '인터뷰' },
-              { value: 'RESUME', label: '이력서' },
-              { value: 'NETWORKING', label: '네트워킹' }
+              { value: 'MARKETING', label: '마케팅' },
+              { value: 'IT', label: 'IT/개발' },
+              { value: 'DESIGN', label: '디자인' },
+              { value: 'PUBLIC', label: '공공' },
+              { value: 'ACCOUNTING', label: '회계' },
+              { value: 'SERVICE', label: '서비스' }
             ]}
           />
         </div>
@@ -351,6 +415,7 @@ export default function AdminEbooksPage() {
                     row={row}
                     index={index}
                     toggleRow={toggleRow}
+                    onDelete={handleDelete}
                   />
                 );
               })}
@@ -360,7 +425,10 @@ export default function AdminEbooksPage() {
 
         {/* Footer Actions */}
         <div className="flex items-center gap-2 justify-end pb-6">
-          <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={() => handleDelete()}
+            className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center hover:bg-gray-50 transition-colors"
+          >
             삭제
           </button>
 
