@@ -111,6 +111,9 @@ model Document {
   visualTitle1   String?
   visualTitle2   String?
 
+  processTitle   String?
+  processContent String?
+
   tableOfContents      Json?
   targetAudienceTypes  TargetAudienceType[] @default([])
   recommendedLinks     Json?
