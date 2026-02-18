@@ -6,6 +6,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const SUPABASE_URL_PREFIX = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+export function toProxyUrl(url: string): string {
+  if (!SUPABASE_URL_PREFIX || !url.startsWith(SUPABASE_URL_PREFIX)) {
+    return url;
+  }
+  return `/api/images/proxy?fileName=${encodeURIComponent(url.split('/').pop() || '')}`;
+}
+
 export function resolveImageSrc({
   thumbnail,
   imageUrl,
