@@ -83,6 +83,8 @@ model Document {
   thumbnail           String?
   visualTitle1        String?
   visualTitle2        String?
+  processTitle        String?
+  processContent      String?
   recommendedLinks    Json?
   targetAudienceTypes TargetAudienceType[] @default([])
 }
