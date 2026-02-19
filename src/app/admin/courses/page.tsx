@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 import {
   DndContext,
@@ -46,12 +47,14 @@ function VisualRow({
   row,
   index,
   toggleRow,
-  onStatusChange
+  onStatusChange,
+  onDelete
 }: {
   row: Row;
   index: number;
   toggleRow: (id: string, checked: boolean) => void;
   onStatusChange: (id: string, status: string) => void;
+  onDelete: (id: string) => void;
 }) {
   const { attemptNavigation } = useNavigationBlocker();
   const value = row.status === '공개중' ? 'public' : 'private';
@@ -164,7 +167,6 @@ function VisualRow({
       <div className="flex items-center gap-6">
         {/* 버튼들 */}
         <div className="flex gap-2">
-          {/* TODO: DB 완료 후 수정 ID 추가 */}
           <Link
             href={`/admin/courses/${row.id}`}
             onClick={(e) => {
@@ -176,8 +178,11 @@ function VisualRow({
               수정
             </button>
           </Link>
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
+          {/* 삭제 버튼 */}
+          <button
+            onClick={() => onDelete(row.id)}
+            className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
         </div>
@@ -202,6 +207,13 @@ export default function Page() {
   const [categoryFilter, setCategoryFilter] = useState('TOTAL');
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Confirm Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | undefined>(
+    undefined
+  );
+  const [deleteMessage, setDeleteMessage] = useState('');
 
   const { isBlocked, setBlocked, attemptNavigation } = useNavigationBlocker();
 
@@ -260,6 +272,56 @@ export default function Page() {
       prev.map((row) => (row.id === id ? { ...row, status } : row))
     );
     setBlocked(true);
+  };
+
+  // 삭제 버튼 클릭 시 모달 오픈
+  const handleDeleteClick = (id?: string) => {
+    const targetIds = id
+      ? [id]
+      : rows.filter((r) => r.selected).map((r) => r.id);
+
+    if (targetIds.length === 0) {
+      toast.info('삭제할 항목을 선택해주세요.');
+      return;
+    }
+
+    setDeleteTargetId(id); // id가 없으면 undefined (일괄 삭제)
+    setDeleteMessage(
+      id
+        ? '선택한 강의를 정말 삭제하시겠습니까?'
+        : `선택한 ${targetIds.length}개의 강의를 정말 삭제하시겠습니까?`
+    );
+    setDeleteModalOpen(true);
+  };
+
+  // 실제 삭제 로직 (모달 확인 시 실행)
+  const executeDelete = async () => {
+    const targetIds = deleteTargetId
+      ? [deleteTargetId]
+      : rows.filter((r) => r.selected).map((r) => r.id);
+
+    try {
+      const res = await fetch('/api/courses', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: targetIds })
+      });
+
+      if (res.ok) {
+        toast.success(
+          `${targetIds.length}개의 강의가 성공적으로 삭제되었습니다.`
+        );
+        await fetchCourses();
+      } else {
+        const error = await res.json();
+        toast.error(`삭제 실패: ${error.error}`);
+      }
+    } catch {
+      toast.error('삭제 중 오류가 발생했습니다.');
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTargetId(undefined);
+    }
   };
 
   const handleSave = async () => {
@@ -397,6 +459,7 @@ export default function Page() {
                   index={index}
                   toggleRow={toggleRow}
                   onStatusChange={handleStatusChange}
+                  onDelete={handleDeleteClick}
                 />
               ))}
             </SortableContext>
@@ -405,8 +468,11 @@ export default function Page() {
 
         {/* 삭제, 추가 버튼들 */}
         <div className="flex items-center gap-2 justify-end pb-6">
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
+          {/* 삭제 버튼 */}
+          <button
+            onClick={() => handleDeleteClick()}
+            className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
 
@@ -423,6 +489,16 @@ export default function Page() {
           </Link>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="강의 삭제"
+        description={deleteMessage}
+        onConfirm={executeDelete}
+        confirmText="삭제"
+        cancelText="취소"
+      />
     </div>
   );
 }
