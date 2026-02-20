@@ -1,3 +1,4 @@
+// Main landing page with visual banners and course lists
 import ListHeader from '@/components/common/list-header';
 import { Button } from '@/components/ui/button';
 import WorkshopList from '@/components/features/workshops/workshop-list-horz';
@@ -5,27 +6,59 @@ import MainReviewContainer from '@/components/main-review-container';
 import EbookList from '@/components/features/ebook/ebook-list-horz';
 import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 import CourseList from '@/components/features/course/course-list-horz';
+import prisma from '@/lib/prisma';
+
+export const revalidate = 0; // Ensure fresh data on every request
 
 export default async function Home() {
-  return (
-    <div className="w-screen flex gap-20 flex-col bg-[#FBF9f6]">
-      <ListHeader
-        slides={[
+  const mainVisuals = await prisma.mainVisual.findMany({
+    where: {
+      isPublic: true,
+      OR: [
+        {
+          startDate: { lte: new Date() },
+          endDate: { gte: new Date() }
+        },
+        {
+          startDate: null,
+          endDate: null
+        }
+      ]
+    },
+    orderBy: { orderIndex: 'asc' }
+  });
+
+  const slides =
+    mainVisuals.length > 0
+      ? mainVisuals.map((visual) => ({
+          title: visual.title || '',
+          subtitle: visual.description || '',
+          buttonText: visual.linkName || 'Explore programs',
+          route: visual.link || '/courses'
+        }))
+      : [
           {
             title:
               'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
             subtitle:
               'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
-            buttonText: 'Explore programs'
+            buttonText: 'Explore programs',
+            route: '/courses'
           },
           {
             title: 'Ready to take the next step?'
           },
           {
             title: 'Your future career starts here.',
-            buttonText: 'Get Started'
+            buttonText: 'Get Started',
+            route: '/courses'
           }
-        ]}
+        ];
+
+  return (
+    <div className="w-screen flex gap-20 flex-col bg-[#FBF9f6]">
+      <ListHeader
+        slides={slides}
         // autoPlayInterval={5000} // 5초마다 자동 전환
         height={'h-[502px]'}
         gradientColors={{
