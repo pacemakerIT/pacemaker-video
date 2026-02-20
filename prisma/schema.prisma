@@ -201,6 +201,7 @@ model Course {
   videos              Video[]              @relation("CourseToVideos")
   sectionsRel         Section[]
   reviews             Review[]
+  isPublic            Boolean              @default(false)
 }
 
 model Review {
