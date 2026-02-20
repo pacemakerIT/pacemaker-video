@@ -16,14 +16,16 @@ export default async function Home() {
               'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
             subtitle:
               'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
-            buttonText: 'Explore programs'
+            buttonText: 'Explore programs',
+            route: '/courses'
           },
           {
             title: 'Ready to take the next step?'
           },
           {
             title: 'Your future career starts here.',
-            buttonText: 'Get Started'
+            buttonText: 'Get Started',
+            route: '/courses'
           }
         ]}
         // autoPlayInterval={5000} // 5초마다 자동 전환
