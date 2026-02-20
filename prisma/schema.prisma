@@ -15,7 +15,6 @@ model User {
   email                 String                 @unique
   name                  String?
   image                 String?
-  nickname              String?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   isSubscribed          Boolean                @default(false)
@@ -24,6 +23,7 @@ model User {
   clerkId               String                 @unique
   roleId                String                 @default("USER")
   interest              Interest[]
+  nickname              String?
   role                  UserRole               @relation(fields: [roleId], references: [id])
   watchedVideos         WatchedVideo[]
   orders                Order[]
@@ -59,9 +59,9 @@ model Video {
 model WatchedVideo {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @db.Uuid
-  videoId   String   @db.Uuid
   watchedAt DateTime @default(now())
   progress  Float
+  videoId   String   @db.Uuid
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
@@ -69,35 +69,25 @@ model WatchedVideo {
 }
 
 model Document {
-  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId  String            @unique
-  title       String?
-  description String?
-  uploadDate  DateTime          @default(now())
-  price       Float?
-  bucketUrl   String
-  category    DocumentCategory?
-  thumbnail   String?
-
-  isPublic       Boolean        @default(false)
-
-  // New fields for UI
-  subTitle       String?
-  subDescription String?
-  isMain         Boolean        @default(false)
-  visualTitle1   String?
-  visualTitle2   String?
-
-  tableOfContents      Json?
-  targetAudienceTypes  TargetAudienceType[] @default([])
-  recommendedLinks     Json?
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId          String               @unique
+  title               String?
+  description         String?
+  uploadDate          DateTime             @default(now())
+  price               Float?
+  bucketUrl           String
+  category            DocumentCategory?
+  isMain              Boolean              @default(false)
+  isPublic            Boolean              @default(false)
+  subDescription      String?
+  subTitle            String?
+  tableOfContents     Json?
+  thumbnail           String?
+  visualTitle1        String?
+  visualTitle2        String?
+  recommendedLinks    Json?
+  targetAudienceTypes TargetAudienceType[] @default([])
 }
-
-/**
- * ==========================
- * WORKSHOP
- * ===========================
- */
 
 model Workshop {
   id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -196,18 +186,18 @@ model Course {
   price               String?
   rating              Float?
   reviewCount         Int?
-  category            CourseCategory?
   duration            String?
   level               String?
   language            String?
   backgroundImage     String?
-  promoText           String?
-  summary             String?
-  detailTitle         String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+  category            CourseCategory?
+  detailTitle         String?
+  promoText           String?
+  summary             String?
   targetAudienceTypes TargetAudienceType[]
-  instructors         Instructor[]         @relation("CourseInstructors")
+  instructors         Instructor[]
   videos              Video[]              @relation("CourseToVideos")
   sectionsRel         Section[]
   reviews             Review[]
@@ -229,13 +219,13 @@ model Review {
 }
 
 model Section {
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   courseId    String        @db.Uuid
   title       String
   description String?
   orderIndex  Int
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
   items       SectionItem[] @relation("SectionToItem")
   videos      Video[]       @relation("SectionToVideos")
@@ -244,11 +234,11 @@ model Section {
 }
 
 model SectionItem {
-  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sectionId  String  @db.Uuid
   title      String
   content    String
   orderIndex Int
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   icon       String?
   section    Section @relation("SectionToItem", fields: [sectionId], references: [id], onDelete: Cascade)
 
@@ -274,13 +264,13 @@ model GlobalRelatedItem {
   thumbnail String?
 }
 
-model CourseInstructors {
+model CourseToInstructor {
   A String @db.Uuid
   B String @db.Uuid
 
-  @@id([A, B], map: "_CourseInstructors_AB_pkey")
-  @@index([B], map: "_CourseInstructors_B_index")
-  @@map("_CourseInstructors")
+  @@id([A, B], map: "_CourseToInstructor_AB_pkey")
+  @@index([B], map: "_CourseToInstructor_B_index")
+  @@map("_CourseToInstructor")
 }
 
 enum WorkshopStatus {

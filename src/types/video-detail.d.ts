@@ -55,6 +55,8 @@ export interface Course {
   promoText: string | null;
   summary: string | null;
   detailTitle: string | null;
+  instructorId?: string; // Optional or removed
+  createdAt: string;
   updatedAt: string;
   instructors: Instructor[];
   sections: Section[];
@@ -63,6 +65,7 @@ export interface Course {
   targetAudienceTypes: string[];
   targetAudiences: CourseTargetAudience[];
   relatedCourses: RelatedCourse[];
+  instructors: Instructor[];
 }
 
 export interface RelatedCourse {
@@ -138,7 +141,6 @@ export interface ApiResponse {
   success: boolean;
   data: {
     course: Course;
-    instructor: Instructor | null;
     instructors: Instructor[];
   };
   error?: string;
