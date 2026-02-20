@@ -16,18 +16,20 @@ export const itemCategoryLabel: Record<'en' | 'ko', Record<string, string>> = {
     DESIGN: 'Design',
     PUBLIC: 'Public',
     ACCOUNTING: 'Accounting',
-    SERVICE: 'Service'
+    SERVICE: 'Service',
+    TOTAL: 'All Categories'
   },
   ko: {
-    INTERVIEW: '이력서',
-    RESUME: '인터뷰',
+    INTERVIEW: '인터뷰',
+    RESUME: '이력서',
     NETWORKING: '네트워킹',
     MARKETING: '마케팅',
     IT: 'IT',
     DESIGN: '디자인',
     PUBLIC: '북미 공무원',
     ACCOUNTING: '재무회계',
-    SERVICE: '서비스'
+    SERVICE: '서비스',
+    TOTAL: '전체 카테고리'
   }
 } as const;
 

@@ -1,7 +1,19 @@
+import { MouseEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export function Footer() {
+interface FooterProps {
+  onLinkClick?: (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
+}
+
+export function Footer({ onLinkClick }: FooterProps) {
+  const handleLinkClick =
+    (href: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+      if (onLinkClick) {
+        onLinkClick(e, href);
+      }
+    };
+
   return (
     <footer className="border-t border-pace-orange-800 bg-white py-8 font-sans">
       <div className="container mx-auto max-w-screen-xl px-6 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
@@ -14,15 +26,27 @@ export function Footer() {
             </div>
             <div className="flex space-x-6 text-pace-base font-normal text-pace-black-900 leading-[1]">
               {/* 온라인 강의 */}
-              <Link href="/courses" className="hover:underline">
+              <Link
+                href="/courses"
+                className="hover:underline"
+                onClick={handleLinkClick('/courses')}
+              >
                 온라인 강의
               </Link>
               {/* 전자책 */}
-              <Link href="/ebooks" className="hover:underline">
+              <Link
+                href="/ebooks"
+                className="hover:underline"
+                onClick={handleLinkClick('/ebooks')}
+              >
                 전자책
               </Link>
               {/* 오프라인 워크샵 */}
-              <Link href="workshops" className="hover:underline">
+              <Link
+                href="workshops"
+                className="hover:underline"
+                onClick={handleLinkClick('workshops')}
+              >
                 오프라인 워크샵
               </Link>
             </div>
@@ -35,17 +59,29 @@ export function Footer() {
             <span>pacemaker@gmail.com</span>
             <span>·</span>
             {/* 개인정보 처리방침 */}
-            <Link href="/legal/privacy-policy" className="hover:underline">
+            <Link
+              href="/legal/privacy-policy"
+              className="hover:underline"
+              onClick={handleLinkClick('/legal/privacy-policy')}
+            >
               개인정보 처리방침
             </Link>
             <span>·</span>
             {/* 이용약관 */}
-            <Link href="/legal/terms-of-use" className="hover:underline">
+            <Link
+              href="/legal/terms-of-use"
+              className="hover:underline"
+              onClick={handleLinkClick('/legal/terms-of-use')}
+            >
               이용약관
             </Link>
             <span>·</span>
             {/* 환불정책 */}
-            <Link href="/legal/refund-policy" className="hover:underline">
+            <Link
+              href="/legal/refund-policy"
+              className="hover:underline"
+              onClick={handleLinkClick('/legal/refund-policy')}
+            >
               환불정책
             </Link>
           </div>
@@ -60,6 +96,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-75"
+              onClick={handleLinkClick('https://facebook.com/globalpacemaker')}
             >
               <Image
                 src="/icons/facebook.svg"
@@ -74,6 +111,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-75"
+              onClick={handleLinkClick('https://www.youtube.com/@pacemaker340')}
             >
               <Image
                 src="/icons/youtube.svg"
@@ -88,6 +126,9 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-75"
+              onClick={handleLinkClick(
+                'https://www.instagram.com/pacemaker_career/'
+              )}
             >
               <Image
                 src="/icons/instagram.svg"
