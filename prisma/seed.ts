@@ -87,6 +87,23 @@ async function main() {
     }
   });
 
+  const instructorId2 = randomUUID();
+  await prisma.instructor.upsert({
+    where: { id: instructorId2 },
+    update: {},
+    create: {
+      id: instructorId2,
+      name: 'Sarah Kim',
+      profileImage: '/img/instructor-image.png',
+      description:
+        'Expert in resume writing and career consulting with over 10 years of experience.',
+      careers: [
+        { period: '2020 ~', position: 'Career Consultant' },
+        { period: '2015 ~ 2020', position: 'HR Manager at Tech Corp' }
+      ]
+    }
+  });
+
   // 2) Course 6개 생성
   for (let i = 1; i <= 6; i++) {
     const courseId = randomUUID();
@@ -113,7 +130,9 @@ async function main() {
         level: '중급',
         language: '한국어',
         backgroundImage: thumbnail,
-        instructorId,
+        instructors: {
+          connect: [{ id: instructorId }, { id: instructorId2 }]
+        },
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
 
         sectionsRel: {
@@ -430,7 +449,6 @@ async function main() {
       }
     });
   }
-
   // 6) Create Mock Reviews for Courses
   console.log('Creating mock reviews...');
   const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
