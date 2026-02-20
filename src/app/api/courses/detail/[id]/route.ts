@@ -102,7 +102,8 @@ export async function GET(
         category: relatedCourse.category || 'GENERAL',
         type: 'course',
         thumbnail: relatedCourse.backgroundImage
-      }))
+      })),
+      instructors: courseData.instructors || []
     };
 
     return NextResponse.json(
@@ -110,8 +111,7 @@ export async function GET(
         success: true,
         data: {
           course,
-          instructor: courseData.instructors[0] || null,
-          instructors: courseData.instructors
+          instructors: course.instructors
         }
       },
       { status: 200 }
