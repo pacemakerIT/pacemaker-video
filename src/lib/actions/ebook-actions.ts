@@ -16,10 +16,10 @@ export type EbookData = {
   processContent: string;
   price: string;
   thumbnailUrl: string;
-  fileUrl: string; // bucketUrl
+  fileUrl: string;
   visualTitle: string;
   visualTitle2: string;
-  recommended: string[]; // keys for TargetAudienceType
+  recommended: string[];
   sections: {
     title: string;
     content: string;
@@ -90,9 +90,9 @@ export async function createEbook(data: EbookData) {
 
     await prisma.document.create({
       data: {
-        documentId: `ebook-${Date.now()}`, // Simple ID generation or use uuid from db
+        documentId: `ebook-${Date.now()}`,
         title,
-        description: intro, // intro -> description
+        description: intro,
         category: categoryEnum,
         isPublic: isPublic === 'public',
         isMain: showOnMain,
@@ -104,8 +104,8 @@ export async function createEbook(data: EbookData) {
         visualTitle1: visualTitle,
         visualTitle2: visualTitle2,
         targetAudienceTypes,
-        tableOfContents: sections, // Store as JSON
-        recommendedLinks: links // Store as JSON
+        tableOfContents: sections,
+        recommendedLinks: links
       }
     });
 

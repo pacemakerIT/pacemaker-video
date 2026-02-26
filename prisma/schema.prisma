@@ -96,12 +96,6 @@ model Document {
   recommendedLinks     Json?
 }
 
-/**
- * ==========================
- * WORKSHOP
- * ===========================
- */
-
 model Workshop {
   id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String
