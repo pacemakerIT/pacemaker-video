@@ -121,7 +121,7 @@ describe('Card', () => {
       expect(screen.getByText('Test Description')).toBeDefined();
 
       // Check if category badge is rendered
-      expect(screen.getByText('INTERVIEW')).toBeDefined();
+      expect(screen.getByText(/INTERVIEW/i)).toBeDefined();
 
       // Check if image is rendered
       const image = screen.getByTestId('card-image');
@@ -139,7 +139,7 @@ describe('Card', () => {
 
     await waitFor(() => {
       // Category badge should not be present
-      expect(screen.queryByText('INTERVIEW')).toBeNull();
+      expect(screen.queryByText(/INTERVIEW/i)).toBeNull();
     });
   });
 

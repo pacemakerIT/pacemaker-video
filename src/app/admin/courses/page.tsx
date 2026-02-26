@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { itemCategoryLabel } from '@/constants/labels';
 
 import {
   DndContext,
@@ -23,8 +24,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+const CATEGORY_LABELS = itemCategoryLabel.en;
+
 type Row = {
-  id: number;
+  id: string;
   title: string; // 강의제목
   description: string; // 강의내용
   price: string; // 금액
@@ -33,7 +36,7 @@ type Row = {
   status: '공개중' | '비공개' | string;
   thumbnail: string;
   selected: boolean; // 선택 여부 필드 추가
-  category: string; // 카테고리 필드 추가
+  category: string; // 카테고리 필드 추가 (Enum 키값)
 };
 
 // Sortable Row
@@ -44,7 +47,7 @@ function VisualRow({
 }: {
   row: Row;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
+  toggleRow: (id: string, checked: boolean) => void;
 }) {
   const [value, setValue] = useState(
     row.status === '공개중' ? 'public' : 'private'
@@ -88,7 +91,7 @@ function VisualRow({
 
       {/* 카테고리 */}
       <div className="w-32 text-pace-stone-500 text-pace-sm text-center">
-        {row.category}
+        {CATEGORY_LABELS[row.category] || row.category}
       </div>
 
       {/* 썸네일 */}
@@ -149,7 +152,7 @@ function VisualRow({
         {/* 버튼들 */}
         <div className="flex gap-2">
           {/* TODO: DB 완료 후 수정 ID 추가 */}
-          <Link href="/admin/courses/1">
+          <Link href={`/admin/courses/${row.id}`}>
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>
@@ -179,25 +182,9 @@ function VisualRow({
 export default function Page() {
   const [categoryFilter, setCategoryFilter] = useState('TOTAL');
 
-  // 한글 매핑 함수 (CourseHeader와 동일 스타일)
-  const getKoreanCategory = (categoryName: string) => {
-    switch (categoryName) {
-      case 'TOTAL':
-        return '전체 카테고리';
-      case 'INTERVIEW':
-        return '인터뷰';
-      case 'RESUME':
-        return '이력서';
-      case 'NETWORKING':
-        return '네트워킹';
-      default:
-        return categoryName;
-    }
-  };
-
   const [rows, setRows] = useState<Row[]>([
     {
-      id: 1,
+      id: '1',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -207,10 +194,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '네트워킹'
+      category: 'NETWORKING'
     },
     {
-      id: 2,
+      id: '2',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -220,10 +207,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '인터뷰'
+      category: 'INTERVIEW'
     },
     {
-      id: 3,
+      id: '3',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -233,10 +220,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '이력서'
+      category: 'RESUME'
     },
     {
-      id: 4,
+      id: '4',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -246,10 +233,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '네트워킹'
+      category: 'NETWORKING'
     },
     {
-      id: 5,
+      id: '5',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -259,10 +246,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '인터뷰'
+      category: 'INTERVIEW'
     },
     {
-      id: 6,
+      id: '6',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -272,10 +259,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '네트워킹'
+      category: 'NETWORKING'
     },
     {
-      id: 7,
+      id: '7',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -285,10 +272,10 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '네트워킹'
+      category: 'NETWORKING'
     },
     {
-      id: 8,
+      id: '8',
       title: '자기소개서 작성 및 면접 준비까지 하나로!',
       description:
         '강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.강의 내용입니다.',
@@ -298,7 +285,7 @@ export default function Page() {
       status: '공개중',
       thumbnail: '/img/course_image1.png',
       selected: false,
-      category: '네트워킹'
+      category: 'NETWORKING'
     }
   ]);
 
@@ -308,7 +295,7 @@ export default function Page() {
   );
 
   // 개별 Row 선택 토글
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, selected: checked } : row))
     );
@@ -331,7 +318,7 @@ export default function Page() {
   // 카테고리별로 필터링된 rows
   const filteredRows = rows.filter((row) => {
     if (categoryFilter === 'TOTAL') return true; // 전체 보기
-    return getKoreanCategory(categoryFilter) === row.category;
+    return row.category === categoryFilter;
   });
 
   return (
@@ -371,10 +358,10 @@ export default function Page() {
             onChange={setCategoryFilter}
             width="w-[145px]"
             options={[
-              { value: 'TOTAL', label: '전체 카테고리' },
-              { value: 'INTERVIEW', label: '인터뷰' },
-              { value: 'RESUME', label: '이력서' },
-              { value: 'NETWORKING', label: '네트워킹' }
+              { value: 'TOTAL', label: itemCategoryLabel.en.TOTAL },
+              { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
+              { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
+              { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
             ]}
           />
         </div>
