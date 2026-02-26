@@ -69,24 +69,31 @@ model WatchedVideo {
 }
 
 model Document {
-  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId          String               @unique
-  title               String?
-  description         String?
-  uploadDate          DateTime             @default(now())
-  price               Float?
-  bucketUrl           String
-  category            DocumentCategory?
-  isMain              Boolean              @default(false)
-  isPublic            Boolean              @default(false)
-  subDescription      String?
-  subTitle            String?
-  tableOfContents     Json?
-  thumbnail           String?
-  visualTitle1        String?
-  visualTitle2        String?
-  recommendedLinks    Json?
-  targetAudienceTypes TargetAudienceType[] @default([])
+  id          String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId  String            @unique
+  title       String?
+  description String?
+  uploadDate  DateTime          @default(now())
+  price       Float?
+  bucketUrl   String
+  category    DocumentCategory?
+  thumbnail   String?
+
+  isPublic       Boolean        @default(false)
+
+  // New fields for UI
+  subTitle       String?
+  subDescription String?
+  isMain         Boolean        @default(false)
+  visualTitle1   String?
+  visualTitle2   String?
+
+  processTitle   String?
+  processContent String?
+
+  tableOfContents      Json?
+  targetAudienceTypes  TargetAudienceType[] @default([])
+  recommendedLinks     Json?
 }
 
 model Workshop {

@@ -10,8 +10,10 @@ import EbookDetailSection from './sections/ebook-detail-section';
 import EbookVisualSection from './sections/ebook-visual-section';
 import EbookActionButtons from './sections/ebook-action-buttons';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
+import { createEbook, updateEbook } from '@/lib/actions/ebook-actions';
 
 export type EbookData = {
+  id?: string;
   category: string;
   isPublic: string;
   showOnMain: boolean;
@@ -116,7 +118,22 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       return;
     }
 
-    toast.success('등록 완료!');
+    // Call Server Action
+    const transition = async () => {
+      try {
+        if (initialData?.id) {
+          await updateEbook(initialData.id, ebookData);
+          toast.success('수정 완료!');
+        } else {
+          await createEbook(ebookData);
+          toast.success('등록 완료!');
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('오류가 발생했습니다.');
+      }
+    };
+    transition();
   };
 
   const updateEbookData = <K extends keyof EbookData>(
