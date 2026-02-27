@@ -2,22 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ItemType } from '@prisma/client';
 import { UserRow, UserRole } from '@/types/admin/user';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
-import { getUsers } from './actions';
+import { getUsers, getUserOrders, OrderDetail } from './actions';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 
 function UserTableRow({
   user,
   index,
   toggleRow,
-  onRoleChange
+  onRoleChange,
+  onPurchaseClick
 }: {
   user: UserRow;
   index: number;
   toggleRow: (id: string, checked: boolean) => void;
   onRoleChange: (id: string, role: string) => void;
+  onPurchaseClick: (userId: string, userName: string) => void;
 }) {
   return (
     <div className="flex items-center border-b border-pace-gray-100 text-pace-base text-pace-gray-500 h-[120px] pl-6 gap-x-6">
@@ -91,7 +100,10 @@ function UserTableRow({
       </div>
 
       <div>
-        <button className="w-[104px] h-11 bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
+        <button
+          onClick={() => onPurchaseClick(user.id, user.name)}
+          className="w-[104px] h-11 bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center hover:bg-pace-gray-100"
+        >
           구매내역
         </button>
       </div>
@@ -104,6 +116,12 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
+  const [open, setOpen] = useState(false);
+
+  const [selectedUserOrders, setSelectedUserOrders] = useState<OrderDetail[]>(
+    []
+  );
+  const [selectedUserName, setSelectedUserName] = useState('');
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
@@ -150,6 +168,18 @@ export default function Page() {
   const handleRoleFilterChange = (value: string) => {
     setRoleFilter(value as typeof roleFilter);
     setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  // 구매내역 클릭 핸들러
+  const handlePurchaseClick = async (userId: string, userName: string) => {
+    try {
+      const orders = await getUserOrders(userId);
+      setSelectedUserOrders(orders);
+      setSelectedUserName(userName);
+      setOpen(true);
+    } catch (error) {
+      toast.error(`Failed to fetch orders: ${error}`);
+    }
   };
 
   return (
@@ -223,6 +253,7 @@ export default function Page() {
               index={(currentPage - 1) * ITEMS_PER_PAGE + index}
               toggleRow={toggleRow}
               onRoleChange={handleRoleChange}
+              onPurchaseClick={handlePurchaseClick}
             />
           ))}
         </div>
@@ -283,6 +314,109 @@ export default function Page() {
           </button>
         </div>
       </div>
+
+      {/* Order Details Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          className="w-[760px] p-10 gap-10 text-pace-black-500"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DialogHeader className="justify-between items-center">
+            <DialogTitle className="text-[28px] font-bold">
+              회원 구매내역
+            </DialogTitle>
+          </DialogHeader>
+
+          <div>
+            {selectedUserOrders.length === 0 ? (
+              <p className="text-center text-pace-gray-500 py-8">
+                구매 내역이 없습니다.
+              </p>
+            ) : (
+              <div>
+                {/* User Info */}
+                <div className="pb-4 border-b border-pace-gray-700">
+                  <div className="flex gap-4">
+                    <span className="text-pace-base font-medium text-pace-gray-700">
+                      {selectedUserName}
+                    </span>
+                    <span className="text-pace-base text-pace-stone-500">
+                      {users.find((u) => u.name === selectedUserName)?.email ||
+                        ''}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Orders */}
+                <div className="">
+                  {selectedUserOrders.map((order) => (
+                    <div
+                      key={order.id}
+                      className="flex justify-between space-y-4 py-4 border-b border-pace-gray-200"
+                    >
+                      {/* Order Items */}
+                      <div>
+                        <div className="flex gap-4 text-pace-sm pb-2">
+                          <span className="text-pace-stone-500">
+                            날짜: {order.orderedAt}
+                          </span>
+                          <span className="text-pace-stone-500">
+                            주문번호: {order.id.slice(0, 8)}
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {order.items.map((item, idx) => (
+                            <div
+                              key={idx}
+                              className="flex gap-4 text-pace-base"
+                            >
+                              <span className="w-20 text-pace-gray-700">
+                                {item.itemType === ItemType.COURSE
+                                  ? '온라인 강의'
+                                  : item.itemType === ItemType.VIDEO
+                                    ? '온라인 강의'
+                                    : item.itemType === ItemType.EBOOK
+                                      ? '전자책'
+                                      : item.itemType === ItemType.DOCUMENT
+                                        ? '전자책'
+                                        : item.itemType === ItemType.WORKSHOP
+                                          ? '워크샵'
+                                          : item.itemType}
+                              </span>
+                              <span className="text-pace-gray-700">
+                                {item.itemTitle}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-4 items-center justify-center">
+                        <p className="text-pace-base font-semibold text-pace-gray-700">
+                          ${order.totalAmount.toFixed(2)}
+                        </p>
+                        <p className="text-pace-base font-medium">
+                          {order.status === 'COMPLETED'
+                            ? '결제 완료'
+                            : order.status === 'PENDING'
+                              ? '대기중'
+                              : order.status === 'CANCELLED'
+                                ? '취소됨'
+                                : order.status === 'FAILED'
+                                  ? '실패'
+                                  : order.status === 'REFUNDED'
+                                    ? '환불됨'
+                                    : order.status}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

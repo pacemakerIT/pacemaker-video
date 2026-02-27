@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { itemCategoryLabel } from '@/constants/labels';
 import {
   Select,
   SelectContent,
@@ -25,18 +26,7 @@ export default function CourseHeader({
 }: CourseHeaderProps) {
   // 카테고리 한글 매핑 함수
   const getKoreanCategory = (categoryName: string) => {
-    switch (categoryName) {
-      case 'TOTAL':
-        return '전체';
-      case 'INTERVIEW':
-        return '인터뷰';
-      case 'RESUME':
-        return '이력서';
-      case 'NETWORKING':
-        return '네트워킹';
-      default:
-        return categoryName;
-    }
+    return itemCategoryLabel.en[categoryName.toUpperCase()] || categoryName;
   };
   return (
     <>

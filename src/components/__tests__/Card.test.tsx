@@ -53,18 +53,50 @@ vi.mock('next/link', () => ({
   )
 }));
 
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}));
+
+// Mock @clerk/nextjs
+vi.mock('@clerk/nextjs', () => ({
+  useUser: () => ({
+    isSignedIn: true,
+    user: { id: 'user1' }
+  })
+}));
+
+import { Favorite } from '@/app/context/favorite-context';
+
+// ... (other code)
+
+// Mock useFavoriteContext
+const mockAddFavorite = vi.fn();
+const mockRemoveFavorite = vi.fn();
+const mockFavorites: Favorite[] = [];
+
+vi.mock('@/app/context/favorite-context', () => ({
+  useFavoriteContext: () => ({
+    favorites: mockFavorites,
+    addFavorite: mockAddFavorite,
+    removeFavorite: mockRemoveFavorite
+  })
+}));
+
 describe('Card', () => {
   const mockCard: OnlineCards = {
     id: '1',
     courseTitle: 'Test Course',
     price: 49.99,
-    description: 'Test Description',
+    summary: 'Test Description',
     category: 'INTERVIEW',
     itemId: 'video1',
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
     purchasedVideos: [],
-    itemType: ItemType.VIDEO
+    itemType: ItemType.COURSE
   };
 
   beforeEach(() => {
@@ -89,7 +121,7 @@ describe('Card', () => {
       expect(screen.getByText('Test Description')).toBeDefined();
 
       // Check if category badge is rendered
-      expect(screen.getByText('INTERVIEW')).toBeDefined();
+      expect(screen.getByText(/INTERVIEW/i)).toBeDefined();
 
       // Check if image is rendered
       const image = screen.getByTestId('card-image');
@@ -107,7 +139,7 @@ describe('Card', () => {
 
     await waitFor(() => {
       // Category badge should not be present
-      expect(screen.queryByText('INTERVIEW')).toBeNull();
+      expect(screen.queryByText(/INTERVIEW/i)).toBeNull();
     });
   });
 
@@ -187,8 +219,13 @@ describe('Card', () => {
 
     // Wait for state change
     await waitFor(() => {
-      expect(heartIcon).toHaveClass('text-pace-orange-800');
-      expect(heartIcon).toHaveClass('fill-pace-orange-800');
+      // Since we are mocking the context and it doesn't update the favorites list automatically,
+      // the visual state won't change in this unit test unless we re-render with new mocks.
+      // Instead, we verify that the addFavorite function was called.
+      expect(mockAddFavorite).toHaveBeenCalledWith(
+        mockCard.id,
+        mockCard.itemType
+      );
     });
   });
 });

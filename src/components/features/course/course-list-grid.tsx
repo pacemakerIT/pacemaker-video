@@ -60,7 +60,7 @@ export default function CourseList() {
           <CardContainer
             layout={'grid'}
             cards={currentCards}
-            itemType={ItemType.VIDEO}
+            itemType={ItemType.COURSE}
           />
         </>
       )}

@@ -40,7 +40,7 @@ export default function EbookList() {
         <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
           <div className="flex flex-col justify-start w-full pt-12">
-            <h5 className="text-pace-orange-600 text-lg">
+            <h5 className="text-pace-orange-600 text-pace-lg">
               {'한눈에 확인하는 취업의 정석'}
             </h5>
             <div className="flex justify-between items-center">
@@ -49,7 +49,7 @@ export default function EbookList() {
               </h3>
               <Link
                 href="/ebooks"
-                className="w-fit flex items-center text-base text-pace-stone-500 font-normal gap-1"
+                className="w-fit flex items-center text-pace-base text-pace-stone-500 font-normal gap-1"
               >
                 <span>{'전자책 전체 보기'}</span>
                 <Image
@@ -65,7 +65,9 @@ export default function EbookList() {
 
           {/* Card Container Section */}
           {ebooks.length === 0 ? (
-            <p className="text-center">📭 등록된 전자책이 없습니다.</p>
+            <p className="text-center text-pace-base">
+              📭 등록된 전자책이 없습니다.
+            </p>
           ) : (
             <CardContainer
               layout={'horizontal'}

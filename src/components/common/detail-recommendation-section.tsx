@@ -5,7 +5,7 @@ import IconTextBox from './icon-text-box';
 
 interface RecommendationItem {
   icon: LucideIcon;
-  title: string;
+  label: string;
   text: string;
 }
 
@@ -26,7 +26,7 @@ export default function DetailRecommendationSection({
           <IconTextBox
             key={index}
             icon={item.icon}
-            title={item.title}
+            title={item.label}
             text={item.text}
           />
         ))}

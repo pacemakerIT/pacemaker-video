@@ -160,6 +160,7 @@ function VisualRow({
           options={[
             { value: 'recruiting', label: '모집중' },
             { value: 'closed', label: '모집완료' },
+            { value: 'ongoing', label: '진행중' },
             { value: 'completed', label: '진행완료' },
             { value: 'hidden', label: '비공개' }
           ]}
@@ -319,6 +320,7 @@ export default function Page() {
               { value: 'ALL', label: '전체 상태' },
               { value: 'RECRUITING', label: '모집중' },
               { value: 'CLOSED', label: '모집완료' },
+              { value: 'ONGOING', label: '진행중' },
               { value: 'COMPLETED', label: '진행완료' },
               { value: 'HIDDEN', label: '비공개' }
             ]}

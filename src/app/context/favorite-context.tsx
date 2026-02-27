@@ -10,7 +10,7 @@ export type Favorite = {
   itemType: ItemType;
   id: string;
   title: string;
-  price: number;
+  price: number | string;
   description: string;
   category: VideoCategory | null;
   startDate: Date | undefined;
@@ -37,7 +37,10 @@ export const FavoriteProvider = ({
   const [favorites, setFavorites] = useState<Favorite[]>([]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setFavorites([]);
+      return;
+    }
 
     const fetchFavorites = async () => {
       try {

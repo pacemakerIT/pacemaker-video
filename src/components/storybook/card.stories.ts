@@ -9,7 +9,7 @@ const meta = {
   },
   argTypes: {
     title: { control: 'text', description: '카드의 제목' },
-    description: { control: 'text', description: '카드에 표시될 설명' },
+    summary: { control: 'text', description: '카드에 표시될 설명' },
     price: { control: 'number', description: '가격 정보' },
     itemId: { control: 'text', description: '연결될 비디오의 ID' },
     category: {
@@ -30,7 +30,7 @@ export const Default: Story = {
     itemId: 'default-video-id',
     title: '리액트 마스터클래스',
     price: 99,
-    description:
+    summary:
       '이 강의는 리액트의 기초부터 심화까지 모든 것을 다룹니다. 훅, 상태 관리, 그리고 최신 기능들을 마스터하여 실무에 바로 적용할 수 있는 능력을 키워보세요.',
     category: 'Intermediate',
     uploadDate: new Date(),

@@ -2,13 +2,7 @@
 import SectionHeader from './section-header';
 import RelatedContentCard from './related-content-card';
 
-interface RelatedContentItem {
-  id: number;
-  itemId: string;
-  title: string;
-  price: number;
-  category: string;
-}
+import { RelatedContentItem } from '@/types/video-detail';
 
 interface DetailRelatedContentSectionProps {
   title?: string;

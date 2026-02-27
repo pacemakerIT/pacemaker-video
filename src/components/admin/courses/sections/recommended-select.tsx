@@ -16,6 +16,7 @@ export default function RecommendedSelect({
   onChange,
   error
 }: RecommendedSelectProps & { error?: string }) {
+  /* TODO: enum으로 관리해서 recomment-auth db랑 연결하는 id로 쓰기 */
   const options = [
     'IT 개발',
     '공무원',
