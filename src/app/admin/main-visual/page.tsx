@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { toast } from 'sonner';
 
 import {
   DndContext,
@@ -23,29 +25,45 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-type Row = {
-  id: number;
+type MainVisual = {
+  id: string;
   title: string;
-  period: string;
-  status: '공개중' | '비공개' | string;
-  thumbnail: string;
-  selected: boolean; // 선택 여부 필드 추가
+  description: string;
+  isPublic: boolean;
+  startDate: string | null;
+  endDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  thumbnail: string | null;
+  link: string | null;
+  linkName: string | null;
+  orderIndex: number;
+  selected?: boolean;
+};
+
+const isExpired = (visual: MainVisual) => {
+  if (!visual.endDate || !visual.endTime) return false;
+  const now = new Date();
+  const end = new Date(visual.endDate);
+  const [h, m] = visual.endTime.split(':').map(Number);
+  end.setHours(h, m, 59, 999);
+  return now > end;
 };
 
 // Sortable Row
 function VisualRow({
   row,
   index,
-  toggleRow
+  toggleRow,
+  onDelete,
+  onStatusChange
 }: {
-  row: Row;
+  row: MainVisual;
   index: number;
-  toggleRow: (id: number, checked: boolean) => void;
+  toggleRow: (id: string, checked: boolean) => void;
+  onDelete: (id: string) => void;
+  onStatusChange: (id: string, isPublic: boolean) => void;
 }) {
-  const [value, setValue] = useState(
-    row.status === '공개중' ? 'public' : 'private'
-  );
-
   const {
     attributes,
     listeners,
@@ -60,6 +78,13 @@ function VisualRow({
     transition,
     opacity: isDragging ? 0.5 : 1
   };
+
+  // const expired = isExpired(row); // Removing unused variable
+
+  const period =
+    row.startDate && row.endDate
+      ? `${new Date(row.startDate).toLocaleDateString()}~${new Date(row.endDate).toLocaleDateString()}`
+      : '-';
 
   return (
     <div
@@ -83,29 +108,34 @@ function VisualRow({
       </div>
 
       {/* 썸네일 */}
-      <div className="w-40">
-        <Image
-          src={row.thumbnail}
-          alt={row.title}
-          width={159}
-          height={106}
-          className="rounded object-cover"
-        />
+      <div className="w-40 relative h-[106px] w-[159px]">
+        {row.thumbnail ? (
+          <Image
+            src={row.thumbnail}
+            alt={row.title || ''}
+            fill
+            className="rounded object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center text-xs text-center p-2">
+            No Thumbnail
+          </div>
+        )}
       </div>
 
       {/* 제목 + 기간 */}
-      <div className="col-span-2 flex-1">
-        <p className="font-medium text-pace-base pb-2">{row.title}</p>
-        <p className="text-pace-sm text-pace-stone-500">
-          게시 기간: {row.period}
-        </p>
+      <div className="col-span-2 flex-1 relative">
+        <div className="flex items-center gap-2 pb-2">
+          <p className="font-medium text-pace-base">{row.title}</p>
+        </div>
+        <p className="text-pace-sm text-pace-stone-500">게시 기간: {period}</p>
       </div>
 
       {/* 공개 여부 */}
       <div className="w-32">
         <PaceSelect
-          value={value}
-          onChange={setValue}
+          value={row.isPublic ? 'public' : 'private'}
+          onChange={(val) => onStatusChange(row.id, val === 'public')}
           width="w-[124px]"
           placeholder="선택"
           options={[
@@ -123,15 +153,16 @@ function VisualRow({
       {/* 액션 */}
       <div className="flex items-center gap-6">
         {/* 버튼들 */}
-        <div className="flex gap-2">
-          {/* TODO: DB 완료 후 수정 ID 추가 */}
-          <Link href="/admin/main-visual/1">
+        <div className="flex gap-2 text-center items-center">
+          <Link href={`/admin/main-visual/${row.id}`}>
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>
           </Link>
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={() => onDelete(row.id)}
+            className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
         </div>
@@ -153,56 +184,79 @@ function VisualRow({
 }
 
 export default function Page() {
-  const [rows, setRows] = useState<Row[]>([
-    {
-      id: 1,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      period: '2025.11.01~2025.11.30',
-      status: '공개중',
-      thumbnail: '/img/ebook_image1.png',
-      selected: false
-    },
-    {
-      id: 2,
-      title: '면접 꿀팁 총정리',
-      period: '2025.12.01~2025.12.15',
-      status: '비공개',
-      thumbnail: '/img/ebook_image1.png',
-      selected: false
-    },
-    {
-      id: 3,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      period: '2025.11.01~2025.11.30',
-      status: '공개중',
-      thumbnail: '/img/ebook_image1.png',
-      selected: false
-    },
-    {
-      id: 4,
-      title: '면접 꿀팁 총정리',
-      period: '2025.12.01~2025.12.15',
-      status: '비공개',
-      thumbnail: '/img/ebook_image1.png',
-      selected: false
-    },
-    {
-      id: 5,
-      title: '자기소개서 작성 및 면접 준비까지 하나로!',
-      period: '2025.11.01~2025.11.30',
-      status: '공개중',
-      thumbnail: '/img/ebook_image1.png',
-      selected: false
-    }
-  ]);
+  const router = useRouter();
+  const [rows, setRows] = useState<MainVisual[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
 
+  useEffect(() => {
+    fetchVisuals();
+  }, []);
+
+  const fetchVisuals = async () => {
+    try {
+      const res = await fetch('/api/main-visual', { cache: 'no-store' });
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data: MainVisual[] = await res.json();
+
+      // Check for expirations and auto-correct if needed
+      const updatedRows = await Promise.all(
+        data.map(async (item) => {
+          if (item.isPublic && isExpired(item)) {
+            // Auto-transition to private in the background
+            try {
+              await fetch(`/api/main-visual/${item.id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isPublic: false })
+              });
+              return { ...item, isPublic: false, selected: false };
+            } catch (err) {
+              // Silencing unused err and console warning
+              void err;
+              return { ...item, selected: false };
+            }
+          }
+          return { ...item, selected: false };
+        })
+      );
+
+      setRows(updatedRows);
+    } catch {
+      toast.error('데이터를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (id: string, isPublic: boolean) => {
+    try {
+      const res = await fetch(`/api/main-visual/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPublic })
+      });
+
+      if (!res.ok) throw new Error('Failed to update status');
+
+      // UI 즉시 반영
+      setRows((prev) =>
+        prev.map((row) => (row.id === id ? { ...row, isPublic } : row))
+      );
+      toast.success(
+        isPublic ? '공개중으로 변경되었습니다.' : '비공개로 변경되었습니다.'
+      );
+    } catch {
+      toast.error('상태 변경 실패');
+    }
+  };
+
   // 개별 Row 선택 토글
-  const toggleRow = (id: number, checked: boolean) => {
+  const toggleRow = (id: string, checked: boolean) => {
     setRows((prev) =>
       prev.map((row) => (row.id === id ? { ...row, selected: checked } : row))
     );
@@ -216,18 +270,87 @@ export default function Page() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const oldIndex = rows.findIndex((row) => row.id === active.id);
-      const newIndex = rows.findIndex((row) => row.id === over.id);
-      setRows((items) => arrayMove(items, oldIndex, newIndex));
+      setRows((items) => {
+        const oldIndex = items.findIndex((row) => row.id === active.id);
+        const newIndex = items.findIndex((row) => row.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
   };
+
+  const handleSaveOrder = async () => {
+    try {
+      const items = rows.map((row, index) => ({
+        id: row.id,
+        orderIndex: index
+      }));
+
+      const res = await fetch('/api/main-visual/reorder', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ items })
+      });
+
+      if (!res.ok) throw new Error('Failed to save order');
+      toast.success('순서가 저장되었습니다.');
+      router.refresh();
+    } catch {
+      toast.error('순서 저장 실패');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      const res = await fetch(`/api/main-visual/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Failed to delete');
+      setRows((prev) => prev.filter((row) => row.id !== id));
+      toast.success('삭제되었습니다.');
+      router.refresh();
+    } catch {
+      toast.error('삭제 실패');
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    const selectedIds = rows.filter((r) => r.selected).map((r) => r.id);
+    if (selectedIds.length === 0) {
+      toast.error('선택된 항목이 없습니다.');
+      return;
+    }
+
+    if (!confirm(`${selectedIds.length}개의 항목을 삭제하시겠습니까?`)) return;
+
+    try {
+      // Promise.all to delete parallel
+      await Promise.all(
+        selectedIds.map((id) =>
+          fetch(`/api/main-visual/${id}`, { method: 'DELETE' })
+        )
+      );
+      setRows((prev) => prev.filter((row) => !row.selected));
+      toast.success('선택된 항목이 삭제되었습니다.');
+      router.refresh();
+    } catch {
+      toast.error('일부 항목 삭제 실패');
+    }
+  };
+
+  if (loading) return <div className="p-10">Loading...</div>;
 
   return (
     <div className="p-10">
       <div className="flex justify-between pb-10">
         <h1 className="text-pace-3xl font-bold">메인 비주얼 관리</h1>
-        {/* TODO: DB 완료 후 저장 기능 추가 */}
-        <button className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded">
+        <button
+          onClick={handleSaveOrder}
+          className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded"
+        >
           저장
         </button>
       </div>
@@ -243,7 +366,7 @@ export default function Page() {
         {/* 전체 선택 */}
         <div className="pt-6 pb-6 flex items-center">
           <Checkbox
-            checked={rows.every((row) => row.selected)}
+            checked={rows.length > 0 && rows.every((row) => row.selected)}
             onCheckedChange={(checked) => toggleAll(!!checked)}
             className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
           />
@@ -255,7 +378,7 @@ export default function Page() {
           <div className="flex items-center border-b border-t border-pace-gray-100 text-pace-base text-pace-gray-500 h-[56px] pl-6 gap-x-6 text-center">
             <div className="w-8">선택</div>
             <div className="w-8">순서</div>
-            <div className="w-40">썸네일</div>
+            <div className="w-40 relative">썸네일</div>
             <div className="flex-1">제목</div>
             <div className="w-32">공개여부</div>
             <div className="w-48"></div>
@@ -277,6 +400,8 @@ export default function Page() {
                   row={row}
                   index={index}
                   toggleRow={toggleRow}
+                  onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
                 />
               ))}
             </SortableContext>
@@ -284,8 +409,10 @@ export default function Page() {
         </div>
 
         <div className="flex items-center gap-2 justify-end pb-6">
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={handleDeleteSelected}
+            className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
 

@@ -58,6 +58,7 @@ export interface Course {
   instructorId?: string; // Optional or removed
   createdAt: string;
   updatedAt: string;
+  instructors: Instructor[];
   sections: Section[];
   videos: Video[];
   reviews: ApiReview[];

@@ -74,9 +74,9 @@ export function Header() {
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {/* 메뉴 */}
           <nav className="flex flex-wrap items-center gap-[0px] text-pace-lg font-medium">
-            <NavItem href="/courses">온라인 강의</NavItem>
-            <NavItem href="/ebooks">전자책</NavItem>
-            <NavItem href="/workshops">워크샵</NavItem>
+            <NavItem href="/courses">Online Courses</NavItem>
+            <NavItem href="/ebooks">E-Books</NavItem>
+            <NavItem href="/workshops">Workshops</NavItem>
           </nav>
 
           <SignedOut>
@@ -96,7 +96,7 @@ export function Header() {
                   {cart.length}
                 </div>
               </div>
-              장바구니
+              Cart
             </Link>
 
             {/* 사용자 이름 + 커스텀 드롭다운 */}
