@@ -90,14 +90,14 @@ model Document {
 }
 
 model Workshop {
-  id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String
   description   String?
   startDate     DateTime
   endDate       DateTime
   price         Float?
   locationOrUrl String?
-  status        WorkshopStatus @default(RECRUITING)
+  status        WorkshopStatus    @default(RECRUITING)
   category      WorkshopCategory?
 
   instructorId String @db.Uuid

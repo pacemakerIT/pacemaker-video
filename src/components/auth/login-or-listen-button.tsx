@@ -13,7 +13,7 @@ export default function LoginOrListenButton() {
       {userId ? (
         <Link href="/courses">
           <button className="h-12 bg-pace-orange-600 text-white border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal">
-            강의 보러가기
+            Watch Courses
           </button>
         </Link>
       ) : (
@@ -21,7 +21,7 @@ export default function LoginOrListenButton() {
           onClick={() => setIsSignInModalOpen(true)}
           className="h-12 bg-pace-orange-600 text-white border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal"
         >
-          로그인하고 강의 듣기
+          Log In to Watch Courses
         </button>
       )}
     </>

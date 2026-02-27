@@ -18,6 +18,7 @@ import {
   Heart
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -39,7 +40,6 @@ import {
   CarouselItem,
   CarouselApi
 } from '@/components/ui/carousel';
-import Image from 'next/image';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -305,7 +305,7 @@ export default function VideoDetailContainer({
       />
 
       <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
-        {selectedMediaId && (
+        {isSignedIn && selectedMediaId && (
           <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
             <WistiaPlayer
               mediaId={selectedMediaId}
@@ -400,9 +400,8 @@ export default function VideoDetailContainer({
         )}
 
         <DetailRecommendationSection items={recommendationItems} />
-
         <DetailRelatedContentSection
-          title={'이 컨텐츠와 함께 보면 좋아요!'}
+          title={'You May Also Like'}
           items={data.course.relatedCourses || []}
         />
 
@@ -422,12 +421,10 @@ export default function VideoDetailContainer({
             })) || []
           }
           rating={data.course.rating}
-          reviewCount={data.course.reviewCount}
         />
       </div>
 
-      {/* Playlist Toggle Button (Floating) */}
-      {!isPlaylistOpen && (
+      {isSignedIn && !isPlaylistOpen && (
         <button
           type="button"
           onClick={() => setIsPlaylistOpen(true)}
