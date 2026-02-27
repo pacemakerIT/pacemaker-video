@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { format } from 'date-fns';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(
   req: Request,
@@ -23,12 +23,12 @@ export async function GET(
     }
 
     return NextResponse.json(document, { status: 200 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: `Failed to fetch document: ${error}` },
-      { status: 500 }
-    );
-  }
+    } catch {
+      return NextResponse.json(
+        { error: 'Failed to fetch document' },
+        { status: 500 }
+      );
+    }
 }
 
 export async function PUT(
@@ -50,6 +50,7 @@ export async function PUT(
     const startTime = formData.get('startTime') as string;
     const endTime = formData.get('endTime') as string;
     const image = formData.get('image') as File | null;
+    const imageUrl = formData.get('imageUrl') as string | null;
     const link = formData.get('link') as string;
     const linkName = formData.get('linkName') as string;
 
@@ -75,7 +76,7 @@ export async function PUT(
       const buffer = Buffer.from(arrayBuffer);
 
       const putCommand = new PutObjectCommand({
-        Bucket: bucketName,
+        Bucket: imgBucketName,
         Key: fileName,
         Body: buffer,
         ContentType: image.type
@@ -83,10 +84,13 @@ export async function PUT(
 
       await s3clientSupabase.send(putCommand);
 
-      const signedUrl = await getSignedUrl(s3clientSupabase, putCommand, {
-        expiresIn: 31536000 // 1 year
-      });
-      updateData.thumbnail = signedUrl;
+      // Construct public URL
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const publicUrl = `${supabaseUrl}/storage/v1/object/public/${imgBucketName}/${fileName}`;
+      updateData.thumbnail = publicUrl;
+    } else if (imageUrl === '') {
+      // Image was explicitly removed in the form
+      updateData.thumbnail = '';
     }
 
     const updatedDocument = await prisma.mainVisual.update({
@@ -94,14 +98,16 @@ export async function PUT(
       data: updateData
     });
 
+    revalidatePath('/admin/main-visual');
+    revalidatePath('/');
+
     return NextResponse.json(updatedDocument, { status: 200 });
-  } catch (error) {
-    console.error('Error updating main visual document:', error);
-    return NextResponse.json(
-      { error: 'Failed to update main visual' },
-      { status: 500 }
-    );
-  }
+    } catch {
+      return NextResponse.json(
+        { error: 'Failed to update main visual' },
+        { status: 500 }
+      );
+    }
 }
 
 export async function DELETE(
@@ -114,14 +120,17 @@ export async function DELETE(
       where: { id }
     });
 
+    revalidatePath('/admin/main-visual');
+    revalidatePath('/');
+
     return NextResponse.json(
       { message: 'Main visual removed successfully' },
       { status: 200 }
     );
-  } catch (error) {
-    return NextResponse.json(
-      { error: `Failed to remove main visual: ${error}` },
-      { status: 500 }
-    );
-  }
+    } catch {
+      return NextResponse.json(
+        { error: 'Failed to remove main visual' },
+        { status: 500 }
+      );
+    }
 }

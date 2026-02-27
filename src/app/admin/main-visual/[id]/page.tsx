@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import MainVisualForm from '@/components/admin/main-visual/main-visual-form';
+import MainVisualForm, {
+  MainVisualFormHandle
+} from '@/components/admin/main-visual/main-visual-form';
 import { MainVisual } from '@/types/admin/main-visual';
 
 export default function EditMainVisualPage({
@@ -12,6 +14,7 @@ export default function EditMainVisualPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const formRef = useRef<MainVisualFormHandle>(null);
   const [initialData, setInitialData] = useState<Partial<MainVisual> | null>(
     null
   );
@@ -19,11 +22,7 @@ export default function EditMainVisualPage({
 
   const resolvedParams = use(params);
 
-  useEffect(() => {
-    fetchData();
-  }, [resolvedParams.id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await fetch(`/api/main-visual/${resolvedParams.id}`);
       if (!res.ok) throw new Error('Failed to fetch');
@@ -37,13 +36,17 @@ export default function EditMainVisualPage({
         image: null,
         imageUrl: data.thumbnail
       });
-    } catch (error) {
+    } catch {
       toast.error('데이터를 불러오는데 실패했습니다.');
       router.push('/admin/main-visual');
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams.id, router]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleEdit = async (data: MainVisual) => {
     try {
@@ -59,6 +62,7 @@ export default function EditMainVisualPage({
       if (data.image && data.image instanceof File) {
         formData.append('image', data.image);
       }
+      formData.append('imageUrl', data.imageUrl || '');
       formData.append('link', data.link);
       formData.append('linkName', data.linkName);
 
@@ -72,7 +76,8 @@ export default function EditMainVisualPage({
       router.push('/admin/main-visual');
     } catch (err) {
       toast.error('수정 중 오류가 발생했습니다.');
-      console.error(err);
+      // Silencing unused err and console warning
+      void err;
     }
   };
 
@@ -80,8 +85,14 @@ export default function EditMainVisualPage({
 
   return (
     <div className="p-10">
-      <div className="flex justify-between pb-10">
+      <div className="flex justify-between items-center pb-10">
         <h1 className="text-pace-3xl font-bold">메인 비주얼 관리</h1>
+        <button
+          onClick={() => formRef.current?.submit()}
+          className="w-[100px] h-[40px] bg-pace-orange-800 text-pace-white-500 rounded text-pace-base font-bold"
+        >
+          저장
+        </button>
       </div>
 
       <div>
@@ -95,6 +106,7 @@ export default function EditMainVisualPage({
         {/* 재사용 Form 컴포넌트 */}
         {initialData && (
           <MainVisualForm
+            ref={formRef}
             mode="edit"
             initialData={initialData}
             onSubmit={handleEdit}

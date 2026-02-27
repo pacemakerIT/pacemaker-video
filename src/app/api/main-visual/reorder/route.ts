@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function PATCH(req: Request) {
   try {
@@ -19,9 +20,11 @@ export async function PATCH(req: Request) {
       )
     );
 
+    revalidatePath('/admin/main-visual');
+    revalidatePath('/');
+
     return NextResponse.json({ message: 'Order updated' }, { status: 200 });
-  } catch (error) {
-    console.error('Failed to reorder:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to reorder main visuals' },
       { status: 500 }

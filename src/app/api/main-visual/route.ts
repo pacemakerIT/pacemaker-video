@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { format } from 'date-fns';
-import { randomUUID } from 'crypto';
+import { revalidatePath } from 'next/cache';
 
 // Get all main visuals
 export async function GET() {
@@ -53,7 +52,7 @@ export async function POST(req: Request) {
       const buffer = Buffer.from(arrayBuffer);
 
       const putCommand = new PutObjectCommand({
-        Bucket: bucketName,
+        Bucket: imgBucketName,
         Key: fileName,
         Body: buffer,
         ContentType: image.type
@@ -61,10 +60,9 @@ export async function POST(req: Request) {
 
       await s3clientSupabase.send(putCommand);
 
-      const signedUrl = await getSignedUrl(s3clientSupabase, putCommand, {
-        expiresIn: 31536000 // 1 year
-      });
-      imageUrl = signedUrl;
+      // Construct public URL
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      imageUrl = `${supabaseUrl}/storage/v1/object/public/${imgBucketName}/${fileName}`;
     }
 
     // Get max orderIndex
@@ -89,9 +87,11 @@ export async function POST(req: Request) {
       }
     });
 
+    revalidatePath('/admin/main-visual');
+    revalidatePath('/');
+
     return NextResponse.json(document, { status: 201 });
-  } catch (error) {
-    console.error('Error creating main visual document:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create main visual' },
       { status: 500 }

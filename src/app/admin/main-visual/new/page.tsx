@@ -31,9 +31,8 @@ export default function CreateMainVisualPage() {
       if (!res.ok) throw new Error('등록 실패');
       toast.success('성공적으로 등록되었습니다!');
       router.push('/admin/main-visual');
-    } catch (err) {
+    } catch {
       toast.error('등록 중 오류가 발생했습니다.');
-      console.error(err);
     }
   };
 
