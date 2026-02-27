@@ -24,8 +24,8 @@ export default function CourseHeader({
   sortBy,
   setSortBy
 }: CourseHeaderProps) {
-  // 카테고리 한글 매핑 함수
-  const getKoreanCategory = (categoryName: string) => {
+  // 카테고리 표시 매핑 함수
+  const getDisplayCategory = (categoryName: string) => {
     return itemCategoryLabel.en[categoryName.toUpperCase()] || categoryName;
   };
   return (
