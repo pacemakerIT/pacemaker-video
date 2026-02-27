@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { toast } from 'sonner';
@@ -31,6 +32,8 @@ type MainVisual = {
   isPublic: boolean;
   startDate: string | null;
   endDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
   thumbnail: string | null;
   link: string | null;
   linkName: string | null;
@@ -38,20 +41,29 @@ type MainVisual = {
   selected?: boolean;
 };
 
+const isExpired = (visual: MainVisual) => {
+  if (!visual.endDate || !visual.endTime) return false;
+  const now = new Date();
+  const end = new Date(visual.endDate);
+  const [h, m] = visual.endTime.split(':').map(Number);
+  end.setHours(h, m, 59, 999);
+  return now > end;
+};
+
 // Sortable Row
 function VisualRow({
   row,
   index,
   toggleRow,
-  onDelete
+  onDelete,
+  onStatusChange
 }: {
   row: MainVisual;
   index: number;
   toggleRow: (id: string, checked: boolean) => void;
   onDelete: (id: string) => void;
+  onStatusChange: (id: string, isPublic: boolean) => void;
 }) {
-  const [value, setValue] = useState(row.isPublic ? 'public' : 'private');
-
   const {
     attributes,
     listeners,
@@ -66,6 +78,8 @@ function VisualRow({
     transition,
     opacity: isDragging ? 0.5 : 1
   };
+
+  // const expired = isExpired(row); // Removing unused variable
 
   const period =
     row.startDate && row.endDate
@@ -110,16 +124,18 @@ function VisualRow({
       </div>
 
       {/* 제목 + 기간 */}
-      <div className="col-span-2 flex-1">
-        <p className="font-medium text-pace-base pb-2">{row.title}</p>
+      <div className="col-span-2 flex-1 relative">
+        <div className="flex items-center gap-2 pb-2">
+          <p className="font-medium text-pace-base">{row.title}</p>
+        </div>
         <p className="text-pace-sm text-pace-stone-500">게시 기간: {period}</p>
       </div>
 
       {/* 공개 여부 */}
       <div className="w-32">
         <PaceSelect
-          value={value}
-          onChange={setValue}
+          value={row.isPublic ? 'public' : 'private'}
+          onChange={(val) => onStatusChange(row.id, val === 'public')}
           width="w-[124px]"
           placeholder="선택"
           options={[
@@ -137,7 +153,7 @@ function VisualRow({
       {/* 액션 */}
       <div className="flex items-center gap-6">
         {/* 버튼들 */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 text-center items-center">
           <Link href={`/admin/main-visual/${row.id}`}>
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
@@ -168,6 +184,7 @@ function VisualRow({
 }
 
 export default function Page() {
+  const router = useRouter();
   const [rows, setRows] = useState<MainVisual[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -182,14 +199,59 @@ export default function Page() {
 
   const fetchVisuals = async () => {
     try {
-      const res = await fetch('/api/main-visual');
+      const res = await fetch('/api/main-visual', { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setRows(data.map((item: MainVisual) => ({ ...item, selected: false })));
-    } catch (error) {
+      const data: MainVisual[] = await res.json();
+
+      // Check for expirations and auto-correct if needed
+      const updatedRows = await Promise.all(
+        data.map(async (item) => {
+          if (item.isPublic && isExpired(item)) {
+            // Auto-transition to private in the background
+            try {
+              await fetch(`/api/main-visual/${item.id}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isPublic: false })
+              });
+              return { ...item, isPublic: false, selected: false };
+            } catch (err) {
+              // Silencing unused err and console warning
+              void err;
+              return { ...item, selected: false };
+            }
+          }
+          return { ...item, selected: false };
+        })
+      );
+
+      setRows(updatedRows);
+    } catch {
       toast.error('데이터를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (id: string, isPublic: boolean) => {
+    try {
+      const res = await fetch(`/api/main-visual/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPublic })
+      });
+
+      if (!res.ok) throw new Error('Failed to update status');
+
+      // UI 즉시 반영
+      setRows((prev) =>
+        prev.map((row) => (row.id === id ? { ...row, isPublic } : row))
+      );
+      toast.success(
+        isPublic ? '공개중으로 변경되었습니다.' : '비공개로 변경되었습니다.'
+      );
+    } catch {
+      toast.error('상태 변경 실패');
     }
   };
 
@@ -233,7 +295,8 @@ export default function Page() {
 
       if (!res.ok) throw new Error('Failed to save order');
       toast.success('순서가 저장되었습니다.');
-    } catch (error) {
+      router.refresh();
+    } catch {
       toast.error('순서 저장 실패');
     }
   };
@@ -248,7 +311,8 @@ export default function Page() {
       if (!res.ok) throw new Error('Failed to delete');
       setRows((prev) => prev.filter((row) => row.id !== id));
       toast.success('삭제되었습니다.');
-    } catch (error) {
+      router.refresh();
+    } catch {
       toast.error('삭제 실패');
     }
   };
@@ -271,7 +335,8 @@ export default function Page() {
       );
       setRows((prev) => prev.filter((row) => !row.selected));
       toast.success('선택된 항목이 삭제되었습니다.');
-    } catch (error) {
+      router.refresh();
+    } catch {
       toast.error('일부 항목 삭제 실패');
     }
   };
@@ -336,6 +401,7 @@ export default function Page() {
                   index={index}
                   toggleRow={toggleRow}
                   onDelete={handleDelete}
+                  onStatusChange={handleStatusChange}
                 />
               ))}
             </SortableContext>

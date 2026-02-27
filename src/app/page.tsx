@@ -8,29 +8,42 @@ import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 import CourseList from '@/components/features/course/course-list-horz';
 import prisma from '@/lib/prisma';
 
+import { MainVisual } from '@prisma/client';
+
 export const revalidate = 0; // Ensure fresh data on every request
 
 export default async function Home() {
-  const mainVisuals = await prisma.mainVisual.findMany({
-    where: {
-      isPublic: true,
-      OR: [
-        {
-          startDate: { lte: new Date() },
-          endDate: { gte: new Date() }
-        },
-        {
-          startDate: null,
-          endDate: null
-        }
-      ]
-    },
+  const allMainVisuals: MainVisual[] = await prisma.mainVisual.findMany({
+    where: { isPublic: true },
     orderBy: { orderIndex: 'asc' }
+  });
+
+  const now = new Date();
+  const mainVisuals = allMainVisuals.filter((visual: MainVisual) => {
+    let isWithinRange = true;
+
+    // Check Start Boundary
+    if (visual.startDate && visual.startTime) {
+      const start = new Date(visual.startDate);
+      const [startH, startM] = visual.startTime.split(':').map(Number);
+      start.setHours(startH, startM, 0, 0);
+      if (now < start) isWithinRange = false;
+    }
+
+    // Check End Boundary
+    if (visual.endDate && visual.endTime) {
+      const end = new Date(visual.endDate);
+      const [endH, endM] = visual.endTime.split(':').map(Number);
+      end.setHours(endH, endM, 59, 999);
+      if (now > end) isWithinRange = false;
+    }
+
+    return isWithinRange;
   });
 
   const slides =
     mainVisuals.length > 0
-      ? mainVisuals.map((visual) => ({
+      ? mainVisuals.map((visual: MainVisual) => ({
           title: visual.title || '',
           subtitle: visual.description || '',
           buttonText: visual.linkName || 'Explore programs',

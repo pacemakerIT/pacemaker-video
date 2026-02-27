@@ -40,7 +40,6 @@ import {
   CarouselItem,
   CarouselApi
 } from '@/components/ui/carousel';
-import Image from 'next/image';
 
 interface VideoDetailContainerProps {
   id: string;
@@ -401,43 +400,6 @@ export default function VideoDetailContainer({
         )}
 
         <DetailRecommendationSection items={recommendationItems} />
-
-        {data.instructor && (
-          <div className="flex flex-col w-full gap-8">
-            <SectionHeader title="Instructor Introduction" />
-            <div className="w-full flex gap-10">
-              <div className="w-[70%] gap-6">
-                <h3 className="font-semibold text-[20px]">
-                  {data.instructor.name}
-                </h3>
-                <p className="text-pace-stone-500 leading-relaxed">
-                  {data.instructor.description}
-                </p>
-                <div className="mt-6">
-                  <h4 className="text-pace-base font-regular mb-4">Career</h4>
-                  <table className="w-full">
-                    <tbody className="text-pace-stone-500">
-                      {data.instructor.careers.map((careerItem, index) => (
-                        <tr key={index}>
-                          <td className="py-1 pr-4">{careerItem.period}</td>
-                          <td className="py-1">{careerItem.position}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="w-[30%]">
-                <Image
-                  src={data.instructor.profileImage}
-                  alt="instructor"
-                  width={360}
-                  height={360}
-                />
-              </div>
-            </div>
-          </div>
-        )}
 
         <DetailRelatedContentSection
           title={'You May Also Like'}
