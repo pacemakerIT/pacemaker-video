@@ -31,6 +31,8 @@ const getKoreanCategory = (categoryName: string) => {
       return '북미 공무원';
     case 'ACCOUNTING':
       return '재무/회계';
+    case 'SERVICE':
+      return '서비스';
     default:
       return categoryName;
   }
@@ -72,10 +74,10 @@ export default function EbookHeader({
 
         {/* 정렬 */}
         <Select value={sortBy} onValueChange={(value) => setSortBy(value)}>
-          <SelectTrigger className="w-[112px] h-12 text-pace-stone-800 bg-white shadow-sm rounded-[40px]">
+          <SelectTrigger className="w-[112px] h-12 text-pace-base text-pace-stone-800 bg-white shadow-sm rounded-[40px]">
             <SelectValue placeholder="sort" />
           </SelectTrigger>
-          <SelectContent className="bg-white border-[#EEEEEE]">
+          <SelectContent className="bg-white border-pace-gray-100">
             <SelectItem value="Total">Total</SelectItem>
             <SelectItem value="Date">Date</SelectItem>
             <SelectItem value="Review">Review</SelectItem>

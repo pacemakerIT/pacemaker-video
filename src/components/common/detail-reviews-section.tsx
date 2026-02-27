@@ -6,7 +6,7 @@ import ReviewCard from './review-card';
 import Image from 'next/image';
 
 interface Review {
-  id: number;
+  id: string | number;
   profileImage: string;
   profileName: string;
   rating: number;

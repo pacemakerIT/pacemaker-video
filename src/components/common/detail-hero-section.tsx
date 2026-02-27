@@ -1,7 +1,6 @@
 'use client';
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useState } from 'react';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
@@ -13,6 +12,7 @@ interface DetailHeroSectionProps {
   price?: string;
   onAddToCart?: () => void;
   onToggleLike?: (isLiked: boolean) => void;
+  isLiked?: boolean;
   buttonText?: string;
   instructorLabel?: string;
   priceLabel?: string;
@@ -20,6 +20,7 @@ interface DetailHeroSectionProps {
 
 export default function DetailHeroSection({
   backgroundImage = '/img/video-bg.png',
+  subtitle,
   title = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
   courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
@@ -27,17 +28,14 @@ export default function DetailHeroSection({
   price = '$999.99',
   onAddToCart,
   onToggleLike,
+  isLiked = false,
   buttonText = '장바구니 담기',
   instructorLabel = '강사',
   priceLabel = '금액'
 }: DetailHeroSectionProps) {
-  const [isLiked, setIsLiked] = useState(false);
-
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
-    const newLikedState = !isLiked;
-    setIsLiked(newLikedState);
-    onToggleLike?.(newLikedState);
+    onToggleLike?.(!isLiked);
   };
 
   const handleAddToCart = () => {
@@ -64,7 +62,7 @@ export default function DetailHeroSection({
         {/* 왼쪽 60% - 부제목과 제목 */}
         <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
           <div className="text-white/80 text-pace-lg font-medium mb-4">
-            {'강의는 이렇게 진행돼요!'}
+            {subtitle}
           </div>
           <h1 className="text-white text-5xl font-bold leading-tight">
             {title}
@@ -86,7 +84,14 @@ export default function DetailHeroSection({
             </p>
             <div className="flex justify-between items-center text-pace-lg">
               <span>{priceLabel}</span>
-              <p className="text-pace-gray-500">${price}</p>
+              <p className="text-pace-gray-500">
+                $
+                {typeof price === 'number'
+                  ? (price as number).toLocaleString()
+                  : Number(
+                      String(price).replace(/[^0-9.]/g, '')
+                    ).toLocaleString()}
+              </p>
             </div>
             <div className="flex gap-3 justify-between items-center">
               <Button
