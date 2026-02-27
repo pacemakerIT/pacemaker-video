@@ -1,4 +1,4 @@
-import { useState, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -129,6 +129,28 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
       }
       setEndTime(time);
     };
+
+    // 기간 만료 여부 확인 및 상태 자동 변경
+    useEffect(() => {
+      if (!endDate || !endTime) return;
+
+      const now = new Date();
+      const end = new Date(endDate);
+      const [h, m] = endTime.split(':').map(Number);
+      end.setHours(h, m, 59, 999);
+
+      if (now > end) {
+        // 만료된 경우 비공개로 고정 (또는 변경)
+        if (status === 'public') {
+          setStatus('private');
+        }
+      } else {
+        // 만료되지 않은 경우, 기존에 비공개였더라도 공개로 전환 (사용자 요청 사항)
+        if (status === 'private' || status === '') {
+          setStatus('public');
+        }
+      }
+    }, [startDate, endDate, startTime, endTime]);
 
     // 최종 제출
     const handleSubmit = () => {
