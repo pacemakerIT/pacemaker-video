@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/admin/checkbox';
 import ErrorText from '@/components/ui/admin/error-text';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
+import { itemCategoryLabel } from '@/constants/labels';
 
 type Props = {
   category: string;
@@ -40,9 +41,9 @@ export default function CourseBasicSection({
             width="w-[240px]"
             placeholder="선택"
             options={[
-              { value: '인터뷰', label: '인터뷰' },
-              { value: '이력서', label: '이력서' },
-              { value: '네트워킹', label: '네트워킹' }
+              { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
+              { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
+              { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
             ]}
           />
 
