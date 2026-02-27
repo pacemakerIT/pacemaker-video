@@ -41,7 +41,6 @@ import {
   CarouselApi
 } from '@/components/ui/carousel';
 
-
 interface VideoDetailContainerProps {
   id: string;
 }
