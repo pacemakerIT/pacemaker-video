@@ -7,23 +7,12 @@ import { CustomBadge } from './custom-badge';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { ItemType } from '@prisma/client';
+import { itemCategoryLabel } from '@/constants/labels';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
-// CustomBadge를 쓰는 쪽에서 category 영문 → 한글 변환
-// (영문 페이지는 매핑 교체로 재사용 가능, CustomBadge 수정 불필요)
-const categoryMap: Record<string, string> = {
-  Marketing: '마케팅',
-  Design: '디자인',
-  Public: '북미 공무원',
-  IT: 'IT',
-  Accounting: '재무회계',
-  Service: '서비스',
-  Interview: '인터뷰',
-  Resume: '이력서',
-  Networking: '네트워킹'
-};
+const categoryMap = itemCategoryLabel.en;
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
@@ -128,7 +117,7 @@ export default function Card({
                   variant={category}
                   className="w-fit flex justify-center items-center py-2 px-3"
                 >
-                  {categoryMap[category] || category}
+                  {categoryMap[category.toUpperCase()] || category}
                 </CustomBadge>
               )}
               <div className="w-full flex justify-between gap-2 items-center">
