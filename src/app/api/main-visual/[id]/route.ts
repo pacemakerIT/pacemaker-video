@@ -23,12 +23,12 @@ export async function GET(
     }
 
     return NextResponse.json(document, { status: 200 });
-    } catch {
-      return NextResponse.json(
-        { error: 'Failed to fetch document' },
-        { status: 500 }
-      );
-    }
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to fetch document' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(
@@ -102,12 +102,12 @@ export async function PUT(
     revalidatePath('/');
 
     return NextResponse.json(updatedDocument, { status: 200 });
-    } catch {
-      return NextResponse.json(
-        { error: 'Failed to update main visual' },
-        { status: 500 }
-      );
-    }
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to update main visual' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(
@@ -127,10 +127,10 @@ export async function DELETE(
       { message: 'Main visual removed successfully' },
       { status: 200 }
     );
-    } catch {
-      return NextResponse.json(
-        { error: 'Failed to remove main visual' },
-        { status: 500 }
-      );
-    }
+  } catch {
+    return NextResponse.json(
+      { error: 'Failed to remove main visual' },
+      { status: 500 }
+    );
+  }
 }
