@@ -28,8 +28,6 @@ import { useNavigationBlocker } from '@/components/admin/common/navigation-block
 
 const CATEGORY_LABELS = itemCategoryLabel.en;
 
-const CATEGORY_LABELS = itemCategoryLabel.en;
-
 type Row = {
   id: string;
   title: string; // 강의제목
