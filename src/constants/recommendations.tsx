@@ -33,14 +33,24 @@ export const RECOMMENDATION_BANNERS: Record<
     label: 'Networking',
     text: 'Building professional connections in North America'
   },
-  [TargetAudienceType.JOB_SEARCH]: {
-    icon: Search,
-    label: 'Job Search',
-    text: 'Effective strategies for finding the right opportunity'
-  },
-  [TargetAudienceType.GLOBAL_CAREER]: {
+  [TargetAudienceType.GOVERNMENT]: {
     icon: Globe,
-    label: 'Global Career',
-    text: 'Navigating the international job market'
+    label: 'Public Sector',
+    text: 'For those aiming for government or public positions'
+  },
+  [TargetAudienceType.FINANCE]: {
+    icon: Search,
+    label: 'Finance/Accounting',
+    text: 'Strategic career prep for financial roles'
+  },
+  [TargetAudienceType.DESIGN]: {
+    icon: Globe,
+    label: 'Design',
+    text: 'Visual portfolio and interview strategy for designers'
+  },
+  [TargetAudienceType.SERVICE]: {
+    icon: Users,
+    label: 'Service Roles',
+    text: 'Effective communication for service industry jobs'
   }
 };

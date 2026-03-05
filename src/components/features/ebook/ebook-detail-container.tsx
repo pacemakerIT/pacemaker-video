@@ -90,11 +90,10 @@ export default function EbookDetailContainer({
     }
   ];
 
-  // 추천 대상 데이터
   // 추천 대상 데이터 - props로 받은 targetAudienceTypes 기반으로 배너 생성
-  const recommendationItems = targetAudienceTypes.map(
-    (type) => RECOMMENDATION_BANNERS[type]
-  );
+  const recommendationItems = targetAudienceTypes
+    .map((type) => RECOMMENDATION_BANNERS[type])
+    .filter(Boolean); // Safety filter to prevent undefined error
 
   // 카드 데이터 정의
   const cards = [
