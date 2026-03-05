@@ -127,3 +127,71 @@ export async function GET(
     );
   }
 }
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const {
+      title,
+      description,
+      price,
+      isPublic,
+      isMain,
+      category,
+      duration,
+      promoText,
+      summary,
+      detailTitle
+      // ... expand as needed for related models
+    } = body;
+
+    if (!title) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Title is required',
+          message: '제목은 필수입니다.'
+        },
+        { status: 400 }
+      );
+    }
+
+    const updatedCourse = await prisma.course.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        price,
+        isPublic,
+        isMain,
+        category: category || 'NETWORKING',
+        duration,
+        promoText,
+        summary,
+        detailTitle
+      }
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Course updated successfully',
+        data: { course: updatedCourse }
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Failed to update course: ${error}`,
+        message: '코스 수정에 실패했습니다.'
+      },
+      { status: 500 }
+    );
+  }
+}
