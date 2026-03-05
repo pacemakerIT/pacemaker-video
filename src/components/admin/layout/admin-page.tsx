@@ -25,9 +25,13 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
   if (!user || user.roleId !== 'ADMIN') return null;
 
   return (
-    <div className="w-screen grid grid-cols-[320px_1fr]">
-      <AdminSidebar />
-      <main>{children}</main>
+    <div className="flex w-full h-full">
+      <div className="w-60 h-full shrink">
+        <AdminSidebar />
+      </div>
+      <main className="flex-1 h-full overflow-auto shrink-0 min-w-0">
+        {children}
+      </main>
     </div>
   );
 }
