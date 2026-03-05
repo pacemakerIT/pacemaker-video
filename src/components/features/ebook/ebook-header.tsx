@@ -7,7 +7,6 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import SectionHeader from '../../common/section-header';
-import { itemCategoryLabel } from '@/constants/labels';
 
 interface EbookHeaderProps {
   category: string[];
@@ -17,8 +16,27 @@ interface EbookHeaderProps {
   setSortBy: (sort: string) => void;
 }
 
-// 카테고리 라벨 매핑
-const categoryMap = itemCategoryLabel.en;
+// 카테고리 한글 매핑
+const getKoreanCategory = (categoryName: string) => {
+  switch (categoryName) {
+    case 'TOTAL':
+      return '전체';
+    case 'MARKETING':
+      return '마케팅';
+    case 'IT':
+      return 'IT';
+    case 'DESIGN':
+      return '디자인';
+    case 'PUBLIC':
+      return '북미 공무원';
+    case 'ACCOUNTING':
+      return '재무/회계';
+    case 'SERVICE':
+      return '서비스';
+    default:
+      return categoryName;
+  }
+};
 
 export default function EbookHeader({
   category,
@@ -31,8 +49,8 @@ export default function EbookHeader({
     <>
       {/* 타이틀 */}
       <SectionHeader
-        subtitle="Curated for What Matters Most"
-        title="Pacemaker E-books"
+        subtitle="필요한 정보만 쏙쏙 골라보는"
+        title="페이스메이커 전자책"
       />
 
       {/* 카테고리 & 정렬 */}
@@ -49,7 +67,7 @@ export default function EbookHeader({
               } rounded-full w-full h-12 min-w-32 justify-center cursor-pointer !text-pace-base font-medium hover:text-pace-orange-600 hover:border-pace-orange-600`}
               onClick={() => setCurrentCategory(categoryName)}
             >
-              {categoryMap[categoryName.toUpperCase()] || categoryName}
+              {getKoreanCategory(categoryName)}
             </Badge>
           ))}
         </div>

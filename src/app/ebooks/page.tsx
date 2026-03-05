@@ -9,7 +9,7 @@ export default function EBooksPage() {
       <ListHeader
         // TO-DO : DB 연결 필요
         title={
-          'The 94% Success Formula: Writing Applications\nThat Set You Apart'
+          '합격률 94%의 비밀: 취업과 이직에서 승리하는\n나만의 관점을 담은 자소서 작성'
         }
         height={'h-[370px]'}
         gradientColors={{
@@ -18,7 +18,7 @@ export default function EBooksPage() {
           end: '#FCF0D7'
         }}
         // TO-DO : DB 연결 필요
-        buttonText={'View the guide'}
+        buttonText={'전자책 보러가기'}
       />
       <LogoCarousel />
       <EbookListGrid />

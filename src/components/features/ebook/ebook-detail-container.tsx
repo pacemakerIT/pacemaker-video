@@ -30,9 +30,9 @@ interface EbookDetailContainerProps {
 
 export default function EbookDetailContainer({
   backgroundImage = '/img/ebook-bg.png',
-  subtitle: _ = 'Chosen by Canadian tech companies',
+  subtitle = 'Chosen by Canadian tech companies',
   title = 'Resume strategies\nthat help developers stand out.',
-  courseTitle: __ = 'Developer Job Applications & Networking',
+  courseTitle = 'Developer Job Applications & Networking',
   instructor = 'James',
   description = 'Learn how recruiters evaluate developer resumes, based on real hiring examples from Canadian tech companies.',
   price = '999.99',
@@ -41,7 +41,6 @@ export default function EbookDetailContainer({
   targetAudienceTypes = [TargetAudienceType.IT, TargetAudienceType.RESUME],
   tableOfContents
 }: EbookDetailContainerProps) {
-  // 후기 데이터 (실제로는 API에서 가져올 데이터)
   const reviews = [
     {
       id: 1,
@@ -51,52 +50,13 @@ export default function EbookDetailContainer({
       reviewDate: '2024.01.15',
       reviewContent:
         'They helped me establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their support, more and more one-on-one sessions, I have found a position that fits my goals and professional abilities.'
-    },
-    {
-      id: 2,
-      profileImage: '/img/instructor-image.png',
-      profileName: 'Jay',
-      rating: 5,
-      reviewDate: '2024.01.12',
-      reviewContent:
-        'They helped me establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their support, more and more one-on-one sessions, I have found a position that fits my goals and professional abilities.'
-    },
-    {
-      id: 3,
-      profileImage: '/img/instructor-image.png',
-      profileName: 'Jay',
-      rating: 5,
-      reviewDate: '2024.01.10',
-      reviewContent:
-        'They helped me establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their support, more and more one-on-one sessions, I have found a position that fits my goals and professional abilities.'
-    },
-    {
-      id: 4,
-      profileImage: '/img/instructor-image.png',
-      profileName: 'Jay',
-      rating: 5,
-      reviewDate: '2024.01.08',
-      reviewContent:
-        'They helped me establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their support, more and more one-on-one sessions, I have found a position that fits my goals and professional abilities.'
-    },
-    {
-      id: 5,
-      profileImage: '/img/instructor-image.png',
-      profileName: 'Jay',
-      rating: 5,
-      reviewDate: '2024.01.05',
-      reviewContent:
-        'They helped me establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their support, more and more one-on-one sessions, I have found a position that fits my goals and professional abilities.'
     }
   ];
 
-  // 추천 대상 데이터
-  // 추천 대상 데이터 - props로 받은 targetAudienceTypes 기반으로 배너 생성
   const recommendationItems = targetAudienceTypes.map(
     (type) => RECOMMENDATION_BANNERS[type]
   );
 
-  // 카드 데이터 정의
   const cards = [
     {
       id: '1',
@@ -105,24 +65,6 @@ export default function EbookDetailContainer({
       price: 299,
       category: 'Marketing',
       type: 'course',
-      thumbnail: null
-    },
-    {
-      id: '2',
-      itemId: 'course-2',
-      title: 'Node.js 백엔드 개발',
-      price: 399,
-      category: 'Design',
-      type: 'course',
-      thumbnail: null
-    },
-    {
-      id: '3',
-      itemId: 'ebook-1',
-      title: 'JavaScript 완벽 가이드',
-      price: 199,
-      category: 'IT',
-      type: 'ebook',
       thumbnail: null
     }
   ];
@@ -153,17 +95,7 @@ export default function EbookDetailContainer({
               <p className="text-pace-stone-500 leading-relaxed">
                 To land a developer role in North America, strong coding skills
                 aren’t enough. Understanding job postings and what companies are
-                truly looking for is just as important. With AI-driven
-                productivity on the rise, developer job openings in North
-                America have decreased by nearly 35% over the past five years,
-                making hiring more competitive than ever.
-                <br />
-                <br />
-                If North American job postings feel unfamiliar, this course
-                guides you through how to read them effectively. Using real
-                English resumes from Pacemaker developers hired by Canadian
-                companies, you’ll learn how to analyze job postings and reflect
-                those insights directly in your resume.
+                truly looking for is just as important.
               </p>
             </div>
             <div className="w-[40%]">
