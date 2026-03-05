@@ -1,13 +1,33 @@
-import EbookDetailContainer from '@/components/features/ebook/ebook-detail-container';
+import EbookDetailContainer, { TOCItem } from '@/components/features/ebook/ebook-detail-container';
+import prisma from '@/lib/prisma';
+import { notFound } from 'next/navigation';
 
-export default function PlaceholderPage() {
+interface EbookPageProps {
+  params: Promise<{
+    ebookId: string;
+  }>;
+}
+
+export default async function EbookDetailPage({ params }: EbookPageProps) {
+  const { ebookId } = await params;
+
+  const ebook = await prisma.document.findUnique({
+    where: { documentId: ebookId }
+  });
+
+  if (!ebook) {
+    notFound();
+  }
+
   return (
-    // <div className="p-4 text-gray-500">
-    //   <h1 className="text-lg font-semibold">🚧 Page Under Construction</h1>
-    //   <p>This page is currently being set up.</p>
-    // </div>
-    <div className="w-screen flex flex-col">
-      <EbookDetailContainer />
+    <div className="min-h-screen bg-white">
+      <EbookDetailContainer
+        title={ebook.title}
+        description={ebook.description || undefined}
+        price={ebook.price?.toString()}
+        targetAudienceTypes={ebook.targetAudienceTypes}
+        tableOfContents={(ebook.tableOfContents as unknown as TOCItem[]) || []}
+      />
     </div>
   );
 }
