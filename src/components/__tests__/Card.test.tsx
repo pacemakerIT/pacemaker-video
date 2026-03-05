@@ -11,6 +11,34 @@ import {
 import Card from '../common/card';
 import { OnlineCards } from '@/types/online';
 import { ItemType } from '@prisma/client';
+import React from 'react';
+
+// Mock context hooks
+const mockAddFavorite = vi.fn();
+const mockRemoveFavorite = vi.fn();
+const mockAddToCart = vi.fn();
+
+vi.mock('@/app/context/cart-context', () => ({
+  useCartContext: () => ({
+    cart: [],
+    addToCart: mockAddToCart
+  })
+}));
+
+// Mock Clerk
+vi.mock('@clerk/nextjs', () => ({
+  useUser: () => ({
+    isSignedIn: true,
+    user: { id: 'user_1' }
+  })
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn()
+  })
+}));
 
 // Mock next/image
 vi.mock('next/image', () => ({
@@ -53,28 +81,8 @@ vi.mock('next/link', () => ({
   )
 }));
 
-// Mock next/navigation
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn()
-  })
-}));
-
-// Mock @clerk/nextjs
-vi.mock('@clerk/nextjs', () => ({
-  useUser: () => ({
-    isSignedIn: true,
-    user: { id: 'user1' }
-  })
-}));
-
 import { Favorite } from '@/app/context/favorite-context';
 
-// ... (other code)
-
-// Mock useFavoriteContext
-const mockAddFavorite = vi.fn();
-const mockRemoveFavorite = vi.fn();
 const mockFavorites: Favorite[] = [];
 
 vi.mock('@/app/context/favorite-context', () => ({
@@ -152,11 +160,11 @@ describe('Card', () => {
     });
   });
 
-  it('renders "자세히 보기" button', async () => {
+  it('renders "View detail" button', async () => {
     render(<Card {...mockCard} />);
 
     await waitFor(() => {
-      const button = screen.getByText('자세히 보기');
+      const button = screen.getByText('View detail');
       expect(button).toBeDefined();
       expect(button).toHaveClass('text-pace-orange-650');
     });

@@ -46,7 +46,7 @@ export default function PurchaseDetailsPopup({
   return (
     <Dialog>
       <DialogTrigger className="p-4 bg-pace-orange-500 text-pace-white-500 rounded-full">
-        자세히 보기
+        View detail
       </DialogTrigger>
       <DialogContent className="max-w-lg p-10 gap-0 rounded-xl overflow-hidden font-light text-pace-base text-pace-gray-700">
         <DialogHeader className="mb-10 justify-between items-center">
