@@ -1,6 +1,8 @@
 'use client';
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
+import { ItemType } from '@prisma/client';
+import { resolveImageSrc } from '@/lib/utils';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
@@ -16,10 +18,11 @@ interface DetailHeroSectionProps {
   buttonText?: string;
   instructorLabel?: string;
   priceLabel?: string;
+  itemType?: ItemType;
 }
 
 export default function DetailHeroSection({
-  backgroundImage = '/img/video-bg.png',
+  backgroundImage,
   subtitle,
   title = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
   courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
@@ -31,8 +34,15 @@ export default function DetailHeroSection({
   isLiked = false,
   buttonText = '장바구니 담기',
   instructorLabel = '강사',
-  priceLabel = '금액'
+  priceLabel = '금액',
+  itemType
 }: DetailHeroSectionProps) {
+  const effectiveBg = resolveImageSrc({
+    thumbnail: backgroundImage, // Hero section uses backgroundImage prop as primary thumbnail
+    itemType
+  });
+
+  const isCourse = itemType === ItemType.COURSE;
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     onToggleLike?.(!isLiked);
@@ -48,7 +58,7 @@ export default function DetailHeroSection({
       <div
         className="absolute inset-0 w-full h-full"
         style={{
-          backgroundImage: `url('${backgroundImage}')`,
+          backgroundImage: `url('${effectiveBg}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -57,14 +67,24 @@ export default function DetailHeroSection({
         }}
       ></div>
       {/* 배경 오버레이 */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div
+        className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
+      ></div>
       <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
         <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
-          <div className="text-white/80 text-pace-lg font-medium mb-4">
+          <div
+            className={`text-pace-lg font-medium mb-4 whitespace-pre-line ${
+              isCourse ? 'text-white/80' : 'text-black/80'
+            }`}
+          >
             {subtitle}
           </div>
-          <h1 className="text-white text-5xl font-bold leading-tight">
+          <h1
+            className={`text-5xl font-bold leading-tight whitespace-pre-line ${
+              isCourse ? 'text-white' : 'text-black'
+            }`}
+          >
             {title}
           </h1>
         </div>
