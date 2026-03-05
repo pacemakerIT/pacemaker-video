@@ -18,8 +18,7 @@ const LONG_DESCRIPTION = `To land a developer role in North America, strong codi
 
 If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
-const TITLE =
-  'From Differentiated Resumes to Confident Interviews';
+const TITLE = 'From Differentiated Resumes to Confident Interviews';
 
 const DETAIL_TITLE =
   'Step by Step: From a Strong Developer Resume to Interviews';
@@ -65,6 +64,35 @@ async function main() {
   }
 
   console.log('🚀 새로운 시드 생성 시작…');
+
+  // 0) Main Visual 생성
+  console.log('Generating Main Visuals...');
+  await prisma.mainVisual.deleteMany({});
+  await prisma.mainVisual.createMany({
+    data: [
+      {
+        title: 'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
+        description: 'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+        isPublic: true,
+        linkName: 'Explore programs',
+        link: '/courses',
+        orderIndex: 0
+      },
+      {
+        title: 'Ready to take the next step?',
+        isPublic: true,
+        orderIndex: 1
+      },
+      {
+        title: 'Your future career starts here.',
+        isPublic: true,
+        linkName: 'Get Started',
+        link: '/courses',
+        orderIndex: 2
+      }
+    ]
+  });
+
   // 1) Mock Instructor 생성
   const instructorId = randomUUID();
   await prisma.instructor.upsert({

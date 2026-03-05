@@ -400,6 +400,7 @@ export default function VideoDetailContainer({
         )}
 
         <DetailRecommendationSection items={recommendationItems} />
+
         <DetailRelatedContentSection
           title={'You May Also Like'}
           items={data.course.relatedCourses || []}
