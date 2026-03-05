@@ -1,4 +1,6 @@
-import EbookDetailContainer, { TOCItem } from '@/components/features/ebook/ebook-detail-container';
+import EbookDetailContainer, {
+  TOCItem
+} from '@/components/features/ebook/ebook-detail-container';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
@@ -12,7 +14,9 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
   const { ebookId } = await params;
 
   const ebook = await prisma.document.findUnique({
-    where: { documentId: ebookId }
+    where: {
+      documentId: ebookId
+    }
   });
 
   if (!ebook) {
@@ -22,7 +26,7 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <EbookDetailContainer
-        title={ebook.title}
+        title={ebook.title || undefined}
         description={ebook.description || undefined}
         price={ebook.price?.toString()}
         targetAudienceTypes={ebook.targetAudienceTypes}

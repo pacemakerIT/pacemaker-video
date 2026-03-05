@@ -81,7 +81,7 @@ model Document {
   isPublic            Boolean              @default(false)
   subDescription      String?
   subTitle            String?
-  tableOfContents     Json?
+  tableOfContents     Json? // ebook 목차
   thumbnail           String?
   visualTitle1        String?
   visualTitle2        String?

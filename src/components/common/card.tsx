@@ -11,6 +11,7 @@ import { itemCategoryLabel } from '@/constants/labels';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { resolveImageSrc } from '@/lib/utils';
 
 const categoryMap = itemCategoryLabel.en;
 
@@ -18,6 +19,7 @@ interface CardProps extends OnlineCards {
   itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
   thumbnail?: string;
   imageUrl?: string;
+  backgroundImage?: string;
 }
 
 export default function Card({
@@ -29,7 +31,8 @@ export default function Card({
   category,
   itemType,
   thumbnail,
-  imageUrl
+  imageUrl,
+  backgroundImage
 }: CardProps) {
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const { isSignedIn } = useUser();
@@ -57,12 +60,13 @@ export default function Card({
     }
   };
 
-  // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
-  const imageSrc = thumbnail
-    ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
-    : itemType === ItemType.VIDEO
-      ? '/img/course_image1.png'
-      : imageUrl || '/img/ebook-default.png';
+  // 공통 유틸리티를 사용하여 이미지 경로 결정
+  const imageSrc = resolveImageSrc({
+    thumbnail,
+    imageUrl,
+    backgroundImage,
+    itemType
+  });
 
   const getLinkPath = () => {
     switch (itemType) {
