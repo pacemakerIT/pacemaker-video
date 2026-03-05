@@ -41,17 +41,17 @@ export default function CourseList() {
           {/* Header Section */}
           <div className="flex flex-col justify-center">
             <h5 className="text-pace-orange-600 text-lg">
-              {'북미 취업의 A to Z'}
+              {'Empowering Your Career'}
             </h5>
             <div className="flex justify-between items-center ">
               <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-                {'페이스메이커 온라인 강의'}
+                {'Pacemaker Online Courses'}
               </h3>
               <Link
                 href="/courses"
                 className="w-fit flex items-center text-base text-pace-stone-500 font-normal gap-1"
               >
-                <span>{'온라인강의 전체 보기'}</span>
+                <span>{'View all courses'}</span>
                 <Image
                   src="/icons/arrow_right.svg"
                   alt="오른쪽 화살표 아이콘"

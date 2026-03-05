@@ -115,7 +115,7 @@ export default function PaymentSuccess() {
               href="/purchase"
               className="w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
             >
-              {item.type === '워크샵' ? '자세히 보기' : '수강하러 가기'}
+              {item.type === '워크샵' ? 'View detail' : '수강하러 가기'}
             </Link>
 
             <button className=""></button>

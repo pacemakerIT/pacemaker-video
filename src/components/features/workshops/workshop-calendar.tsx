@@ -277,7 +277,7 @@ export default function WorkshopCalendar({
               }}
               className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
             >
-              자세히 보기
+              View detail
             </Button>
           </div>
         </EventPopup>

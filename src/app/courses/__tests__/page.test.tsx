@@ -251,7 +251,7 @@ describe('CoursesPage', () => {
       () => {
         const listHeader = screen.getByTestId('list-header');
         expect(listHeader.textContent).toBe(
-          '북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'
+          'Build a strong foundation\nfor your career abroad with Pacemaker'
         );
       },
       { timeout: 5000 }

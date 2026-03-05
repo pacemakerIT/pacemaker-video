@@ -30,7 +30,7 @@ const ReviewContainer = () => {
   return (
     <div className="w-screen relative flex-col justify-center gap-8 py-20 overflow-hidden bg-pace-ivory-500 flex items-center">
       <h3 className="text-center text-2xl font-medium">
-        수강생들의 솔직한 리뷰를 확인해 보세요
+        Hear from learners who&apos;ve taken our courses.
       </h3>
       <div
         className={`whitespace-nowrap flex${reviews.length > 0 ? ' animate-marquee' : ''} p-4`}
