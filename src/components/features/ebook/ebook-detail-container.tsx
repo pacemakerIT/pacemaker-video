@@ -6,7 +6,7 @@ import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ItemType, TargetAudienceType } from '@prisma/client';
-import { RECOMMENDATION_BANNERS } from '@/constants/recommendations';
+import { CodeSquare, FileEdit } from 'lucide-react';
 
 export interface TOCItem {
   id: string;
@@ -30,15 +30,14 @@ interface EbookDetailContainerProps {
 
 export default function EbookDetailContainer({
   backgroundImage = '/img/ebook-bg.png',
-  subtitle: _ = 'Chosen by Canadian tech companies',
+  subtitle = 'Chosen by Canadian tech companies',
   title = 'Resume strategies\nthat help developers stand out.',
-  courseTitle: __ = 'Developer Job Applications & Networking',
+  courseTitle = 'Developer Job Applications & Networking',
   instructor = 'James',
   description = 'Learn how recruiters evaluate developer resumes, based on real hiring examples from Canadian tech companies.',
   price = '999.99',
   reviewCount = 185,
   rating = 5,
-  targetAudienceTypes = [TargetAudienceType.IT, TargetAudienceType.RESUME],
   tableOfContents
 }: EbookDetailContainerProps) {
   // 후기 데이터 (실제로는 API에서 가져올 데이터)
@@ -90,11 +89,18 @@ export default function EbookDetailContainer({
     }
   ];
 
-  // 추천 대상 데이터
-  // 추천 대상 데이터 - props로 받은 targetAudienceTypes 기반으로 배너 생성
-  const recommendationItems = targetAudienceTypes.map(
-    (type) => RECOMMENDATION_BANNERS[type]
-  );
+  const recommendationItems = [
+    {
+      icon: CodeSquare,
+      label: 'IT Specialist',
+      text: 'For those interested in North American tech careers'
+    },
+    {
+      icon: FileEdit,
+      label: 'Resume Prep',
+      text: 'For those who need help with North American resumes'
+    }
+  ];
 
   // 카드 데이터 정의
   const cards = [
@@ -133,7 +139,7 @@ export default function EbookDetailContainer({
         backgroundImage={backgroundImage}
         subtitle="E-book Presentation"
         title="Effective Resume Structure & Keywords"
-        courseTitle={title.replace('\n', ' ')}
+        courseTitle={courseTitle || title.replace('\n', ' ')}
         instructor={instructor}
         description={description}
         price={price}
@@ -145,7 +151,7 @@ export default function EbookDetailContainer({
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
         <div className="flex flex-col gap-8">
           <SectionHeader
-            subtitle="Chosen by Leading Canadian Tech Companies"
+            subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title="Effective Resume Structure & Keywords for Developers"
           />
           <div className="w-full flex gap-8">
