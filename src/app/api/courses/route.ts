@@ -101,3 +101,31 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { ids } = await request.json();
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { error: 'No IDs provided for deletion' },
+        { status: 400 }
+      );
+    }
+
+    const { count } = await prisma.course.deleteMany({
+      where: {
+        id: { in: ids }
+      }
+    });
+
+    return NextResponse.json({
+      message: `${count} courses deleted successfully`
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to delete courses: ${error}` },
+      { status: 500 }
+    );
+  }
+}
