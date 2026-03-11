@@ -24,7 +24,7 @@ export async function GET() {
     }));
 
     return NextResponse.json(ebooks);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch ebooks' },
       { status: 500 }
