@@ -123,7 +123,7 @@ function VisualRow({
         <p className="font-medium text-pace-base pb-2">{row.title}</p>
 
         {/* 강의내용 */}
-        <p className="text-pace-sm text-pace-stone-500 pb-1 line-clamp-2">
+        <p className="text-pace-sm text-pace-stone-500 mb-1 line-clamp-2">
           {row.description.length > 110
             ? `${row.description.slice(0, 110)}...`
             : row.description}
