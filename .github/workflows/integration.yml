@@ -31,27 +31,17 @@ jobs:
           set -euo pipefail
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            BASE_REF="${{ github.event.pull_request.base.sha }}"
-            RANGE="${BASE_REF}...${GITHUB_SHA}"
+            BASE_REF="$(git merge-base "${{ github.event.pull_request.base.sha }}" "${GITHUB_SHA}")"
           else
             BASE_REF="${{ github.event.before }}"
-            RANGE="${BASE_REF}..${GITHUB_SHA}"
           fi
 
           # Handle the first push edge case where event.before can be all zeros.
           if [[ "${BASE_REF}" =~ ^0+$ ]]; then
-            RANGE="HEAD~1..HEAD"
+            BASE_REF="HEAD~1"
           fi
 
-          CHANGED_FILES="$(git diff --name-only ${RANGE})"
-
-          if echo "${CHANGED_FILES}" | grep -qx 'prisma/schema.prisma'; then
-            if ! echo "${CHANGED_FILES}" | grep -qE '^prisma/migrations/.+/migration\.sql$'; then
-              echo "ERROR: prisma/schema.prisma changed but no Prisma migration file was added."
-              echo "Run: npx prisma migrate dev --name <description>"
-              exit 1
-            fi
-          fi
+          node scripts/verify-prisma-schema-sync.mjs "${BASE_REF}" "${GITHUB_SHA}"
 
       - name: Run Prisma Migration 🚀
         if: github.repository == 'pacemakerIT/pacemaker-video'
