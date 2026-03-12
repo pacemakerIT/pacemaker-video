@@ -212,8 +212,9 @@ model Course {
   detailTitle         String?
   promoText           String?
   summary             String?  
-  isPublic            Boolean @default(false)
-  
+  isPublic            Boolean              @default(false)
+  isMain              Boolean              @default(false)
+
   targetAudienceTypes TargetAudienceType[]
   instructors         Instructor[]
   videos              Video[]              @relation("CourseToVideos")
