@@ -1,0 +1,51 @@
+name: Sync Fork
+
+on:
+  workflow_run:
+    workflows: ['Integration 🔀']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    if: |
+      github.repository == 'pacemakerIT/pacemaker-video' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main'
+        )
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      FORK_REPO: nhistory/pacemaker-video
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref || github.event.workflow_run.head_sha }}
+
+      - name: Sync Main To Fork
+        env:
+          NHISTORY_SYNC_TOKEN: ${{ secrets.NHISTORY_SYNC_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${NHISTORY_SYNC_TOKEN}" ]]; then
+            echo "Missing NHISTORY_SYNC_TOKEN secret."
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git remote add fork "https://x-access-token:${NHISTORY_SYNC_TOKEN}@github.com/${FORK_REPO}.git"
+          git fetch fork main
+          git push --force-with-lease fork HEAD:main
