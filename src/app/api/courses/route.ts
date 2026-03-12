@@ -69,6 +69,53 @@ export async function GET() {
   }
 }
 
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const {
+      title,
+      description,
+      price,
+      isPublic,
+      isMain,
+      category,
+      duration,
+      promoText,
+      summary,
+      detailTitle
+    } = body;
+
+    if (!title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    const newCourse = await prisma.course.create({
+      data: {
+        title,
+        description,
+        price,
+        isPublic,
+        isMain,
+        category: category || 'NETWORKING',
+        duration,
+        promoText,
+        summary,
+        detailTitle
+      }
+    });
+
+    return NextResponse.json(
+      { message: 'Course created successfully', course: newCourse },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to create course: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
@@ -97,6 +144,34 @@ export async function PUT(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to update courses: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { ids } = await request.json();
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { error: 'No IDs provided for deletion' },
+        { status: 400 }
+      );
+    }
+
+    const { count } = await prisma.course.deleteMany({
+      where: {
+        id: { in: ids }
+      }
+    });
+
+    return NextResponse.json({
+      message: `${count} courses deleted successfully`
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to delete courses: ${error}` },
       { status: 500 }
     );
   }
