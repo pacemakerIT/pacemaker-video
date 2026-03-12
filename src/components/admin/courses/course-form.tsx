@@ -56,9 +56,15 @@ export type CourseData = {
 
 type Props = {
   initialData?: CourseData;
+  isEdit?: boolean;
+  courseId?: string;
 };
 
-export default function CourseForm({ initialData }: Props) {
+export default function CourseForm({
+  initialData,
+  isEdit = false,
+  courseId
+}: Props) {
   const [courseData, setCourseData] = useState<CourseData>(
     initialData || {
       category: '',
@@ -101,7 +107,7 @@ export default function CourseForm({ initialData }: Props) {
   const [errors, setErrors] = useState<CourseFormErrors>({});
 
   // 제출 함수
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors: CourseFormErrors = {};
 
     if (!courseData.category) newErrors.category = '카테고리를 선택해주세요.';
@@ -195,7 +201,45 @@ export default function CourseForm({ initialData }: Props) {
       return;
     }
 
-    toast.success('등록 완료!');
+    try {
+      // TODO: 파일 업로드(이미지 등)가 필요한 경우, 먼저 S3 등에 업로드 후 URL을 받아와서 FormData 대신 JSON으로 전송하거나, 서버 API에서 멀티파트를 처리해야 합니다.
+      // 일단은 현재 폼 데이터를 POST로 보내는 기본 기능을 구현합니다.
+      const payload = {
+        category: courseData.category,
+        isPublic: courseData.isPublic === '공개',
+        isMain: courseData.showOnMain,
+        title: courseData.title,
+        description: courseData.intro,
+        price: courseData.price,
+        duration: courseData.time,
+        promoText: courseData.processTitle,
+        summary: courseData.processContent,
+        detailTitle: courseData.visualTitle
+        // ... 필요한 다른 필드들 매핑
+      };
+
+      const url =
+        isEdit && courseId ? `/api/courses/detail/${courseId}` : '/api/courses';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        toast.success(isEdit ? '수정 완료!' : '등록 완료!');
+        window.location.href = '/admin/courses';
+      } else {
+        const errorData = await res.json();
+        toast.error(`저장 실패: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch {
+      toast.error('저장 중 오류가 발생했습니다.');
+    }
   };
 
   const updateCourseData = <K extends keyof CourseData>(
@@ -234,7 +278,14 @@ export default function CourseForm({ initialData }: Props) {
   };
 
   return (
-    <div className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16">
+    <form
+      id="course-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16"
+    >
       {/* 카테고리 / 공개여부 / 메인표시 */}
       <CourseBasicSection
         category={courseData.category}
@@ -346,7 +397,7 @@ export default function CourseForm({ initialData }: Props) {
       />
 
       {/* 버튼 */}
-      <CourseActionButtons onSubmit={handleSubmit} />
-    </div>
+      <CourseActionButtons submitLabel={isEdit ? '수정' : '등록'} />
+    </form>
   );
 }
