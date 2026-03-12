@@ -3,15 +3,15 @@
 import Link from 'next/link';
 
 type Props = {
-  onSubmit: () => void;
   onPreview?: () => void;
   cancelHref?: string;
+  submitLabel?: string;
 };
 
 export default function CourseActionButtons({
-  onSubmit,
   onPreview,
-  cancelHref = '/admin/courses'
+  cancelHref = '/admin/courses',
+  submitLabel = '등록'
 }: Props) {
   return (
     <div className="flex justify-between items-center border-t border-pace-gray-200 pt-10">
@@ -35,11 +35,10 @@ export default function CourseActionButtons({
           </button>
         </Link>
         <button
-          type="button"
-          onClick={onSubmit}
+          type="submit"
           className="w-[112px] h-[60px] rounded bg-pace-gray-700 text-white hover:bg-pace-gray-800"
         >
-          등록
+          {submitLabel}
         </button>
       </div>
     </div>
