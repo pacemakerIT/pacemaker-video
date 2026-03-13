@@ -41,18 +41,18 @@ export type WorkshopFromApi = {
 };
 
 const monthMap: { [key: string]: string } = {
-  January: '1월',
-  February: '2월',
-  March: '3월',
-  April: '4월',
-  May: '5월',
-  June: '6월',
-  July: '7월',
-  August: '8월',
-  September: '9월',
-  October: '10월',
-  November: '11월',
-  December: '12월'
+  January: 'January',
+  February: 'February',
+  March: 'March',
+  April: 'April',
+  May: 'May',
+  June: 'June',
+  July: 'July',
+  August: 'August',
+  September: 'September',
+  October: 'October',
+  November: 'November',
+  December: 'December'
 };
 
 function get6MonthRange(center: Date) {
@@ -95,9 +95,8 @@ function CustomToolbar({
           {label}
         </h2>
         <p className="text-pace-stone-500 text-pace-base truncate">
-          {monthMap[label.split(' ')[0]]}에는{' '}
-          <span className="text-pace-orange-600">{count}개</span>의 워크샵이
-          있어요
+          <span className="text-pace-orange-600">{count}</span> Workshops in{' '}
+          {monthMap[label.split(' ')[0]]}
         </p>
       </div>
       <button
@@ -267,9 +266,11 @@ export default function WorkshopCalendar({
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
-                <p className="text-pace-sm pb-2">강사 {openedEvent.speaker}</p>
+                <p className="text-pace-sm pb-2">
+                  Instructor: {openedEvent.speaker}
+                </p>
               )}
-            <p className="text-pace-sm pb-2">참가비 {openedEvent.fee}</p>
+            <p className="text-pace-sm pb-2">Fee: {openedEvent.fee}</p>
             <Button
               onClick={() => {
                 onSelectWorkshop?.(openedEvent.title); // 워크숍 title을 상위로 전달
