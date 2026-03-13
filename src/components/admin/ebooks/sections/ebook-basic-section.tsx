@@ -39,11 +39,7 @@ export default function EbookBasicSection({
             onChange={setCategory}
             width="w-[240px]"
             placeholder="선택"
-            options={[
-              { value: '인터뷰', label: '인터뷰' },
-              { value: '이력서', label: '이력서' },
-              { value: '네트워킹', label: '네트워킹' }
-            ]}
+            options={[{ value: 'NETWORKING', label: '네트워킹' }]}
           />
 
           {/* 에러 표시 */}
