@@ -242,13 +242,11 @@ export default function VideoDetailContainer({
 
   // Dynamic content items from database
   const contentItems =
-    data.course.sections.flatMap((section) =>
-      section.items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        content: item.content
-      }))
-    ) || [];
+    data.course.sections.map((section) => ({
+      id: section.id,
+      title: section.title,
+      content: section.description || ''
+    })) || [];
 
   // Icon mapping for recommendation items
   const getIcon = (iconName: string | null) => {

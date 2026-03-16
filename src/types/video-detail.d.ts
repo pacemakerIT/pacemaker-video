@@ -65,7 +65,6 @@ export interface Course {
   targetAudienceTypes: string[];
   targetAudiences: CourseTargetAudience[];
   relatedCourses: RelatedCourse[];
-  instructors: Instructor[];
 }
 
 export interface RelatedCourse {
@@ -104,23 +103,8 @@ export interface Section {
   title: string;
   description: string | null;
   orderIndex: number;
-  items: SectionItem[];
   videos: Video[];
 }
-
-export interface SectionItem {
-  id: string;
-  title: string;
-  content: string;
-  icon: string | null;
-  orderIndex: number;
-  itemId?: string;
-  price?: number;
-  category?: string;
-  type?: string;
-  thumbnail?: string;
-}
-
 export interface CourseTargetAudience {
   type: string;
   title: string;
