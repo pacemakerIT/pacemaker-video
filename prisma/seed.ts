@@ -73,8 +73,10 @@ async function main() {
   await prisma.mainVisual.createMany({
     data: [
       {
-        title: 'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
-        description: 'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+        title:
+          'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
+        description:
+          'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
         isPublic: true,
         linkName: 'Explore programs',
         link: '/courses',
@@ -466,22 +468,45 @@ async function main() {
 
   // 7) 워크샵 생성 (Mock data from UX Design & Home page)
   console.log('Generating dummy workshops...');
-  const uxDesignWorkshops = [
-    { title: 'UX Design Workshop', status: 'RECRUITING', category: 'NETWORKING' },
-    { title: 'UX Design Workshop', status: 'ONGOING', category: 'NETWORKING' },
-    { title: 'UX Design Workshop', status: 'COMPLETED', category: 'NETWORKING' },
-    { title: 'UX Design Workshop', status: 'COMPLETED', category: 'NETWORKING' }
+  const uxDesignWorkshopData = [
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-01-15T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-02-10T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-03-05T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'RECRUITING',
+      category: 'NETWORKING',
+      date: '2026-03-20T19:00:00Z'
+    }
   ];
 
-  for (const ws of uxDesignWorkshops) {
+  for (const ws of uxDesignWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
     await prisma.workshop.create({
       data: {
         id: randomUUID(),
         title: ws.title,
         description:
           "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
-        startDate: new Date('2026-03-20T19:00:00Z'),
-        endDate: new Date('2026-03-20T21:00:00Z'),
+        startDate,
+        endDate,
         price: 20,
         locationOrUrl: 'North York centre',
         status: ws.status as WorkshopStatus,
@@ -492,21 +517,49 @@ async function main() {
     });
   }
 
-  const homeWorkshops = [
-    { title: 'Mind Training for Success', category: 'NETWORKING', status: 'ONGOING', thumbnail: '/img/course_image2.png' },
-    { title: "Let's Connect!", category: 'NETWORKING', status: 'COMPLETED', thumbnail: '/img/course_image3.png' },
-    { title: 'Build an English Resume for Career Transitions', category: 'RESUME', status: 'RECRUITING', thumbnail: '/img/course_image1.png' },
-    { title: 'Resume Workshop for International Opportunities', category: 'NETWORKING', status: 'COMPLETED', thumbnail: '/img/course_image2.png' }
+  const homeWorkshopData = [
+    {
+      title: 'Mind Training for Success',
+      category: 'NETWORKING',
+      status: 'ONGOING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-03-16T19:00:00Z'
+    },
+    {
+      title: "Let's Connect!",
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image3.png',
+      date: '2026-05-15T19:00:00Z'
+    },
+    {
+      title: 'Build an English Resume for Career Transitions',
+      category: 'RESUME',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image1.png',
+      date: '2026-08-10T19:00:00Z'
+    },
+    {
+      title: 'Resume Workshop for International Opportunities',
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-11-05T19:00:00Z'
+    }
   ];
 
-  for (const ws of homeWorkshops) {
+  for (const ws of homeWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
     await prisma.workshop.create({
       data: {
         id: randomUUID(),
         title: ws.title,
-        description: 'Join this workshop to gain valuable insights and boost your career.',
-        startDate: new Date('2026-03-21T19:00:00Z'),
-        endDate: new Date('2026-03-21T21:00:00Z'),
+        description:
+          'Join this workshop to gain valuable insights and boost your career.',
+        startDate,
+        endDate,
         price: 20,
         locationOrUrl: 'North York centre',
         status: ws.status as WorkshopStatus,
