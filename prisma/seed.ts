@@ -56,7 +56,6 @@ async function main() {
   } else {
     console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
     await prisma.video.deleteMany({});
-    await prisma.sectionItem.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
     await prisma.document.deleteMany({});
@@ -71,8 +70,10 @@ async function main() {
   await prisma.mainVisual.createMany({
     data: [
       {
-        title: 'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
-        description: 'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+        title:
+          'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
+        description:
+          'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
         isPublic: true,
         linkName: 'Explore programs',
         link: '/courses',
@@ -200,13 +201,10 @@ async function main() {
     for (const section of sections) {
       const content = SECTION_CONTENT_MAP[section.title];
       if (content) {
-        await prisma.sectionItem.create({
+        await prisma.section.update({
+          where: { id: section.id },
           data: {
-            id: randomUUID(),
-            sectionId: section.id,
-            title: section.title,
-            content: content,
-            orderIndex: 1
+            description: content
           }
         });
       }

@@ -17,7 +17,6 @@ export async function GET(
         videos: true,
         sectionsRel: {
           include: {
-            items: true,
             videos: true
           },
           orderBy: {
@@ -79,10 +78,7 @@ export async function GET(
       ...courseData,
       sections: (courseData.sectionsRel || []).map((section) => ({
         ...section,
-        items: (section.items || []).map((item) => ({
-          ...item,
-          icon: item.icon || null
-        }))
+        videos: section.videos || []
       })),
       targetAudiences: (courseData.targetAudienceTypes || []).map((type) => {
         const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
