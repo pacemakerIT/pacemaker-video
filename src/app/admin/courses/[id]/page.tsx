@@ -1,6 +1,6 @@
 'use client';
 
-import CourseForm, { CourseData } from '@/components/admin/courses/course-form';
+import AddForm, { CourseData } from '@/components/admin/add-form';
 
 // Mock Data for testing edit mode
 const MOCK_COURSE_DATA: CourseData = {
@@ -103,7 +103,7 @@ export default function CourseEditPage() {
           </span>
         </div>
 
-        <CourseForm initialData={courseData} />
+        <AddForm formType="course" initialData={courseData} />
       </div>
     </div>
   );
