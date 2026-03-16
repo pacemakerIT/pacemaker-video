@@ -246,7 +246,7 @@ export default function WorkshopCalendar({
           event: ({ event }) => (
             <div
               onClick={(e) => handleEventClick(e, event)}
-              className={`cursor-pointer text-sm rounded px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02] ${calendarStyleMap[event.status].event}`}
+              className={`${openedEvent ? 'rounded-t' : 'rounded'} cursor-pointer text-sm rounded-t px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02] ${calendarStyleMap[event.status].event}`}
             >
               {event.title}
             </div>
@@ -262,7 +262,7 @@ export default function WorkshopCalendar({
           onClose={() => setOpenedEvent(null)}
         >
           <div
-            className={`rounded-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
+            className={`rounded-b-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (

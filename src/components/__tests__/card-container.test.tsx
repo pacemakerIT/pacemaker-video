@@ -21,8 +21,8 @@ describe('CardContainer', () => {
       category: 'INTERVIEW',
       uploadDate: new Date(),
       itemId: 'video1',
-      watchedVideos: undefined,
-      purchasedVideos: undefined
+      watchedVideos: [],
+      purchasedVideos: []
     },
     {
       id: '2',
@@ -32,8 +32,8 @@ describe('CardContainer', () => {
       category: 'RESUME',
       uploadDate: new Date(),
       itemId: 'video2',
-      watchedVideos: undefined,
-      purchasedVideos: undefined
+      watchedVideos: [],
+      purchasedVideos: []
     },
     {
       id: '3',
@@ -43,8 +43,8 @@ describe('CardContainer', () => {
       category: 'NETWORKING',
       uploadDate: new Date(),
       itemId: 'video3',
-      watchedVideos: undefined,
-      purchasedVideos: undefined
+      watchedVideos: [],
+      purchasedVideos: []
     }
   ];
 
