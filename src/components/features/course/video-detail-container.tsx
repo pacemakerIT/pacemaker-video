@@ -300,6 +300,7 @@ export default function VideoDetailContainer({
         onToggleLike={handleToggleLike}
         isLiked={isLiked}
         buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
+        itemType={ItemType.COURSE}
       />
 
       <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
