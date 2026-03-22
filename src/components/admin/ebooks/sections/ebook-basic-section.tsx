@@ -40,9 +40,9 @@ export default function EbookBasicSection({
             width="w-[240px]"
             placeholder="선택"
             options={[
-              { value: '인터뷰', label: '인터뷰' },
-              { value: '이력서', label: '이력서' },
-              { value: '네트워킹', label: '네트워킹' }
+              { value: 'NETWORKING', label: 'Networking' },
+              { value: 'INTERVIEW', label: 'Interview' },
+              { value: 'RESUME', label: 'Resume' }
             ]}
           />
 
