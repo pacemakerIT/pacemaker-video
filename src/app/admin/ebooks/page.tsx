@@ -11,6 +11,7 @@ import {
 } from '@/lib/actions/ebook-actions';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
+import { itemCategoryLabel } from '@/constants/labels';
 
 import {
   DndContext,
