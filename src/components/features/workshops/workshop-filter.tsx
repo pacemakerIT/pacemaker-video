@@ -4,7 +4,7 @@ import React from 'react';
 import { WorkshopStatus } from '@/types/workshops';
 import { calendarStyleMap } from '@/components/ui/calendar-style-map';
 
-type FilterKey = '전체' | WorkshopStatus;
+type FilterKey = 'All' | WorkshopStatus;
 
 interface WorkshopFilterProps {
   selected: FilterKey;
@@ -12,15 +12,15 @@ interface WorkshopFilterProps {
 }
 
 const FILTERS: { label: string; value: FilterKey }[] = [
-  { label: '전체', value: '전체' },
-  { label: '모집중', value: WorkshopStatus.RECRUITING },
-  { label: '모집완료', value: WorkshopStatus.CLOSED },
-  { label: '진행중', value: WorkshopStatus.ONGOING },
-  { label: '진행완료', value: WorkshopStatus.COMPLETED }
+  { label: 'All', value: 'All' },
+  { label: 'Open', value: WorkshopStatus.RECRUITING },
+  { label: 'Closed', value: WorkshopStatus.CLOSED },
+  { label: 'Ongoing', value: WorkshopStatus.ONGOING },
+  { label: 'Completed', value: WorkshopStatus.COMPLETED }
 ];
 
 const getSelectedStyle = (status: FilterKey) => {
-  if (status === '전체') {
+  if (status === 'All') {
     return {
       text: 'text-pace-orange-500',
       border: 'border-pace-orange-500',
@@ -37,7 +37,7 @@ const getSelectedStyle = (status: FilterKey) => {
 };
 
 const getHoverStyle = (status: FilterKey) => {
-  if (status === '전체') {
+  if (status === 'All') {
     return 'hover:text-pace-orange-500 hover:border-pace-orange-500';
   }
 
