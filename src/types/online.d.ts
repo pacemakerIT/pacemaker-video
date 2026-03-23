@@ -20,4 +20,7 @@ export interface OnlineCards {
   watchedVideos: unknown[];
   purchasedVideos: unknown[];
   itemType?: ItemType;
+  startDate?: string | Date;
+  locationOrUrl?: string;
+  status?: string;
 }

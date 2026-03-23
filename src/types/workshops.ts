@@ -9,11 +9,13 @@ export enum WorkshopStatus {
 export interface WorkshopCard {
   id: string;
   title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
+  description: string | null;
+  startDate: string | Date;
+  endDate: string | Date;
   price: number | null;
   status: WorkshopStatus;
+  category: string | null;
+  thumbnail: string | null;
   instructor: {
     name: string | null;
   } | null;
