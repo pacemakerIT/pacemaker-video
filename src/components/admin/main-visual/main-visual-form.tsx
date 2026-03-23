@@ -150,7 +150,7 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
           setStatus('public');
         }
       }
-    }, [startDate, endDate, startTime, endTime]);
+    }, [startDate, endDate, startTime, endTime, status]);
 
     // 최종 제출
     const handleSubmit = () => {
