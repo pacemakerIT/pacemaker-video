@@ -13,7 +13,8 @@ const mockCard: OnlineCards = {
   itemId: 'video1',
   uploadDate: new Date(),
   watchedVideos: [],
-  purchasedVideos: []
+  purchasedVideos: [],
+  status: 'RECRUITING'
 };
 
 describe('ImageOverlayCard', () => {
@@ -22,7 +23,7 @@ describe('ImageOverlayCard', () => {
     expect(screen.getByText('Card 1')).toBeInTheDocument();
     expect(screen.getByText('WORKSHOP')).toBeInTheDocument();
     expect(screen.getByTestId('card-image')).toBeInTheDocument();
-    expect(screen.getByText('진행중')).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
   });
 
   it('toggles like state when heart button is clicked', () => {
