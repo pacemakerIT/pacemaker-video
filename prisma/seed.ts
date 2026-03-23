@@ -19,16 +19,17 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg(pool)
 });
 
-const COURSE_TITLE = 'From Differentiated Resumes to Confident Interviews';
-const COURSE_DESC =
+const TITLE = 'Resume + Interview Prep (All-in-One)';
+const DESCRIPTION =
   'Learn how recruiters evaluate resumes and interviews, based on real hiring examples from Canadian companies.';
-const LONG_DESCRIPTION = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
+const PROCESS_CONTENT = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
 
 If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
-const TITLE = 'From Differentiated Resumes to Confident Interviews';
+const VISUAL_TITLE = 'Chosen by Professionals';
+const VISUAL_TITLE_2 = 'From Differentiated Resumes to Confident Interviews';
 
-const DETAIL_TITLE =
+const PROCESS_TITLE =
   'Step by Step: From a Strong Developer Resume to Interviews';
 
 const COURSE_THUMBNAILS = [
@@ -160,20 +161,19 @@ async function main() {
     await prisma.course.create({
       data: {
         id: courseId,
+        category: categoryString as CourseCategory,
+        isPublic: true,
+        showOnMain: true,
         title: TITLE,
-        courseTitle: COURSE_TITLE,
-        description: LONG_DESCRIPTION,
-        promoText: 'Chosen by Professionals',
-        summary: COURSE_DESC,
-        detailTitle: DETAIL_TITLE,
+        description: DESCRIPTION,
+        processTitle: PROCESS_TITLE,
+        processContent: PROCESS_CONTENT,
+        videoLink: 'https://vimeo.com/123456789',
         price: '2800',
-        rating: 5,
-        reviewCount: 1500,
-        category: categoryString as 'INTERVIEW' | 'RESUME' | 'NETWORKING',
-        duration: '7 Hours',
-        level: 'Intermediate',
-        language: 'English',
-        backgroundImage: thumbnail,
+        time: '7 Hours',
+        thumbnailUrl: thumbnail,
+        visualTitle: VISUAL_TITLE,
+        visualTitle2: VISUAL_TITLE_2,
         instructors: {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
@@ -250,18 +250,22 @@ async function main() {
   const ebooks = [
     {
       category: DocumentCategory.MARKETING,
-      title: 'The 94% Success Formula: A Proven Approach to Job & Career Transitions',
+      title:
+        'The 94% Success Formula: A Proven Approach to Job & Career Transitions',
       subTitle: 'Branding & Networking for Marketers',
-      description: 'Learn what truly matters in hiring criteria and how to build the right experience to strengthen your resume.',
+      description:
+        'Learn what truly matters in hiring criteria and how to build the right experience to strengthen your resume.',
       price: 2800,
       visualTitle1: 'Branding & Networking',
       visualTitle2: 'for Marketers'
     },
     {
       category: DocumentCategory.DESIGN,
-      title: 'What Every Designer Should Know: Interviews That Shape Your Career',
+      title:
+        'What Every Designer Should Know: Interviews That Shape Your Career',
       subTitle: 'Preparing for Design Interviews',
-      description: 'Identify your unique strengths and communicate your design thinking with confidence during interviews.',
+      description:
+        'Identify your unique strengths and communicate your design thinking with confidence during interviews.',
       price: 2800,
       visualTitle1: 'Preparing for',
       visualTitle2: 'Design Interviews'
@@ -270,7 +274,8 @@ async function main() {
       category: DocumentCategory.PUBLIC,
       title: 'A Resume That Gets You Hired in the North American Public Sector',
       subTitle: 'Public Sector Resume',
-      description: 'Learn how to structure your resume to meet public sector hiring criteria and leave a strong, positive impression on recruiters.',
+      description:
+        'Learn how to structure your resume to meet public sector hiring criteria and leave a strong, positive impression on recruiters.',
       price: 2800,
       visualTitle1: 'Public Sector',
       visualTitle2: 'Resume'
@@ -279,25 +284,30 @@ async function main() {
       category: DocumentCategory.IT,
       title: 'The 94% Success Formula: Resumes That Win Jobs and Interviews',
       subTitle: 'IT Resume & Interview Preparation',
-      description: 'Understand what hiring managers look for and learn how to build a resume and interview strategy aligned with North American IT hiring standards.',
+      description:
+        'Understand what hiring managers look for and learn how to build a resume and interview strategy aligned with North American IT hiring standards.',
       price: 2800,
       visualTitle1: 'IT Resume &',
       visualTitle2: 'Interview Preparation'
     },
     {
       category: DocumentCategory.ACCOUNTING,
-      title: 'A practical guide to Interviews for finance and accounting roles, learn once, use for life.',
+      title:
+        'A practical guide to Interviews for finance and accounting roles, learn once, use for life.',
       subTitle: 'Preparing for Accounting Interviews',
-      description: 'Learn how to identify your strengths and clues to present them in resumes and interviews.',
+      description:
+        'Learn how to identify your strengths and clues to present them in resumes and interviews.',
       price: 2800,
       visualTitle1: 'Preparing for',
       visualTitle2: 'Accounting Interviews'
     },
     {
       category: DocumentCategory.SERVICE,
-      title: 'The 94% success approach: communicate your value clearly in job searches and career moves.',
+      title:
+        'The 94% success approach: communicate your value clearly in job searches and career moves.',
       subTitle: 'Resume & Networking for Service Roles',
-      description: 'Learn what truly matters in resumes and how to build relevant experience strategically.',
+      description:
+        'Learn what truly matters in resumes and how to build relevant experience strategically.',
       price: 2800,
       visualTitle1: 'Resume & Networking',
       visualTitle2: 'for Service Roles'

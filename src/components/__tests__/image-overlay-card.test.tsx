@@ -6,11 +6,13 @@ import { ItemType } from '@prisma/client';
 
 const mockCard: OnlineCards = {
   id: '1',
-  title: 'Card 1',
+  visualTitle2: 'Card 1',
   price: 0,
-  summary: '',
+  description: '',
   category: ItemType.WORKSHOP,
   itemId: 'video1',
+  isPublic: true,
+  showOnMain: true,
   uploadDate: new Date(),
   watchedVideos: [],
   purchasedVideos: []

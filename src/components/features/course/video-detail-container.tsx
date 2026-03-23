@@ -27,7 +27,7 @@ import DetailRelatedContentSection from '../../common/detail-related-content-sec
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
-
+import { resolveImageSrc } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
@@ -286,16 +286,19 @@ export default function VideoDetailContainer({
   return (
     <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
-        title={data.course.title}
-        courseTitle={data.course.courseTitle}
-        subtitle={data.course.promoText || undefined}
-        description={data.course.summary || data.course.description}
-        price={data.course.price}
+        visualTitle2={data.course.visualTitle2}
+        title={data.course.title || ''}
+        subtitle={data.course.visualTitle || undefined}
+        description={data.course.description || ''}
+        price={data.course.price || ''}
         instructor={
           data.instructors?.map((inst) => inst.name).join(', ') ||
           '페이스메이커'
         }
-        backgroundImage={data.course.backgroundImage}
+        backgroundImage={resolveImageSrc({
+          thumbnailUrl: data.course.thumbnailUrl,
+          itemType: ItemType.COURSE
+        })}
         onAddToCart={handleAddToCart}
         onToggleLike={handleToggleLike}
         isLiked={isLiked}
@@ -317,12 +320,12 @@ export default function VideoDetailContainer({
           <SectionHeader
             subtitle="How the Course Works"
             title={
-              data.course.detailTitle ||
+              data.course.processTitle ||
               'Step by Step: From a Strong Developer Resume to Interviews'
             }
           />
           <div className="flex gap-4">
-            <div className="text-pace-stone-500 whitespace-pre-wrap">
+            <div className="w-[60%] text-pace-stone-500 whitespace-pre-wrap">
               {data.course.description ||
                 'Detailed course description not available.'}
             </div>
@@ -420,7 +423,6 @@ export default function VideoDetailContainer({
               reviewContent: review.content
             })) || []
           }
-          rating={data.course.rating}
         />
       </div>
 

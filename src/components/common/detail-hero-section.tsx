@@ -7,8 +7,8 @@ import { resolveImageSrc } from '@/lib/utils';
 interface DetailHeroSectionProps {
   backgroundImage?: string;
   subtitle?: string;
+  visualTitle2?: string;
   title?: string;
-  courseTitle?: string;
   instructor?: string;
   description?: string;
   price?: string;
@@ -24,8 +24,8 @@ interface DetailHeroSectionProps {
 export default function DetailHeroSection({
   backgroundImage,
   subtitle,
-  title = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
-  courseTitle = '자기소개서 작성 및 면접 준비까지 하나로!',
+  visualTitle2 = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
+  title = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
   description = '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!',
   price = '$999.99',
@@ -85,7 +85,7 @@ export default function DetailHeroSection({
               isCourse ? 'text-white' : 'text-black'
             }`}
           >
-            {title}
+            {visualTitle2}
           </h1>
         </div>
 
@@ -93,7 +93,7 @@ export default function DetailHeroSection({
         <div className="w-[40%] flex justify-center items-center px-8 relative z-10 ">
           <div className="flex flex-col bg-white backdrop-blur-sm rounded-2xl p-8 shadow-2xl w-full max-w-[360px] gap-4">
             <h2 className="text-pace-xl font-medium text-pace-gray-500 mb-2">
-              {courseTitle}
+              {title}
             </h2>
             <div className="flex justify-start items-center gap-4">
               <span>{instructorLabel}</span>
