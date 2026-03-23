@@ -56,25 +56,22 @@ model MainVisual {
 }
 
 model Course {
-  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title               String
-  courseTitle         String?
-  description         String?
-  price               String?
-  rating              Float?
-  reviewCount         Int?
-  duration            String?
-  level               String?
-  language            String?
-  backgroundImage     String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  category            CourseCategory?
-  detailTitle         String?
-  promoText           String?
-  summary             String?  
-  isPublic            Boolean              @default(false)
-  isMain              Boolean              @default(false)
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  category        CourseCategory?
+  isPublic        Boolean              @default(false)
+  showOnMain      Boolean              @default(false)
+  title           String?
+  description     String?
+  processTitle    String?
+  processContent  String?
+  videoLink       String?
+  price           String?
+  time            String?
+  thumbnailUrl    String?
+  visualTitle     String?
+  visualTitle2    String
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   targetAudienceTypes TargetAudienceType[]
   instructors         Instructor[]

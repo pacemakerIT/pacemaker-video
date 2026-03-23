@@ -138,8 +138,8 @@ export default function EbookDetailContainer({
       <DetailHeroSection
         backgroundImage={backgroundImage}
         subtitle="E-book Presentation"
-        title="Effective Resume Structure & Keywords"
-        courseTitle={courseTitle || title.replace('\n', ' ')}
+        visualTitle2="Effective Resume Structure & Keywords"
+        title={courseTitle || title.replace('\n', ' ')}
         instructor={instructor}
         description={description}
         price={price}

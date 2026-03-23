@@ -35,7 +35,7 @@ export default function ExpandableCards({
   };
 
   return (
-    <div className={cn('w-full max-w-4xl mx-auto', className)}>
+    <div className={cn('w-[40%] max-w-4xl mx-auto', className)}>
       <div className="space-y-4">
         {items.map((item) => (
           <div

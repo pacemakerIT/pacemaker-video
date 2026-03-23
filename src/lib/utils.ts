@@ -9,12 +9,12 @@ export function cn(...inputs: ClassValue[]) {
 export function resolveImageSrc({
   thumbnail,
   imageUrl,
-  backgroundImage,
+  thumbnailUrl,
   itemType
 }: {
   thumbnail?: string | null;
   imageUrl?: string | null;
-  backgroundImage?: string | null;
+  thumbnailUrl?: string | null;
   itemType?: ItemType;
 }) {
   // 1. Local path check
@@ -29,8 +29,8 @@ export function resolveImageSrc({
     )}`;
   }
 
-  // 3. Fallback to imageUrl or backgroundImage
-  const secondaryImage = imageUrl || backgroundImage;
+  // 3. Fallback to thumbnailUrl or imageUrl
+  const secondaryImage = thumbnailUrl || imageUrl;
   if (secondaryImage) {
     return secondaryImage;
   }
