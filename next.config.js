@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@prisma/adapter-pg'],
   webpack: (config) => {
     config.resolve.alias.canvas = false;
     return config;
