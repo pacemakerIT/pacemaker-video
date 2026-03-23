@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import workshops from '@/../public/json/workshops.json'; // mock JSON import
+import prisma from '@/lib/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -13,7 +13,14 @@ export async function GET(req: Request) {
   try {
     // 1. 단건 조회
     if (id) {
-      const workshop = workshops.find((w) => w.id === id);
+      const workshop = await prisma.workshop.findUnique({
+        where: { id },
+        include: {
+          instructor: {
+            select: { name: true } // User model only has name (and nickname, image, etc.)
+          }
+        }
+      });
       if (!workshop) {
         return NextResponse.json(
           { error: 'Workshop not found' },
@@ -47,14 +54,36 @@ export async function GET(req: Request) {
         59
       );
 
-      const filtered = workshops.filter((w) => {
-        const d = new Date(w.startDate);
-        return d >= startDate && d <= endDate;
+      const workshops = await prisma.workshop.findMany({
+        where: {
+          startDate: {
+            gte: startDate,
+            lte: endDate
+          }
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          startDate: true,
+          endDate: true,
+          price: true,
+          locationOrUrl: true,
+          status: true,
+          category: true,
+          thumbnail: true,
+          instructor: {
+            select: { name: true }
+          }
+        },
+        orderBy: {
+          startDate: 'asc'
+        }
       });
 
       return NextResponse.json({
-        workshops: filtered,
-        count: filtered.length
+        workshops,
+        count: workshops.length
       });
     }
 
@@ -63,18 +92,61 @@ export async function GET(req: Request) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
 
-      const filtered = workshops.filter((w) => {
-        const d = new Date(w.startDate);
-        return d >= startDate && d <= endDate;
+      const workshops = await prisma.workshop.findMany({
+        where: {
+          startDate: {
+            gte: startDate,
+            lte: endDate
+          }
+        },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          startDate: true,
+          endDate: true,
+          price: true,
+          locationOrUrl: true,
+          status: true,
+          category: true,
+          thumbnail: true,
+          instructor: {
+            select: { name: true }
+          }
+        },
+        orderBy: {
+          startDate: 'asc'
+        }
       });
 
       return NextResponse.json({
-        workshops: filtered,
-        count: filtered.length
+        workshops,
+        count: workshops.length
       });
     }
 
     // 4. 전체 조회 (fallback)
+    const workshops = await prisma.workshop.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        startDate: true,
+        endDate: true,
+        price: true,
+        locationOrUrl: true,
+        status: true,
+        category: true,
+        thumbnail: true,
+        instructor: {
+          select: { name: true }
+        }
+      },
+      orderBy: {
+        startDate: 'asc'
+      }
+    });
+
     return NextResponse.json({
       workshops,
       count: workshops.length

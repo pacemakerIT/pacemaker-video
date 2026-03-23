@@ -57,6 +57,7 @@ export async function GET() {
       status: course.isPublic ? '공개중' : '비공개',
       thumbnail: course.backgroundImage || '',
       selected: false,
+      summary: course.summary || '',
       category: course.category || 'NETWORKING'
     }));
 

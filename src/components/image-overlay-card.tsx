@@ -8,7 +8,10 @@ import { useState, useMemo } from 'react';
 export default function ImageOverlayCard({
   itemId,
   title,
-  category
+  category,
+  startDate,
+  locationOrUrl,
+  status
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -25,6 +28,32 @@ export default function ImageOverlayCard({
   }, []);
 
   const displayTitle = title || '';
+  const formattedStatus =
+    status === 'RECRUITING'
+      ? 'Open'
+      : status === 'CLOSED'
+        ? 'Closed'
+        : status === 'ONGOING'
+          ? 'Ongoing'
+          : status === 'COMPLETED'
+            ? 'Completed'
+            : status;
+
+  function formatDateTime(dateStr: string | Date | undefined | null) {
+    if (!dateStr) return 'TBA';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const isPM = hour >= 12;
+    const hour12 = hour % 12 || 12;
+    const minuteStr =
+      minute === 0 ? '' : `:${minute.toString().padStart(2, '0')}`;
+    const ampm = isPM ? 'PM' : 'AM';
+    return `${year}.${month}.${day} ${hour12}${minuteStr}${ampm}`;
+  }
 
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
@@ -71,24 +100,24 @@ export default function ImageOverlayCard({
                   </h3>
                 </div>
                 <p className="line-clamp-2 text-white/90 font-normal">
-                  일정 | 2025.05.20
+                  Date | {formatDateTime(startDate)}
                 </p>
                 <p className="line-clamp-2 text-white/90 font-normal">
-                  장소 | North York centre
+                  Location | {locationOrUrl}
                 </p>
               </div>
               <Button
                 variant="link"
                 className="text-white p-0 h-5 hover:text-pace-orange-800"
               >
-                {`신청하기`}
+                {`View Details`}
                 <ArrowRight width={20} height={20} />
               </Button>
             </div>
           </div>
 
           <div className="p-4 bg-white border-t border-[#EEEEEE] flex justify-center">
-            <span className="text-sm text-gray-600">진행중</span>
+            <span className="text-sm text-gray-600">{formattedStatus}</span>
           </div>
         </div>
       </Link>
