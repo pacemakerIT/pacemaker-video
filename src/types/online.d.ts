@@ -10,8 +10,11 @@ export interface OnlineCards {
   uploadDate: Date;
   price: number;
   category: string;
-  watchedVideos: Array;
-  purchasedVideos: Array;
+  watchedVideos: unknown[];
+  purchasedVideos: unknown[];
   thumbnail?: string;
   itemType?: ItemType;
+  startDate?: string | Date;
+  locationOrUrl?: string;
+  status?: string;
 }
