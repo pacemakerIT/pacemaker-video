@@ -7,10 +7,10 @@ import WorkshopCardList from '@/components/features/workshops/workshop-card-list
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { toast } from 'sonner';
 
-type FilterKey = '전체' | WorkshopStatus;
+type FilterKey = 'All' | WorkshopStatus;
 
-export default function Page() {
-  const [filterStatus, setFilterStatus] = useState<FilterKey>('전체');
+export default function WorkshopsPage() {
+  const [filterStatus, setFilterStatus] = useState<FilterKey>('All');
   const [workshops, setWorkshops] = useState<WorkshopCard[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedWorkshopTitle, setSelectedWorkshopTitle] = useState<
@@ -20,13 +20,14 @@ export default function Page() {
   useEffect(() => {
     const fetchWorkshops = async () => {
       try {
-        // TO-DO: DB 완료 후 API 연결필요
-        // mock 데이터 불러오기 (public/json/workshop.json)
-        const res = await fetch('/json/workshops.json');
+        const res = await fetch('/api/workshops');
         const data = await res.json();
-        setWorkshops(data); // data 자체가 배열이면 그대로 세팅
+        // API returns { workshops: WorkshopCard[], count: number }
+        if (data.workshops) {
+          setWorkshops(data.workshops);
+        }
       } catch (err) {
-        toast('워크숍 불러오기 실패:' + err);
+        toast.error('Failed to load workshops: ' + err);
       }
     };
 
@@ -38,11 +39,11 @@ export default function Page() {
       <div className="w-[62.5%] items-center mx-auto justify-center flex flex-col gap-8 pt-20">
         {/* 워크샵 헤더 */}
         <div className="w-full max-w-[1200px] text-left mx-auto">
-          <p className="text-pace-lg text-pace-orange-600 font-light">
-            만남이 큰 기회를 만드는
+          <p className="text-pace-orange-600 font-medium pb-2 text-base">
+            Connections Create Opportunities
           </p>
-          <h1 className="text-pace-3xl font-bold text-pace-black-500">
-            페이스메이커 워크샵
+          <h1 className="text-[32px] font-bold text-pace-black-500">
+            Pacemaker Workshops
           </h1>
         </div>
 
