@@ -33,7 +33,10 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
         run: |
+          npx prisma generate
+
           node <<'EOF'
+          const fs = require('fs');
           const { PrismaClient } = require('@prisma/client');
           const { PrismaPg } = require('@prisma/adapter-pg');
           const { Pool } = require('pg');
@@ -106,6 +109,14 @@ jobs:
           }
 
           async function main() {
+            console.log(
+              JSON.stringify({
+                generatedClientPresent: fs.existsSync(
+                  'node_modules/.prisma/client/default.js'
+                )
+              })
+            );
+
             for (const name of [
               'DATABASE_URL',
               'DIRECT_URL',
