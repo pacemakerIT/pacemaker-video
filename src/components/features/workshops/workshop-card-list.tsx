@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 
 interface Props {
   workshops: WorkshopCard[];
-  filter: '전체' | WorkshopStatus;
+  filter: 'All' | WorkshopStatus;
   selectedMonth: Date;
   selectedTitle?: string | null; // 외부에서 전달된 title로 스크롤 및 열기
   onCloseDetail?: () => void;
@@ -53,20 +53,22 @@ export default function WorkshopCardList({
     const inSelectedMonth =
       date.getFullYear() === selectedMonth.getFullYear() &&
       date.getMonth() === selectedMonth.getMonth();
-    const matchesStatus = filter === '전체' || w.status === filter;
+    const matchesStatus = filter === 'All' || w.status === filter;
     return inSelectedMonth && matchesStatus;
   });
 
-  const getDday = (start: string) => {
+  const getDday = (start: string | Date) => {
     const startDate = new Date(start);
     const today = new Date();
     const diff = Math.ceil(
       (startDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
-    return diff >= 0 ? `D-${diff}` : '종료';
+    if (diff > 0) return `${diff} days left`;
+    if (diff === 0) return 'Today';
+    return 'Ended';
   };
 
-  function formatDateTime(dateStr: string) {
+  function formatDateTime(dateStr: string | Date) {
     const date = new Date(dateStr);
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -113,7 +115,7 @@ export default function WorkshopCardList({
               <div className="w-[384px] h-[320px] py-8 flex-shrink-0">
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
-                    src="/img/workshop-card.svg"
+                    src={w.thumbnail ?? '/img/workshop-card.svg'}
                     alt={w.title}
                     fill
                     className="object-cover"
@@ -144,14 +146,16 @@ export default function WorkshopCardList({
                       className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
                     >
                       {w.status === 'RECRUITING'
-                        ? '모집중'
-                        : w.status === 'ONGOING'
-                          ? '모집완료'
-                          : '진행완료'}
+                        ? 'Open'
+                        : w.status === 'CLOSED'
+                          ? 'Closed'
+                          : w.status === 'ONGOING'
+                            ? 'Ongoing'
+                            : 'Completed'}
                     </span>
                     {/* TO-DO: category 필드 생기면 대체 */}
                     <span className="text-pace-orange-800 text-pace-sm">
-                      네트워킹
+                      {w.category ?? 'Networking'}
                     </span>
                     <span className="text-pace-stone-500 text-pace-sm">
                       {getDday(w.startDate)}
@@ -182,17 +186,17 @@ export default function WorkshopCardList({
 
                 {/* 일정 / 장소 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
-                  일정 | {formatDateTime(w.startDate)}
+                  Date | {formatDateTime(w.startDate)}
                   {w.instructor?.name &&
                     w.instructor?.name.toUpperCase() != 'UNKNOWN' && (
-                      <>&nbsp;&nbsp; 강사 | {w.instructor.name}</>
+                      <>&nbsp;&nbsp; Instructor | {w.instructor.name}</>
                     )}
-                  &nbsp;&nbsp; 장소 | {w.locationOrUrl ?? 'TBD'}
+                  &nbsp;&nbsp; Location | {w.locationOrUrl ?? 'TBD'}
                 </p>
 
                 {/* 설명 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
-                  꿈을 현실로 만드는 이야기{' '}
+                  Turning Dreams Into Reality{' '}
                   {/* TO-DO: 워크숍 subTitle 문구 필드 생기면 대체 */}
                 </p>
 
@@ -214,7 +218,7 @@ export default function WorkshopCardList({
                       {w.instructor && (
                         <div className="flex-1 space-y-1">
                           <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                            강사
+                            Instructor
                           </h4>
                           <p className="font-bold text-pace-base text-pace-black-500 mb-2">
                             {w.instructor?.name}
@@ -232,7 +236,7 @@ export default function WorkshopCardList({
                       {w.instructor && (
                         <div className="flex-1">
                           <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                            커리큘럼
+                            Curriculum
                           </h4>
                           <ul className="space-y-1">
                             {[

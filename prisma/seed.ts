@@ -5,7 +5,8 @@ import {
   CourseCategory,
   DocumentCategory,
   WorkshopCategory,
-  TargetAudienceType
+  TargetAudienceType,
+  WorkshopStatus
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -63,11 +64,12 @@ async function main() {
   if (isSupabase) {
     console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜅니다.');
   } else {
-    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
+    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
     await prisma.video.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
     await prisma.document.deleteMany({});
+    await prisma.workshop.deleteMany({});
     console.log('✨ 기존 데이터 삭제 완료.');
   }
 
@@ -138,13 +140,13 @@ async function main() {
     update: {},
     create: {
       id: instructorId2,
-      name: 'Sarah Kim',
+      name: 'Sujin Ku',
       profileImage: '/img/instructor-image.png',
       description:
-        'Expert in resume writing and career consulting with over 10 years of experience.',
+        'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
-        { period: '2020 ~', position: 'Career Consultant' },
-        { period: '2015 ~ 2020', position: 'HR Manager at Tech Corp' }
+        { period: '2020 ~', position: 'Career Coach at U of T' },
+        { period: '2015 ~ 2020', position: 'Employer Strategy Specialist' }
       ]
     }
   });
@@ -528,25 +530,106 @@ async function main() {
     }
   }
 
-  // 워크샵 카테고리에 데이터 추가
-  const categories = Object.values(WorkshopCategory);
+  // 7) 워크샵 생성 (Mock data from UX Design & Home page)
+  console.log('Generating dummy workshops...');
+  const uxDesignWorkshopData = [
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-01-15T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-02-10T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-03-05T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'RECRUITING',
+      category: 'NETWORKING',
+      date: '2026-03-20T19:00:00Z'
+    }
+  ];
 
-  // 2. 현재 DB에 있는 모든 Workshop 조회
-  const workshops = await prisma.workshop.findMany({
-    select: { id: true }
-  });
+  for (const ws of uxDesignWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
-  console.log(`${workshops.length}개의 데이터를 업데이트 중...`);
-
-  // 3. 루프를 돌며 랜덤 카테고리 할당
-  for (const workshop of workshops) {
-    const randomCategory =
-      categories[Math.floor(Math.random() * categories.length)];
-
-    await prisma.workshop.update({
-      where: { id: workshop.id },
+    await prisma.workshop.create({
       data: {
-        category: randomCategory
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: '/img/course_image1.png'
+      }
+    });
+  }
+
+  const homeWorkshopData = [
+    {
+      title: 'Mind Training for Success',
+      category: 'NETWORKING',
+      status: 'ONGOING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-03-16T19:00:00Z'
+    },
+    {
+      title: "Let's Connect!",
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image3.png',
+      date: '2026-05-15T19:00:00Z'
+    },
+    {
+      title: 'Build an English Resume for Career Transitions',
+      category: 'RESUME',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image1.png',
+      date: '2026-08-10T19:00:00Z'
+    },
+    {
+      title: 'Resume Workshop for International Opportunities',
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-11-05T19:00:00Z'
+    }
+  ];
+
+  for (const ws of homeWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+    await prisma.workshop.create({
+      data: {
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          'Join this workshop to gain valuable insights and boost your career.',
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: ws.thumbnail
       }
     });
   }
