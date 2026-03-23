@@ -2,9 +2,11 @@
 import {
   ItemType,
   PrismaClient,
+  CourseCategory,
   DocumentCategory,
   WorkshopCategory,
-  TargetAudienceType
+  TargetAudienceType,
+  WorkshopStatus
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -36,7 +38,14 @@ const COURSE_THUMBNAILS = [
   '/img/course_image3.png'
 ];
 
-const COURSE_CATEGORIES = ['INTERVIEW', 'RESUME', 'NETWORKING'];
+const EBOOK_THUMBNAILS = [
+  '/img/ebook_image1.png',
+  '/img/ebook_image2.png',
+  '/img/ebook_image3.png',
+  '/img/ebook_image4.png',
+  '/img/ebook_image5.png',
+  '/img/ebook_image6.png'
+];
 
 // Section Titles
 const SECTION_TITLES = [
@@ -54,12 +63,13 @@ async function main() {
   if (isSupabase) {
     console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜅니다.');
   } else {
-    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
+    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
     await prisma.video.deleteMany({});
     await prisma.sectionItem.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
     await prisma.document.deleteMany({});
+    await prisma.workshop.deleteMany({});
     console.log('✨ 기존 데이터 삭제 완료.');
   }
 
@@ -71,8 +81,10 @@ async function main() {
   await prisma.mainVisual.createMany({
     data: [
       {
-        title: 'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
-        description: 'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+        title:
+          'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
+        description:
+          'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
         isPublic: true,
         linkName: 'Explore programs',
         link: '/courses',
@@ -128,13 +140,13 @@ async function main() {
     update: {},
     create: {
       id: instructorId2,
-      name: 'Sarah Kim',
+      name: 'Sujin Ku',
       profileImage: '/img/instructor-image.png',
       description:
-        'Expert in resume writing and career consulting with over 10 years of experience.',
+        'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
-        { period: '2020 ~', position: 'Career Consultant' },
-        { period: '2015 ~ 2020', position: 'HR Manager at Tech Corp' }
+        { period: '2020 ~', position: 'Career Coach at U of T' },
+        { period: '2015 ~ 2020', position: 'Employer Strategy Specialist' }
       ]
     }
   });
@@ -144,8 +156,8 @@ async function main() {
     const courseId = randomUUID();
 
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
-    const categoryString =
-      COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
+    const categories = Object.values(CourseCategory);
+    const categoryString = categories[(i - 1) % categories.length];
 
     // Course 생성
     await prisma.course.create({
@@ -239,71 +251,131 @@ async function main() {
     }
   }
 
-  // 3) Document 4개 생성
-  console.log('Generating dummy documents...');
-  const documentCategories: DocumentCategory[] = [
-    'MARKETING',
-    'IT',
-    'DESIGN',
-    'SERVICE'
-  ];
-  const audienceTypes: TargetAudienceType[] = [
-    'IT',
-    'NETWORKING',
-    'DESIGN',
-    'SERVICE'
+  // 3) Document (E-book) 6개 생성
+  console.log('Generating English e-books...');
+  const ebooks = [
+    {
+      category: DocumentCategory.MARKETING,
+      title:
+        'The 94% Success Formula: A Proven Approach to Job & Career Transitions',
+      subTitle: 'Branding & Networking for Marketers',
+      description:
+        'Learn what truly matters in hiring criteria and how to build the right experience to strengthen your resume.',
+      price: 2800,
+      visualTitle1: 'Branding & Networking',
+      visualTitle2: 'for Marketers'
+    },
+    {
+      category: DocumentCategory.DESIGN,
+      title:
+        'What Every Designer Should Know: Interviews That Shape Your Career',
+      subTitle: 'Preparing for Design Interviews',
+      description:
+        'Identify your unique strengths and communicate your design thinking with confidence during interviews.',
+      price: 2800,
+      visualTitle1: 'Preparing for',
+      visualTitle2: 'Design Interviews'
+    },
+    {
+      category: DocumentCategory.PUBLIC,
+      title: 'A Resume That Gets You Hired in the North American Public Sector',
+      subTitle: 'Public Sector Resume',
+      description:
+        'Learn how to structure your resume to meet public sector hiring criteria and leave a strong, positive impression on recruiters.',
+      price: 2800,
+      visualTitle1: 'Public Sector',
+      visualTitle2: 'Resume'
+    },
+    {
+      category: DocumentCategory.IT,
+      title: 'The 94% Success Formula: Resumes That Win Jobs and Interviews',
+      subTitle: 'IT Resume & Interview Preparation',
+      description:
+        'Understand what hiring managers look for and learn how to build a resume and interview strategy aligned with North American IT hiring standards.',
+      price: 2800,
+      visualTitle1: 'IT Resume &',
+      visualTitle2: 'Interview Preparation'
+    },
+    {
+      category: DocumentCategory.ACCOUNTING,
+      title:
+        'A practical guide to Interviews for finance and accounting roles, learn once, use for life.',
+      subTitle: 'Preparing for Accounting Interviews',
+      description:
+        'Learn how to identify your strengths and clues to present them in resumes and interviews.',
+      price: 2800,
+      visualTitle1: 'Preparing for',
+      visualTitle2: 'Accounting Interviews'
+    },
+    {
+      category: DocumentCategory.SERVICE,
+      title:
+        'The 94% success approach: communicate your value clearly in job searches and career moves.',
+      subTitle: 'Resume & Networking for Service Roles',
+      description:
+        'Learn what truly matters in resumes and how to build relevant experience strategically.',
+      price: 2800,
+      visualTitle1: 'Resume & Networking',
+      visualTitle2: 'for Service Roles'
+    }
   ];
 
-  for (let i = 1; i <= 4; i++) {
-    const category = documentCategories[(i - 1) % documentCategories.length];
+  const EBOOK_TOC = [
+    {
+      id: '1',
+      title: 'Developer Job Posting Examples',
+      content:
+        'Review real North American job posting examples to understand current hiring trends.'
+    },
+    {
+      id: '2',
+      title: 'Analyzing Developer Job Postings',
+      content:
+        'Analyze resume strategies and key keywords based on actual North American job postings.'
+    },
+    {
+      id: '3',
+      title: 'Resume Examples from Hired Developers',
+      content:
+        'Learn how to analyze and leverage job postings through successful real-world resumes.'
+    }
+  ];
 
+  for (let i = 0; i < ebooks.length; i++) {
+    const ebook = ebooks[i];
     await prisma.document.create({
       data: {
-        documentId: `doc-${i}-${randomUUID().slice(0, 8)}`,
-        title: `북미 취업 성공을 위한 ${category} 가이드북 Vol.${i}`,
-        description: `이 가이드북은 ${category} 분야 북미 취업을 희망하는 분들을 위해 제작되었습니다. 실제 합격 사례와 핵심 전략을 담고 있습니다.`,
-        price: 15000 + i * 1000,
-        bucketUrl: `https://example-bucket.s3.amazonaws.com/documents/guide-${i}.pdf`,
-        category: category,
-        thumbnail: COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length],
+        documentId: `ebook-${i + 1}`,
+        title: ebook.title,
+        description: ebook.description,
+        price: ebook.price,
+        bucketUrl: `https://example-bucket.s3.amazonaws.com/ebooks/guide-${i + 1}.pdf`,
+        category: ebook.category,
+        thumbnail: EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length],
         isPublic: true,
-        subTitle: `${category} 커리어 성장을 위한 필수 지침서`,
-        subDescription:
-          '현직자들의 생생한 노하우와 유용한 꿀팁을 한 단계씩 따라해보세요.',
-        isMain: i <= 2,
-        visualTitle1: `꿈꾸던 ${category} 커리어,`,
-        visualTitle2: '이제 현실이 됩니다',
-        tableOfContents: [
-          {
-            section: 'Chapter 1',
-            title: '시장 트렌드 분석',
-            content: '현재 북미 시장의 흐름'
-          },
-          {
-            section: 'Chapter 2',
-            title: '이력서 커스텀',
-            content: '나만의 강점 부각하기'
-          },
-          {
-            section: 'Chapter 3',
-            title: '실전 답변 전략',
-            content: '자주 나오는 질문 베스트 10'
+        subTitle: ebook.subTitle,
+        isMain: i < 4,
+        visualTitle1: ebook.visualTitle1,
+        visualTitle2: ebook.visualTitle2,
+        tableOfContents: EBOOK_TOC,
+        targetAudienceTypes: (() => {
+          switch (ebook.category) {
+            case DocumentCategory.MARKETING:
+              return [TargetAudienceType.NETWORKING];
+            case DocumentCategory.IT:
+              return [TargetAudienceType.IT];
+            case DocumentCategory.DESIGN:
+              return [TargetAudienceType.DESIGN];
+            case DocumentCategory.PUBLIC:
+              return [TargetAudienceType.GOVERNMENT];
+            case DocumentCategory.ACCOUNTING:
+              return [TargetAudienceType.FINANCE];
+            case DocumentCategory.SERVICE:
+              return [TargetAudienceType.SERVICE];
+            default:
+              return [];
           }
-        ],
-        targetAudienceTypes:
-          i % 2 === 0
-            ? [audienceTypes[0], audienceTypes[1]]
-            : [audienceTypes[2], audienceTypes[3]],
-        recommendedLinks: [
-          {
-            name: '관련 무료 워크샵 신청하기',
-            url: 'https://example.com/workshop'
-          },
-          {
-            name: '오픈 카톡방 참여 (비번: 1234)',
-            url: 'https://open.kakao.com/o/example'
-          }
-        ]
+        })()
       }
     });
   }
@@ -462,25 +534,106 @@ async function main() {
     }
   }
 
-  // 워크샵 카테고리에 데이터 추가
-  const categories = Object.values(WorkshopCategory);
+  // 7) 워크샵 생성 (Mock data from UX Design & Home page)
+  console.log('Generating dummy workshops...');
+  const uxDesignWorkshopData = [
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-01-15T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-02-10T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-03-05T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'RECRUITING',
+      category: 'NETWORKING',
+      date: '2026-03-20T19:00:00Z'
+    }
+  ];
 
-  // 2. 현재 DB에 있는 모든 Workshop 조회
-  const workshops = await prisma.workshop.findMany({
-    select: { id: true }
-  });
+  for (const ws of uxDesignWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
-  console.log(`${workshops.length}개의 데이터를 업데이트 중...`);
-
-  // 3. 루프를 돌며 랜덤 카테고리 할당
-  for (const workshop of workshops) {
-    const randomCategory =
-      categories[Math.floor(Math.random() * categories.length)];
-
-    await prisma.workshop.update({
-      where: { id: workshop.id },
+    await prisma.workshop.create({
       data: {
-        category: randomCategory
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: '/img/course_image1.png'
+      }
+    });
+  }
+
+  const homeWorkshopData = [
+    {
+      title: 'Mind Training for Success',
+      category: 'NETWORKING',
+      status: 'ONGOING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-03-16T19:00:00Z'
+    },
+    {
+      title: "Let's Connect!",
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image3.png',
+      date: '2026-05-15T19:00:00Z'
+    },
+    {
+      title: 'Build an English Resume for Career Transitions',
+      category: 'RESUME',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image1.png',
+      date: '2026-08-10T19:00:00Z'
+    },
+    {
+      title: 'Resume Workshop for International Opportunities',
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-11-05T19:00:00Z'
+    }
+  ];
+
+  for (const ws of homeWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+    await prisma.workshop.create({
+      data: {
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          'Join this workshop to gain valuable insights and boost your career.',
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: ws.thumbnail
       }
     });
   }

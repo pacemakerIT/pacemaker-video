@@ -35,7 +35,7 @@ export default function WorkshopList() {
   return (
     <section className="w-full gap-8">
       {loading ? (
-        <p className="text-center">📡 워크샵 불러오는 중...</p>
+        <p className="text-center">📡 Loading workshops...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl gap-8">
           <div className="flex flex-col justify-start w-full pt-12">
@@ -62,7 +62,7 @@ export default function WorkshopList() {
             </div>
           </div>
           {workshops.length === 0 ? (
-            <p>📭 등록된 워크샵이 없습니다.</p>
+            <p>📭 No registered workshops.</p>
           ) : (
             <ImageOverlayCardContainer
               layout={'horizontal'}
