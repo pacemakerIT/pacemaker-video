@@ -23,6 +23,118 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Debug build env (temporary)
+        if: github.event_name == 'pull_request'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+        run: |
+          node <<'EOF'
+          const { PrismaClient } = require('@prisma/client');
+          const { PrismaPg } = require('@prisma/adapter-pg');
+          const { Pool } = require('pg');
+
+          function summarize(name, value) {
+            const trimmed = value?.trim() ?? '';
+
+            let parsed = {
+              isValidUrl: false,
+              protocol: null,
+              hasHostname: false,
+              hasPort: false,
+              pathnameLength: 0,
+              usernameLength: 0,
+              passwordLength: 0
+            };
+
+            try {
+              if (trimmed) {
+                const url = new URL(trimmed);
+                parsed = {
+                  isValidUrl: true,
+                  protocol: url.protocol,
+                  hasHostname: Boolean(url.hostname),
+                  hasPort: Boolean(url.port),
+                  pathnameLength: url.pathname.length,
+                  usernameLength: url.username.length,
+                  passwordLength: url.password.length
+                };
+              }
+            } catch {}
+
+            console.log(
+              JSON.stringify({
+                name,
+                present: Boolean(value),
+                length: value?.length ?? 0,
+                trimmedLength: trimmed.length,
+                changedByTrim:
+                  value !== undefined ? value.length !== trimmed.length : false,
+                containsNewline: /\r|\n/.test(value ?? ''),
+                parsed
+              })
+            );
+          }
+
+          async function validatePrismaClient(name, value) {
+            const connectionString = value?.trim() ?? '';
+
+            try {
+              const pool = new Pool({ connectionString });
+              const client = new PrismaClient({
+                adapter: new PrismaPg(pool),
+                log: ['query']
+              });
+
+              console.log(JSON.stringify({ name, prismaClientInit: 'ok' }));
+              await client.$disconnect();
+              await pool.end();
+            } catch (error) {
+              console.log(
+                JSON.stringify({
+                  name,
+                  prismaClientInit: 'error',
+                  errorName: error?.name ?? 'UnknownError',
+                  errorMessage: String(error?.message ?? error).split('\n')[0]
+                })
+              );
+            }
+          }
+
+          async function main() {
+            for (const name of [
+              'DATABASE_URL',
+              'DIRECT_URL',
+              'NEXT_PUBLIC_SUPABASE_URL',
+              'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+              'SUPABASE_SERVICE_ROLE_KEY',
+              'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY'
+            ]) {
+              summarize(name, process.env[name]);
+            }
+
+            console.log(
+              JSON.stringify({
+                databaseEqualsDirect:
+                  process.env.DATABASE_URL?.trim() ===
+                  process.env.DIRECT_URL?.trim()
+              })
+            );
+
+            await validatePrismaClient('DATABASE_URL', process.env.DATABASE_URL);
+            await validatePrismaClient('DIRECT_URL', process.env.DIRECT_URL);
+          }
+
+          main().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          EOF
+
       - name: Lint Code
         run: npm run lint
 
