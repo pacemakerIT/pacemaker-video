@@ -6,7 +6,10 @@ export default function CoursesPage() {
   return (
     <div className="w-screen flex gap-20 flex-col">
       <ListHeader
-        title={'북미 취업의 정석,\n 페이스 메이커 온라인 강의로 준비하세요.'}
+        title={
+          'Build a strong foundation\nfor your career abroad with Pacemaker'
+        }
+        buttonText="Explore courses"
         height={'h-[370px]'}
         gradientColors={{
           start: '#A8DBFF60',
