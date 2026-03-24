@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,6 +12,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -24,8 +27,27 @@ jobs:
       - name: Lint Code
         run: npm run lint
 
+      - name: Verify Prisma schema/migration sync
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_REF="$(git merge-base "${{ github.event.pull_request.base.sha }}" "${GITHUB_SHA}")"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            BASE_REF="$(git merge-base "origin/${{ github.event.repository.default_branch }}" "${GITHUB_SHA}")"
+          else
+            BASE_REF="${{ github.event.before }}"
+          fi
+
+          # Handle the first push edge case where event.before can be all zeros.
+          if [[ "${BASE_REF}" =~ ^0+$ ]]; then
+            BASE_REF="HEAD~1"
+          fi
+
+          node scripts/verify-prisma-schema-sync.mjs "${BASE_REF}" "${GITHUB_SHA}"
+
       - name: Run Prisma Migration 🚀
-        if: github.repository == 'nhistory/pacemaker-video'
+        if: github.repository == 'pacemakerIT/pacemaker-video' && github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}

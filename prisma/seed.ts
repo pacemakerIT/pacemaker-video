@@ -2,27 +2,30 @@
 import {
   ItemType,
   PrismaClient,
+  CourseCategory,
   DocumentCategory,
   WorkshopCategory,
-  TargetAudienceType
+  TargetAudienceType,
+  WorkshopStatus
 } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+});
 
-const COURSE_TITLE = '자기소개서 작성 및 면접 준비까지 하늘로!';
+const COURSE_TITLE = 'From Differentiated Resumes to Confident Interviews';
 const COURSE_DESC =
-  '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!';
+  'Learn how recruiters evaluate resumes and interviews, based on real hiring examples from Canadian companies.';
+const LONG_DESCRIPTION = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
 
-const LONG_DESCRIPTION = `북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요. 그만큼 기업들은 더 신중하게, 해당 포지션을 정말 잘 이해하고 있는 지원자를 찾고 있죠.
+If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
-한국과는 조금 다른 북미식 채용공고의 특징, 어떻게 읽고 준비해야 할지 막막하셨다면, 실제 캐나다 기업에 최종 합격한 페이스메이커 개발자의 영문 이력서를 통해 채용공고 분석부터 이력서에 반영하는 방법까지 함께 살펴보세요!`;
-
-const TITLE =
-  '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지';
+const TITLE = 'From Differentiated Resumes to Confident Interviews';
 
 const DETAIL_TITLE =
-  '북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기';
+  'Step by Step: From a Strong Developer Resume to Interviews';
 
 const COURSE_THUMBNAILS = [
   '/img/course_image1.png',
@@ -30,13 +33,20 @@ const COURSE_THUMBNAILS = [
   '/img/course_image3.png'
 ];
 
-const COURSE_CATEGORIES = ['INTERVIEW', 'RESUME', 'NETWORKING'];
+const EBOOK_THUMBNAILS = [
+  '/img/ebook_image1.png',
+  '/img/ebook_image2.png',
+  '/img/ebook_image3.png',
+  '/img/ebook_image4.png',
+  '/img/ebook_image5.png',
+  '/img/ebook_image6.png'
+];
 
 // Section Titles
 const SECTION_TITLES = [
-  '북미 개발자 채용 공고 사례',
-  '북미 개발자 채용 공고 분석',
-  '실제 북미 개발자 취업 성공 이력서'
+  'Case Studies of North American Developer Job Postings',
+  'Analysis of North American Developer Job Postings',
+  'Actual Successful Resumes for North American Developer Jobs'
 ];
 
 async function main() {
@@ -46,18 +56,50 @@ async function main() {
     process.env.DATABASE_URL?.includes('pooler.supabase.com');
 
   if (isSupabase) {
-    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜁니다.');
+    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜅니다.');
   } else {
-    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중…');
+    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
     await prisma.video.deleteMany({});
     await prisma.sectionItem.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
     await prisma.document.deleteMany({});
+    await prisma.workshop.deleteMany({});
     console.log('✨ 기존 데이터 삭제 완료.');
   }
 
   console.log('🚀 새로운 시드 생성 시작…');
+
+  // 0) Main Visual 생성
+  console.log('Generating Main Visuals...');
+  await prisma.mainVisual.deleteMany({});
+  await prisma.mainVisual.createMany({
+    data: [
+      {
+        title:
+          'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
+        description:
+          'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+        isPublic: true,
+        linkName: 'Explore programs',
+        link: '/courses',
+        orderIndex: 0
+      },
+      {
+        title: 'Ready to take the next step?',
+        isPublic: true,
+        orderIndex: 1
+      },
+      {
+        title: 'Your future career starts here.',
+        isPublic: true,
+        linkName: 'Get Started',
+        link: '/courses',
+        orderIndex: 2
+      }
+    ]
+  });
+
   // 1) Mock Instructor 생성
   const instructorId = randomUUID();
   await prisma.instructor.upsert({
@@ -68,7 +110,7 @@ async function main() {
       name: 'Raphael. Lee',
       profileImage: '/img/instructor-image.png',
       description:
-        'I’ve bee managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+        'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
         { period: '2019 ~', position: 'Managing Director at Pacemaker' },
         {
@@ -93,13 +135,13 @@ async function main() {
     update: {},
     create: {
       id: instructorId2,
-      name: 'Sarah Kim',
+      name: 'Sujin Ku',
       profileImage: '/img/instructor-image.png',
       description:
-        'Expert in resume writing and career consulting with over 10 years of experience.',
+        'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
-        { period: '2020 ~', position: 'Career Consultant' },
-        { period: '2015 ~ 2020', position: 'HR Manager at Tech Corp' }
+        { period: '2020 ~', position: 'Career Coach at U of T' },
+        { period: '2015 ~ 2020', position: 'Employer Strategy Specialist' }
       ]
     }
   });
@@ -109,8 +151,8 @@ async function main() {
     const courseId = randomUUID();
 
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
-    const categoryString =
-      COURSE_CATEGORIES[(i - 1) % COURSE_CATEGORIES.length];
+    const categories = Object.values(CourseCategory);
+    const categoryString = categories[(i - 1) % categories.length];
 
     // Course 생성
     await prisma.course.create({
@@ -119,16 +161,16 @@ async function main() {
         title: TITLE,
         courseTitle: COURSE_TITLE,
         description: LONG_DESCRIPTION,
-        promoText: '캐나다 테크기업 OOO이 선택한',
+        promoText: 'Chosen by Professionals',
         summary: COURSE_DESC,
         detailTitle: DETAIL_TITLE,
         price: '2800',
         rating: 5,
         reviewCount: 1500,
         category: categoryString as 'INTERVIEW' | 'RESUME' | 'NETWORKING',
-        duration: '7시간',
-        level: '중급',
-        language: '한국어',
+        duration: '7 Hours',
+        level: 'Intermediate',
+        language: 'English',
         backgroundImage: thumbnail,
         instructors: {
           connect: [{ id: instructorId }, { id: instructorId2 }]
@@ -154,12 +196,12 @@ async function main() {
 
     // 각 Section에 상세 설명 Item 생성
     const SECTION_CONTENT_MAP: Record<string, string> = {
-      '북미 개발자 채용 공고 사례':
-        '북미 스타일의 이력서 작성법을 상세하게 다룹니다. ATS(지원자 추적 시스템)를 통과하는 키워드 선정부터, 경험을 효과적으로 어필하는 액션 동사 활용법까지 배울 수 있습니다.',
-      '북미 개발자 채용 공고 분석':
-        '자료구조, 알고리즘 등 필수 기술 면접 주제를 다룹니다. 실제 빅테크 기업의 기출 문제 분석과 모범 답안을 통해 실전 감각을 익힐 수 있습니다.',
-      '실제 북미 개발자 취업 성공 이력서':
-        'STAR 기법을 활용하여 자신의 경험을 논리적으로 설명하는 방법을 배웁니다. 리더십, 갈등 해결, 팀워크 등 주요 평가 항목별 답변 전략을 제공합니다.'
+      'Case Studies of North American Developer Job Postings':
+        'Covers the North American style of resume writing in detail. Learn everything from keyword selection to pass ATS (Applicant Tracking Systems) to using action verbs to effectively showcase experiences.',
+      'Analysis of North American Developer Job Postings':
+        'Covers essential technical interview topics such as data structures and algorithms. Gain practical experience through analysis of past questions from big tech companies and model answers.',
+      'Actual Successful Resumes for North American Developer Jobs':
+        'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
     };
 
     for (const section of sections) {
@@ -204,71 +246,131 @@ async function main() {
     }
   }
 
-  // 3) Document 4개 생성
-  console.log('Generating dummy documents...');
-  const documentCategories: DocumentCategory[] = [
-    'MARKETING',
-    'IT',
-    'DESIGN',
-    'SERVICE'
-  ];
-  const audienceTypes: TargetAudienceType[] = [
-    'IT',
-    'NETWORKING',
-    'DESIGN',
-    'SERVICE'
+  // 3) Document (E-book) 6개 생성
+  console.log('Generating English e-books...');
+  const ebooks = [
+    {
+      category: DocumentCategory.MARKETING,
+      title:
+        'The 94% Success Formula: A Proven Approach to Job & Career Transitions',
+      subTitle: 'Branding & Networking for Marketers',
+      description:
+        'Learn what truly matters in hiring criteria and how to build the right experience to strengthen your resume.',
+      price: 2800,
+      visualTitle1: 'Branding & Networking',
+      visualTitle2: 'for Marketers'
+    },
+    {
+      category: DocumentCategory.DESIGN,
+      title:
+        'What Every Designer Should Know: Interviews That Shape Your Career',
+      subTitle: 'Preparing for Design Interviews',
+      description:
+        'Identify your unique strengths and communicate your design thinking with confidence during interviews.',
+      price: 2800,
+      visualTitle1: 'Preparing for',
+      visualTitle2: 'Design Interviews'
+    },
+    {
+      category: DocumentCategory.PUBLIC,
+      title: 'A Resume That Gets You Hired in the North American Public Sector',
+      subTitle: 'Public Sector Resume',
+      description:
+        'Learn how to structure your resume to meet public sector hiring criteria and leave a strong, positive impression on recruiters.',
+      price: 2800,
+      visualTitle1: 'Public Sector',
+      visualTitle2: 'Resume'
+    },
+    {
+      category: DocumentCategory.IT,
+      title: 'The 94% Success Formula: Resumes That Win Jobs and Interviews',
+      subTitle: 'IT Resume & Interview Preparation',
+      description:
+        'Understand what hiring managers look for and learn how to build a resume and interview strategy aligned with North American IT hiring standards.',
+      price: 2800,
+      visualTitle1: 'IT Resume &',
+      visualTitle2: 'Interview Preparation'
+    },
+    {
+      category: DocumentCategory.ACCOUNTING,
+      title:
+        'A practical guide to Interviews for finance and accounting roles, learn once, use for life.',
+      subTitle: 'Preparing for Accounting Interviews',
+      description:
+        'Learn how to identify your strengths and clues to present them in resumes and interviews.',
+      price: 2800,
+      visualTitle1: 'Preparing for',
+      visualTitle2: 'Accounting Interviews'
+    },
+    {
+      category: DocumentCategory.SERVICE,
+      title:
+        'The 94% success approach: communicate your value clearly in job searches and career moves.',
+      subTitle: 'Resume & Networking for Service Roles',
+      description:
+        'Learn what truly matters in resumes and how to build relevant experience strategically.',
+      price: 2800,
+      visualTitle1: 'Resume & Networking',
+      visualTitle2: 'for Service Roles'
+    }
   ];
 
-  for (let i = 1; i <= 4; i++) {
-    const category = documentCategories[(i - 1) % documentCategories.length];
+  const EBOOK_TOC = [
+    {
+      id: '1',
+      title: 'Developer Job Posting Examples',
+      content:
+        'Review real North American job posting examples to understand current hiring trends.'
+    },
+    {
+      id: '2',
+      title: 'Analyzing Developer Job Postings',
+      content:
+        'Analyze resume strategies and key keywords based on actual North American job postings.'
+    },
+    {
+      id: '3',
+      title: 'Resume Examples from Hired Developers',
+      content:
+        'Learn how to analyze and leverage job postings through successful real-world resumes.'
+    }
+  ];
 
+  for (let i = 0; i < ebooks.length; i++) {
+    const ebook = ebooks[i];
     await prisma.document.create({
       data: {
-        documentId: `doc-${i}-${randomUUID().slice(0, 8)}`,
-        title: `북미 취업 성공을 위한 ${category} 가이드북 Vol.${i}`,
-        description: `이 가이드북은 ${category} 분야 북미 취업을 희망하는 분들을 위해 제작되었습니다. 실제 합격 사례와 핵심 전략을 담고 있습니다.`,
-        price: 15000 + i * 1000,
-        bucketUrl: `https://example-bucket.s3.amazonaws.com/documents/guide-${i}.pdf`,
-        category: category,
-        thumbnail: COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length],
+        documentId: `ebook-${i + 1}`,
+        title: ebook.title,
+        description: ebook.description,
+        price: ebook.price,
+        bucketUrl: `https://example-bucket.s3.amazonaws.com/ebooks/guide-${i + 1}.pdf`,
+        category: ebook.category,
+        thumbnail: EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length],
         isPublic: true,
-        subTitle: `${category} 커리어 성장을 위한 필수 지침서`,
-        subDescription:
-          '현직자들의 생생한 노하우와 유용한 꿀팁을 한 단계씩 따라해보세요.',
-        isMain: i <= 2,
-        visualTitle1: `꿈꾸던 ${category} 커리어,`,
-        visualTitle2: '이제 현실이 됩니다',
-        tableOfContents: [
-          {
-            section: 'Chapter 1',
-            title: '시장 트렌드 분석',
-            content: '현재 북미 시장의 흐름'
-          },
-          {
-            section: 'Chapter 2',
-            title: '이력서 커스텀',
-            content: '나만의 강점 부각하기'
-          },
-          {
-            section: 'Chapter 3',
-            title: '실전 답변 전략',
-            content: '자주 나오는 질문 베스트 10'
+        subTitle: ebook.subTitle,
+        isMain: i < 4,
+        visualTitle1: ebook.visualTitle1,
+        visualTitle2: ebook.visualTitle2,
+        tableOfContents: EBOOK_TOC,
+        targetAudienceTypes: (() => {
+          switch (ebook.category) {
+            case DocumentCategory.MARKETING:
+              return [TargetAudienceType.NETWORKING];
+            case DocumentCategory.IT:
+              return [TargetAudienceType.IT];
+            case DocumentCategory.DESIGN:
+              return [TargetAudienceType.DESIGN];
+            case DocumentCategory.PUBLIC:
+              return [TargetAudienceType.GOVERNMENT];
+            case DocumentCategory.ACCOUNTING:
+              return [TargetAudienceType.FINANCE];
+            case DocumentCategory.SERVICE:
+              return [TargetAudienceType.SERVICE];
+            default:
+              return [];
           }
-        ],
-        targetAudienceTypes:
-          i % 2 === 0
-            ? [audienceTypes[0], audienceTypes[1]]
-            : [audienceTypes[2], audienceTypes[3]],
-        recommendedLinks: [
-          {
-            name: '관련 무료 워크샵 신청하기',
-            url: 'https://example.com/workshop'
-          },
-          {
-            name: '오픈 카톡방 참여 (비번: 1234)',
-            url: 'https://open.kakao.com/o/example'
-          }
-        ]
+        })()
       }
     });
   }
@@ -427,25 +529,106 @@ async function main() {
     }
   }
 
-  // 워크샵 카테고리에 데이터 추가
-  const categories = Object.values(WorkshopCategory);
+  // 7) 워크샵 생성 (Mock data from UX Design & Home page)
+  console.log('Generating dummy workshops...');
+  const uxDesignWorkshopData = [
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-01-15T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-02-10T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'COMPLETED',
+      category: 'NETWORKING',
+      date: '2026-03-05T19:00:00Z'
+    },
+    {
+      title: 'UX Design Workshop',
+      status: 'RECRUITING',
+      category: 'NETWORKING',
+      date: '2026-03-20T19:00:00Z'
+    }
+  ];
 
-  // 2. 현재 DB에 있는 모든 Workshop 조회
-  const workshops = await prisma.workshop.findMany({
-    select: { id: true }
-  });
+  for (const ws of uxDesignWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
-  console.log(`${workshops.length}개의 데이터를 업데이트 중...`);
-
-  // 3. 루프를 돌며 랜덤 카테고리 할당
-  for (const workshop of workshops) {
-    const randomCategory =
-      categories[Math.floor(Math.random() * categories.length)];
-
-    await prisma.workshop.update({
-      where: { id: workshop.id },
+    await prisma.workshop.create({
       data: {
-        category: randomCategory
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: '/img/course_image1.png'
+      }
+    });
+  }
+
+  const homeWorkshopData = [
+    {
+      title: 'Mind Training for Success',
+      category: 'NETWORKING',
+      status: 'ONGOING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-03-16T19:00:00Z'
+    },
+    {
+      title: "Let's Connect!",
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image3.png',
+      date: '2026-05-15T19:00:00Z'
+    },
+    {
+      title: 'Build an English Resume for Career Transitions',
+      category: 'RESUME',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image1.png',
+      date: '2026-08-10T19:00:00Z'
+    },
+    {
+      title: 'Resume Workshop for International Opportunities',
+      category: 'NETWORKING',
+      status: 'RECRUITING',
+      thumbnail: '/img/course_image2.png',
+      date: '2026-11-05T19:00:00Z'
+    }
+  ];
+
+  for (const ws of homeWorkshopData) {
+    const startDate = new Date(ws.date);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+    await prisma.workshop.create({
+      data: {
+        id: randomUUID(),
+        title: ws.title,
+        description:
+          'Join this workshop to gain valuable insights and boost your career.',
+        startDate,
+        endDate,
+        price: 20,
+        locationOrUrl: 'North York centre',
+        status: ws.status as WorkshopStatus,
+        category: ws.category as WorkshopCategory,
+        instructorId: instructorId2,
+        thumbnail: ws.thumbnail
       }
     });
   }
@@ -458,17 +641,17 @@ async function main() {
     {
       rating: 5,
       content:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+        "It was a huge help in writing my resume. Especially the ATS-related tips were content I hadn't heard anywhere else!"
     },
     {
       rating: 4.5,
       content:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+        'I was at a loss for interview prep, but I gained confidence thanks to this lecture. The mock interview questions were very similar to the actual ones.'
     },
     {
       rating: 5,
       content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+        "The advice coming from the instructor's experience was impressive. I highly recommend it to those preparing for overseas employment."
     }
   ];
 

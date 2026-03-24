@@ -11,6 +11,7 @@ import { itemCategoryLabel } from '@/constants/labels';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { resolveImageSrc } from '@/lib/utils';
 
 const categoryMap = itemCategoryLabel.en;
 
@@ -57,12 +58,12 @@ export default function Card({
     }
   };
 
-  // thumbnail이 있으면 프록시 URL 사용, 없으면 기본 이미지 사용
-  const imageSrc = thumbnail
-    ? `/api/images/proxy?fileName=${encodeURIComponent(thumbnail.split('/').pop() || '')}`
-    : itemType === ItemType.VIDEO
-      ? '/img/course_image1.png'
-      : imageUrl || '/img/ebook-default.png';
+  // Use the central utility for image source resolution
+  const imageSrc = resolveImageSrc({
+    thumbnail,
+    imageUrl,
+    itemType
+  });
 
   const getLinkPath = () => {
     switch (itemType) {
@@ -140,7 +141,7 @@ export default function Card({
               variant="link"
               className="!text-pace-lg text-pace-orange-650 p-0 h-5"
             >
-              {`자세히 보기`}
+              {`View detail`}
               <ArrowRight width={20} height={20} />
             </Button>
           </div>
