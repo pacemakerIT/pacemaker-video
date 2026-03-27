@@ -8,28 +8,42 @@ import InstructorSection from '@/components/admin/courses/sections/instructor-se
 import ExpandableCards from '@/components/common/expandable-cards';
 import AddButton from '@/components/ui/admin/add-button';
 import RecommendedLinkSection from '@/components/admin/courses/sections/recommended-link-section';
-import CourseBasicSection from '@/components/admin/courses/sections/course-basic-section';
-import CourseDetailSection from '@/components/admin/courses/sections/course-detail-section';
+import CourseBasicSection from '@/components/admin/basic-section';
+import CourseDetailSection from '@/components/admin/detail-section';
 import CourseVisualSection from '@/components/admin/courses/sections/course-visual-section';
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
+export type FormType = 'course' | 'workshop';
+
 export type CourseData = {
+  // course only
+  isPublic?: string;
+  processTitle?: string;
+  processContent?: string;
+  videoLink?: string;
+  visualTitle?: string;
+  visualTitle2?: string;
+  recommended?: string[];
+
+  // workshop only
+  recruitStatus?: string;
+  workshopDate?: string;
+  workshopTime?: string;
+  workshopLocation?: string;
+  workshopProcessContent?: string;
+  priceNote?: string;
+
+  // shared
   category: string;
-  isPublic: string;
   showOnMain: boolean;
   title: string;
   intro: string;
-  processTitle: string;
-  processContent: string;
-  videoLink: string;
   price: string;
   time: string;
   thumbnail: File | null;
   thumbnailUrl: string;
-  visualTitle: string;
-  visualTitle2: string;
-  recommended: string[];
+
   sections: {
     title: string;
     content: string;
@@ -55,26 +69,36 @@ export type CourseData = {
 };
 
 type Props = {
+  formType: FormType;
   initialData?: CourseData;
   isEdit?: boolean;
   courseId?: string;
 };
 
-export default function CourseForm({
+export default function AddForm({
+  formType,
   initialData,
   isEdit = false,
   courseId
 }: Props) {
+  const isCourse = formType === 'course';
+
   const [courseData, setCourseData] = useState<CourseData>(
     initialData || {
       category: '',
       isPublic: '',
+      recruitStatus: '',
       showOnMain: false,
       title: '',
       intro: '',
       processTitle: '',
       processContent: '',
       videoLink: '',
+      workshopDate: '',
+      workshopTime: '',
+      workshopLocation: '',
+      workshopProcessContent: '',
+      priceNote: '',
       price: '',
       time: '',
       thumbnail: null,
@@ -103,7 +127,6 @@ export default function CourseForm({
     }
   );
 
-  // 에러 상태
   const [errors, setErrors] = useState<CourseFormErrors>({});
 
   // 제출 함수
@@ -111,46 +134,56 @@ export default function CourseForm({
     const newErrors: CourseFormErrors = {};
 
     if (!courseData.category) newErrors.category = '카테고리를 선택해주세요.';
-    if (!courseData.isPublic) newErrors.isPublic = '공개 여부를 선택해주세요.';
-    if (!courseData.title.trim()) newErrors.title = '강의 제목을 입력해주세요.';
-    if (!courseData.intro.trim()) newErrors.intro = '강의 소개를 입력해주세요.';
-    if (!courseData.videoLink.trim())
-      newErrors.videoLink = '동영상 링크를 입력해주세요.';
+
+    if (isCourse) {
+      if (!courseData.isPublic)
+        newErrors.isPublic = '공개 여부를 선택해주세요.';
+    } else {
+      if (!courseData.recruitStatus)
+        newErrors.recruitStatus = '모집 여부를 선택해주세요.';
+    }
+
+    if (!courseData.title.trim()) newErrors.title = '제목을 입력해주세요.';
+    if (!courseData.intro.trim()) newErrors.intro = '소개를 입력해주세요.';
+
+    if (isCourse) {
+      if (!courseData.videoLink?.trim())
+        newErrors.videoLink = '동영상 링크를 입력해주세요.';
+    }
+
     if (!courseData.price.trim()) newErrors.price = '가격을 입력해주세요.';
-    if (!courseData.time.trim()) newErrors.time = '강의 시간을 입력해주세요.';
+    if (!courseData.time.trim()) newErrors.time = '시간을 입력해주세요.';
 
     if (!courseData.thumbnail && !courseData.thumbnailUrl)
       newErrors.thumbnail = '썸네일 이미지를 업로드해주세요.';
 
-    if (!courseData.visualTitle.trim())
-      newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
-    if (!courseData.visualTitle2.trim())
-      newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
+    if (isCourse) {
+      if (!courseData.visualTitle?.trim())
+        newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
+      if (!courseData.visualTitle2?.trim())
+        newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
+      if (!courseData.recommended?.length)
+        newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
+    }
 
     const hasInvalidLink = courseData.links.some(
       (l) => !l.url.trim() || !l.name.trim()
     );
     if (hasInvalidLink) newErrors.links = '링크와 이름을 모두 입력해주세요.';
 
-    if (courseData.recommended.length === 0) {
-      newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
-    }
-
-    // Sections Validation
     const sectionErrors = courseData.sections.map((section) => {
-      const errors: { title?: string; content?: string } = {};
-      if (!section.title.trim()) errors.title = '섹션 제목을 입력해주세요.';
-      if (!section.content.trim()) errors.content = '섹션 내용을 입력해주세요.';
-      return Object.keys(errors).length > 0 ? errors : {};
+      const errs: { title?: string; content?: string } = {};
+      if (!section.title.trim()) errs.title = '섹션 제목을 입력해주세요.';
+      if (!section.content.trim()) errs.content = '섹션 내용을 입력해주세요.';
+      return Object.keys(errs).length > 0 ? errs : {};
     });
 
     if (sectionErrors.some((err) => Object.keys(err).length > 0)) {
       newErrors.sections = sectionErrors;
     }
 
-    // Instructors Validation
     const instructorErrors = courseData.instructors.map((inst) => {
-      const errors: {
+      const errs: {
         name?: string;
         intro?: string;
         careers?: {
@@ -162,10 +195,10 @@ export default function CourseForm({
         photo?: string;
       } = {};
 
-      if (!inst.name.trim()) errors.name = '강사 이름을 입력해주세요.';
-      if (!inst.intro.trim()) errors.intro = '강사 소개를 입력해주세요.';
+      if (!inst.name.trim()) errs.name = '강사 이름을 입력해주세요.';
+      if (!inst.intro.trim()) errs.intro = '강사 소개를 입력해주세요.';
       if (!inst.photo && !inst.photoUrl)
-        errors.photo = '강사 사진을 업로드해주세요.';
+        errs.photo = '강사 사진을 업로드해주세요.';
 
       const careerErrors = inst.careers.map((career) => {
         const cErrors: {
@@ -184,10 +217,10 @@ export default function CourseForm({
       });
 
       if (careerErrors.some((err) => Object.keys(err).length > 0)) {
-        errors.careers = careerErrors;
+        errs.careers = careerErrors;
       }
 
-      return Object.keys(errors).length > 0 ? errors : {};
+      return Object.keys(errs).length > 0 ? errs : {};
     });
 
     if (instructorErrors.some((err) => Object.keys(err).length > 0)) {
@@ -286,25 +319,36 @@ export default function CourseForm({
       }}
       className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16"
     >
-      {/* 카테고리 / 공개여부 / 메인표시 */}
+      {/* 카테고리 / 공개여부(강의) or 모집여부(워크샵) / 메인표시 */}
       <CourseBasicSection
+        formType={formType}
         category={courseData.category}
         setCategory={(v) => {
           updateCourseData('category', v);
           setErrors((prev) => ({ ...prev, category: undefined }));
         }}
-        isPublic={courseData.isPublic}
-        setIsPublic={(v) => {
-          updateCourseData('isPublic', v);
-          setErrors((prev) => ({ ...prev, isPublic: undefined }));
+        statusValue={
+          isCourse
+            ? (courseData.isPublic ?? '')
+            : (courseData.recruitStatus ?? '')
+        }
+        setStatusValue={(v) => {
+          if (isCourse) {
+            updateCourseData('isPublic', v);
+            setErrors((prev) => ({ ...prev, isPublic: undefined }));
+          } else {
+            updateCourseData('recruitStatus', v);
+            setErrors((prev) => ({ ...prev, recruitStatus: undefined }));
+          }
         }}
         showOnMain={courseData.showOnMain}
         setShowOnMain={(v) => updateCourseData('showOnMain', v)}
         errors={errors}
       />
 
-      {/* 강의 정보 */}
+      {/* 정보 */}
       <CourseDetailSection
+        formType={formType}
         title={courseData.title}
         setTitle={(v) => updateCourseData('title', v)}
         intro={courseData.intro}
@@ -315,6 +359,18 @@ export default function CourseForm({
         setProcessContent={(v) => updateCourseData('processContent', v)}
         videoLink={courseData.videoLink}
         setVideoLink={(v) => updateCourseData('videoLink', v)}
+        workshopDate={courseData.workshopDate}
+        setWorkshopDate={(v) => updateCourseData('workshopDate', v)}
+        workshopTime={courseData.workshopTime}
+        setWorkshopTime={(v) => updateCourseData('workshopTime', v)}
+        workshopLocation={courseData.workshopLocation}
+        setWorkshopLocation={(v) => updateCourseData('workshopLocation', v)}
+        workshopProcessContent={courseData.workshopProcessContent}
+        setWorkshopProcessContent={(v) =>
+          updateCourseData('workshopProcessContent', v)
+        }
+        priceNote={courseData.priceNote}
+        setPriceNote={(v) => updateCourseData('priceNote', v)}
         price={courseData.price}
         setPrice={(v) => updateCourseData('price', v)}
         time={courseData.time}
@@ -326,25 +382,30 @@ export default function CourseForm({
         errors={errors}
       />
 
-      {/* 비주얼 타이틀 */}
-      <CourseVisualSection
-        visualTitle={courseData.visualTitle}
-        setVisualTitle={(v) => updateCourseData('visualTitle', v)}
-        visualTitle2={courseData.visualTitle2}
-        setVisualTitle2={(v) => updateCourseData('visualTitle2', v)}
-        errors={errors}
-      />
+      {/* 비주얼 타이틀 (강의 전용) */}
+      {isCourse && (
+        <CourseVisualSection
+          visualTitle={courseData.visualTitle ?? ''}
+          setVisualTitle={(v) => updateCourseData('visualTitle', v)}
+          visualTitle2={courseData.visualTitle2 ?? ''}
+          setVisualTitle2={(v) => updateCourseData('visualTitle2', v)}
+          errors={errors}
+        />
+      )}
 
-      {/* 추천드려요 */}
-      <RecommendedSelect
-        maxSelect={2}
-        value={courseData.recommended}
-        onChange={(v) => updateCourseData('recommended', v)}
-        error={errors.recommended}
-      />
+      {/* 추천드려요 (강의 전용) */}
+      {isCourse && (
+        <RecommendedSelect
+          maxSelect={2}
+          value={courseData.recommended}
+          onChange={(v) => updateCourseData('recommended', v)}
+          error={errors.recommended}
+        />
+      )}
 
       {/* 섹션 리스트 */}
       <SectionList
+        formType={formType}
         value={courseData.sections}
         onChange={(v) => updateCourseData('sections', v)}
         errors={errors.sections}
@@ -389,12 +450,14 @@ export default function CourseForm({
         </div>
       </div>
 
-      {/* 추천 컨텐츠 링크 */}
-      <RecommendedLinkSection
-        value={courseData.links}
-        onChange={(v) => updateCourseData('links', v)}
-        error={errors.links}
-      />
+      {/* 추천 컨텐츠 링크 (강의 전용) */}
+      {isCourse && (
+        <RecommendedLinkSection
+          value={courseData.links}
+          onChange={(v) => updateCourseData('links', v)}
+          error={errors.links}
+        />
+      )}
 
       {/* 버튼 */}
       <CourseActionButtons submitLabel={isEdit ? '수정' : '등록'} />
