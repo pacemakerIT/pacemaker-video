@@ -1,6 +1,6 @@
 'use client';
 
-import CourseForm, { CourseData } from '@/components/admin/courses/course-form';
+import AddForm, { CourseData } from '@/components/admin/add-form';
 
 import { useEffect, useState, use } from 'react';
 import { toast } from 'sonner';
@@ -152,7 +152,12 @@ export default function CourseEditPage({
           </span>
         </div>
 
-        <CourseForm initialData={courseData} isEdit={true} courseId={id} />
+        <AddForm
+          formType="course"
+          initialData={courseData}
+          isEdit={true}
+          courseId={id}
+        />
       </div>
     </div>
   );
