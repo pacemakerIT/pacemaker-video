@@ -1,9 +1,12 @@
 export type CourseFormErrors = {
   category?: string;
   isPublic?: string;
+  recruitStatus?: string;
   title?: string;
   intro?: string;
   videoLink?: string;
+  workshopDate?: string;
+  workshopLocation?: string;
   price?: string;
   time?: string;
   thumbnail?: string;
