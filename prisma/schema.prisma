@@ -295,7 +295,6 @@ model CourseToInstructor {
 enum WorkshopStatus {
   RECRUITING
   CLOSED
-  ONGOING
   COMPLETED
   HIDDEN
 }
