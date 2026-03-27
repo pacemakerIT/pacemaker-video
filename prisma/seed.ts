@@ -15,16 +15,17 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
 });
 
-const COURSE_TITLE = 'From Differentiated Resumes to Confident Interviews';
-const COURSE_DESC =
+const TITLE = 'Resume + Interview Prep (All-in-One)';
+const DESCRIPTION =
   'Learn how recruiters evaluate resumes and interviews, based on real hiring examples from Canadian companies.';
-const LONG_DESCRIPTION = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
+const PROCESS_CONTENT = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
 
 If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
-const TITLE = 'From Differentiated Resumes to Confident Interviews';
+const VISUAL_TITLE = 'Chosen by Professionals';
+const VISUAL_TITLE_2 = 'From Differentiated Resumes to Confident Interviews';
 
-const DETAIL_TITLE =
+const PROCESS_TITLE =
   'Step by Step: From a Strong Developer Resume to Interviews';
 
 const COURSE_THUMBNAILS = [
@@ -60,7 +61,6 @@ async function main() {
   } else {
     console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
     await prisma.video.deleteMany({});
-    await prisma.sectionItem.deleteMany({});
     await prisma.section.deleteMany({});
     await prisma.course.deleteMany({});
     await prisma.document.deleteMany({});
@@ -158,20 +158,19 @@ async function main() {
     await prisma.course.create({
       data: {
         id: courseId,
+        category: categoryString as CourseCategory,
+        isPublic: true,
+        showOnMain: true,
         title: TITLE,
-        courseTitle: COURSE_TITLE,
-        description: LONG_DESCRIPTION,
-        promoText: 'Chosen by Professionals',
-        summary: COURSE_DESC,
-        detailTitle: DETAIL_TITLE,
+        description: DESCRIPTION,
+        processTitle: PROCESS_TITLE,
+        processContent: PROCESS_CONTENT,
+        videoLink: 'https://vimeo.com/123456789',
         price: '2800',
-        rating: 5,
-        reviewCount: 1500,
-        category: categoryString as 'INTERVIEW' | 'RESUME' | 'NETWORKING',
-        duration: '7 Hours',
-        level: 'Intermediate',
-        language: 'English',
-        backgroundImage: thumbnail,
+        time: '7 Hours',
+        thumbnailUrl: thumbnail,
+        visualTitle: VISUAL_TITLE,
+        visualTitle2: VISUAL_TITLE_2,
         instructors: {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
@@ -207,13 +206,10 @@ async function main() {
     for (const section of sections) {
       const content = SECTION_CONTENT_MAP[section.title];
       if (content) {
-        await prisma.sectionItem.create({
+        await prisma.section.update({
+          where: { id: section.id },
           data: {
-            id: randomUUID(),
-            sectionId: section.id,
-            title: section.title,
-            content: content,
-            orderIndex: 1
+            description: content
           }
         });
       }

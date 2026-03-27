@@ -49,15 +49,16 @@ export async function GET() {
 
     const rows = courses.map((course) => ({
       id: course.id,
-      title: course.title,
+      title: course.title || '',
+      visualTitle2: course.visualTitle2,
       description: course.description || '',
       price: course.price ? `$${course.price}` : 'Free',
       likes: favoritesMap.get(course.id) || 0,
       purchases: purchasesMap.get(course.id) || 0,
       status: course.isPublic ? '공개중' : '비공개',
-      thumbnail: course.backgroundImage || '',
+      thumbnail: course.thumbnailUrl || '',
       selected: false,
-      summary: course.summary || '',
+      summary: course.description || '', // Keep mapping for UI compatibility if needed
       category: course.category || 'NETWORKING'
     }));
 
@@ -74,16 +75,19 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
+      category,
+      isPublic,
+      showOnMain,
       title,
       description,
+      processTitle,
+      processContent,
+      videoLink,
       price,
-      isPublic,
-      isMain,
-      category,
-      duration,
-      promoText,
-      summary,
-      detailTitle
+      time,
+      thumbnailUrl,
+      visualTitle,
+      visualTitle2
     } = body;
 
     if (!title) {
@@ -92,16 +96,19 @@ export async function POST(request: Request) {
 
     const newCourse = await prisma.course.create({
       data: {
+        category: category || 'NETWORKING',
+        isPublic,
+        showOnMain,
         title,
         description,
+        processTitle,
+        processContent,
+        videoLink,
         price,
-        isPublic,
-        isMain,
-        category: category || 'NETWORKING',
-        duration,
-        promoText,
-        summary,
-        detailTitle
+        time,
+        thumbnailUrl,
+        visualTitle,
+        visualTitle2
       }
     });
 
