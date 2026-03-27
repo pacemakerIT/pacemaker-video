@@ -5,6 +5,7 @@ import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import ExpandableCards from '@/components/common/expandable-cards';
+import { FormType } from '@/components/admin/add-form';
 
 type Video = {
   title: string;
@@ -18,16 +19,19 @@ type Section = {
 };
 
 type SectionListProps = {
+  formType: FormType;
   value: Section[];
   onChange: (sections: Section[]) => void;
   errors?: { title?: string; content?: string }[];
 };
 
 export default function SectionList({
+  formType,
   value = [],
   onChange,
   errors = []
 }: SectionListProps) {
+  const isWorkshop = formType === 'workshop';
   // 섹션 추가
   const handleAddSection = () => {
     onChange([
@@ -86,7 +90,7 @@ export default function SectionList({
       <div className="flex items-start gap-6">
         {/* 왼쪽 라벨 */}
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          섹션 별 내용
+          {isWorkshop ? '커리큘럼' : '섹션 별 내용'}
         </label>
 
         {/* 오른쪽 섹션 입력 영역 */}
@@ -146,67 +150,70 @@ export default function SectionList({
                     )}
                   </div>
 
-                  {/* 비디오 리스트 */}
-                  {section.videos?.map((video, vIndex) => (
-                    <div key={vIndex} className="flex flex-col gap-2 mt-2">
-                      <div className="flex items-start gap-4">
-                        <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
-                          영상 {vIndex + 1}
-                        </label>
+                  {/* 비디오 리스트 (course only) */}
+                  {!isWorkshop &&
+                    section.videos?.map((video, vIndex) => (
+                      <div key={vIndex} className="flex flex-col gap-2 mt-2">
+                        <div className="flex items-start gap-4">
+                          <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
+                            영상 {vIndex + 1}
+                          </label>
 
-                        <div className="flex-1 flex flex-col gap-2">
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="text"
-                              value={video.title}
-                              onChange={(e) =>
-                                handleVideoChange(
-                                  index,
-                                  vIndex,
-                                  'title',
-                                  e.target.value
-                                )
-                              }
-                              placeholder={`영상 ${vIndex + 1} 제목 입력`}
-                              className="w-full"
-                            />
-                            {section.videos.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteVideo(index, vIndex)}
-                                className="text-pace-orange-500 hover:text-pace-orange-600 flex-shrink-0"
-                              >
-                                ✕
-                              </button>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Input
-                              type="text"
-                              value={video.link}
-                              onChange={(e) =>
-                                handleVideoChange(
-                                  index,
-                                  vIndex,
-                                  'link',
-                                  e.target.value
-                                )
-                              }
-                              placeholder="링크 입력"
-                              className="flex-1"
-                            />
-                            {vIndex === section.videos.length - 1 && (
-                              <AddButton
-                                label="영상 링크 추가"
-                                onClick={() => handleAddVideo(index)}
-                                className="whitespace-nowrap"
+                          <div className="flex-1 flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="text"
+                                value={video.title}
+                                onChange={(e) =>
+                                  handleVideoChange(
+                                    index,
+                                    vIndex,
+                                    'title',
+                                    e.target.value
+                                  )
+                                }
+                                placeholder={`영상 ${vIndex + 1} 제목 입력`}
+                                className="w-full"
                               />
-                            )}
+                              {section.videos.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDeleteVideo(index, vIndex)
+                                  }
+                                  className="text-pace-orange-500 hover:text-pace-orange-600 flex-shrink-0"
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              <Input
+                                type="text"
+                                value={video.link}
+                                onChange={(e) =>
+                                  handleVideoChange(
+                                    index,
+                                    vIndex,
+                                    'link',
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="링크 입력"
+                                className="flex-1"
+                              />
+                              {vIndex === section.videos.length - 1 && (
+                                <AddButton
+                                  label="영상 링크 추가"
+                                  onClick={() => handleAddVideo(index)}
+                                  className="whitespace-nowrap"
+                                />
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )
             }))}
