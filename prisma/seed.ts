@@ -9,15 +9,10 @@ import {
   WorkshopStatus
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 import { randomUUID } from 'crypto';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-});
-
 const prisma = new PrismaClient({
-  adapter: new PrismaPg(pool)
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
 });
 
 const TITLE = 'Resume + Interview Prep (All-in-One)';
@@ -689,5 +684,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    await pool.end();
   });

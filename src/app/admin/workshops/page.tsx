@@ -61,8 +61,6 @@ function VisualRow({
         return 'recruiting';
       case 'CLOSED':
         return 'closed';
-      case 'ONGOING':
-        return 'ongoing';
       case 'COMPLETED':
         return 'completed';
       case 'HIDDEN':
@@ -169,7 +167,6 @@ function VisualRow({
           valueClassMap={{
             recruiting: 'text-pace-gray-700 font-semibold',
             closed: 'text-pace-gray-700 font-semibold',
-            ongoing: 'text-pace-gray-700 font-semibold',
             completed: 'text-pace-gray-700 font-semibold',
             hidden: 'text-pace-gray-700 font-semibold',
             '': 'text-pace-stone-500 font-semibold'
@@ -250,8 +247,6 @@ export default function Page() {
           return 'RECRUITING';
         case 'closed':
           return 'CLOSED';
-        case 'ongoing':
-          return 'ONGOING';
         case 'completed':
           return 'COMPLETED';
         case 'hidden':

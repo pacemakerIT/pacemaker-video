@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -11,7 +11,6 @@ export async function GET() {
         uploadDate: 'desc'
       }
     });
-
     const ebooks = documents.map((doc) => ({
       id: doc.documentId,
       title: doc.title,
