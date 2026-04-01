@@ -25,7 +25,6 @@ model User {
   role                  UserRole               @relation(fields: [roleId], references: [id])
   watchedVideos         WatchedVideo[]
   orders                Order[]
-  taughtWorkshops       Workshop[]             @relation("InstructorWorkshops")
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
   cart                  Cart[]
@@ -174,7 +173,7 @@ model Workshop {
   category      WorkshopCategory?
 
   instructorId String @db.Uuid
-  instructor   User   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
+  instructor   Instructor @relation("InstructorWorkshops", fields: [instructorId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -277,6 +276,7 @@ model Instructor {
   description  String?
   careers      Json?
   courses      Course[]
+  workshops    Workshop[] @relation("InstructorWorkshops")
 }
 
 
