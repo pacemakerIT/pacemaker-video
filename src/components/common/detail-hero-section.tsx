@@ -6,7 +6,7 @@ import { resolveImageSrc } from '@/lib/utils';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
-  subtitle?: string;
+  visualTitle?: string;
   visualTitle2?: string;
   title?: string;
   instructor?: string;
@@ -23,7 +23,7 @@ interface DetailHeroSectionProps {
 
 export default function DetailHeroSection({
   backgroundImage,
-  subtitle,
+  visualTitle,
   visualTitle2 = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
   title = '자기소개서 작성 및 면접 준비까지 하나로!',
   instructor = 'Heilee, Linda, Raphael. Lee',
@@ -78,7 +78,7 @@ export default function DetailHeroSection({
               isCourse ? 'text-white/80' : 'text-black/80'
             }`}
           >
-            {subtitle}
+            {visualTitle}
           </div>
           <h1
             className={`text-5xl font-bold leading-tight whitespace-pre-line ${

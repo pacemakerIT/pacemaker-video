@@ -286,9 +286,9 @@ export default function VideoDetailContainer({
   return (
     <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
+        visualTitle={data.course.visualTitle || undefined}
         visualTitle2={data.course.visualTitle2}
         title={data.course.title || ''}
-        subtitle={data.course.visualTitle || undefined}
         description={data.course.description || ''}
         price={data.course.price || ''}
         instructor={
@@ -326,7 +326,7 @@ export default function VideoDetailContainer({
           />
           <div className="flex gap-4">
             <div className="w-[60%] text-pace-stone-500 whitespace-pre-wrap">
-              {data.course.description ||
+              {data.course.processContent ||
                 'Detailed course description not available.'}
             </div>
             <ExpandableCards items={contentItems} />

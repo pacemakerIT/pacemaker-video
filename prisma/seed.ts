@@ -11,8 +11,14 @@ import {
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
 
+const connectionString =
+  process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || '';
+
+if (!connectionString) {
+  throw new Error('Either DIRECT_URL or DATABASE_URL must be set for seed.');
+}
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+  adapter: new PrismaPg({ connectionString })
 });
 
 const TITLE = 'Resume + Interview Prep (All-in-One)';
@@ -43,7 +49,6 @@ const EBOOK_THUMBNAILS = [
   '/img/ebook_image6.png'
 ];
 
-// Section Titles
 const SECTION_TITLES = [
   'Case Studies of North American Developer Job Postings',
   'Analysis of North American Developer Job Postings',
@@ -100,7 +105,7 @@ function pickOne<T>(rng: () => number, items: readonly T[]) {
 }
 
 async function resetLocalSeedData() {
-  console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
+  console.log('🧹 Local environment: Removing existing seed data...');
 
   await prisma.favorite.deleteMany({});
   await prisma.cart.deleteMany({});
@@ -118,11 +123,13 @@ async function resetLocalSeedData() {
   await prisma.workshop.deleteMany({});
   await prisma.instructor.deleteMany({});
 
-  console.log('✨ 기존 데이터 삭제 완료.');
+  console.log('✨ Existing data deletion complete.');
 }
 
 async function main() {
-  if (isRemoteSupabaseUrl(connectionString)) {
+  const dbUrl = process.env.DATABASE_URL || '';
+
+  if (isRemoteSupabaseUrl(dbUrl)) {
     throw new Error(
       'Remote Supabase database detected. Refusing to run destructive local seed.'
     );
@@ -138,11 +145,9 @@ async function main() {
 
   await resetLocalSeedData();
 
-  console.log('🚀 새로운 시드 생성 시작…');
+  console.log('🚀 Starting new seed generation...');
 
-  // 0) Main Visual 생성
   console.log('Generating Main Visuals...');
-  await prisma.mainVisual.deleteMany({});
   await prisma.mainVisual.createMany({
     data: [
       {
@@ -170,11 +175,30 @@ async function main() {
     ]
   });
 
-  // 1) Mock Instructor 생성
-  const instructorId = randomUUID();
+  const instructorId = SEEDED_INSTRUCTOR_IDS.raphael;
   await prisma.instructor.upsert({
     where: { id: instructorId },
-    update: {},
+    update: {
+      name: 'Raphael. Lee',
+      profileImage: '/img/instructor-image.png',
+      description:
+        'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+      careers: [
+        { period: '2019 ~', position: 'Managing Director at Pacemaker' },
+        {
+          period: '2015 ~ 2019',
+          position: 'Director of Operations at Metanet'
+        },
+        {
+          period: '2009 ~ 2014',
+          position: 'Business Development Manager at People In Biz Corp.'
+        },
+        {
+          period: '2004 ~ 2008',
+          position: 'Purchaser at InterContinental Hotels Group'
+        }
+      ]
+    },
     create: {
       id: instructorId,
       name: 'Raphael. Lee',
@@ -199,10 +223,19 @@ async function main() {
     }
   });
 
-  const instructorId2 = randomUUID();
+  const instructorId2 = SEEDED_INSTRUCTOR_IDS.sujin;
   await prisma.instructor.upsert({
     where: { id: instructorId2 },
-    update: {},
+    update: {
+      name: 'Sujin Ku',
+      profileImage: '/img/instructor-image.png',
+      description:
+        'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
+      careers: [
+        { period: '2020 ~', position: 'Career Coach at U of T' },
+        { period: '2015 ~ 2020', position: 'Employer Strategy Specialist' }
+      ]
+    },
     create: {
       id: instructorId2,
       name: 'Sujin Ku',
@@ -216,15 +249,13 @@ async function main() {
     }
   });
 
-  // 2) Course 6개 생성
   for (let i = 1; i <= 6; i++) {
     const courseId = randomUUID();
-
+    const coursePrice = 2800;
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
     const categories = Object.values(CourseCategory);
     const categoryString = categories[(i - 1) % categories.length];
 
-    // Course 생성
     await prisma.course.create({
       data: {
         id: courseId,
@@ -245,7 +276,6 @@ async function main() {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
-
         sectionsRel: {
           create: SECTION_TITLES.map((sectionName, idx) => ({
             id: randomUUID(),
@@ -257,14 +287,18 @@ async function main() {
       }
     });
 
-    // 생성된 Section 조회
+    seededCatalog.COURSE.push({
+      id: courseId,
+      itemType: 'COURSE',
+      price: coursePrice
+    });
+
     const sections = await prisma.section.findMany({
       where: { courseId },
       orderBy: { orderIndex: 'asc' }
     });
 
-    // 각 Section에 상세 설명 Item 생성
-    const SECTION_CONTENT_MAP: Record<string, string> = {
+    const sectionContentMap: Record<string, string> = {
       'Case Studies of North American Developer Job Postings':
         'Covers the North American style of resume writing in detail. Learn everything from keyword selection to pass ATS (Applicant Tracking Systems) to using action verbs to effectively showcase experiences.',
       'Analysis of North American Developer Job Postings':
@@ -273,36 +307,15 @@ async function main() {
         'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
     };
 
-    for (const section of sections) {
-      const content = sectionContentMap[section.title];
-      if (!content) {
-        continue;
-      }
-
-      await prisma.sectionItem.create({
-        data: {
-          id: randomUUID(),
-          sectionId: section.id,
-          title: section.title,
-          content,
-          orderIndex: 1
-        }
-      });
-    }
-
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
       for (let s = 1; s <= 4; s++) {
         await prisma.video.create({
           data: {
-            videoId: (() => {
-              // 첫 번째 코스의 첫 번째 섹션의 첫 번째 비디오만 실제 Wistia ID 사용
-              if (i === 1 && sectionIdx === 0 && s === 1) {
-                return '32ktrbrf3j';
-              }
-              // 나머지는 중복되지 않도록 고유한 더미 ID 생성 (@unique 제약 조건 대응)
-              return `vidx-${i}-${sectionIdx}-${s}-${randomUUID().slice(0, 8)}`;
-            })(),
+            videoId:
+              i === 1 && sectionIdx === 0 && s === 1
+                ? '32ktrbrf3j'
+                : `vidx-${i}-${sectionIdx + 1}-${s}`,
             title: `Session ${s}`,
             description: null,
             price: null,
@@ -316,7 +329,6 @@ async function main() {
     }
   }
 
-  // 3) Document (E-book) 6개 생성
   console.log('Generating English e-books...');
   const ebooks = [
     {
@@ -385,7 +397,7 @@ async function main() {
     }
   ];
 
-  const EBOOK_TOC = [
+  const ebookToc = [
     {
       id: '1',
       title: 'Developer Job Posting Examples',
@@ -408,8 +420,11 @@ async function main() {
 
   for (let i = 0; i < ebooks.length; i++) {
     const ebook = ebooks[i];
+    const documentRecordId = randomUUID();
+
     await prisma.document.create({
       data: {
+        id: documentRecordId,
         documentId: `ebook-${i + 1}`,
         title: ebook.title,
         description: ebook.description,
@@ -422,7 +437,7 @@ async function main() {
         isMain: i < 4,
         visualTitle1: ebook.visualTitle1,
         visualTitle2: ebook.visualTitle2,
-        tableOfContents: EBOOK_TOC,
+        tableOfContents: ebookToc,
         targetAudienceTypes: (() => {
           switch (ebook.category) {
             case DocumentCategory.MARKETING:
@@ -443,9 +458,14 @@ async function main() {
         })()
       }
     });
+
+    seededCatalog.EBOOK.push({
+      id: documentRecordId,
+      itemType: 'EBOOK',
+      price: ebook.price
+    });
   }
 
-  // 4) Ensure UserRoles exist
   console.log('Creating user roles...');
   await prisma.userRole.upsert({
     where: { id: 'ADMIN' },
@@ -463,7 +483,6 @@ async function main() {
     create: { id: 'USER', label: 'USER' }
   });
 
-  // 5) 고정 테스트 계정 생성 (Admin, User)
   console.log('Generating stable test accounts...');
   const stableUsers = [
     {
@@ -485,7 +504,9 @@ async function main() {
       where: { email: u.email },
       update: {
         clerkId: u.clerkId,
-        roleId: u.roleId
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
       },
       create: {
         id: u.id,
@@ -498,20 +519,16 @@ async function main() {
     });
   }
 
-  // 6) 30명의 추가 User 생성 with random roles
-  console.log('Generating 30 additional users with random roles...');
-  const itemTypes = ['COURSE', 'EBOOK', 'WORKSHOP'];
-
+  console.log('Generating stable sample users...');
   for (let i = 1; i <= 30; i++) {
-    const userId = randomUUID();
     const email = `user${i}@example.com`;
     const name = `User ${i}`;
     const nickname = `Nick${i}`;
+    const createdAt = randomPastDate(rng, 10_000_000_000);
+    const lastLoginAt = randomPastDate(rng, 14 * 24 * 60 * 60 * 1000);
 
-    // Random role selection with weighted distribution
-    // ADMIN: ~10%, INSTRUCTOR: ~20%, USER: ~70%
     let roleId;
-    const roleRandom = Math.random();
+    const roleRandom = rng();
     if (roleRandom < 0.1) {
       roleId = 'ADMIN';
     } else if (roleRandom < 0.3) {
@@ -520,86 +537,37 @@ async function main() {
       roleId = 'USER';
     }
 
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { email },
       update: {
-        image: null
+        name,
+        nickname,
+        image: null,
+        clerkId: `clerk_user_${i}`,
+        roleId,
+        isSubscribed: i % 3 === 0,
+        createdAt,
+        lastLoginAt
       },
       create: {
-        id: userId,
+        id: randomUUID(),
         email,
         name,
         nickname,
         image: null,
         clerkId: `clerk_user_${i}`,
-        roleId: roleId,
-        isSubscribed: i % 3 === 0, // 1/3 probability
-        createdAt: new Date(
-          Date.now() - Math.floor(Math.random() * 10000000000)
-        ), // Random past date
-        lastLoginAt: new Date()
+        roleId,
+        isSubscribed: i % 3 === 0,
+        createdAt,
+        lastLoginAt
       }
     });
 
-    // Create random orders for non-admin users
     if (roleId !== 'ADMIN') {
-      // Generate 1-5 random orders per user
-      const numOrders = Math.floor(Math.random() * 5) + 1;
-
-      for (let j = 0; j < numOrders; j++) {
-        const orderId = randomUUID();
-        const orderItems: Array<{
-          itemType: string;
-          itemId: string;
-          priceAtPurchase: number;
-          quantity: number;
-        }> = [];
-
-        // Generate 1-3 items per order
-        const numItems = Math.floor(Math.random() * 3) + 1;
-        let totalAmount = 0;
-
-        for (let k = 0; k < numItems; k++) {
-          const itemType =
-            itemTypes[Math.floor(Math.random() * itemTypes.length)];
-          const price = Math.floor(Math.random() * 200) + 50; // Random price between 50-250
-          const quantity = 1;
-
-          orderItems.push({
-            itemType,
-            itemId: randomUUID(),
-            priceAtPurchase: price,
-            quantity
-          });
-
-          totalAmount += price * quantity;
-        }
-
-        // Create order with items
-        await prisma.order.create({
-          data: {
-            id: orderId,
-            userId: userId,
-            totalAmount,
-            status: 'COMPLETED',
-            orderedAt: new Date(
-              Date.now() - Math.floor(Math.random() * 10000000000)
-            ),
-            items: {
-              create: orderItems.map((item) => ({
-                itemType: item.itemType as ItemType,
-                itemId: item.itemId,
-                priceAtPurchase: item.priceAtPurchase,
-                quantity: item.quantity
-              }))
-            }
-          }
-        });
-      }
+      seedOrderUsers.push({ id: user.id, roleId });
     }
   }
 
-  // 7) 워크샵 생성 (Mock data from UX Design & Home page)
   console.log('Generating dummy workshops...');
   const uxDesignWorkshopData = [
     {
@@ -632,9 +600,16 @@ async function main() {
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
+    const status =
+      startDate < SEEDED_REFERENCE_DATE
+        ? WorkshopStatus.COMPLETED
+        : WorkshopStatus.RECRUITING;
+
+    const workshopId = randomUUID();
+
     await prisma.workshop.create({
       data: {
-        id: randomUUID(),
+        id: workshopId,
         title: ws.title,
         description:
           "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
@@ -642,11 +617,17 @@ async function main() {
         endDate,
         price: 20,
         locationOrUrl: 'North York centre',
-        status: ws.status as WorkshopStatus,
+        status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
         thumbnail: '/img/course_image1.png'
       }
+    });
+
+    seededCatalog.WORKSHOP.push({
+      id: workshopId,
+      itemType: 'WORKSHOP',
+      price: 20
     });
   }
 
@@ -685,9 +666,16 @@ async function main() {
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
+    const status =
+      startDate < SEEDED_REFERENCE_DATE
+        ? WorkshopStatus.COMPLETED
+        : WorkshopStatus.RECRUITING;
+
+    const workshopId = randomUUID();
+
     await prisma.workshop.create({
       data: {
-        id: randomUUID(),
+        id: workshopId,
         title: ws.title,
         description:
           'Join this workshop to gain valuable insights and boost your career.',
@@ -695,17 +683,69 @@ async function main() {
         endDate,
         price: 20,
         locationOrUrl: 'North York centre',
-        status: ws.status as WorkshopStatus,
+        status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
         thumbnail: ws.thumbnail
       }
     });
+
+    seededCatalog.WORKSHOP.push({
+      id: workshopId,
+      itemType: 'WORKSHOP',
+      price: 20
+    });
   }
-  // 6) Create Mock Reviews for Courses
+
+  console.log('Generating sample orders...');
+  for (const user of seedOrderUsers) {
+    if (user.roleId === 'ADMIN') {
+      continue;
+    }
+
+    const numOrders = randomInt(rng, 1, 5);
+
+    for (let orderIndex = 0; orderIndex < numOrders; orderIndex++) {
+      const numItems = randomInt(rng, 1, 3);
+      const orderItems: SeedCatalogEntry[] = [];
+
+      for (let itemIndex = 0; itemIndex < numItems; itemIndex++) {
+        const itemType = pickOne(rng, ORDER_ITEM_TYPES);
+        const item = pickOne(rng, seededCatalog[itemType]);
+
+        orderItems.push(item);
+      }
+
+      const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
+
+      await prisma.order.create({
+        data: {
+          id: randomUUID(),
+          userId: user.id,
+          totalAmount,
+          status: 'COMPLETED',
+          orderedAt: randomPastDate(rng, 10_000_000_000),
+          items: {
+            create: orderItems.map((item) => ({
+              itemType: item.itemType as ItemType,
+              itemId: item.id,
+              priceAtPurchase: item.price,
+              quantity: 1
+            }))
+          }
+        }
+      });
+    }
+  }
+
   console.log('Creating mock reviews...');
-  const users = await prisma.user.findMany({ where: { roleId: 'USER' } });
-  const courses = await prisma.course.findMany();
+  const users = await prisma.user.findMany({
+    where: { roleId: 'USER' },
+    orderBy: { email: 'asc' }
+  });
+  const courses = await prisma.course.findMany({
+    orderBy: { createdAt: 'asc' }
+  });
 
   const reviewContents = [
     {
@@ -727,9 +767,8 @@ async function main() {
 
   if (users.length > 0 && courses.length > 0) {
     for (const course of courses) {
-      // Add 3 reviews per course to match mock data count
       for (let i = 0; i < 3; i++) {
-        const user = users[i % users.length]; // Cycle through users
+        const user = users[i % users.length];
         const reviewData = reviewContents[i % reviewContents.length];
 
         await prisma.review.create({
@@ -738,10 +777,7 @@ async function main() {
             courseId: course.id,
             rating: reviewData.rating,
             content: reviewData.content,
-            // Random date within last 3 months
-            createdAt: new Date(
-              Date.now() - Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000)
-            )
+            createdAt: randomPastDate(rng, 90 * 24 * 60 * 60 * 1000)
           }
         });
       }

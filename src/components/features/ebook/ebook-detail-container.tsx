@@ -137,7 +137,7 @@ export default function EbookDetailContainer({
     <div className="w-full flex flex-col justify-between items-center gap-20">
       <DetailHeroSection
         backgroundImage={backgroundImage}
-        subtitle="E-book Presentation"
+        visualTitle="E-book Presentation"
         visualTitle2="Effective Resume Structure & Keywords"
         title={courseTitle || title.replace('\n', ' ')}
         instructor={instructor}
