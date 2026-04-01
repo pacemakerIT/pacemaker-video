@@ -59,6 +59,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run typecheck` - Run TypeScript type checking
+- `npm run jira -- <command>` - Run the local Jira CLI
 - `npm run validate-branch-name` - Validate git branch name
 - `npm run precommit-tasks` - Run all pre-commit tasks
 
@@ -169,3 +170,35 @@ Tailwind updates often, so some colors may change or be removed.
 
 - If a color is missing, check the docs and update it while working.
 - After all work is done, we’ll review and update colors in one go.
+
+## Jira CLI
+
+This repository includes a lightweight Jira CLI for common sprint workflows.
+
+### Required Environment Variables
+
+Add these values to `.env.local`:
+
+```bash
+JIRA_BASE_URL=https://your-domain.atlassian.net
+JIRA_EMAIL=you@example.com
+JIRA_API_TOKEN=your_api_token
+JIRA_PROJECT_KEY=PACE
+JIRA_BOARD_ID=123
+```
+
+`JIRA_BOARD_ID` is optional if the CLI can infer the board from the project.
+
+### Common Commands
+
+```bash
+npm run jira -- me
+npm run jira -- boards
+npm run jira -- current-sprint
+npm run jira -- backlog
+npm run jira -- create --type Story --summary "Implement workshop detail page"
+npm run jira -- update-description --issue PACE-123 --description-file ./ticket.md
+npm run jira -- add-to-sprint --issue PACE-123 --current
+```
+
+Add `--json` to any read command for machine-readable output.
