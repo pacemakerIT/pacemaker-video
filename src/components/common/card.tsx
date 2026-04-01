@@ -78,7 +78,7 @@ export default function Card({
     }
   };
 
-  const displayTitle = title || visualTitle2 || '';
+  const displayTitle = visualTitle2 || title || '';
 
   return (
     <div className="cursor-pointer">
