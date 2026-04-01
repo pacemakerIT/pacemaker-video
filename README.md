@@ -189,6 +189,42 @@ JIRA_BOARD_ID=123
 
 `JIRA_BOARD_ID` is optional if the CLI can infer the board from the project.
 
+### Team Setup
+
+For team use, split Jira environment variables into shared values and personal values.
+
+Shared values for this project:
+
+```bash
+JIRA_BASE_URL=https://pacemakerca.atlassian.net
+JIRA_PROJECT_KEY=PACE
+JIRA_BOARD_ID=1
+```
+
+Personal values that each contributor should set with their own Jira account:
+
+```bash
+JIRA_EMAIL=your-email@example.com
+JIRA_API_TOKEN=your-own-api-token
+```
+
+How to get each value:
+
+- `JIRA_BASE_URL`: use the shared project value above
+- `JIRA_PROJECT_KEY`: use the shared project value above
+- `JIRA_BOARD_ID`: use the shared board value above
+- `JIRA_EMAIL`: use the Atlassian account email you log into Jira with
+- `JIRA_API_TOKEN`: create a personal API token from Atlassian Account Settings at `https://id.atlassian.com/manage-profile/security/api-tokens`
+
+Recommended setup:
+
+1. Copy the shared values into your local `.env.local`.
+2. Add your own `JIRA_EMAIL`.
+3. Create your own `JIRA_API_TOKEN` and add it to `.env.local`.
+4. Run `npm run jira -- me` to confirm authentication works.
+
+Do not commit `.env.local` or share your personal API token in chat, email, or the repository.
+
 ### Common Commands
 
 ```bash
