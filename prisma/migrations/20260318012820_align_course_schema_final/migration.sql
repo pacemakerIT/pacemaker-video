@@ -34,5 +34,5 @@ ADD COLUMN     "thumbnailUrl" TEXT,
 ADD COLUMN     "time" TEXT,
 ADD COLUMN     "videoLink" TEXT,
 ADD COLUMN     "visualTitle" TEXT,
-ADD COLUMN     "visualTitle2" TEXT NOT NULL,
+ADD COLUMN     "visualTitle2" TEXT,
 ALTER COLUMN "title" DROP NOT NULL;
