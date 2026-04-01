@@ -41,21 +41,19 @@ export interface Review {
 // Three-table 구조 타입 정의
 export interface Course {
   id: string;
-  title: string;
-  courseTitle: string;
-  description: string;
-  price: string;
-  rating: number;
-  reviewCount: number;
   category: 'INTERVIEW' | 'RESUME' | 'NETWORKING' | null;
-  duration: string;
-  level: string;
-  language: string;
-  backgroundImage: string;
-  promoText: string | null;
-  summary: string | null;
-  detailTitle: string | null;
-  instructorId?: string; // Optional or removed
+  isPublic: boolean;
+  showOnMain: boolean;
+  title: string | null;
+  description: string | null;
+  processTitle: string | null;
+  processContent: string | null;
+  videoLink: string | null;
+  price: string | null;
+  time: string | null;
+  thumbnailUrl: string | null;
+  visualTitle: string | null;
+  visualTitle2: string;
   createdAt: string;
   updatedAt: string;
   instructors: Instructor[];
@@ -65,7 +63,6 @@ export interface Course {
   targetAudienceTypes: string[];
   targetAudiences: CourseTargetAudience[];
   relatedCourses: RelatedCourse[];
-  instructors: Instructor[];
 }
 
 export interface RelatedCourse {
@@ -104,23 +101,8 @@ export interface Section {
   title: string;
   description: string | null;
   orderIndex: number;
-  items: SectionItem[];
   videos: Video[];
 }
-
-export interface SectionItem {
-  id: string;
-  title: string;
-  content: string;
-  icon: string | null;
-  orderIndex: number;
-  itemId?: string;
-  price?: number;
-  category?: string;
-  type?: string;
-  thumbnail?: string;
-}
-
 export interface CourseTargetAudience {
   type: string;
   title: string;

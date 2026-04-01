@@ -15,34 +15,40 @@ describe('CardContainer', () => {
   const mockCards: OnlineCards[] = [
     {
       id: '1',
-      title: 'Test Card 1',
-      summary: 'Test Description 1',
+      visualTitle2: 'Test Card 1',
+      description: 'Test Description 1',
       price: 49.99,
       category: 'INTERVIEW',
       uploadDate: new Date(),
       itemId: 'video1',
+      isPublic: true,
+      showOnMain: true,
       watchedVideos: [],
       purchasedVideos: []
     },
     {
       id: '2',
-      title: 'Test Card 2',
-      summary: 'Test Description 2',
+      visualTitle2: 'Test Card 2',
+      description: 'Test Description 2',
       price: 59.99,
       category: 'RESUME',
       uploadDate: new Date(),
       itemId: 'video2',
+      isPublic: true,
+      showOnMain: true,
       watchedVideos: [],
       purchasedVideos: []
     },
     {
       id: '3',
-      title: 'Test Card 3',
-      summary: 'Test Description 3',
+      visualTitle2: 'Test Card 3',
+      description: 'Test Description 3',
       price: 69.99,
       category: 'NETWORKING',
       uploadDate: new Date(),
       itemId: 'video3',
+      isPublic: true,
+      showOnMain: true,
       watchedVideos: [],
       purchasedVideos: []
     }

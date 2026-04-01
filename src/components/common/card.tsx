@@ -23,13 +23,13 @@ interface CardProps extends OnlineCards {
 
 export default function Card({
   id,
-  courseTitle,
   title,
+  visualTitle2,
   price,
-  summary,
+  description,
   category,
   itemType,
-  thumbnail,
+  thumbnailUrl,
   imageUrl
 }: CardProps) {
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
@@ -60,7 +60,7 @@ export default function Card({
 
   // Use the central utility for image source resolution
   const imageSrc = resolveImageSrc({
-    thumbnail,
+    thumbnailUrl,
     imageUrl,
     itemType
   });
@@ -78,7 +78,7 @@ export default function Card({
     }
   };
 
-  const displayTitle = courseTitle || title || '';
+  const displayTitle = visualTitle2 || title || '';
 
   return (
     <div className="cursor-pointer">
@@ -135,7 +135,7 @@ export default function Card({
               </div>
             </div>
             <p className="w-full min-h-[72px] line-clamp-3 text-pace-stone-500 font-normal">
-              {summary}
+              {description}
             </p>
             <Button
               variant="link"

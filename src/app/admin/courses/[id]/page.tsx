@@ -29,18 +29,18 @@ export default function CourseEditPage({
           setCourseData({
             category: apiData.category || '',
             isPublic: apiData.isPublic ? '공개' : '비공개',
-            showOnMain: apiData.isMain || false, // Use isMain from apiData
+            showOnMain: apiData.showOnMain || false,
             title: apiData.title || '',
             intro: apiData.description || '',
-            processTitle: apiData.promoText || '',
-            processContent: apiData.summary || '',
-            videoLink: '', // Map if available
+            visualTitle: apiData.processTitle || '',
+            visualTitle2: apiData.processContent || '',
+            processTitle: apiData.visualTitle || '',
+            processContent: apiData.visualTitle2 || '',
+            videoLink: apiData.videoLink || '',
             price: apiData.price || '',
-            time: apiData.duration || '',
+            time: apiData.time || '',
             thumbnail: null,
-            thumbnailUrl: apiData.backgroundImage || '',
-            visualTitle: apiData.detailTitle || '',
-            visualTitle2: '', // Map if available
+            thumbnailUrl: apiData.thumbnailUrl || '',
             recommended: [], // Map if available
             sections:
               apiData.sections.length > 0

@@ -25,7 +25,6 @@ model User {
   role                  UserRole               @relation(fields: [roleId], references: [id])
   watchedVideos         WatchedVideo[]
   orders                Order[]
-  taughtWorkshops       Workshop[]             @relation("InstructorWorkshops")
   workshopRegistrations WorkshopRegistration[]
   favorites             Favorite[]
   cart                  Cart[]
@@ -36,6 +35,80 @@ model UserRole {
   id    String @id
   label String
   users User[]
+}
+
+model MainVisual {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  isPublic    Boolean   @default(false)
+  startDate   DateTime?
+  endDate     DateTime?
+  startTime   String?
+  endTime     String?
+  thumbnail   String?
+  link        String?
+  linkName    String?
+  orderIndex  Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Course {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title               String?
+  description         String?
+  price               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  category            CourseCategory?
+  targetAudienceTypes TargetAudienceType[]
+  isPublic            Boolean              @default(false)
+  processContent      String?
+  processTitle        String?
+  showOnMain          Boolean              @default(false)
+  thumbnailUrl        String?
+  time                String?
+  videoLink           String?
+  visualTitle         String?
+  visualTitle2        String?
+  instructors         Instructor[]
+  videos              Video[]              @relation("CourseToVideos")
+  sectionsRel         Section[]
+  reviews             Review[]
+}
+
+model CourseToInstructor {
+  A String @db.Uuid
+  B String @db.Uuid
+
+  @@id([A, B], map: "_CourseToInstructor_AB_pkey")
+  @@index([B], map: "_CourseToInstructor_B_index")
+  @@map("_CourseToInstructor")
+}
+
+model GlobalRelatedItem {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  content   String
+  price     Float
+  category  String
+  type      String
+  thumbnail String?
+}
+
+model Section {
+  courseId    String   @db.Uuid
+  title       String
+  description String?
+  orderIndex  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  videos      Video[]  @relation("SectionToVideos")
+
+  @@index([courseId])
 }
 
 model Video {
@@ -87,42 +160,21 @@ model Document {
   targetAudienceTypes TargetAudienceType[] @default([])
 }
 
-model MainVisual {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title       String
-  description String?
-  isPublic    Boolean   @default(false)
-  startDate   DateTime?
-  endDate     DateTime?
-  startTime   String?
-  endTime     String?
-  thumbnail   String?
-  link        String?
-  linkName    String?
-  orderIndex  Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-
 model Workshop {
-  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String
   description   String?
   startDate     DateTime
   endDate       DateTime
   price         Float?
   locationOrUrl String?
-  status        WorkshopStatus    @default(RECRUITING)
+  status        WorkshopStatus         @default(RECRUITING)
+  instructorId  String                 @db.Uuid
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  thumbnail     String?
   category      WorkshopCategory?
-
-  instructorId String @db.Uuid
-  instructor   User   @relation("InstructorWorkshops", fields: [instructorId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  thumbnail String?
-
+  instructor    Instructor             @relation("InstructorWorkshops", fields: [instructorId], references: [id])
   registrations WorkshopRegistration[]
 }
 
@@ -194,34 +246,6 @@ model Image {
   createdAt DateTime @default(now())
 }
 
-model Course {
-  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title               String
-  courseTitle         String?
-  description         String?
-  price               String?
-  rating              Float?
-  reviewCount         Int?
-  duration            String?
-  level               String?
-  language            String?
-  backgroundImage     String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  category            CourseCategory?
-  detailTitle         String?
-  promoText           String?
-  summary             String?  
-  isPublic            Boolean              @default(false)
-  isMain              Boolean              @default(false)
-
-  targetAudienceTypes TargetAudienceType[]
-  instructors         Instructor[]
-  videos              Video[]              @relation("CourseToVideos")
-  sectionsRel         Section[]
-  reviews             Review[]
-}
-
 model Review {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @db.Uuid
@@ -237,59 +261,14 @@ model Review {
   @@index([userId])
 }
 
-model Section {
-  courseId    String        @db.Uuid
-  title       String
-  description String?
-  orderIndex  Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  items       SectionItem[] @relation("SectionToItem")
-  videos      Video[]       @relation("SectionToVideos")
-
-  @@index([courseId])
-}
-
-model SectionItem {
-  sectionId  String  @db.Uuid
-  title      String
-  content    String
-  orderIndex Int
-  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  icon       String?
-  section    Section @relation("SectionToItem", fields: [sectionId], references: [id], onDelete: Cascade)
-
-  @@index([sectionId])
-}
-
 model Instructor {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name         String
   profileImage String?
   description  String?
   careers      Json?
   courses      Course[]
-}
-
-model GlobalRelatedItem {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title     String
-  content   String
-  price     Float
-  category  String
-  type      String
-  thumbnail String?
-}
-
-model CourseToInstructor {
-  A String @db.Uuid
-  B String @db.Uuid
-
-  @@id([A, B], map: "_CourseToInstructor_AB_pkey")
-  @@index([B], map: "_CourseToInstructor_B_index")
-  @@map("_CourseToInstructor")
+  workshops    Workshop[] @relation("InstructorWorkshops")
 }
 
 enum WorkshopStatus {

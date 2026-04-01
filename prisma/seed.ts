@@ -21,16 +21,17 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString })
 });
 
-const COURSE_TITLE = 'From Differentiated Resumes to Confident Interviews';
-const COURSE_DESC =
+const TITLE = 'Resume + Interview Prep (All-in-One)';
+const DESCRIPTION =
   'Learn how recruiters evaluate resumes and interviews, based on real hiring examples from Canadian companies.';
-const LONG_DESCRIPTION = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
+const PROCESS_CONTENT = `To land a developer role in North America, strong coding skills aren’t enough.\n Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.
 
 If North American job postings feel unfamiliar, this course guides you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you’ll learn how to analyze job postings and reflect those insights directly in your resume.`;
 
-const TITLE = 'From Differentiated Resumes to Confident Interviews';
+const VISUAL_TITLE = 'Chosen by Professionals';
+const VISUAL_TITLE_2 = 'From Differentiated Resumes to Confident Interviews';
 
-const DETAIL_TITLE =
+const PROCESS_TITLE =
   'Step by Step: From a Strong Developer Resume to Interviews';
 
 const COURSE_THUMBNAILS = [
@@ -104,7 +105,7 @@ function pickOne<T>(rng: () => number, items: readonly T[]) {
 }
 
 async function resetLocalSeedData() {
-  console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
+  console.log('🧹 Local environment: Removing existing seed data...');
 
   await prisma.favorite.deleteMany({});
   await prisma.cart.deleteMany({});
@@ -115,7 +116,6 @@ async function resetLocalSeedData() {
   await prisma.review.deleteMany({});
   await prisma.mainVisual.deleteMany({});
   await prisma.video.deleteMany({});
-  await prisma.sectionItem.deleteMany({});
   await prisma.section.deleteMany({});
   await prisma.$executeRawUnsafe('DELETE FROM "_CourseToInstructor";');
   await prisma.course.deleteMany({});
@@ -123,11 +123,13 @@ async function resetLocalSeedData() {
   await prisma.workshop.deleteMany({});
   await prisma.instructor.deleteMany({});
 
-  console.log('✨ 기존 데이터 삭제 완료.');
+  console.log('✨ Existing data deletion complete.');
 }
 
 async function main() {
-  if (isRemoteSupabaseUrl(connectionString)) {
+  const dbUrl = process.env.DATABASE_URL || '';
+
+  if (isRemoteSupabaseUrl(dbUrl)) {
     throw new Error(
       'Remote Supabase database detected. Refusing to run destructive local seed.'
     );
@@ -143,7 +145,7 @@ async function main() {
 
   await resetLocalSeedData();
 
-  console.log('🚀 새로운 시드 생성 시작…');
+  console.log('🚀 Starting new seed generation...');
 
   console.log('Generating Main Visuals...');
   await prisma.mainVisual.createMany({
@@ -257,20 +259,19 @@ async function main() {
     await prisma.course.create({
       data: {
         id: courseId,
+        category: categoryString as CourseCategory,
+        isPublic: true,
+        showOnMain: true,
         title: TITLE,
-        courseTitle: COURSE_TITLE,
-        description: LONG_DESCRIPTION,
-        promoText: 'Chosen by Professionals',
-        summary: COURSE_DESC,
-        detailTitle: DETAIL_TITLE,
-        price: String(coursePrice),
-        rating: 5,
-        reviewCount: 1500,
-        category: categoryString as 'INTERVIEW' | 'RESUME' | 'NETWORKING',
-        duration: '7 Hours',
-        level: 'Intermediate',
-        language: 'English',
-        backgroundImage: thumbnail,
+        description: DESCRIPTION,
+        processTitle: PROCESS_TITLE,
+        processContent: PROCESS_CONTENT,
+        videoLink: 'https://vimeo.com/123456789',
+        price: '2800',
+        time: '7 Hours',
+        thumbnailUrl: thumbnail,
+        visualTitle: VISUAL_TITLE,
+        visualTitle2: VISUAL_TITLE_2,
         instructors: {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
@@ -305,23 +306,6 @@ async function main() {
       'Actual Successful Resumes for North American Developer Jobs':
         'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
     };
-
-    for (const section of sections) {
-      const content = sectionContentMap[section.title];
-      if (!content) {
-        continue;
-      }
-
-      await prisma.sectionItem.create({
-        data: {
-          id: randomUUID(),
-          sectionId: section.id,
-          title: section.title,
-          content,
-          orderIndex: 1
-        }
-      });
-    }
 
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
@@ -614,7 +598,13 @@ async function main() {
 
   for (const ws of uxDesignWorkshopData) {
     const startDate = new Date(ws.date);
-    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+    const status =
+      startDate < SEEDED_REFERENCE_DATE
+        ? WorkshopStatus.COMPLETED
+        : WorkshopStatus.RECRUITING;
+
     const workshopId = randomUUID();
 
     await prisma.workshop.create({
@@ -627,7 +617,7 @@ async function main() {
         endDate,
         price: 20,
         locationOrUrl: 'North York centre',
-        status: ws.status as WorkshopStatus,
+        status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
         thumbnail: '/img/course_image1.png'
@@ -674,7 +664,13 @@ async function main() {
 
   for (const ws of homeWorkshopData) {
     const startDate = new Date(ws.date);
-    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+    const status =
+      startDate < SEEDED_REFERENCE_DATE
+        ? WorkshopStatus.COMPLETED
+        : WorkshopStatus.RECRUITING;
+
     const workshopId = randomUUID();
 
     await prisma.workshop.create({
@@ -687,7 +683,7 @@ async function main() {
         endDate,
         price: 20,
         locationOrUrl: 'North York centre',
-        status: ws.status as WorkshopStatus,
+        status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
         thumbnail: ws.thumbnail

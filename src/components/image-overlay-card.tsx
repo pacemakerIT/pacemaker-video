@@ -8,6 +8,7 @@ import { useState, useMemo } from 'react';
 export default function ImageOverlayCard({
   itemId,
   title,
+  visualTitle2,
   category,
   startDate,
   locationOrUrl,
@@ -27,7 +28,7 @@ export default function ImageOverlayCard({
     return images[randomIndex];
   }, []);
 
-  const displayTitle = title || '';
+  const displayTitle = title || visualTitle2 || '';
   const formattedStatus =
     status === 'RECRUITING'
       ? 'Open'

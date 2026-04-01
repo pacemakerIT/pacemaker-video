@@ -17,7 +17,6 @@ export async function GET(
         videos: true,
         sectionsRel: {
           include: {
-            items: true,
             videos: true
           },
           orderBy: {
@@ -79,10 +78,7 @@ export async function GET(
       ...courseData,
       sections: (courseData.sectionsRel || []).map((section) => ({
         ...section,
-        items: (section.items || []).map((item) => ({
-          ...item,
-          icon: item.icon || null
-        }))
+        videos: section.videos || []
       })),
       targetAudiences: (courseData.targetAudienceTypes || []).map((type) => {
         const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
@@ -96,12 +92,12 @@ export async function GET(
       }),
       relatedCourses: relatedCoursesData.map((relatedCourse) => ({
         id: relatedCourse.id,
-        itemId: relatedCourse.id, // itemId seems redundant but kept for type signature matching if needed
-        title: relatedCourse.title,
-        price: Number(relatedCourse.price) || 0, // Ensure number
+        itemId: relatedCourse.id,
+        title: relatedCourse.visualTitle2,
+        price: Number(relatedCourse.price) || 0,
         category: relatedCourse.category || 'GENERAL',
         type: 'course',
-        thumbnail: relatedCourse.backgroundImage
+        thumbnail: relatedCourse.thumbnailUrl
       })),
       instructors: courseData.instructors || []
     };
@@ -136,16 +132,19 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
     const {
+      category,
+      isPublic,
+      showOnMain,
       title,
       description,
+      processTitle,
+      processContent,
+      videoLink,
       price,
-      isPublic,
-      isMain,
-      category,
-      duration,
-      promoText,
-      summary,
-      detailTitle
+      time,
+      thumbnailUrl,
+      visualTitle,
+      visualTitle2
       // ... expand as needed for related models
     } = body;
 
@@ -163,16 +162,19 @@ export async function PUT(
     const updatedCourse = await prisma.course.update({
       where: { id },
       data: {
+        category: category || 'NETWORKING',
+        isPublic,
+        showOnMain,
         title,
         description,
+        processTitle,
+        processContent,
+        videoLink,
         price,
-        isPublic,
-        isMain,
-        category: category || 'NETWORKING',
-        duration,
-        promoText,
-        summary,
-        detailTitle
+        time,
+        thumbnailUrl,
+        visualTitle,
+        visualTitle2
       }
     });
 
