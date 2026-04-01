@@ -240,15 +240,17 @@ export default function AddForm({
       const payload = {
         category: courseData.category,
         isPublic: courseData.isPublic === '공개',
-        isMain: courseData.showOnMain,
+        showOnMain: courseData.showOnMain,
         title: courseData.title,
         description: courseData.intro,
+        processTitle: courseData.processTitle,
+        processContent: courseData.processContent,
+        videoLink: courseData.videoLink,
         price: courseData.price,
-        duration: courseData.time,
-        promoText: courseData.processTitle,
-        summary: courseData.processContent,
-        detailTitle: courseData.visualTitle
-        // ... 필요한 다른 필드들 매핑
+        time: courseData.time,
+        thumbnailUrl: courseData.thumbnailUrl,
+        visualTitle: courseData.visualTitle,
+        visualTitle2: courseData.visualTitle2
       };
 
       const url =

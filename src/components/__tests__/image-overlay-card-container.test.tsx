@@ -14,22 +14,26 @@ vi.mock('../image-overlay-card', () => ({
 const mockCards: OnlineCards[] = [
   {
     id: '1',
-    title: 'Card 1',
+    visualTitle2: 'Card 1',
     price: 0,
-    summary: '',
+    description: '',
     category: ItemType.WORKSHOP,
     itemId: 'video1',
+    isPublic: true,
+    showOnMain: true,
     uploadDate: new Date(),
     watchedVideos: [],
     purchasedVideos: []
   },
   {
     id: '2',
-    title: 'Card 2',
+    visualTitle2: 'Card 2',
     price: 0,
-    summary: '',
+    description: '',
     category: ItemType.WORKSHOP,
     itemId: 'video2',
+    isPublic: true,
+    showOnMain: true,
     uploadDate: new Date(),
     watchedVideos: [],
     purchasedVideos: []

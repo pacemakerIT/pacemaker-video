@@ -96,9 +96,12 @@ vi.mock('@/app/context/favorite-context', () => ({
 describe('Card', () => {
   const mockCard: OnlineCards = {
     id: '1',
-    courseTitle: 'Test Course',
+    visualTitle2: 'Test Course',
+    title: 'Test Course Title',
     price: 49.99,
-    summary: 'Test Description',
+    description: 'Test Description',
+    isPublic: true,
+    showOnMain: true,
     category: 'INTERVIEW',
     itemId: 'video1',
     uploadDate: new Date('2024-03-20'),
