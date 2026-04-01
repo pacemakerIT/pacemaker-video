@@ -50,7 +50,10 @@ function normalizeSchema(schema) {
     }
 
     if (line === '}') {
-      if (currentBlock.kind !== 'generator' && currentBlock.kind !== 'datasource') {
+      if (
+        currentBlock.kind !== 'generator' &&
+        currentBlock.kind !== 'datasource'
+      ) {
         const normalizedLines =
           currentBlock.kind === 'enum'
             ? currentBlock.lines
@@ -80,7 +83,9 @@ function main() {
   const [baseRef, headRef] = process.argv.slice(2);
 
   if (!baseRef || !headRef) {
-    console.error('Usage: node scripts/verify-prisma-schema-sync.mjs <base-ref> <head-ref>');
+    console.error(
+      'Usage: node scripts/verify-prisma-schema-sync.mjs <base-ref> <head-ref>'
+    );
     process.exit(2);
   }
 
@@ -110,7 +115,9 @@ function main() {
     return;
   }
 
-  console.error('ERROR: Prisma datamodel changed but no Prisma migration file was added.');
+  console.error(
+    'ERROR: Prisma datamodel changed but no Prisma migration file was added.'
+  );
   console.error('Run: npx prisma migrate dev --name <description>');
   process.exit(1);
 }

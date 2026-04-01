@@ -8,8 +8,8 @@ import BadgeHeader from '@/components/features/mypage/badge-header';
 import MyPageCard from '@/components/features/mypage/my-page-card';
 
 export default function Favorites() {
-  const type = useMemo(() => ['TOTAL', 'COURSE', 'DOCUMENT', 'WORKSHOP'], []);
-  type CurrentFilter = 'TOTAL' | 'COURSE' | 'DOCUMENT' | 'WORKSHOP';
+  const type = useMemo(() => ['TOTAL', 'COURSE', 'EBOOK', 'WORKSHOP'], []);
+  type CurrentFilter = 'TOTAL' | 'COURSE' | 'EBOOK' | 'WORKSHOP';
   const [currentType, setCurrentType] = useState<CurrentFilter>('TOTAL');
   const { favorites } = useFavoriteContext();
   const allCards = useMemo<MyCard[]>(
@@ -34,7 +34,7 @@ export default function Favorites() {
         ? allCards
         : allCards.filter((c) => {
             if (currentType === 'COURSE') return c.type === ItemType.COURSE;
-            if (currentType === 'DOCUMENT') return c.type === ItemType.DOCUMENT;
+            if (currentType === 'EBOOK') return c.type === ItemType.EBOOK;
             if (currentType === 'WORKSHOP') return c.type === ItemType.WORKSHOP;
             return true;
           }),
