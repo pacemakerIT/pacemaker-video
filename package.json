@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
+    "jira": "node scripts/jira-cli.mjs",
     "prepare": "husky",
     "validate-branch-name": "npx validate-branch-name",
     "typecheck": "tsc --noEmit --module esnext --incremental",
