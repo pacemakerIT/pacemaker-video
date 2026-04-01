@@ -50,23 +50,93 @@ const SECTION_TITLES = [
   'Actual Successful Resumes for North American Developer Jobs'
 ];
 
-async function main() {
-  // 운영 환경(Supabase) 체크: DATABASE_URL에 supabase 주소가 포함되어 있으면 데이터 삭제 중단
-  const isSupabase =
-    process.env.DATABASE_URL?.includes('supabase.com') ||
-    process.env.DATABASE_URL?.includes('pooler.supabase.com');
+const SEEDED_INSTRUCTOR_IDS = {
+  raphael: 'cd0bf417-d5ff-4ab7-8dd2-6e6682189f77',
+  sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae'
+} as const;
 
-  if (isSupabase) {
-    console.log('⚠️ 운영/원격 환경(Supabase) 감지: 데이터 삭제를 건너뜅니다.');
-  } else {
-    console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
-    await prisma.video.deleteMany({});
-    await prisma.section.deleteMany({});
-    await prisma.course.deleteMany({});
-    await prisma.document.deleteMany({});
-    await prisma.workshop.deleteMany({});
-    console.log('✨ 기존 데이터 삭제 완료.');
+const SEEDED_REFERENCE_DATE = new Date('2026-03-25T12:00:00.000Z');
+const ORDER_ITEM_TYPES = ['COURSE', 'EBOOK', 'WORKSHOP'] as const;
+
+type SeedOrderItemType = (typeof ORDER_ITEM_TYPES)[number];
+type SeedCatalogEntry = {
+  id: string;
+  itemType: SeedOrderItemType;
+  price: number;
+};
+
+function isRemoteSupabaseUrl(url: string) {
+  return (
+    url.includes('supabase.com') ||
+    url.includes('pooler.supabase.com') ||
+    url.includes('supabase.co')
+  );
+}
+
+function createSeededRandom(seed: number) {
+  let state = seed >>> 0;
+
+  return () => {
+    state += 0x6d2b79f5;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomInt(rng: () => number, min: number, max: number) {
+  return Math.floor(rng() * (max - min + 1)) + min;
+}
+
+function randomPastDate(rng: () => number, maxOffsetMs: number) {
+  return new Date(
+    SEEDED_REFERENCE_DATE.getTime() - Math.floor(rng() * maxOffsetMs)
+  );
+}
+
+function pickOne<T>(rng: () => number, items: readonly T[]) {
+  return items[Math.floor(rng() * items.length)];
+}
+
+async function resetLocalSeedData() {
+  console.log('🧹 로컬 환경: 기존 Seed 데이터 제거 중...');
+
+  await prisma.favorite.deleteMany({});
+  await prisma.cart.deleteMany({});
+  await prisma.watchedVideo.deleteMany({});
+  await prisma.workshopRegistration.deleteMany({});
+  await prisma.orderItem.deleteMany({});
+  await prisma.order.deleteMany({});
+  await prisma.review.deleteMany({});
+  await prisma.mainVisual.deleteMany({});
+  await prisma.video.deleteMany({});
+  await prisma.section.deleteMany({});
+  await prisma.$executeRawUnsafe('DELETE FROM "_CourseToInstructor";');
+  await prisma.course.deleteMany({});
+  await prisma.document.deleteMany({});
+  await prisma.workshop.deleteMany({});
+  await prisma.instructor.deleteMany({});
+
+  console.log('✨ 기존 데이터 삭제 완료.');
+}
+
+async function main() {
+  if (isRemoteSupabaseUrl(connectionString)) {
+    throw new Error(
+      'Remote Supabase database detected. Refusing to run destructive local seed.'
+    );
   }
+
+  const rng = createSeededRandom(20260325);
+  const seededCatalog: Record<SeedOrderItemType, SeedCatalogEntry[]> = {
+    COURSE: [],
+    EBOOK: [],
+    WORKSHOP: []
+  };
+  const seedOrderUsers: Array<{ id: string; roleId: string }> = [];
+
+  await resetLocalSeedData();
 
   console.log('🚀 새로운 시드 생성 시작…');
 
@@ -204,18 +274,22 @@ async function main() {
     };
 
     for (const section of sections) {
-      const content = SECTION_CONTENT_MAP[section.title];
-      if (content) {
-        await prisma.section.update({
-          where: { id: section.id },
-          data: {
-            description: content
-          }
-        });
+      const content = sectionContentMap[section.title];
+      if (!content) {
+        continue;
       }
+
+      await prisma.sectionItem.create({
+        data: {
+          id: randomUUID(),
+          sectionId: section.id,
+          title: section.title,
+          content,
+          orderIndex: 1
+        }
+      });
     }
 
-    // 각 Section에 Video 4개씩 생성
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
       for (let s = 1; s <= 4; s++) {
