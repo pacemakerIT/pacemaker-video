@@ -7,6 +7,7 @@ import DetailRelatedContentSection from '../../common/detail-related-content-sec
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ItemType, TargetAudienceType } from '@prisma/client';
 import { CodeSquare, FileEdit } from 'lucide-react';
+import { RelatedContentItem } from '@/types/video-detail';
 
 export interface TOCItem {
   id: string;
@@ -17,6 +18,10 @@ export interface TOCItem {
 interface EbookDetailContainerProps {
   backgroundImage?: string;
   subtitle?: string;
+  sectionTitle?: string;
+  visualTitle?: string;
+  visualTitle2?: string;
+  subDescription?: string;
   title?: string;
   courseTitle?: string;
   instructor?: string;
@@ -26,11 +31,16 @@ interface EbookDetailContainerProps {
   rating?: number;
   targetAudienceTypes?: TargetAudienceType[];
   tableOfContents?: TOCItem[];
+  relatedItems?: RelatedContentItem[];
 }
 
 export default function EbookDetailContainer({
   backgroundImage = '/img/ebook-bg.png',
   subtitle = 'Chosen by Canadian tech companies',
+  sectionTitle,
+  visualTitle,
+  visualTitle2,
+  subDescription,
   title = 'Resume strategies\nthat help developers stand out.',
   courseTitle = 'Developer Job Applications & Networking',
   instructor = 'James',
@@ -38,7 +48,8 @@ export default function EbookDetailContainer({
   price = '999.99',
   reviewCount = 185,
   rating = 5,
-  tableOfContents
+  tableOfContents,
+  relatedItems = []
 }: EbookDetailContainerProps) {
   // 후기 데이터 (실제로는 API에서 가져올 데이터)
   const reviews = [
@@ -102,43 +113,12 @@ export default function EbookDetailContainer({
     }
   ];
 
-  // 카드 데이터 정의
-  const cards = [
-    {
-      id: '1',
-      itemId: 'course-1',
-      title: 'React 기초부터 실전까지',
-      price: 299,
-      category: 'Marketing',
-      type: 'course',
-      thumbnail: null
-    },
-    {
-      id: '2',
-      itemId: 'course-2',
-      title: 'Node.js 백엔드 개발',
-      price: 399,
-      category: 'Design',
-      type: 'course',
-      thumbnail: null
-    },
-    {
-      id: '3',
-      itemId: 'ebook-1',
-      title: 'JavaScript 완벽 가이드',
-      price: 199,
-      category: 'IT',
-      type: 'ebook',
-      thumbnail: null
-    }
-  ];
-
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
       <DetailHeroSection
         backgroundImage={backgroundImage}
-        visualTitle="E-book Presentation"
-        visualTitle2="Effective Resume Structure & Keywords"
+        visualTitle={visualTitle}
+        visualTitle2={visualTitle2}
         title={courseTitle || title.replace('\n', ' ')}
         instructor={instructor}
         description={description}
@@ -146,30 +126,18 @@ export default function EbookDetailContainer({
         buttonText="Add to cart"
         instructorLabel="Instructor"
         priceLabel="Price"
-        itemType={ItemType.DOCUMENT}
+        itemType={ItemType.EBOOK}
       />
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
-        <div className="flex flex-col gap-8">
+        <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
-            title="Effective Resume Structure & Keywords for Developers"
+            title={sectionTitle ?? title ?? ''}
           />
           <div className="w-full flex gap-8">
             <div className="w-[60%]">
               <p className="text-pace-stone-500 leading-relaxed">
-                To land a developer role in North America, strong coding skills
-                aren’t enough. Understanding job postings and what companies are
-                truly looking for is just as important. With AI-driven
-                productivity on the rise, developer job openings in North
-                America have decreased by nearly 35% over the past five years,
-                making hiring more competitive than ever.
-                <br />
-                <br />
-                If North American job postings feel unfamiliar, this course
-                guides you through how to read them effectively. Using real
-                English resumes from Pacemaker developers hired by Canadian
-                companies, you’ll learn how to analyze job postings and reflect
-                those insights directly in your resume.
+                {subDescription}
               </p>
             </div>
             <div className="w-[40%]">
@@ -190,7 +158,7 @@ export default function EbookDetailContainer({
         />
         <DetailRelatedContentSection
           title="Recommended E-books"
-          items={cards}
+          items={relatedItems}
         />
         <DetailReviewsSection
           title="Reader Reviews"

@@ -5,14 +5,23 @@ import { bucketName } from '@/lib/supabase';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const fileName = searchParams.get('fileName');
+    const rawUrl = searchParams.get('url');
 
-    if (!fileName) {
+    if (!rawUrl) {
       return NextResponse.json(
-        { error: 'File name is required' },
+        { error: 'url param is required' },
         { status: 400 }
       );
     }
+
+    const match = rawUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
+    if (!match) {
+      return NextResponse.json(
+        { error: 'Invalid Supabase storage URL' },
+        { status: 400 }
+      );
+    }
+    const [, bucket, filePath] = match;
 
     // Supabase 클라이언트 생성
     const supabase = createClient(
