@@ -12,7 +12,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
-import { toProxyUrl } from '@/lib/utils';
+import { resolveImageSrc } from '@/lib/utils';
 
 import {
   DndContext,
@@ -117,7 +117,7 @@ function VisualRow({
       <div className="w-40 h-[106px] relative rounded overflow-hidden bg-gray-100">
         {/* Using a placeholder if thumbnail is empty or local path */}
         <Image
-          src={toProxyUrl(row.thumbnail)}
+          src={resolveImageSrc({ thumbnail: row.thumbnail })}
           alt={row.title}
           fill
           className="object-cover"

@@ -7,7 +7,7 @@ import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
-import { toProxyUrl } from '@/lib/utils';
+import { resolveImageSrc } from '@/lib/utils';
 
 type Props = {
   title: string;
@@ -260,7 +260,7 @@ export default function EbookDetailSection({
           )}
           <ImageUploadInput
             value={null}
-            imageUrl={thumbnailUrl ? toProxyUrl(thumbnailUrl) : ''}
+            imageUrl={resolveImageSrc({ thumbnail: thumbnailUrl })}
             placeholder="파일 선택"
             onChange={handleThumbnailChange}
           />
