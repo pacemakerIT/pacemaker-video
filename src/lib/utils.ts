@@ -40,5 +40,5 @@ export function resolveImageSrc({
     return '/img/course_image1.png';
   }
 
-  return '/img/ebook_image1.png';
+  return '';
 }
