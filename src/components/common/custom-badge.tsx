@@ -21,7 +21,9 @@ const customBadgeVariants = cva(badgeVariants(), {
       ACCOUNTING:
         'border-transparent bg-pace-navy-500 !text-pace-sm text-pace-white-500 font-light',
       SERVICE:
-        'border-transparent bg-pace-teal-500 !text-pace-sm text-pace-white-500 font-light'
+        'border-transparent bg-pace-teal-500 !text-pace-sm text-pace-white-500 font-light',
+      RECOMMENDED:
+        'border-transparent bg-pace-orange-500 !text-pace-sm text-pace-white-500 font-light'
     }
   },
   defaultVariants: {

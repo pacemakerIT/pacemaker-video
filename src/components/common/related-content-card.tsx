@@ -1,7 +1,9 @@
 'use client';
-import Image from 'next/image';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Heart } from 'lucide-react';
+import { resolveImageSrc, isUnoptimizedImage } from '@/lib/utils';
+import { ItemType } from '@prisma/client';
 import { CustomBadge } from '@/components/common/custom-badge';
 
 interface RelatedContentCardProps {
@@ -9,19 +11,35 @@ interface RelatedContentCardProps {
   title: string;
   price: number;
   category: string;
+  linkUrl?: string;
+  thumbnailUrl?: string | null;
+  thumbnail?: string | null;
 }
 
 export default function RelatedContentCard({
   itemId,
   title,
   price,
-  category
+  category,
+  linkUrl,
+  thumbnailUrl,
+  thumbnail
 }: RelatedContentCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
   const handleCardClick = () => {
-    window.location.href = `/courses/${itemId}`;
+    if (linkUrl) {
+      window.location.href = linkUrl;
+    } else {
+      window.location.href = `/courses/${itemId}`;
+    }
   };
+
+  const imageSrc = resolveImageSrc({
+    thumbnail,
+    thumbnailUrl,
+    itemType: ItemType.COURSE // Default to COURSE for related items
+  });
 
   return (
     <div className="w-full cursor-pointer font-normal">
@@ -48,15 +66,21 @@ export default function RelatedContentCard({
           />
         </button>
 
-        <div className="w-full aspect-[3/2]">
-          <Image
-            src="/img/resume_lecture.jpeg"
-            width={384}
-            height={256}
-            className="w-full h-full object-cover"
-            alt="courses img"
-            data-testid="card-image"
-          />
+        <div className="w-full aspect-[3/2] relative overflow-hidden">
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              fill
+              className="object-cover object-center"
+              alt={title || 'courses img'}
+              data-testid="card-image"
+              unoptimized={isUnoptimizedImage(imageSrc)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+              No Image
+            </div>
+          )}
         </div>
 
         <div className="w-full p-6 flex flex-col justify-start items-start gap-4">
@@ -74,7 +98,9 @@ export default function RelatedContentCard({
 
             <div className="w-full flex justify-between items-start text-pace-gray-500">
               <h3 className="text-pace-base">{title}</h3>
-              <span className="text-pace-xl font-bold">{`$${price}`}</span>
+              {price > 0 && (
+                <span className="text-pace-xl font-bold">{`$${price}`}</span>
+              )}
             </div>
           </div>
 

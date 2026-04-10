@@ -72,6 +72,7 @@ model Course {
   videoLink           String?
   visualTitle         String?
   visualTitle2        String?
+  recommendedLinks    Json?
   instructors         Instructor[]
   videos              Video[]              @relation("CourseToVideos")
   sectionsRel         Section[]
@@ -87,15 +88,6 @@ model CourseToInstructor {
   @@map("_CourseToInstructor")
 }
 
-model GlobalRelatedItem {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title     String
-  content   String
-  price     Float
-  category  String
-  type      String
-  thumbnail String?
-}
 
 model Section {
   courseId    String   @db.Uuid
@@ -120,9 +112,9 @@ model Video {
   price         Float?
   category      VideoCategory?
   thumbnail     String?
-  courseId      String         @db.Uuid
+  courseId      String?        @db.Uuid
   sectionId     String?        @db.Uuid
-  course        Course         @relation("CourseToVideos", fields: [courseId], references: [id], onDelete: Cascade)
+  course        Course?        @relation("CourseToVideos", fields: [courseId], references: [id], onDelete: Cascade)
   section       Section?       @relation("SectionToVideos", fields: [sectionId], references: [id], onDelete: Cascade)
   watchedVideos WatchedVideo[]
 }

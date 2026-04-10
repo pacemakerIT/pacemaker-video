@@ -283,6 +283,20 @@ export default function VideoDetailContainer({
       text: item.content
     })) || [];
 
+  const relatedContentItems =
+    data.course.resolvedRecommendedCourses &&
+    data.course.resolvedRecommendedCourses.length > 0
+      ? data.course.resolvedRecommendedCourses
+      : data.course.relatedCourses?.map((course) => ({
+          id: course.id,
+          itemId: course.itemId,
+          title: course.title,
+          price: course.price,
+          category: course.category,
+          type: course.type,
+          thumbnail: course.thumbnail
+        })) || [];
+
   return (
     <div className="flex flex-col w-full h-full relative">
       <DetailHeroSection
@@ -405,7 +419,7 @@ export default function VideoDetailContainer({
 
         <DetailRelatedContentSection
           title={'You May Also Like'}
-          items={data.course.relatedCourses || []}
+          items={relatedContentItems}
         />
 
         <DetailReviewsSection
