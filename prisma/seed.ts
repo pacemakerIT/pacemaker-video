@@ -110,7 +110,7 @@ async function resetLocalSeedData() {
   await prisma.favorite.deleteMany({});
   await prisma.cart.deleteMany({});
   await prisma.watchedVideo.deleteMany({});
-  await prisma.workshopRegistration.deleteMany({});
+  await prisma.userWorkshop.deleteMany({});
   await prisma.orderItem.deleteMany({});
   await prisma.order.deleteMany({});
   await prisma.review.deleteMany({});
@@ -619,8 +619,10 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        instructorId: instructorId2,
-        thumbnail: '/img/course_image1.png'
+        thumbnail: '/img/course_image1.png',
+        instructors: {
+          create: [{ instructorId: instructorId2 }]
+        }
       }
     });
 
@@ -685,8 +687,10 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        instructorId: instructorId2,
-        thumbnail: ws.thumbnail
+        thumbnail: ws.thumbnail,
+        instructors: {
+          create: [{ instructorId: instructorId2 }]
+        }
       }
     });
 

@@ -16,8 +16,8 @@ export interface WorkshopCard {
   status: WorkshopStatus;
   category: string | null;
   thumbnail: string | null;
-  instructor: {
-    name: string | null;
-  } | null;
+  instructors: {
+    instructor: { name: string };
+  }[];
   locationOrUrl: string | null;
 }
