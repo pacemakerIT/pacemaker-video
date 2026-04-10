@@ -16,8 +16,8 @@ export async function GET(req: Request) {
       const workshop = await prisma.workshop.findUnique({
         where: { id },
         include: {
-          instructor: {
-            select: { name: true } // User model only has name (and nickname, image, etc.)
+          instructors: {
+            include: { instructor: { select: { name: true } } }
           }
         }
       });
@@ -72,8 +72,8 @@ export async function GET(req: Request) {
           status: true,
           category: true,
           thumbnail: true,
-          instructor: {
-            select: { name: true }
+          instructors: {
+            include: { instructor: { select: { name: true } } }
           }
         },
         orderBy: {
@@ -110,8 +110,8 @@ export async function GET(req: Request) {
           status: true,
           category: true,
           thumbnail: true,
-          instructor: {
-            select: { name: true }
+          instructors: {
+            include: { instructor: { select: { name: true } } }
           }
         },
         orderBy: {
@@ -138,8 +138,8 @@ export async function GET(req: Request) {
         status: true,
         category: true,
         thumbnail: true,
-        instructor: {
-          select: { name: true }
+        instructors: {
+          include: { instructor: { select: { name: true } } }
         }
       },
       orderBy: {
