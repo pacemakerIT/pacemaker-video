@@ -36,6 +36,13 @@ export default function ImageUploadInput({
     setPreview(null);
   }, [value]);
 
+  // imageUrl prop이 외부에서 바뀔 때 동기화 (업로드 완료 후 URL 반영)
+  useEffect(() => {
+    if (imageUrl) {
+      setLocalImageUrl(imageUrl);
+    }
+  }, [imageUrl]);
+
   // 파일 선택 시
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;

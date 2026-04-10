@@ -5,8 +5,6 @@ import Image from 'next/image';
 import AddButton from '@/components/ui/admin/add-button';
 import Input from '@/components/ui/admin/input';
 
-import RequiredMark from '@/components/ui/admin/required-mark';
-
 type LinkItem = {
   url: string;
   name: string;
@@ -23,9 +21,7 @@ export default function EbookRecommendedLinkSection({
   onChange,
   error
 }: RecommendedLinkSectionProps & { error?: string }) {
-  const [localLinks, setLocalLinks] = useState<LinkItem[]>([
-    { url: '', name: '', errors: {} }
-  ]);
+  const [localLinks, setLocalLinks] = useState<LinkItem[]>([]);
 
   const effectiveLinks = value !== undefined ? value : localLinks;
 
@@ -39,11 +35,9 @@ export default function EbookRecommendedLinkSection({
   // Warning: ensuring it stays in sync with effectiveLinks additions.
   const [editStates, setEditStates] = useState<boolean[]>(() => {
     if (value && value.length > 0) {
-      // If we have initial value, check if they are "empty" (new) or have data.
-      // Or just assume initial data is "saved".
       return new Array(value.length).fill(false);
     }
-    return [true]; // Default one empty item is editing
+    return []; // Default empty
   });
 
   const handleAddRecommendlink = () => {
@@ -128,7 +122,6 @@ export default function EbookRecommendedLinkSection({
           <div key={i} className="flex items-start gap-6">
             <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
               추천 컨텐츠 링크 연결
-              <RequiredMark />
             </label>
 
             <div className="flex flex-col flex-1 gap-2 rounded">
