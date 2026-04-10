@@ -1,28 +1,27 @@
 'use client';
 
+import { useState } from 'react';
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
+import { resolveImageSrc } from '@/lib/utils';
 
 type Props = {
   title: string;
   setTitle: (v: string) => void;
   intro: string;
   setIntro: (v: string) => void;
-  processTitle: string;
-  setProcessTitle: (v: string) => void;
-  processContent: string;
-  setProcessContent: (v: string) => void;
+  subTitle: string;
+  setSubTitle: (v: string) => void;
+  subDescription: string;
+  setSubDescription: (v: string) => void;
   price: string;
   setPrice: (v: string) => void;
-  thumbnail: File | null;
-  setThumbnail: (file: File | null) => void;
   thumbnailUrl: string;
   setThumbnailUrl: (v: string) => void;
-  setFile: (file: File | null) => void;
   fileUrl: string;
   setFileUrl: (v: string) => void;
   errors?: EbookFormErrors;
@@ -33,21 +32,90 @@ export default function EbookDetailSection({
   setTitle,
   intro,
   setIntro,
-  processTitle,
-  setProcessTitle,
-  processContent,
-  setProcessContent,
+  subTitle,
+  setSubTitle,
+  subDescription,
+  setSubDescription,
   price,
   setPrice,
-  thumbnail,
-  setThumbnail,
   thumbnailUrl,
   setThumbnailUrl,
-  setFile,
   fileUrl,
   setFileUrl,
   errors
 }: Props) {
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [fileUploading, setFileUploading] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  // /api/images/upload 사용 (기존 어드민 이미지 업로드 툴과 동일)
+  const uploadImage = async (
+    file: File,
+    column: string,
+    onSuccess: (url: string) => void,
+    onError?: (msg: string) => void
+  ) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('table', 'Document');
+    formData.append('column', column);
+
+    const res = await fetch('/api/images/upload', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+
+    if (res.ok && data.image?.url) {
+      onSuccess(data.image.url);
+    } else {
+      onError?.(data.error || '업로드에 실패했습니다.');
+    }
+  };
+
+  const handleThumbnailChange = async (file: File | null) => {
+    if (!file) {
+      setThumbnailUrl('');
+      return;
+    }
+    setThumbnailUploading(true);
+    try {
+      await uploadImage(file, 'thumbnail', (url) => {
+        setThumbnailUrl(url);
+      });
+    } catch {
+      // noop
+    } finally {
+      setThumbnailUploading(false);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFileUploading(true);
+    setFileUploadError(null);
+    setUploadedFileName(null);
+
+    try {
+      await uploadImage(
+        file,
+        'bucketUrl',
+        (url: string) => {
+          setFileUrl(url);
+          setUploadedFileName(file.name);
+        },
+        (msg: string) => setFileUploadError(msg)
+      );
+    } catch {
+      setFileUploadError('네트워크 오류가 발생했습니다.');
+    } finally {
+      setFileUploading(false);
+    }
+  };
+
   return (
     <>
       {/* 전자책 제목 */}
@@ -92,9 +160,9 @@ export default function EbookDetailSection({
         <div className="flex flex-col flex-1">
           <Input
             type="text"
-            value={processTitle}
-            onChange={(e) => setProcessTitle(e.target.value)}
-            placeholder="전자책 진행 제목 입력"
+            value={subTitle}
+            onChange={(e) => setSubTitle(e.target.value)}
+            placeholder="진행 제목 입력"
           />
         </div>
       </div>
@@ -106,10 +174,10 @@ export default function EbookDetailSection({
         </label>
         <div className="flex flex-col flex-1">
           <Textarea
-            value={processContent}
-            onChange={(e) => setProcessContent(e.target.value)}
-            placeholder="전자책 진행 내용 입력"
-            className="h-[200px]"
+            value={subDescription}
+            onChange={(e) => setSubDescription(e.target.value)}
+            placeholder="진행 내용 입력"
+            className="h-[120px]"
           />
         </div>
       </div>
@@ -131,15 +199,24 @@ export default function EbookDetailSection({
                   file:bg-pace-gray-100 file:text-pace-gray-700
                   hover:file:bg-pace-gray-200
                 "
-              onChange={(e) => {
-                const f = e.target.files?.[0] || null;
-                setFile(f);
-                if (f) setFileUrl(f.name);
-              }}
+              disabled={fileUploading}
+              onChange={handleFileChange}
             />
+            {fileUploading && (
+              <span className="text-sm text-pace-gray-500 whitespace-nowrap">
+                업로드 중...
+              </span>
+            )}
           </div>
-          {fileUrl && (
-            <p className="text-sm text-gray-500 mt-1">현재 파일: {fileUrl}</p>
+          {(uploadedFileName || fileUrl) && !fileUploading && (
+            <p className="text-sm text-pace-blue-600 mt-1 truncate">
+              ✓ {uploadedFileName ?? fileUrl}
+            </p>
+          )}
+          {fileUploadError && (
+            <p className="text-sm text-pace-orange-500 mt-1">
+              {fileUploadError}
+            </p>
           )}
           <ErrorText message={errors?.file} />
         </div>
@@ -178,15 +255,14 @@ export default function EbookDetailSection({
           <RequiredMark />
         </label>
         <div className="flex flex-col gap-2 flex-1">
+          {thumbnailUploading && (
+            <p className="text-sm text-pace-gray-500">업로드 중...</p>
+          )}
           <ImageUploadInput
-            value={thumbnail}
-            imageUrl={thumbnailUrl}
+            value={null}
+            imageUrl={resolveImageSrc({ thumbnail: thumbnailUrl })}
             placeholder="파일 선택"
-            onChange={(file) => {
-              setThumbnail(file);
-              if (file) setThumbnailUrl(URL.createObjectURL(file));
-              else setThumbnailUrl('');
-            }}
+            onChange={handleThumbnailChange}
           />
           <ErrorText message={errors?.thumbnail} />
         </div>

@@ -747,23 +747,23 @@ async function main() {
     orderBy: { createdAt: 'asc' }
   });
 
-  const reviewContents = [
-    {
-      rating: 5,
-      content:
-        "It was a huge help in writing my resume. Especially the ATS-related tips were content I hadn't heard anywhere else!"
-    },
-    {
-      rating: 4.5,
-      content:
-        'I was at a loss for interview prep, but I gained confidence thanks to this lecture. The mock interview questions were very similar to the actual ones.'
-    },
-    {
-      rating: 5,
-      content:
-        "The advice coming from the instructor's experience was impressive. I highly recommend it to those preparing for overseas employment."
-    }
-  ];
+    const reviewContents = [
+      {
+        rating: 5,
+        content:
+          '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+      },
+      {
+        rating: 4.5,
+        content:
+          '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+      },
+      {
+        rating: 5,
+        content:
+          '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+      }
+    ];
 
   if (users.length > 0 && courses.length > 0) {
     for (const course of courses) {
@@ -782,9 +782,9 @@ async function main() {
         });
       }
     }
-  }
 
-  console.log('🎉 Seed data created successfully!');
+    console.log('🎉 Seed data created successfully!');
+  }
 }
 
 main()
