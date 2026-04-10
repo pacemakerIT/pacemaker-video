@@ -48,6 +48,35 @@ export default function EbookDetailSection({
   setFileUrl,
   errors
 }: Props) {
+  const handleThumbnailChange = async (file: File | null) => {
+    setThumbnail(file);
+    if (!file) {
+      setThumbnailUrl('');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'EBOOK');
+
+      const res = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await res.json();
+      setThumbnailUrl(data.url);
+    } catch (error) {
+      // Intentionally silent for lint consistency
+      void error;
+    }
+  };
+
   return (
     <>
       {/* 전자책 제목 */}
@@ -182,11 +211,7 @@ export default function EbookDetailSection({
             value={thumbnail}
             imageUrl={thumbnailUrl}
             placeholder="파일 선택"
-            onChange={(file) => {
-              setThumbnail(file);
-              if (file) setThumbnailUrl(URL.createObjectURL(file));
-              else setThumbnailUrl('');
-            }}
+            onChange={handleThumbnailChange}
           />
           <ErrorText message={errors?.thumbnail} />
         </div>

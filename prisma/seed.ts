@@ -249,12 +249,19 @@ async function main() {
     }
   });
 
+  console.log('Generating English e-books...');
+  const courseIds = Array.from({ length: 6 }, () => randomUUID());
+
   for (let i = 1; i <= 6; i++) {
-    const courseId = randomUUID();
+    const courseId = courseIds[i - 1];
     const coursePrice = 2800;
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
     const categories = Object.values(CourseCategory);
     const categoryString = categories[(i - 1) % categories.length];
+
+    // Link to next course, wrapping around
+    const nextCourseId = courseIds[i % 6];
+    const prevCourseId = courseIds[(i + 4) % 6]; // (i-2) % 6 safely
 
     await prisma.course.create({
       data: {
@@ -262,7 +269,7 @@ async function main() {
         category: categoryString as CourseCategory,
         isPublic: true,
         showOnMain: true,
-        title: TITLE,
+        title: `${TITLE} - Volume ${i}`,
         description: DESCRIPTION,
         processTitle: PROCESS_TITLE,
         processContent: PROCESS_CONTENT,
@@ -276,6 +283,16 @@ async function main() {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
+        recommendedLinks: [
+          {
+            name: `Recommended Course ${i + 1}`,
+            url: `/courses/${nextCourseId}`
+          },
+          {
+            name: `Bonus Material for ${i}`,
+            url: `/courses/${prevCourseId}`
+          }
+        ],
         sectionsRel: {
           create: SECTION_TITLES.map((sectionName, idx) => ({
             id: randomUUID(),

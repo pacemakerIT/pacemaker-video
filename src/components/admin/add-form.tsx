@@ -250,7 +250,11 @@ export default function AddForm({
         time: courseData.time,
         thumbnailUrl: courseData.thumbnailUrl,
         visualTitle: courseData.visualTitle,
-        visualTitle2: courseData.visualTitle2
+        visualTitle2: courseData.visualTitle2,
+        recommended: courseData.recommended, // Target audience labels
+        sections: courseData.sections,
+        instructors: courseData.instructors,
+        links: courseData.links // Recommended links
       };
 
       const url =
