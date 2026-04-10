@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
-import { resolveImageSrc, isUnoptimizedImage } from '@/lib/utils';
+import { resolveImageSrc } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
 import { CustomBadge } from '@/components/common/custom-badge';
 
@@ -74,7 +74,6 @@ export default function RelatedContentCard({
               className="object-cover object-center"
               alt={title || 'courses img'}
               data-testid="card-image"
-              unoptimized={isUnoptimizedImage(imageSrc)}
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
