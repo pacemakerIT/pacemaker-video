@@ -5,10 +5,12 @@ import { Checkbox } from '@/components/ui/admin/checkbox';
 import ErrorText from '@/components/ui/admin/error-text';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
+import { itemCategoryLabel } from '@/constants/labels';
+import { DocumentCategory } from '@prisma/client';
 
 type Props = {
-  category: string;
-  setCategory: (v: string) => void;
+  category: DocumentCategory | '';
+  setCategory: (v: DocumentCategory) => void;
   isPublic: string;
   setIsPublic: (v: string) => void;
   showOnMain: boolean;
@@ -25,6 +27,20 @@ export default function EbookBasicSection({
   setShowOnMain,
   errors
 }: Props) {
+  const supportedCategories = [
+    DocumentCategory.MARKETING,
+    DocumentCategory.IT,
+    DocumentCategory.DESIGN,
+    DocumentCategory.PUBLIC,
+    DocumentCategory.ACCOUNTING,
+    DocumentCategory.SERVICE
+  ] as const satisfies readonly DocumentCategory[];
+
+  const categoryOptions = supportedCategories.map((value) => ({
+    value,
+    label: itemCategoryLabel.ko[value]
+  }));
+
   return (
     <div className="flex items-center gap-10">
       {/* 카테고리 선택 */}
@@ -36,14 +52,10 @@ export default function EbookBasicSection({
         <div className="flex flex-col flex-1">
           <PaceSelect
             value={category}
-            onChange={setCategory}
+            onChange={(value) => setCategory(value as DocumentCategory)}
             width="w-[240px]"
             placeholder="선택"
-            options={[
-              { value: '인터뷰', label: '인터뷰' },
-              { value: '이력서', label: '이력서' },
-              { value: '네트워킹', label: '네트워킹' }
-            ]}
+            options={categoryOptions}
           />
 
           {/* 에러 표시 */}
@@ -65,8 +77,8 @@ export default function EbookBasicSection({
             width="w-[240px]"
             placeholder="선택"
             options={[
-              { value: '공개', label: '공개' },
-              { value: '비공개', label: '비공개' }
+              { value: 'public', label: '공개' },
+              { value: 'private', label: '비공개' }
             ]}
           />
 
