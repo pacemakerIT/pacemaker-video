@@ -13,6 +13,7 @@ import CourseDetailSection from '@/components/admin/detail-section';
 import CourseVisualSection from '@/components/admin/courses/sections/course-visual-section';
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
+import RequiredMark from '../ui/admin/required-mark';
 
 export type FormType = 'course' | 'workshop';
 
@@ -422,6 +423,7 @@ export default function AddForm({
         <div className="flex items-start gap-6">
           <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
             강사 소개
+            <RequiredMark />
           </label>
           <div className="flex-1 flex flex-col gap-6">
             <ExpandableCards
