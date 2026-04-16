@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { imgBucketName } from '@/lib/supabase';
+import { bucketName } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
@@ -22,7 +22,7 @@ export async function GET(req: Request) {
 
     // Signed URL 생성
     const { data, error } = await supabase.storage
-      .from(imgBucketName)
+      .from(bucketName)
       .createSignedUrl(fileName, 3600); // 1시간 유효
 
     if (error || !data) {
