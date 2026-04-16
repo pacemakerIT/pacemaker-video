@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import AddButton from '@/components/ui/admin/add-button';
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import Textarea from '@/components/ui/admin/textarea';
@@ -41,6 +42,8 @@ export default function InstructorSection({
   onChange,
   error
 }: InstructorSectionProps) {
+  const [isUploading, setIsUploading] = useState(false);
+
   const yearOptions = Array.from({ length: 50 }, (_, i) => {
     const year = new Date().getFullYear() - i;
     return { label: `${year}년`, value: String(year) };
@@ -98,6 +101,40 @@ export default function InstructorSection({
   const handleDeleteCareer = (index: number) => {
     const updatedCareers = value.careers.filter((_, i) => i !== index);
     onChange({ ...value, careers: updatedCareers });
+  };
+
+  const handlePhotoChange = async (file: File | null) => {
+    if (!file) {
+      onChange({ ...value, photo: null, photoUrl: '' });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'INSTRUCTOR');
+
+      const res = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+
+      const data = await res.json();
+      onChange({
+        ...value,
+        photo: file,
+        photoUrl: data.url
+      });
+      toast.success('강사 사진이 업로드되었습니다.');
+    } catch (error) {
+      void error;
+      toast.error('사진 업로드 중 오류가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -247,22 +284,8 @@ export default function InstructorSection({
           <ImageUploadInput
             value={value.photo}
             imageUrl={value.photoUrl}
-            placeholder="파일 선택"
-            onChange={(file) => {
-              if (file) {
-                onChange({
-                  ...value,
-                  photo: file,
-                  photoUrl: URL.createObjectURL(file)
-                });
-              } else {
-                onChange({
-                  ...value,
-                  photo: null,
-                  photoUrl: ''
-                });
-              }
-            }}
+            placeholder={isUploading ? '업로드 중...' : '파일 선택'}
+            onChange={handlePhotoChange}
           />
         </div>
         {error?.photo && (

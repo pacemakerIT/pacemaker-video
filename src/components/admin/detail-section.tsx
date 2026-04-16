@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ImageUploadInput from '@/components/ui/admin/image-upload-input';
 import TimeInput from '@/components/ui/admin/time-input';
@@ -35,6 +36,7 @@ type Props = {
   priceNote?: string;
   setPriceNote?: (v: string) => void;
   // shared
+  // Shared
   price: string;
   setPrice: (v: string) => void;
   time: string;
@@ -80,6 +82,40 @@ export default function DetailSection({
 }: Props) {
   const isWorkshop = formType === 'workshop';
   const typeLabel = isWorkshop ? '워크샵' : '강의';
+  const [isUploading, setIsUploading] = React.useState(false);
+
+  const handleThumbnailChange = async (file: File | null) => {
+    setThumbnail(file);
+    if (!file) {
+      setThumbnailUrl('');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append(
+        'type',
+        isWorkshop ? 'WORKSHOP_THUMBNAIL' : 'COURSE_THUMBNAIL'
+      );
+
+      const res = await fetch('/api/images/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+
+      const data = await res.json();
+      setThumbnailUrl(data.url);
+    } catch (error) {
+      // Intentionally silent for lint consistency
+      void error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <>
@@ -290,12 +326,8 @@ export default function DetailSection({
           <ImageUploadInput
             value={thumbnail}
             imageUrl={thumbnailUrl}
-            placeholder="파일 선택"
-            onChange={(file) => {
-              setThumbnail(file);
-              if (file) setThumbnailUrl(URL.createObjectURL(file));
-              else setThumbnailUrl('');
-            }}
+            placeholder={isUploading ? '업로드 중...' : '파일 선택'}
+            onChange={handleThumbnailChange}
           />
           <ErrorText message={errors?.thumbnail} />
         </div>

@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,8 @@ export default function ExpandableCards({
   className,
   onDelete
 }: ExpandableCardProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const toggleItem = (id: string) => {
@@ -35,7 +38,13 @@ export default function ExpandableCards({
   };
 
   return (
-    <div className={cn('w-[40%] max-w-4xl mx-auto', className)}>
+    <div
+      className={cn(
+        isAdmin ? 'w-full' : 'w-[40%]',
+        'max-w-4xl mx-auto',
+        className
+      )}
+    >
       <div className="space-y-4">
         {items.map((item) => (
           <div
@@ -44,6 +53,7 @@ export default function ExpandableCards({
           >
             <div className="w-full px-6 py-4 flex items-center justify-between transition-all duration-200 hover:scale-[1.02]">
               <button
+                type="button"
                 onClick={() => toggleItem(item.id)}
                 className="flex-1 text-left flex items-center justify-between mr-4"
               >
@@ -63,6 +73,7 @@ export default function ExpandableCards({
               </button>
               {onDelete && (
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(item.id);
