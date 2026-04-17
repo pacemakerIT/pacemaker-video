@@ -25,6 +25,7 @@ export interface RelatedContentItem {
   category: string;
   type: string;
   thumbnail: string | null;
+  linkUrl?: string;
 }
 
 export interface Review {
@@ -63,6 +64,8 @@ export interface Course {
   targetAudienceTypes: string[];
   targetAudiences: CourseTargetAudience[];
   relatedCourses: RelatedCourse[];
+  recommendedLinks: { name: string; url: string }[] | null;
+  resolvedRecommendedCourses?: RelatedCourse[];
 }
 
 export interface RelatedCourse {
@@ -73,6 +76,7 @@ export interface RelatedCourse {
   category: string;
   type: string;
   thumbnail: string | null;
+  linkUrl?: string;
 }
 
 export interface ApiReview {
