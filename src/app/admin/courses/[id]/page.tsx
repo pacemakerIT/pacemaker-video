@@ -41,7 +41,7 @@ export default function CourseEditPage({
             time: apiData.time || '',
             thumbnail: null,
             thumbnailUrl: apiData.thumbnailUrl || '',
-            recommended: [], // Map if available
+            recommended: apiData.recommendedLabels || [],
             sections:
               apiData.sections.length > 0
                 ? apiData.sections.map(
@@ -112,7 +112,13 @@ export default function CourseEditPage({
                       photoUrl: ''
                     }
                   ],
-            links: [{ url: '', name: '', errors: {} }] // Map if available
+            links: apiData.recommendedLinks || [
+              {
+                url: '',
+                name: '',
+                errors: {}
+              }
+            ]
           });
         } else {
           toast.error(json.message || '강의를 불러오는데 실패했습니다.');

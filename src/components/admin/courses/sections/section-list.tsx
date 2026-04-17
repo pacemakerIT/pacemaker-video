@@ -91,6 +91,7 @@ export default function SectionList({
         {/* 왼쪽 라벨 */}
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
           {isWorkshop ? '커리큘럼' : '섹션 별 내용'}
+          <RequiredMark />
         </label>
 
         {/* 오른쪽 섹션 입력 영역 */}

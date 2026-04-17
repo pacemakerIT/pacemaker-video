@@ -60,6 +60,8 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
       linkName?: string;
     }>({});
 
+    const [isUploading, setIsUploading] = useState(false);
+
     useImperativeHandle(ref, () => ({
       submit: handleSubmit
     }));
@@ -128,6 +130,38 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
         }
       }
       setEndTime(time);
+    };
+
+    const handleImageUpload = async (file: File | null) => {
+      setImage(file);
+      setErrors((prev) => ({ ...prev, image: undefined }));
+      if (!file) {
+        setImageUrl('');
+        return;
+      }
+
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'MAIN_VISUAL');
+
+        const res = await fetch('/api/images/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) throw new Error('Upload failed');
+
+        const data = await res.json();
+        setImageUrl(data.url);
+        toast.success('이미지가 업로드되었습니다.');
+      } catch (error) {
+        void error;
+        toast.error('이미지 업로드에 실패했습니다.');
+      } finally {
+        setIsUploading(false);
+      }
     };
 
     // 기간 만료 여부 확인 및 상태 자동 변경
@@ -304,16 +338,10 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
                 </div>
               ) : (
                 <ImageUploadInput
-                  placeholder="파일 선택"
+                  placeholder={isUploading ? '업로드 중...' : '파일 선택'}
                   value={image}
                   imageUrl={imageUrl}
-                  onChange={(file) => {
-                    setImage(file);
-                    setErrors((prev) => ({ ...prev, image: undefined }));
-                    if (!file) {
-                      setImageUrl('');
-                    }
-                  }}
+                  onChange={handleImageUpload}
                 />
               )}
               <ErrorText message={errors.image} />
@@ -417,7 +445,8 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
           </Link>
           <button
             onClick={handleSubmit}
-            className="w-[112px] h-[60px] rounded text-pace-white-500 bg-pace-gray-700 text-pace-lg"
+            disabled={isUploading}
+            className="w-[112px] h-[60px] rounded text-pace-white-500 bg-pace-gray-700 text-pace-lg disabled:opacity-50"
           >
             수정
           </button>
