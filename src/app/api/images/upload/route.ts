@@ -7,24 +7,19 @@ import { bucketName, s3clientSupabase } from '@/lib/supabase';
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get('image') as File;
-    const table = formData.get('table') as string;
-    const column = formData.get('column') as string;
-    const recordId = formData.get('recordId') as string;
+    const file = (formData.get('image') || formData.get('file')) as File | null;
+    const table = (formData.get('table') || formData.get('type')) as
+      | string
+      | null;
+    const column = formData.get('column') as string | null;
+    const recordId = formData.get('recordId') as string | null;
     const courseId = formData.get('courseId') as string | null;
 
     if (!file) {
       return NextResponse.json({ error: 'File Not Found' }, { status: 400 });
     }
 
-    if (!table || !column) {
-      return NextResponse.json(
-        { error: 'Missing table or column' },
-        { status: 400 }
-      );
-    }
-
-    const ext = file.name.split('.').pop();
+    const ext = file.name.split('.').pop() || 'png';
     const uuid = uuidv4();
     const fileName = `${uuid}.${ext}`;
 
@@ -47,6 +42,13 @@ export async function POST(req: Request) {
 
     // 레코드 ID가 있으면 업데이트, 없으면 새로 생성
     let updatedRecord;
+
+    if (!column) {
+      return NextResponse.json(
+        { error: 'Column not specified' },
+        { status: 400 }
+      );
+    }
 
     switch (table) {
       case 'Video':
@@ -123,6 +125,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message: 'Image uploaded successfully',
+        url: imageUrl,
         image: newImage,
         updatedRecord
       },

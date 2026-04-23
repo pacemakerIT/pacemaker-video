@@ -249,12 +249,19 @@ async function main() {
     }
   });
 
+  console.log('Generating English e-books...');
+  const courseIds = Array.from({ length: 6 }, () => randomUUID());
+
   for (let i = 1; i <= 6; i++) {
-    const courseId = randomUUID();
+    const courseId = courseIds[i - 1];
     const coursePrice = 2800;
     const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
     const categories = Object.values(CourseCategory);
     const categoryString = categories[(i - 1) % categories.length];
+
+    // Link to next course, wrapping around
+    const nextCourseId = courseIds[i % 6];
+    const prevCourseId = courseIds[(i + 4) % 6]; // (i-2) % 6 safely
 
     await prisma.course.create({
       data: {
@@ -262,7 +269,7 @@ async function main() {
         category: categoryString as CourseCategory,
         isPublic: true,
         showOnMain: true,
-        title: TITLE,
+        title: `${TITLE} - Volume ${i}`,
         description: DESCRIPTION,
         processTitle: PROCESS_TITLE,
         processContent: PROCESS_CONTENT,
@@ -276,6 +283,16 @@ async function main() {
           connect: [{ id: instructorId }, { id: instructorId2 }]
         },
         targetAudienceTypes: ['IT', 'GOVERNMENT'],
+        recommendedLinks: [
+          {
+            name: `Recommended Course ${i + 1}`,
+            url: `/courses/${nextCourseId}`
+          },
+          {
+            name: `Bonus Material for ${i}`,
+            url: `/courses/${prevCourseId}`
+          }
+        ],
         sectionsRel: {
           create: SECTION_TITLES.map((sectionName, idx) => ({
             id: randomUUID(),
@@ -751,23 +768,23 @@ async function main() {
     orderBy: { createdAt: 'asc' }
   });
 
-    const reviewContents = [
-      {
-        rating: 5,
-        content:
-          '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
-      },
-      {
-        rating: 4.5,
-        content:
-          '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
-      },
-      {
-        rating: 5,
-        content:
-          '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
-      }
-    ];
+  const reviewContents = [
+    {
+      rating: 5,
+      content:
+        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+    },
+    {
+      rating: 4.5,
+      content:
+        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+    },
+    {
+      rating: 5,
+      content:
+        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+    }
+  ];
 
   if (users.length > 0 && courses.length > 0) {
     for (const course of courses) {

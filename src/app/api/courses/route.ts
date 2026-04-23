@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { ItemType } from '@prisma/client';
+import { ItemType, TargetAudienceType } from '@prisma/client';
 
 export async function GET() {
   try {
@@ -71,6 +71,29 @@ export async function GET() {
   }
 }
 
+const TARGET_AUDIENCE_MAP: Record<string, TargetAudienceType> = {
+  'IT 개발': TargetAudienceType.IT,
+  공무원: TargetAudienceType.GOVERNMENT,
+  재무회계: TargetAudienceType.FINANCE,
+  디자인: TargetAudienceType.DESIGN,
+  '북미 취업이력서': TargetAudienceType.RESUME,
+  '인터뷰 준비': TargetAudienceType.INTERVIEW,
+  네트워킹: TargetAudienceType.NETWORKING,
+  서비스: TargetAudienceType.SERVICE
+};
+
+interface InstructorInput {
+  name: string;
+  intro: string;
+  photoUrl: string;
+  careers?: string[];
+}
+
+interface VideoInput {
+  title: string;
+  link: string;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -87,29 +110,82 @@ export async function POST(request: Request) {
       time,
       thumbnailUrl,
       visualTitle,
-      visualTitle2
+      visualTitle2,
+      recommended, // TargetAudienceType strings (Korean)
+      sections,
+      instructors,
+      links // RecommendedLinks JSON
     } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
-    const newCourse = await prisma.course.create({
-      data: {
-        category: category || 'NETWORKING',
-        isPublic,
-        showOnMain,
-        title,
-        description,
-        processTitle,
-        processContent,
-        videoLink,
-        price,
-        time,
-        thumbnailUrl,
-        visualTitle,
-        visualTitle2
+    // Map Korean labels to Enum
+    const targetAudienceTypes = (recommended || [])
+      .map((label: string) => TARGET_AUDIENCE_MAP[label])
+      .filter(Boolean);
+
+    // Perform creation in a transaction to ensure atomic execution and fix nested validation errors
+    const newCourse = await prisma.$transaction(async (tx) => {
+      // 1. Create the Course basic data and instructors
+      const course = await tx.course.create({
+        data: {
+          category: category || 'NETWORKING',
+          isPublic,
+          showOnMain,
+          title,
+          description,
+          processTitle,
+          processContent,
+          videoLink,
+          price,
+          time,
+          thumbnailUrl,
+          visualTitle,
+          visualTitle2,
+          targetAudienceTypes,
+          recommendedLinks: links || [],
+          // Instructors (Many-to-Many)
+          instructors: {
+            create: (instructors || []).map((inst: InstructorInput) => ({
+              name: inst.name,
+              description: inst.intro,
+              profileImage: inst.photoUrl,
+              careers: inst.careers || []
+            }))
+          }
+        }
+      });
+
+      // 2. Create Sections and Videos iteratively
+      if (sections && sections.length > 0) {
+        for (let i = 0; i < sections.length; i++) {
+          const sectionData = sections[i];
+          const section = await tx.section.create({
+            data: {
+              title: sectionData.title,
+              description: sectionData.content,
+              orderIndex: i,
+              courseId: course.id
+            }
+          });
+
+          if (sectionData.videos && sectionData.videos.length > 0) {
+            await tx.video.createMany({
+              data: sectionData.videos.map((video: VideoInput) => ({
+                title: video.title,
+                videoId: video.link || `temp-${Math.random()}`,
+                description: '',
+                courseId: course.id,
+                sectionId: section.id
+              }))
+            });
+          }
+        }
       }
+
+      return course;
     });
 
     return NextResponse.json(
