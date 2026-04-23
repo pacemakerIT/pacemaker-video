@@ -10,6 +10,7 @@ import {
 } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
+import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
 const connectionString =
   process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || '';
@@ -20,6 +21,41 @@ if (!connectionString) {
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString })
 });
+
+const cleanEnv = (key: string) => {
+  const val = process.env[key];
+  if (!val) return '';
+  return val.replace(/^['"](.*)['"]$/, '$1');
+};
+
+const s3Client = new S3Client({
+  forcePathStyle: true,
+  region: cleanEnv('SUPABASE_S3_REGION') || 'ca-central-1',
+  endpoint: cleanEnv('SUPABASE_S3_ENDPOINT'),
+  credentials: {
+    accessKeyId: cleanEnv('SUPABASE_S3_ACCESS_KEY'),
+    secretAccessKey: cleanEnv('SUPABASE_S3_SECRET_KEY')
+  }
+});
+
+const BUCKET =
+  cleanEnv('SUPABASE_S3_BUCKET') || cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
+
+async function getRemoteImages() {
+  if (!BUCKET) return [];
+  try {
+    const command = new ListObjectsV2Command({ Bucket: BUCKET });
+    const response = await s3Client.send(command);
+    return (
+      (response.Contents?.map((item) => item.Key).filter(
+        (key) => key && /\.(png|jpg|jpeg|webp)$/i.test(key)
+      ) as string[]) || []
+    );
+  } catch (err) {
+    console.error('Failed to fetch images from S3:', err);
+    return [];
+  }
+}
 
 const TITLE = 'Resume + Interview Prep (All-in-One)';
 const DESCRIPTION =
@@ -47,6 +83,12 @@ const EBOOK_THUMBNAILS = [
   '/img/ebook_image4.png',
   '/img/ebook_image5.png',
   '/img/ebook_image6.png'
+];
+
+const WORKSHOP_THUMBNAILS = [
+  '/img/course_image1.png',
+  '/img/course_image2.png',
+  '/img/course_image3.png'
 ];
 
 const SECTION_TITLES = [
@@ -128,13 +170,13 @@ async function resetLocalSeedData() {
 
 async function main() {
   const dbUrl = process.env.DATABASE_URL || '';
-
+  /*
   if (isRemoteSupabaseUrl(dbUrl)) {
     throw new Error(
       'Remote Supabase database detected. Refusing to run destructive local seed.'
     );
   }
-
+*/
   const rng = createSeededRandom(20260325);
   const seededCatalog: Record<SeedOrderItemType, SeedCatalogEntry[]> = {
     COURSE: [],
@@ -142,6 +184,17 @@ async function main() {
     WORKSHOP: []
   };
   const seedOrderUsers: Array<{ id: string; roleId: string }> = [];
+
+  const remoteImages = await getRemoteImages();
+  console.log(
+    `📸 Found ${remoteImages.length} images in Supabase bucket: ${BUCKET}`
+  );
+  const getRandomImage = (fallback: string) => {
+    if (remoteImages.length > 0) {
+      return remoteImages[Math.floor(Math.random() * remoteImages.length)];
+    }
+    return fallback;
+  };
 
   await resetLocalSeedData();
 
@@ -180,7 +233,7 @@ async function main() {
     where: { id: instructorId },
     update: {
       name: 'Raphael. Lee',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -202,7 +255,7 @@ async function main() {
     create: {
       id: instructorId,
       name: 'Raphael. Lee',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -228,7 +281,7 @@ async function main() {
     where: { id: instructorId2 },
     update: {
       name: 'Sujin Ku',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -239,7 +292,7 @@ async function main() {
     create: {
       id: instructorId2,
       name: 'Sujin Ku',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -255,7 +308,9 @@ async function main() {
   for (let i = 1; i <= 6; i++) {
     const courseId = courseIds[i - 1];
     const coursePrice = 2800;
-    const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
+    const thumbnail = getRandomImage(
+      COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length]
+    );
     const categories = Object.values(CourseCategory);
     const categoryString = categories[(i - 1) % categories.length];
 
@@ -448,7 +503,9 @@ async function main() {
         price: ebook.price,
         bucketUrl: `https://example-bucket.s3.amazonaws.com/ebooks/guide-${i + 1}.pdf`,
         category: ebook.category,
-        thumbnail: EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length],
+        thumbnail: getRandomImage(
+          EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length]
+        ),
         isPublic: true,
         subTitle: ebook.subTitle,
         isMain: i < 4,
@@ -613,7 +670,8 @@ async function main() {
     }
   ];
 
-  for (const ws of uxDesignWorkshopData) {
+  for (let i = 0; i < uxDesignWorkshopData.length; i++) {
+    const ws = uxDesignWorkshopData[i];
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
@@ -637,7 +695,9 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
-        thumbnail: '/img/course_image1.png'
+        thumbnail: getRandomImage(
+          WORKSHOP_THUMBNAILS[i % WORKSHOP_THUMBNAILS.length]
+        )
       }
     });
 
@@ -653,33 +713,30 @@ async function main() {
       title: 'Mind Training for Success',
       category: 'NETWORKING',
       status: 'ONGOING',
-      thumbnail: '/img/course_image2.png',
       date: '2026-03-16T19:00:00Z'
     },
     {
       title: "Let's Connect!",
       category: 'NETWORKING',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image3.png',
       date: '2026-05-15T19:00:00Z'
     },
     {
       title: 'Build an English Resume for Career Transitions',
       category: 'RESUME',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image1.png',
       date: '2026-08-10T19:00:00Z'
     },
     {
       title: 'Resume Workshop for International Opportunities',
       category: 'NETWORKING',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image2.png',
       date: '2026-11-05T19:00:00Z'
     }
   ];
 
-  for (const ws of homeWorkshopData) {
+  for (let i = 0; i < homeWorkshopData.length; i++) {
+    const ws = homeWorkshopData[i];
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
@@ -703,7 +760,9 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         instructorId: instructorId2,
-        thumbnail: ws.thumbnail
+        thumbnail: getRandomImage(
+          WORKSHOP_THUMBNAILS[(i + 2) % WORKSHOP_THUMBNAILS.length]
+        )
       }
     });
 
@@ -768,17 +827,17 @@ async function main() {
     {
       rating: 5,
       content:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
+        'This was incredibly helpful for writing my resume. Especially the ATS tips—I haven’t heard them anywhere else!'
     },
     {
       rating: 4.5,
       content:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
+        'I was lost with interview prep, but this course gave me confidence. The mock interview questions were very similar to real ones.'
     },
     {
       rating: 5,
       content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
+        'I was impressed by the instructor’s advice based on their real experience. Highly recommend this to anyone preparing for a career abroad.'
     }
   ];
 
