@@ -140,15 +140,13 @@ export default function EbookDetailContainer({
                 {subDescription}
               </p>
             </div>
-            <div className="w-[40%]">
-              <ExpandableCards
-                items={
-                  tableOfContents && Array.isArray(tableOfContents)
-                    ? tableOfContents
-                    : []
-                }
-              />
-            </div>
+            <ExpandableCards
+              items={
+                tableOfContents && Array.isArray(tableOfContents)
+                  ? tableOfContents
+                  : []
+              }
+            />
           </div>
         </div>
 

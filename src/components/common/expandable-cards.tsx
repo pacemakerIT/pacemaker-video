@@ -80,42 +80,19 @@ export default function ExpandableCards({
                   }}
                   className="text-pace-sm text-pace-orange-500 hover:text-pace-orange-700 font-medium px-2 py-1"
                 >
-                  <span className="text-lg font-semibold text-gray-900">
-                    {item.title}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">
-                      {expandedItems.has(itemKey) ? collapseLabel : expandLabel}
-                    </span>
-                    {expandedItems.has(itemKey) ? (
-                      <ChevronUp className="w-5 h-5 text-gray-500" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-500" />
-                    )}
-                  </div>
+                  삭제
                 </button>
-                {onDelete && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(item.id);
-                    }}
-                    className="text-pace-sm text-pace-orange-500 hover:text-pace-orange-700 font-medium px-2 py-1"
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-              {expandedItems.has(itemKey) && (
-                <div className="px-6 pb-4 border-t border-gray-100">
-                  <div className="pt-4 text-gray-700 leading-relaxed">
-                    {item.content}
-                  </div>
-                </div>
               )}
             </div>
-          );
-        })}
+            {expandedItems.has(item.id) && (
+              <div className="px-6 pb-4 border-t border-gray-100">
+                <div className="pt-4 text-gray-700 leading-relaxed">
+                  {item.content}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
