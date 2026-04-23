@@ -37,7 +37,7 @@ export type WorkshopFromApi = {
   endDate: string;
   price: number | null;
   status: string;
-  instructor: { name: string | null } | null;
+  instructors: { instructor: { name: string } }[];
 };
 
 const monthMap: { [key: string]: string } = {
@@ -144,7 +144,7 @@ export default function WorkshopCalendar({
       title: w.title,
       start: new Date(w.startDate),
       end: new Date(w.endDate),
-      speaker: w.instructor?.name ?? 'Unknown',
+      speaker: w.instructors[0]?.instructor?.name ?? 'Unknown',
       fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
       status: w.status as CalendarEvent['status']
     }));
