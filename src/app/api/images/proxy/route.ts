@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { bucketName } from '@/lib/supabase';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { bucketName, s3clientSupabase } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
@@ -14,30 +15,29 @@ export async function GET(req: Request) {
       );
     }
 
-    // Supabase 클라이언트 생성
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // S3 GetObject 커맨드 생성
+    const getCommand = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: fileName
+    });
 
-    // Signed URL 생성
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(fileName, 3600); // 1시간 유효
-
-    if (error || !data) {
-      return NextResponse.json(
-        { error: 'Failed to create signed URL' },
-        { status: 500 }
-      );
-    }
+    // S3 Signed URL 생성
+    const signedUrl = await getSignedUrl(s3clientSupabase, getCommand, {
+      expiresIn: 3600 // 1시간 유효
+    });
 
     // Signed URL로 이미지 가져오기
-    const response = await fetch(data.signedUrl);
+    const response = await fetch(signedUrl);
 
     if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Fetch from S3 signed URL failed:',
+        response.status,
+        response.statusText
+      );
       return NextResponse.json(
-        { error: 'Failed to fetch image' },
+        { error: 'Failed to fetch image from storage' },
         { status: 404 }
       );
     }
@@ -51,7 +51,9 @@ export async function GET(req: Request) {
         'Cache-Control': 'public, max-age=3600, immutable'
       }
     });
-  } catch {
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Proxy image error:', error);
     return NextResponse.json(
       { error: 'Failed to proxy image' },
       { status: 500 }

@@ -10,6 +10,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { toast } from 'sonner';
 
 import RequiredMark from '@/components/ui/admin/required-mark';
+import { resolveImageSrc } from '@/lib/utils';
 
 type Career = {
   startDate: string;
@@ -114,6 +115,7 @@ export default function InstructorSection({
       const formData = new FormData();
       formData.append('file', file);
       formData.append('type', 'INSTRUCTOR');
+      formData.append('column', 'profileImage');
 
       const res = await fetch('/api/images/upload', {
         method: 'POST',
@@ -126,7 +128,7 @@ export default function InstructorSection({
       onChange({
         ...value,
         photo: file,
-        photoUrl: data.url
+        photoUrl: data.image?.fileName || data.image?.url || data.url
       });
       toast.success('강사 사진이 업로드되었습니다.');
     } catch (error) {
@@ -283,7 +285,7 @@ export default function InstructorSection({
           </label>
           <ImageUploadInput
             value={value.photo}
-            imageUrl={value.photoUrl}
+            imageUrl={resolveImageSrc({ thumbnail: value.photoUrl })}
             placeholder={isUploading ? '업로드 중...' : '파일 선택'}
             onChange={handlePhotoChange}
           />

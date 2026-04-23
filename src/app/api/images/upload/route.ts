@@ -26,6 +26,16 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // eslint-disable-next-line no-console
+    console.log('S3 Upload Start:', {
+      bucketName,
+      fileName,
+      contentType: file.type,
+      table,
+      column,
+      recordId
+    });
+
     const putCommand = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileName,
@@ -34,7 +44,15 @@ export async function POST(req: Request) {
     });
 
     // S3에 파일 업로드
-    await s3clientSupabase.send(putCommand);
+    try {
+      await s3clientSupabase.send(putCommand);
+      // eslint-disable-next-line no-console
+      console.log('S3 Upload Success:', fileName);
+    } catch (s3Error) {
+      // eslint-disable-next-line no-console
+      console.error('S3 Upload Error details:', s3Error);
+      throw s3Error;
+    }
 
     // Supabase Storage URL 생성
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -102,9 +120,21 @@ export async function POST(req: Request) {
             updatedRecord = null;
           }
           break;
+        case 'Instructor':
+        case 'INSTRUCTOR':
+          if (recordId && recordId.trim() !== '') {
+            updatedRecord = await prisma.instructor.update({
+              where: { id: recordId },
+              data: { [column]: imageUrl }
+            });
+          } else {
+            // recordId 없이 URL만 반환하는 경우 (강사 신규 등록 시)
+            updatedRecord = null;
+          }
+          break;
         default:
           return NextResponse.json(
-            { error: 'Invalid table name' },
+            { error: `Invalid table name: ${table}` },
             { status: 400 }
           );
       }

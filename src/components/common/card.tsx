@@ -29,6 +29,7 @@ export default function Card({
   description,
   category,
   itemType,
+  thumbnail,
   thumbnailUrl,
   imageUrl
 }: CardProps) {
@@ -60,6 +61,7 @@ export default function Card({
 
   // Use the central utility for image source resolution
   const imageSrc = resolveImageSrc({
+    thumbnail,
     thumbnailUrl,
     imageUrl,
     itemType
@@ -101,14 +103,20 @@ export default function Card({
           </button>
 
           <div className="w-[588px] h-[331px] relative overflow-hidden rounded-t-lg">
-            <Image
-              src={imageSrc}
-              fill
-              className="object-cover object-center"
-              alt="courses img"
-              data-testid="card-image"
-              sizes="588px"
-            />
+            {imageSrc ? (
+              <Image
+                src={imageSrc}
+                fill
+                className="object-cover object-center"
+                alt="courses img"
+                data-testid="card-image"
+                sizes="588px"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                No Image
+              </div>
+            )}
           </div>
 
           <div className="w-[588px] p-6 flex flex-col gap-4 justify-start items-start">
