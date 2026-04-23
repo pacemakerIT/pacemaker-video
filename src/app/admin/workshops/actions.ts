@@ -21,10 +21,10 @@ export interface WorkshopRow {
 export async function getWorkshops(): Promise<WorkshopRow[]> {
   const workshops = await prisma.workshop.findMany({
     include: {
-      registrations: true,
+      userWorkshops: true,
       _count: {
         select: {
-          registrations: true
+          userWorkshops: true
         }
       }
     },
@@ -49,7 +49,7 @@ export async function getWorkshops(): Promise<WorkshopRow[]> {
         description: workshop.description || '',
         price: workshop.price || 0,
         likes: favoritesCount,
-        purchases: workshop._count.registrations,
+        purchases: workshop._count.userWorkshops,
         status: workshop.status,
         category: (workshop.category ?? '') as string,
         thumbnail: workshop.thumbnail,
