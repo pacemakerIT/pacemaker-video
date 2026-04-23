@@ -38,6 +38,7 @@ export default function DetailRelatedContentSection({
             title={item.title}
             price={item.price}
             category={item.category}
+            linkUrl={item.linkUrl}
           />
         ))}
       </div>

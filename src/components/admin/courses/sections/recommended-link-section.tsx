@@ -39,9 +39,8 @@ export default function RecommendedLinkSection({
   // Warning: ensuring it stays in sync with effectiveLinks additions.
   const [editStates, setEditStates] = useState<boolean[]>(() => {
     if (value && value.length > 0) {
-      // If we have initial value, check if they are "empty" (new) or have data.
-      // Or just assume initial data is "saved".
-      return new Array(value.length).fill(false);
+      // Start in edit mode if the link is empty
+      return value.map((link) => !link.url.trim() || !link.name.trim());
     }
     return [true]; // Default one empty item is editing
   });
@@ -71,15 +70,6 @@ export default function RecommendedLinkSection({
     if (value === undefined) {
       setLocalLinks(updated);
     }
-    onChange?.(updated);
-  };
-
-  const handleRemoveLink = (index: number) => {
-    const updated = effectiveLinks.filter((_, i) => i !== index);
-    if (value === undefined) {
-      setLocalLinks(updated);
-    }
-    setEditStates((prev) => prev.filter((_, i) => i !== index));
     onChange?.(updated);
   };
 
@@ -169,16 +159,6 @@ export default function RecommendedLinkSection({
                         />
                       </button>
                     </div>
-                    {/* Delete button (X) for list item even in edit mode to remove unwanted row */}
-                    {effectiveLinks.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveLink(i)}
-                        className="text-pace-orange-500 hover:text-pace-orange-600 flex-shrink-0 px-2"
-                      >
-                        ✕
-                      </button>
-                    )}
                   </div>
 
                   {/* Validation Errors */}
