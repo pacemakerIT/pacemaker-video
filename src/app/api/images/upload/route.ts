@@ -43,71 +43,75 @@ export async function POST(req: Request) {
     // 레코드 ID가 있으면 업데이트, 없으면 새로 생성
     let updatedRecord;
 
-    if (table && column) {
-      switch (table) {
-        case 'Video':
-          if (recordId && recordId.trim() !== '') {
-            // 기존 레코드 업데이트
-            updatedRecord = await prisma.video.update({
-              where: { id: recordId },
-              data: { [column]: imageUrl }
-            });
-          } else {
-            // 새 레코드 생성 - courseId가 필요함
-            if (!courseId || courseId.trim() === '') {
-              return NextResponse.json(
-                { error: 'Missing courseId for new Video creation' },
-                { status: 400 }
-              );
+    if (!column) {
+      return NextResponse.json(
+        { error: 'Column not specified' },
+        { status: 400 }
+      );
+    }
+
+    switch (table) {
+      case 'Video':
+        if (recordId && recordId.trim() !== '') {
+          // 기존 레코드 업데이트
+          updatedRecord = await prisma.video.update({
+            where: { id: recordId },
+            data: { [column]: imageUrl }
+          });
+        } else {
+          // 새 레코드 생성 - courseId가 필요함
+          if (!courseId || courseId.trim() === '') {
+            return NextResponse.json(
+              { error: 'Missing courseId for new Video creation' },
+              { status: 400 }
+            );
+          }
+          updatedRecord = await prisma.video.create({
+            data: {
+              videoId: `video_${uuid}`,
+              title: '새 비디오',
+              course: { connect: { id: courseId } },
+              [column]: imageUrl
             }
-            updatedRecord = await prisma.video.create({
-              data: {
-                videoId: `video_${uuid}`,
-                title: '새 비디오',
-                course: { connect: { id: courseId } },
-                [column]: imageUrl
-              }
-            });
-          }
-          break;
-        case 'Workshop':
-          if (recordId && recordId.trim() !== '') {
-            // 기존 레코드 업데이트
-            updatedRecord = await prisma.workshop.update({
-              where: { id: recordId },
-              data: { [column]: imageUrl }
-            });
-          } else {
-            // 새 레코드 생성 - instructorId는 나중에 설정해야 함
-            updatedRecord = await prisma.workshop.create({
-              data: {
-                title: '새 워크숍',
-                description: '워크숍 설명',
-                startDate: new Date(),
-                endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                instructorId: '00000000-0000-0000-0000-000000000000', // 임시 값, 실제 사용 시 업데이트 필요
-                [column]: imageUrl
-              }
-            });
-          }
-          break;
-        case 'Document':
-          if (recordId && recordId.trim() !== '') {
-            updatedRecord = await prisma.document.update({
-              where: { id: recordId },
-              data: { [column]: imageUrl }
-            });
-          } else {
-            // recordId 없이 URL만 반환 (ebook 신규 등록 시)
-            updatedRecord = null;
-          }
-          break;
-        default:
-          return NextResponse.json(
-            { error: 'Invalid table name' },
-            { status: 400 }
-          );
-      }
+          });
+        }
+        break;
+      case 'Workshop':
+        if (recordId && recordId.trim() !== '') {
+          // 기존 레코드 업데이트
+          updatedRecord = await prisma.workshop.update({
+            where: { id: recordId },
+            data: { [column]: imageUrl }
+          });
+        } else {
+          // 새 레코드 생성 - 강사는 별도로 WorkshopInstructor를 통해 연결
+          updatedRecord = await prisma.workshop.create({
+            data: {
+              title: '새 워크숍',
+              description: '워크숍 설명',
+              startDate: new Date(),
+              endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              [column]: imageUrl
+            }
+          });
+        }
+        break;
+      case 'Document':
+        if (recordId && recordId.trim() !== '') {
+          updatedRecord = await prisma.document.update({
+            where: { id: recordId },
+            data: { [column]: imageUrl }
+          });
+        } else {
+          // recordId 없이 URL만 반환 (ebook 신규 등록 시)
+          updatedRecord = null;
+        }
+        break;
+      default:
+        return NextResponse.json(
+          { error: 'Invalid table name' },
+          { status: 400 }
+        );
     }
 
     // Image 테이블에도 기록
