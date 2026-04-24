@@ -24,9 +24,7 @@ export function resolveImageSrc({
 
   // 2. Remote thumbnail check (Supabase Proxy)
   if (thumbnail) {
-    return `/api/images/proxy?fileName=${encodeURIComponent(
-      thumbnail.split('/').pop() || ''
-    )}`;
+    return `/api/images/proxy?url=${encodeURIComponent(thumbnail)}`;
   }
 
   // 3. Fallback to thumbnailUrl or imageUrl

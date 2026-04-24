@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
 export default function ImageOverlayCard({
-  itemId,
+  id,
   title,
   visualTitle2,
   category,
@@ -58,7 +58,7 @@ export default function ImageOverlayCard({
 
   return (
     <div className="cursor-pointer" data-testid="image-overlay-card">
-      <Link href={`/courses/${itemId}`}>
+      <Link href={`/workshops/${id}`}>
         <div className="w-[384px] bg-white rounded-lg dark:bg-gray-950 relative overflow-hidden group transition-transform duration-300 hover:scale-105">
           <button
             role="button"
