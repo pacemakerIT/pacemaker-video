@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import {
   Carousel,
@@ -13,6 +14,7 @@ interface ListHeaderProps {
   title?: string;
   subtitle?: string;
   buttonText?: string;
+  route?: string;
   height?: string;
   gradientColors?: {
     start: string;
@@ -32,15 +34,17 @@ interface ListHeaderProps {
 export default function ListHeader({
   title,
   buttonText,
+  route,
   height = 'h-96',
   gradientColors = {
     start: '#A8DBFF60',
     middle: '#FF823610',
     end: '#A8DBFF40'
   },
-  slides = title && buttonText ? [{ title, buttonText }] : [],
+  slides = title && buttonText ? [{ title, buttonText, route }] : [],
   autoPlayInterval
 }: ListHeaderProps) {
+  const router = useRouter();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
@@ -89,7 +93,10 @@ export default function ListHeader({
             {title}
           </span>
           {buttonText && (
-            <Button className="bg-pace-orange-600 text-white px-8 py-4 rounded-full">
+            <Button
+              className="bg-pace-orange-600 text-white px-8 py-4 rounded-full"
+              onClick={() => route && router.push(route)}
+            >
               {buttonText}
             </Button>
           )}
@@ -127,7 +134,10 @@ export default function ListHeader({
                   </span>
                 </div>
                 {slide.buttonText && (
-                  <Button className="w-[178px] h-[66px]  bg-pace-orange-600 text-white px-10 py-6 rounded-full flex justify-center items-center mx-auto">
+                  <Button
+                    className="w-[178px] h-[66px]  bg-pace-orange-600 text-white px-10 py-6 rounded-full flex justify-center items-center mx-auto"
+                    onClick={() => slide.route && router.push(slide.route)}
+                  >
                     {slide.buttonText}
                   </Button>
                 )}

@@ -1,18 +1,26 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { bucketName } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const fileName = searchParams.get('fileName');
+    const rawUrl = searchParams.get('url');
 
-    if (!fileName) {
+    if (!rawUrl) {
       return NextResponse.json(
-        { error: 'File name is required' },
+        { error: 'url param is required' },
         { status: 400 }
       );
     }
+
+    const match = rawUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
+    if (!match) {
+      return NextResponse.json(
+        { error: 'Invalid Supabase storage URL' },
+        { status: 400 }
+      );
+    }
+    const [, bucket, filePath] = match;
 
     // Supabase 클라이언트 생성
     const supabase = createClient(
@@ -22,8 +30,8 @@ export async function GET(req: Request) {
 
     // Signed URL 생성
     const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(fileName, 3600); // 1시간 유효
+      .from(bucket)
+      .createSignedUrl(filePath, 3600); // 1시간 유효
 
     if (error || !data) {
       return NextResponse.json(

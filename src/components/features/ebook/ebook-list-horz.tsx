@@ -15,7 +15,7 @@ export default function EbookList() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const res = await fetch('/api/ebooks');
+        const res = await fetch('/api/ebooks?isMain=true');
         if (res.ok) {
           const data = await res.json();
           setEbooks(data);
