@@ -2,23 +2,28 @@ import ListHeader from '@/components/common/list-header';
 import LogoCarousel from '@/components/common/logo-marquee';
 import ReviewContainer from '@/components/common/review-container';
 import EbookListGrid from '@/components/features/ebook/ebook-list-grid';
+import prisma from '@/lib/prisma';
 
-export default function EBooksPage() {
+export const revalidate = 0;
+
+export default async function EBooksPage() {
+  const mainDoc = await prisma.document.findFirst({
+    where: { isMain: true, isPublic: true },
+    select: { visualTitle1: true, id: true }
+  });
+
   return (
     <div className="w-screen flex gap-20 flex-col">
       <ListHeader
-        // TO-DO : DB 연결 필요
-        title={
-          'The 94% Success Formula: Writing Applications\nThat Set You Apart'
-        }
+        title={mainDoc?.visualTitle1 ?? ''}
         height={'h-[370px]'}
         gradientColors={{
           start: '#FFD262',
           middle: '#FFFFFF',
           end: '#FCF0D7'
         }}
-        // TO-DO : DB 연결 필요
         buttonText={'View the guide'}
+        route={mainDoc ? `/ebooks/${mainDoc.id}` : undefined}
       />
       <LogoCarousel />
       <EbookListGrid />

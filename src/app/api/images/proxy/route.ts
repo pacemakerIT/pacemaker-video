@@ -6,19 +6,38 @@ import { bucketName, s3clientSupabase } from '@/lib/supabase';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const fileName = searchParams.get('fileName');
+    const rawUrl = searchParams.get('url');
 
-    if (!fileName) {
+    if (!rawUrl) {
       return NextResponse.json(
-        { error: 'File name is required' },
+        { error: 'url param is required' },
         { status: 400 }
       );
     }
 
+    // Parse Supabase public URL: .../object/public/[bucket]/[path]
+    const match = rawUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
+    let targetBucket = bucketName;
+    let filePath = rawUrl;
+
+    if (match) {
+      targetBucket = match[1];
+      filePath = match[2];
+    } else {
+      // If it's not a full URL, it might be just a file path/name
+      // Use the default bucket and the raw input as the path
+      // decodeURIComponent if it looks like it was encoded
+      try {
+        filePath = decodeURIComponent(rawUrl);
+      } catch {
+        filePath = rawUrl;
+      }
+    }
+
     // S3 GetObject 커맨드 생성
     const getCommand = new GetObjectCommand({
-      Bucket: bucketName,
-      Key: fileName
+      Bucket: targetBucket,
+      Key: filePath
     });
 
     // S3 Signed URL 생성
@@ -34,7 +53,11 @@ export async function GET(req: Request) {
       console.error(
         'Fetch from S3 signed URL failed:',
         response.status,
-        response.statusText
+        response.statusText,
+        'Bucket:',
+        targetBucket,
+        'Key:',
+        filePath
       );
       return NextResponse.json(
         { error: 'Failed to fetch image from storage' },

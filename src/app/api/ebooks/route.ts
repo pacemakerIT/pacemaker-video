@@ -1,20 +1,24 @@
 import prisma from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const isMainParam = searchParams.get('isMain');
+
   try {
     const documents = await prisma.document.findMany({
       where: {
-        isPublic: true
+        isPublic: true,
+        ...(isMainParam === 'true' ? { isMain: true } : {})
       },
       orderBy: {
         uploadDate: 'desc'
       }
     });
     const ebooks = documents.map((doc) => ({
-      id: doc.documentId,
+      id: doc.id,
       title: doc.title,
-      summary: doc.description,
+      description: doc.description,
       category: doc.category,
       price: doc.price,
       thumbnail: doc.thumbnail
