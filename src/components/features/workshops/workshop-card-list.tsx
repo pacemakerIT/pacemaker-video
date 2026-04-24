@@ -187,9 +187,13 @@ export default function WorkshopCardList({
                 {/* 일정 / 장소 */}
                 <p className="text-pace-base text-pace-stone-500 px-3">
                   Date | {formatDateTime(w.startDate)}
-                  {w.instructor?.name &&
-                    w.instructor?.name.toUpperCase() != 'UNKNOWN' && (
-                      <>&nbsp;&nbsp; Instructor | {w.instructor.name}</>
+                  {w.instructors[0]?.instructor?.name &&
+                    w.instructors[0].instructor.name.toUpperCase() !=
+                      'UNKNOWN' && (
+                      <>
+                        &nbsp;&nbsp; Instructor |{' '}
+                        {w.instructors[0].instructor.name}
+                      </>
                     )}
                   &nbsp;&nbsp; Location | {w.locationOrUrl ?? 'TBD'}
                 </p>
@@ -215,13 +219,13 @@ export default function WorkshopCardList({
                   <div className="mt-2 bg-pace-ivory-500 text-sm text-pace-stone-600 p-6 rounded-b-xl">
                     <div className="flex flex-col md:flex-row justify-between gap-6">
                       {/* 강사 정보 */}
-                      {w.instructor && (
+                      {w.instructors.length > 0 && (
                         <div className="flex-1 space-y-1">
                           <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
                             Instructor
                           </h4>
                           <p className="font-bold text-pace-base text-pace-black-500 mb-2">
-                            {w.instructor?.name}
+                            {w.instructors[0].instructor.name}
                           </p>
                           <p>
                             Employer Strategy & Engagement Specialist at
@@ -233,7 +237,7 @@ export default function WorkshopCardList({
 
                       {/* 커리큘럼 */}
                       {/* TO-DO: instrutor가 아닌 커리큘럼 관련 컬럼으로 변경 필요 */}
-                      {w.instructor && (
+                      {w.instructors.length > 0 && (
                         <div className="flex-1">
                           <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
                             Curriculum
