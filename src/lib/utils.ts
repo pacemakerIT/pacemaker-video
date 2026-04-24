@@ -9,17 +9,17 @@ export function cn(...inputs: ClassValue[]) {
 export function resolveImageSrc({
   thumbnail,
   imageUrl,
-  thumbnailUrl,
-  itemType
+  thumbnailUrl
 }: {
   thumbnail?: string | null;
   imageUrl?: string | null;
   thumbnailUrl?: string | null;
   itemType?: ItemType;
 }) {
-  // 1. Local path check
-  if (thumbnail && thumbnail.startsWith('/img/')) {
-    return thumbnail;
+  const primaryImage = thumbnail || thumbnailUrl || imageUrl;
+
+  if (!primaryImage) {
+    return undefined;
   }
 
   // 2. Remote thumbnail check (Supabase Proxy)
@@ -27,16 +27,15 @@ export function resolveImageSrc({
     return `/api/images/proxy?url=${encodeURIComponent(thumbnail)}`;
   }
 
-  // 3. Fallback to thumbnailUrl or imageUrl
-  const secondaryImage = thumbnailUrl || imageUrl;
-  if (secondaryImage) {
-    return secondaryImage;
+  // 3. Local path, proxy path and object URL check
+  if (
+    primaryImage.startsWith('/img/') ||
+    primaryImage.startsWith('/api/') ||
+    primaryImage.startsWith('blob:')
+  ) {
+    return primaryImage;
   }
 
-  // 4. Item type based default fallbacks
-  if (itemType === ItemType.VIDEO || itemType === ItemType.COURSE) {
-    return '/img/course_image1.png';
-  }
-
-  return '';
+  // 4. Default fallback to proxy using url parameter
+  return `/api/images/proxy?url=${encodeURIComponent(primaryImage)}`;
 }

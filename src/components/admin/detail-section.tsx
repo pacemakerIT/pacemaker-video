@@ -10,6 +10,7 @@ import { CourseFormErrors } from '@/types/admin/course-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import { FormType } from '@/components/admin/add-form';
 import { Calendar } from 'lucide-react';
+import { resolveImageSrc } from '@/lib/utils';
 
 type Props = {
   formType: FormType;
@@ -108,7 +109,8 @@ export default function DetailSection({
       if (!res.ok) throw new Error('Upload failed');
 
       const data = await res.json();
-      setThumbnailUrl(data.url);
+      // Proxy-compatible fileName if present, else URL
+      setThumbnailUrl(data.image?.fileName || data.image?.url || data.url);
     } catch (error) {
       // Intentionally silent for lint consistency
       void error;
@@ -325,7 +327,7 @@ export default function DetailSection({
         <div className="flex flex-col gap-2 flex-1">
           <ImageUploadInput
             value={thumbnail}
-            imageUrl={thumbnailUrl}
+            imageUrl={resolveImageSrc({ thumbnail: thumbnailUrl })}
             placeholder={isUploading ? '업로드 중...' : '파일 선택'}
             onChange={handleThumbnailChange}
           />
