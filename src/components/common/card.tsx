@@ -29,6 +29,7 @@ export default function Card({
   description,
   category,
   itemType,
+  thumbnail,
   thumbnailUrl,
   imageUrl
 }: CardProps) {
@@ -60,6 +61,7 @@ export default function Card({
 
   // Use the central utility for image source resolution
   const imageSrc = resolveImageSrc({
+    thumbnail,
     thumbnailUrl,
     imageUrl,
     itemType

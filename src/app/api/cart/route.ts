@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
               break;
             case ItemType.DOCUMENT:
               item = await prisma.document.findUnique({
-                where: { documentId: cart.itemId },
+                where: { id: cart.itemId },
                 select: {
                   id: true,
                   title: true,
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
           break;
         case ItemType.DOCUMENT:
           item = await prisma.document.findUnique({
-            where: { documentId: newCart.itemId },
+            where: { id: newCart.itemId },
             select: {
               id: true,
               title: true,

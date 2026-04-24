@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
             break;
           case ItemType.DOCUMENT:
             item = await prisma.document.findUnique({
-              where: { documentId: favorite.itemId },
+              where: { id: favorite.itemId },
               select: {
                 id: true,
                 title: true,
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
           break;
         case ItemType.DOCUMENT:
           item = await prisma.document.findUnique({
-            where: { documentId: newFavorite.itemId },
+            where: { id: newFavorite.itemId },
             select: {
               id: true,
               title: true,
