@@ -42,6 +42,9 @@ cp .env.local.example .env.local
 # Fill in the required environment variables
 ```
 
+Prisma CLI loads `.env*` files with the same precedence as Next.js, so a local
+`.env.local` is enough for Prisma commands as well.
+
 ### Development
 
 Run the development server:
@@ -56,6 +59,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - `npm run dev` - Start development server
 - `npm run build` - Build production bundle
+- `npm run prisma:generate` - Generate Prisma Client
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run typecheck` - Run TypeScript type checking
@@ -140,12 +144,15 @@ Branches must follow this naming pattern:
 
 The project uses Husky for pre-commit hooks that run:
 
-1. Build validation
+1. Prisma Client generation
 2. Branch name validation
 3. TypeScript type checking
 4. Lint-staged checks:
    - ESLint for `.js`, `.jsx`, `.ts`, `.tsx` files
    - Prettier for `.json`, `.md`, `.yaml`, `.yml` files
+
+Run `npm run build` manually or in CI when you want the full Next.js production
+build validation with all required environment variables configured.
 
 ## Code Style
 
