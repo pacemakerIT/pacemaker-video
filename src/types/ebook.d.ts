@@ -1,6 +1,6 @@
-export interface Document {
+export interface Ebook {
   id: string;
-  documentId: string;
+  ebookId: string;
   title?: string;
   description?: string;
   price?: number;

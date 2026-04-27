@@ -9,7 +9,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
 interface PdfViewerProps {
-  docId: string;
+  ebookId: string;
   bucketName: string;
 }
 
@@ -18,7 +18,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-export default function PdfViewer({ docId, bucketName }: PdfViewerProps) {
+export default function PdfViewer({ ebookId, bucketName }: PdfViewerProps) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function PdfViewer({ docId, bucketName }: PdfViewerProps) {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`/api/document/${docId}`, {
+        const response = await fetch(`/api/ebooks/${ebookId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/pdf'
@@ -61,7 +61,7 @@ export default function PdfViewer({ docId, bucketName }: PdfViewerProps) {
     };
 
     fetchSignedUrl();
-  }, [docId, bucketName, isSignedIn]);
+  }, [ebookId, bucketName, isSignedIn]);
 
   if (loading) return <div>PDF 로딩 중...</div>;
   if (error) return <div>에러: {error}</div>;

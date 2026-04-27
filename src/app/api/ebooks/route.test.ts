@@ -11,7 +11,7 @@ vi.mock('@clerk/nextjs/server', () => ({
 vi.mock('@/lib/prisma', () => {
   return {
     default: {
-      document: {
+      ebook: {
         findUnique: vi.fn()
       }
     }
@@ -21,11 +21,11 @@ vi.mock('@/lib/prisma', () => {
 const { auth } = await import('@clerk/nextjs/server');
 const { GetObjectCommand } = await import('@aws-sdk/client-s3');
 
-describe('GET /api/document/[docId]', () => {
-  const docId = 'abc123';
+describe('GET /api/ebooks/[ebookId]', () => {
+  const ebookId = 'abc123';
   let GET: (
     req: Request,
-    { params }: { params: Promise<{ docId: string }> }
+    { params }: { params: Promise<{ ebookId: string }> }
   ) => Promise<NextResponse>;
   const mockS3ClientInstance = {
     send: vi.fn()
@@ -42,7 +42,7 @@ describe('GET /api/document/[docId]', () => {
   });
 
   const createMockRequest = () => {
-    return new Request('http://localhost/api/document/abc123', {
+    return new Request('http://localhost/api/ebooks/abc123', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/pdf'
@@ -67,7 +67,7 @@ describe('GET /api/document/[docId]', () => {
     });
 
     const result = await GET(req, {
-      params: Promise.resolve({ docId: docId })
+      params: Promise.resolve({ ebookId: ebookId })
     });
 
     expect(mockS3ClientInstance.send).toHaveBeenCalledWith(
@@ -87,7 +87,7 @@ describe('GET /api/document/[docId]', () => {
     const req = createMockRequest();
 
     const result = await GET(req, {
-      params: Promise.resolve({ docId: docId })
+      params: Promise.resolve({ ebookId: ebookId })
     });
 
     expect(result.status).toBe(401);
@@ -95,18 +95,18 @@ describe('GET /api/document/[docId]', () => {
     expect(json).toEqual({ error: 'Unauthorized' });
   });
 
-  it('should return 400 if docId is missing', async () => {
-    const req = new Request('http://localhost/api/document/', {
+  it('should return 400 if ebookId is missing', async () => {
+    const req = new Request('http://localhost/api/ebooks/', {
       method: 'GET'
     });
 
     const result = await GET(req, {
-      params: Promise.resolve({ docId: '' })
+      params: Promise.resolve({ ebookId: '' })
     });
 
     expect(result.status).toBe(400);
     const json = await result.json();
-    expect(json).toEqual({ error: 'Missing docId' });
+    expect(json).toEqual({ error: 'Missing ebookId' });
   });
 
   it('should return 500 if S3 throws an error', async () => {
@@ -115,7 +115,7 @@ describe('GET /api/document/[docId]', () => {
     mockS3ClientInstance.send.mockRejectedValue(new Error('S3 error'));
 
     const result = await GET(req, {
-      params: Promise.resolve({ docId: docId })
+      params: Promise.resolve({ ebookId: ebookId })
     });
 
     expect(result.status).toBe(500);

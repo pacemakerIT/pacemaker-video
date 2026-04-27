@@ -72,7 +72,7 @@ export default function EbookList() {
             <CardContainer
               layout={'horizontal'}
               cards={ebooks}
-              itemType={ItemType.DOCUMENT}
+              itemType={ItemType.EBOOK}
             />
           )}
         </div>

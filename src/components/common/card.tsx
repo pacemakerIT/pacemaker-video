@@ -16,7 +16,7 @@ import { resolveImageSrc } from '@/lib/utils';
 const categoryMap = itemCategoryLabel.en;
 
 interface CardProps extends OnlineCards {
-  itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
+  itemType?: ItemType; // WORKSHOP, EBOOK, VIDEO
   thumbnail?: string;
   imageUrl?: string;
 }
@@ -71,7 +71,7 @@ export default function Card({
     switch (itemType) {
       case ItemType.COURSE:
         return `/courses/${id}`;
-      case ItemType.DOCUMENT:
+      case ItemType.EBOOK:
         return `/ebooks/${id}`;
       case ItemType.WORKSHOP:
         return `/workshops/${id}`;

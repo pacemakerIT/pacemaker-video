@@ -40,7 +40,7 @@ const cards = [
     price: 9.99,
     description: 'test3',
     category: 'Resume',
-    type: ItemType.DOCUMENT
+    type: ItemType.EBOOK
   }
 ];
 

@@ -14,11 +14,11 @@ import {
   createEbook,
   updateEbook
 } from '@/components/admin/ebooks/actions/ebook-actions';
-import { DocumentCategory, TargetAudienceType } from '@prisma/client';
+import { EbookCategory, TargetAudienceType } from '@prisma/client';
 
 export type EbookData = {
   id?: string;
-  category: DocumentCategory | '';
+  category: EbookCategory | '';
   isPublic: string;
   showOnMain: boolean;
   title: string;
@@ -131,7 +131,7 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
 
         const payload = {
           ...ebookData,
-          category: ebookData.category as DocumentCategory
+          category: ebookData.category as EbookCategory
         };
 
         if (initialData?.id) {

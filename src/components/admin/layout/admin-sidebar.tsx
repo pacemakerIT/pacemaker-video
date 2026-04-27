@@ -10,7 +10,6 @@ const menuItems = [
   { label: '전자책 관리', href: '/admin/ebooks' },
   { label: '워크샵 관리', href: '/admin/workshops' },
   { label: '회원 관리', href: '/admin/users' },
-  { label: '(기존) document', href: '/admin/document' },
   { label: '(기존) video', href: '/admin/video' }
 ];
 

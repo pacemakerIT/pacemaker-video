@@ -19,9 +19,7 @@ function loadEnvFiles() {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('#')) continue;
 
-      const match = trimmed.match(
-        /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/
-      );
+      const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
       if (!match) continue;
 
       const [, key, rawValue] = match;
@@ -365,14 +363,18 @@ async function commandUpdateDescription(config, args) {
 
   const description = readDescription(args);
 
-  await jiraFetch(config, `/rest/api/3/issue/${encodeURIComponent(String(issueKey))}`, {
-    method: 'PUT',
-    body: {
-      fields: {
-        description: adfFromText(description)
+  await jiraFetch(
+    config,
+    `/rest/api/3/issue/${encodeURIComponent(String(issueKey))}`,
+    {
+      method: 'PUT',
+      body: {
+        fields: {
+          description: adfFromText(description)
+        }
       }
     }
-  });
+  );
 
   if (args.json) {
     printJson({ issue: String(issueKey), updated: true });
@@ -395,7 +397,9 @@ async function commandAddToSprint(config, args) {
   }
 
   const boardId = await resolveBoardId(config);
-  const sprintId = args.sprint || (args.current && (await getCurrentSprintId(config, boardId)));
+  const sprintId =
+    args.sprint ||
+    (args.current && (await getCurrentSprintId(config, boardId)));
 
   if (!sprintId) {
     throw new Error('Missing sprint target. Use --sprint <id> or --current.');
