@@ -377,11 +377,9 @@ export default function Page() {
                                     ? '온라인 강의'
                                     : item.itemType === ItemType.EBOOK
                                       ? '전자책'
-                                      : item.itemType === ItemType.DOCUMENT
-                                        ? '전자책'
-                                        : item.itemType === ItemType.WORKSHOP
-                                          ? '워크샵'
-                                          : item.itemType}
+                                      : item.itemType === ItemType.WORKSHOP
+                                        ? '워크샵'
+                                        : item.itemType}
                               </span>
                               <span className="text-pace-gray-700">
                                 {item.itemTitle}

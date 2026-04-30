@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 export const revalidate = 0;
 
 export default async function EBooksPage() {
-  const mainDoc = await prisma.document.findFirst({
+  const mainDoc = await prisma.ebook.findFirst({
     where: { isMain: true, isPublic: true },
     select: { visualTitle1: true, id: true }
   });

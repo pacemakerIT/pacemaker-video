@@ -6,11 +6,11 @@ import ErrorText from '@/components/ui/admin/error-text';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import { itemCategoryLabel } from '@/constants/labels';
-import { DocumentCategory } from '@prisma/client';
+import { EbookCategory } from '@prisma/client';
 
 type Props = {
-  category: DocumentCategory | '';
-  setCategory: (v: DocumentCategory) => void;
+  category: EbookCategory | '';
+  setCategory: (v: EbookCategory) => void;
   isPublic: string;
   setIsPublic: (v: string) => void;
   showOnMain: boolean;
@@ -28,13 +28,13 @@ export default function EbookBasicSection({
   errors
 }: Props) {
   const supportedCategories = [
-    DocumentCategory.MARKETING,
-    DocumentCategory.IT,
-    DocumentCategory.DESIGN,
-    DocumentCategory.PUBLIC,
-    DocumentCategory.ACCOUNTING,
-    DocumentCategory.SERVICE
-  ] as const satisfies readonly DocumentCategory[];
+    EbookCategory.MARKETING,
+    EbookCategory.IT,
+    EbookCategory.DESIGN,
+    EbookCategory.PUBLIC,
+    EbookCategory.ACCOUNTING,
+    EbookCategory.SERVICE
+  ] as const satisfies readonly EbookCategory[];
 
   const categoryOptions = supportedCategories.map((value) => ({
     value,
@@ -52,7 +52,7 @@ export default function EbookBasicSection({
         <div className="flex flex-col flex-1">
           <PaceSelect
             value={category}
-            onChange={(value) => setCategory(value as DocumentCategory)}
+            onChange={(value) => setCategory(value as EbookCategory)}
             width="w-[240px]"
             placeholder="선택"
             options={categoryOptions}
