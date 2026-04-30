@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Paceup - Course Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#ff4f02",
+            navy: "#00263b",
+            teal: "#00adbd",
+            "background-light": "#ffffff",
+            "background-dark": "#00263b",
+            "card-light": "#f8f9fa",
+            "card-dark": "#0a3650",
+            "text-light": "#00263b",
+            "text-dark": "#ffffff",
+            "text-muted-light": "#6b7280",
+            "text-muted-dark": "#9ca3af",
+            "border-light": "#e5e7eb",
+            "border-dark": "#374151"
+          },
+          fontFamily: {
+            display: ["Poppins", "sans-serif"],
+            body: ["Source Sans 3", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0px",
+            '2xl': "16px",
+          },
+        },
+      },
+    };
+  </script>
+<style>
+    body { font-family: 'Source Sans 3', sans-serif; }
+    h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-body min-h-screen">
+<header class="bg-background-light dark:bg-background-dark border-b border-border-light dark:border-border-dark sticky top-0 z-50">
+<div class="max-w-[1920px] mx-auto px-6 h-20 flex items-center justify-between">
+<a class="text-primary font-display font-bold text-3xl tracking-tight" href="#">paceup</a>
+<nav class="hidden md:flex items-center gap-8 font-medium">
+<a class="hover:text-primary transition-colors" href="#">온라인 강의</a>
+<a class="hover:text-primary transition-colors" href="#">전자책</a>
+<a class="hover:text-primary transition-colors" href="#">워크샵</a>
+<a class="hover:text-primary transition-colors ml-4" href="#">회원가입</a>
+<a class="flex items-center gap-2 hover:text-primary transition-colors" href="#">
+<span class="material-icons text-xl">account_circle</span>
+          로그인
+        </a>
+<button class="flex items-center gap-1 text-text-muted-light dark:text-text-muted-dark hover:text-text-light dark:hover:text-text-dark transition-colors">
+<span class="material-icons text-xl">language</span>
+          KOR
+        </button>
+</nav>
+</div>
+</header>
+<section class="relative h-[600px] w-full bg-navy overflow-hidden">
+<img alt="Coding background" class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEGsgP4a9fXHhhYrc1ITamebrKxFns1b34h2ctDm41O7TB3iqkoq8YGFsZNt9wr9-ror5uQn70pzsgCsJcfCKQToi-s-HZZncV46tuJaSOHGxigK-ACvHAMplncRuxdZtQ3P7z8Jjm58fgfwAomYEJAdfH9WsP1obIYwlK7Xf6v-vFTmYgNIt8AEcNOaFWLWTHy2smQ1zB_sKV_R0sv8qXEpzs0-jCrlAXa09XwdDCyoLyMG6PSGuPgMPb-5i5mNb8kEar6M0kUfU"/>
+<div class="max-w-[1920px] mx-auto px-6 h-full relative flex items-center justify-between">
+<div class="max-w-2xl text-white">
+<p class="text-xl mb-4 font-medium opacity-90">캐나다 테크기업 OOO이 선택한</p>
+<h1 class="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight">
+          북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지
+        </h1>
+</div>
+<div class="bg-background-light dark:bg-card-dark p-8 w-full max-w-md shadow-xl mr-8">
+<h2 class="text-2xl font-display font-bold text-text-light dark:text-text-dark mb-4">
+          자기소개서 작성 및 면접 준비까지 하나로!
+        </h2>
+<div class="mb-6 flex gap-2 text-sm text-text-muted-light dark:text-text-muted-dark">
+<span class="font-bold text-text-light dark:text-text-dark">강사</span>
+<span>Heelee, Linda, Raphael, Lee</span>
+</div>
+<p class="text-sm text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed">
+          실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!
+        </p>
+<div class="flex justify-between items-center mb-8">
+<span class="font-bold text-text-light dark:text-text-dark">금액</span>
+<span class="text-2xl font-display font-bold text-text-light dark:text-text-dark">$999.99</span>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 bg-background-light dark:bg-card-dark border-2 border-primary text-primary font-bold py-4 px-6 rounded-2xl hover:bg-primary hover:text-white transition-colors duration-300">
+            장바구니 담기
+          </button>
+<button class="w-14 h-14 flex items-center justify-center border-2 border-border-light dark:border-border-dark rounded-2xl text-text-muted-light dark:text-text-muted-dark hover:text-primary hover:border-primary transition-colors">
+<span class="material-icons">favorite_border</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<main class="max-w-[1200px] mx-auto px-6 py-20 space-y-32">
+<section>
+<p class="text-primary font-bold mb-2">강의는 이렇게 진행돼요!</p>
+<h2 class="text-3xl font-display font-bold mb-12">북미 개발자 차별화된 이력서부터 인터뷰까지 차근차근 준비하기</h2>
+<div class="flex flex-col lg:flex-row gap-16">
+<div class="flex-1 text-text-muted-light dark:text-text-muted-dark leading-relaxed space-y-6">
+<p>
+            북미에서 개발자로 취업하려면 코딩 실력만큼이나 채용공고를 제대로 읽고 이해하는 능력이 중요해요. 특히 요즘은 AI 덕분에 개발 생산성이 높아지면서, 지난 5년간 북미 지역의 개발자 채용공고 수가 약 35%나 줄었어요. 그만큼 기업들은 더 신중하게, 해당 포지션을 정말 잘 이해하고 있는 지원자를 찾고 있죠.
+          </p>
+<p>
+            한국과는 조금 다른 북미식 채용공고의 특징, 어떻게 읽고 준비해야 할지 막막하셨다면, 실제 캐나다 기업에 최종 합격한 페이스메이커 개발자의 영문 이력서를 통해 채용공고 분석부터 이력서에 반영하는 방법까지 함께 살펴보세요!
+          </p>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-card-light dark:bg-card-dark p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<h3 class="font-bold text-lg">북미 개발자 채용 공고 사례</h3>
+<span class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm">Read <span class="material-icons text-sm">expand_more</span></span>
+</div>
+<div class="bg-card-light dark:bg-card-dark p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<h3 class="font-bold text-lg">북미 개발자 채용 공고 분석</h3>
+<span class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm">Read <span class="material-icons text-sm">expand_more</span></span>
+</div>
+<div class="bg-card-light dark:bg-card-dark p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<h3 class="font-bold text-lg">실제 북미 개발자 취업 성공 이력서</h3>
+<span class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm">Read <span class="material-icons text-sm">expand_more</span></span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-3xl font-display font-bold mb-12">이런분들께 추천드려요!</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="border border-border-light dark:border-border-dark p-8 flex items-start gap-6">
+<div class="w-16 h-16 flex items-center justify-center border-2 border-text-light dark:border-text-dark">
+<span class="material-icons text-3xl">code</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-2">북미 개발자</h3>
+<p class="text-text-muted-light dark:text-text-muted-dark">개발 분야 취업에 관심 있으신 분</p>
+</div>
+</div>
+<div class="border border-border-light dark:border-border-dark p-8 flex items-start gap-6">
+<div class="w-16 h-16 flex items-center justify-center border-2 border-text-light dark:border-text-dark">
+<span class="material-icons text-3xl">description</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-2">북미 취업이력서</h3>
+<p class="text-text-muted-light dark:text-text-muted-dark">작성방법이 궁금하신 분</p>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-3xl font-display font-bold mb-12">강사소개</h2>
+<div class="flex flex-col md:flex-row gap-16">
+<div class="flex-1">
+<h3 class="text-2xl font-bold mb-4">Raphael. Lee</h3>
+<p class="text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed">
+            I've been managing multicultural teams for over 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal &amp; professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.
+          </p>
+<h4 class="font-bold mb-4">이력</h4>
+<ul class="space-y-4 text-sm">
+<li class="flex gap-8">
+<span class="text-text-muted-light dark:text-text-muted-dark w-24">2019 ~</span>
+<span>Managing Director at Pacemaker</span>
+</li>
+<li class="flex gap-8">
+<span class="text-text-muted-light dark:text-text-muted-dark w-24">2015 ~ 2019</span>
+<span>Director of Operations at Metanet</span>
+</li>
+<li class="flex gap-8">
+<span class="text-text-muted-light dark:text-text-muted-dark w-24">2009 ~ 2014</span>
+<span>Business Development Manager at People In Biz Corp.</span>
+</li>
+<li class="flex gap-8">
+<span class="text-text-muted-light dark:text-text-muted-dark w-24">2004 ~ 2008</span>
+<span>Purchaser at InterContinental Hotels Group</span>
+</li>
+</ul>
+</div>
+<div class="flex-1">
+<div class="bg-card-light dark:bg-card-dark h-full min-h-[400px] flex items-center justify-center p-8 text-center">
+<div>
+<p class="text-2xl font-bold mb-2">사진 영역</p>
+<p class="text-text-muted-light dark:text-text-muted-dark">개인적으로는 사진보다 제페토같은<br/>아바타 이미지 넣는게 좋을듯</p>
+</div>
+</div>
+<div class="flex justify-center gap-2 mt-8">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<div class="w-3 h-3 rounded-full bg-border-light dark:bg-border-dark"></div>
+<div class="w-3 h-3 rounded-full bg-border-light dark:bg-border-dark"></div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-3xl font-display font-bold mb-12">이 컨텐츠와 함께 보면 좋아요!</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="border border-border-light dark:border-border-dark overflow-hidden group">
+<div class="relative h-48 bg-gray-200 dark:bg-gray-800">
+<img alt="GitLab" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRhT56fx96ItVR4e76MJERnFvplH069pjmJ49F6JuHd62jaQ-m5Vxz5AmllcZxHDJV9Z6e_NOQNNqpRDBuYjVnNpHoJIylox7AC_zraw9RZc6_vuXdeHhheXqcTYC7vm1DyOdSx2oCmr4oH9uFDfp_CCwAn-3RcABc7vGJGn5D6v4HwB9e6T8ZhoH3NybHUHNbJsvp41J9UJN1UDdQ7YIO32xRbJcx0K2v2Aly9cLDkv_QZpBIuTipVa16WVulmrcZzvA9UTfaYZ0"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md text-gray-400 hover:text-primary transition-colors">
+<span class="material-icons text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<span class="inline-block px-3 py-1 bg-teal/10 text-teal text-sm font-bold mb-4">인터뷰</span>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-bold text-lg leading-snug pr-4">자기소개서 작성 및 면접 준비까지</h3>
+<span class="text-xl font-display font-bold">$2800</span>
+</div>
+<a class="inline-flex items-center gap-1 text-primary font-bold text-sm group-hover:underline" href="#">
+              자세히 보기 <span class="material-icons text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="border border-border-light dark:border-border-dark overflow-hidden group">
+<div class="relative h-48 bg-gray-200 dark:bg-gray-800">
+<img alt="Coding" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3E7U3cOclXH_scpGx0HGbuKcz2xn8s07kSS105HOVycE8mUcvuCu8Km68dkfbNgoW3GJgOjM630H8BFp-LH_jB9aqfKrHU987O6Zi42ZF7HFI4ky0vc0e5a8QwNi0BPeDleAKAGhABj22FiZxv2HFqtionDGmxIcptZsw6fA0HA6zfeJfPFA8EVJf8JTBciZc9Pp5TG6WHsAYuKP9JS-i61fOKZfRJtvRNzMAY2zf7-J3BCOkMSkO-pWxRvtcuZ1cM8R_5lOztKk"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md text-gray-400 hover:text-primary transition-colors">
+<span class="material-icons text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<span class="inline-block px-3 py-1 bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 text-sm font-bold mb-4">네트워킹</span>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-bold text-lg leading-snug pr-4">자기소개서 작성 및 면접 준비까지</h3>
+<span class="text-xl font-display font-bold">$2800</span>
+</div>
+<a class="inline-flex items-center gap-1 text-primary font-bold text-sm group-hover:underline" href="#">
+              자세히 보기 <span class="material-icons text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="border border-border-light dark:border-border-dark overflow-hidden group">
+<div class="relative h-48 bg-gray-200 dark:bg-gray-800">
+<img alt="Join us online" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH39f4bLCyZesur1B_73TAFaYn9zplMHFBZH3yXZGFHsgllArbG7qhgwHlFeUw_pwxDF9zP4fOaCUfQ5WjoOsbXbCDk6Sm6VRQh-YimxBXck0l9lyMvgBhfFhKmr4vGA-XLxEuUnWLdZDHviVlElbu6uP1sllAMuAfeEzoznqq69-_LXojvmWUg6HGF2DUHB58Ul8k5yFerqcC1HfTBME02qooUsYeF4SoOPSPO-992_7CqbfotirTjZR5dm12nmiJPiOFR_dLkgw"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md text-gray-400 hover:text-primary transition-colors">
+<span class="material-icons text-xl">favorite</span>
+</button>
+</div>
+<div class="p-6">
+<span class="inline-block px-3 py-1 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 text-sm font-bold mb-4">이력서</span>
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-bold text-lg leading-snug pr-4">자기소개서 작성 및 면접 준비까지</h3>
+<span class="text-xl font-display font-bold">$2800</span>
+</div>
+<a class="inline-flex items-center gap-1 text-primary font-bold text-sm group-hover:underline" href="#">
+              자세히 보기 <span class="material-icons text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-end gap-4 mb-8">
+<h2 class="text-3xl font-display font-bold">강의 후기</h2>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xl font-bold">5 / 5</span>
+<div class="flex text-primary">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+</div>
+<span class="text-text-muted-light dark:text-text-muted-dark text-sm">(185개 후기)</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="border border-border-light dark:border-border-dark p-8">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<img alt="User avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD70zVCKYN0yZhavjpOUxUNwvr23GVD1m3GUBeLOrzq1weJfLvaBf9lzPXCeXYe2G8XF9Xro18Ep8OTQRRZwdB1GdBwIPi97J5kk5DH_Stjak6Ek-s36v-FTk00nKYWzh3rKBSmfwFxVkh6-5idYAxUOFwtmXn_NaiG245tr802CJSeY-_1FBNHvTBEE7yVQ-OGWQJXos7DxSyMw2XoZIYSDew5OQkLW7fuihScTJfJoawuysRXxKiUupYc_qqCe9C84e-ZDrkFt0I"/>
+<span class="font-bold text-primary">Jay</span>
+</div>
+<div class="text-right">
+<div class="flex text-yellow-400 mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+</div>
+<span class="text-text-muted-light dark:text-text-muted-dark text-xs">05.19.2025</span>
+</div>
+</div>
+<p class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed">
+            They helped me to establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their diligent work and one-on-one sessions, I have found a position that fits my goals and professional abilities!
+          </p>
+</div>
+<div class="border border-border-light dark:border-border-dark p-8">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<img alt="User avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsHdrtgoFNLEAPQm3-rksEiFU6G_jp2gpKdjTl2c52O9aQEAQtSgyYKuiPHMb1lGFS7TQJUxH1R2thMZzjFsFbfBdWyeOpz8X2RpEaDqWcUF8GANLV36Z7Lsh1ntf3VFs71HSxO-GoyWgVj2iNKP6ws61nmUg_ClmwoHltszqBTrW8C1VldmONBvbcojmzJ0U2usdBDfdG-IS29Snfn1xNqWu6ho7a5GTrgSod97kMd_KT6q3V2Dxw2Z8nsPjHLWc2T2TThDKnaGs"/>
+<span class="font-bold text-primary">Jay</span>
+</div>
+<div class="text-right">
+<div class="flex text-yellow-400 mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm text-gray-300">star</span>
+</div>
+<span class="text-text-muted-light dark:text-text-muted-dark text-xs">05.19.2025</span>
+</div>
+</div>
+<p class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed">
+            They helped me to establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their diligent work and one-on-one sessions, I have found a position that fits my goals and professional abilities!
+          </p>
+</div>
+<div class="border border-border-light dark:border-border-dark p-8">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<img alt="User avatar" class="w-12 h-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtBbswJEVn_BdU4gMuF10NRfYbQtk3PsRMYv8ogWt_3tFFo_hLkZBWqdrfrpQP8WYB83hXXi_pdmNbETrYbxji9-hluWrO8ZYZOcXDpoJmHvJPC2-nkCbXPkyGiN5WcqHgDPrcrXQu4bd1GcSZ0M55GA3AISsdahMUyNFwFHtB3bLYBxsK--LKY9pd3OM4UtPF1_V1v2jIU9QYq9Os7h55a_jlQZw7VDOrlGU52cOTZShz3vzo5lTtZ1vqsOg2RmtSob9gPGz7vXI"/>
+<span class="font-bold text-primary">Jay</span>
+</div>
+<div class="text-right">
+<div class="flex text-yellow-400 mb-1">
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm">star</span>
+<span class="material-icons text-sm text-gray-300">star</span>
+</div>
+<span class="text-text-muted-light dark:text-text-muted-dark text-xs">05.19.2025</span>
+</div>
+</div>
+<p class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed">
+            They helped me to establish my motivating factors, transferable skills, and areas of expertise that would allow me to best navigate the highly competitive job market. Thanks to their diligent work and one-on-one sessions, I have found a position that fits my goals and professional abilities!
+          </p>
+</div>
+</div>
+<div class="mt-8 flex justify-center">
+<button class="bg-primary text-white font-bold py-3 px-8 rounded-2xl hover:bg-orange-600 transition-colors">
+          리뷰 더 보기
+        </button>
+</div>
+</section>
+</main>
+<footer class="border-t border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-12 mt-20">
+<div class="max-w-[1920px] mx-auto px-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-8">
+<span class="text-text-light dark:text-text-dark font-display font-bold text-2xl tracking-tight">pacemaker</span>
+<nav class="hidden sm:flex gap-6 font-medium text-sm">
+<a class="hover:text-primary transition-colors" href="#">온라인 강의</a>
+<a class="hover:text-primary transition-colors" href="#">전자책</a>
+<a class="hover:text-primary transition-colors" href="#">오프라인 워크샵</a>
+</nav>
+</div>
+<div class="text-xs text-text-muted-light dark:text-text-muted-dark flex flex-wrap gap-x-4 gap-y-2">
+<span>4789 Yonge St Toronto, ON M2N 0G3</span>
+<span>pacemaker@gmail.com</span>
+<div class="flex gap-4 border-l border-border-light dark:border-border-dark pl-4">
+<a class="hover:text-text-light dark:hover:text-text-dark transition-colors" href="#">개인정보 처리방침</a>
+<a class="hover:text-text-light dark:hover:text-text-dark transition-colors" href="#">이용약관</a>
+<a class="hover:text-text-light dark:hover:text-text-dark transition-colors" href="#">환불정책</a>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end gap-4">
+<div class="flex gap-4 text-text-muted-light dark:text-text-muted-dark">
+<a class="hover:text-primary transition-colors" href="#"><span class="material-icons">facebook</span></a>
+<a class="hover:text-primary transition-colors" href="#"><span class="material-icons">play_circle</span></a>
+<a class="hover:text-primary transition-colors" href="#"><span class="material-icons">camera_alt</span></a>
+</div>
+<p class="text-xs text-text-muted-light dark:text-text-muted-dark">
+          © 2025 pacemaker All rights reserved.
+        </p>
+</div>
+</div>
+</footer>
+
+</body></html>
