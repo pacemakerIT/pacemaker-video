@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { getWorkshops, WorkshopRow } from './actions';
 import { toast } from 'sonner';
+import { resolveImageSrc } from '@/lib/utils';
 
 import {
   DndContext,
@@ -114,14 +115,19 @@ function VisualRow({
       </div>
 
       {/* 썸네일 */}
-      <div className="w-40">
-        <Image
-          src={row.thumbnail || '/img/workshop_image3.png'}
-          alt={row.title}
-          width={159}
-          height={106}
-          className="rounded object-cover"
-        />
+      <div className="w-40 relative h-[106px]">
+        {resolveImageSrc({ thumbnail: row.thumbnail }) ? (
+          <Image
+            src={resolveImageSrc({ thumbnail: row.thumbnail })!}
+            alt={row.title}
+            fill
+            className="rounded object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* 강의제목 + 세부 정보 */}

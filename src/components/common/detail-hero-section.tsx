@@ -54,22 +54,29 @@ export default function DetailHeroSection({
 
   return (
     <div className="w-full flex justify-between items-center h-[600px] relative overflow-hidden">
-      {/* 배경 이미지 */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url('${effectiveBg}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          minWidth: '100%',
-          minHeight: '100%'
-        }}
-      ></div>
-      {/* 배경 오버레이 */}
-      <div
-        className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
-      ></div>
+      {/* 배경 이미지 및 오버레이 */}
+      {effectiveBg ? (
+        <>
+          <div
+            className="absolute inset-0 w-full h-full"
+            style={{
+              backgroundImage: `url('${effectiveBg}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              minWidth: '100%',
+              minHeight: '100%'
+            }}
+          ></div>
+          <div
+            className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
+          ></div>
+        </>
+      ) : (
+        <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+          No Image
+        </div>
+      )}
       <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
         <div className="w-[60%] flex flex-col justify-center items-start relative z-10">

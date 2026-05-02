@@ -8,7 +8,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-
+import { resolveImageSrc } from '@/lib/utils';
 import {
   DndContext,
   closestCenter,
@@ -105,7 +105,7 @@ function VisualRow({
       <div className="w-40 relative h-[106px]">
         {row.thumbnail ? (
           <Image
-            src={row.thumbnail}
+            src={resolveImageSrc({ thumbnail: row.thumbnail })!}
             alt={row.title}
             fill
             className="rounded object-cover"
