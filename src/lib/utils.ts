@@ -48,9 +48,9 @@ export function resolveImageSrc({
   // 3. Assume it's a raw Supabase object key if it doesn't match above patterns
   // We construct a full Supabase public URL and then proxy it
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const bucket = 'image'; // Default bucket name from .env
+  const bucket = process.env.SUPABASE_S3_IMG_BUCKET || 'image';
 
-  if (supabaseUrl) {
+  if (supabaseUrl && src) {
     const fullUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${src}`;
     return `/api/images/proxy?url=${encodeURIComponent(fullUrl)}`;
   }

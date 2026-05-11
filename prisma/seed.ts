@@ -201,7 +201,7 @@ async function main() {
       if (supabaseUrl && BUCKET) {
         return `${supabaseUrl}/storage/v1/object/public/${BUCKET}/${key}`;
       }
-      return key;
+      return key; // Fallback to raw key if URL/Bucket missing, resolver will handle it
     }
     return fallback;
   };

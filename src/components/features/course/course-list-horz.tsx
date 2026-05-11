@@ -35,7 +35,7 @@ export default function CourseList() {
   return (
     <section className="w-full  gap-8">
       {loading ? (
-        <p className="text-center">📡 코스 불러오는 중...</p>
+        <p className="text-center">📡 Loading courses...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
@@ -65,7 +65,7 @@ export default function CourseList() {
 
           {/* Card Container Section */}
           {courses.length === 0 ? (
-            <p className="text-center">📭 등록된 코스가 없습니다.</p>
+            <p className="text-center">📭 No registered courses.</p>
           ) : (
             <CardContainer
               layout={'horizontal'}
