@@ -384,7 +384,9 @@ export default function VideoDetailContainer({
                       </div>
                       <div className="w-[30%]">
                         <Image
-                          src={instructor.profileImage}
+                          src={resolveImageSrc({
+                            thumbnail: instructor.profileImage
+                          })}
                           alt="instructor"
                           width={360}
                           height={360}

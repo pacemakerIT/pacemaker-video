@@ -35,7 +35,7 @@ export default function EbookList() {
   return (
     <section className="w-full gap-8">
       {loading ? (
-        <p className="text-center">📡 전자책 불러오는 중...</p>
+        <p className="text-center">📡 Loading ebooks...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
@@ -66,7 +66,7 @@ export default function EbookList() {
           {/* Card Container Section */}
           {ebooks.length === 0 ? (
             <p className="text-center text-pace-base">
-              📭 등록된 전자책이 없습니다.
+              📭 No registered ebooks.
             </p>
           ) : (
             <CardContainer
