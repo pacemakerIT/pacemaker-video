@@ -169,14 +169,18 @@ async function resetLocalSeedData() {
 }
 
 async function main() {
-  const dbUrl = process.env.DATABASE_URL || '';
-  /*
-  if (isRemoteSupabaseUrl(dbUrl)) {
+  if (isRemoteSupabaseUrl(connectionString)) {
+    // Masking credentials for security in logs
+    const maskedUrl = connectionString.replace(
+      /:\/\/([^:]+):([^@]+)@/,
+      '://$1:****@'
+    );
+    console.error('❌ Remote Supabase database detected:', maskedUrl);
     throw new Error(
-      'Remote Supabase database detected. Refusing to run destructive local seed.'
+      'Remote Supabase database detected. Refusing to run destructive local seed on production/remote DB.'
     );
   }
-*/
+
   const rng = createSeededRandom(20260325);
   const seededCatalog: Record<SeedOrderItemType, SeedCatalogEntry[]> = {
     COURSE: [],
@@ -185,13 +189,19 @@ async function main() {
   };
   const seedOrderUsers: Array<{ id: string; roleId: string }> = [];
 
+  const supabaseUrl = cleanEnv('NEXT_PUBLIC_SUPABASE_URL');
   const remoteImages = await getRemoteImages();
   console.log(
     `📸 Found ${remoteImages.length} images in Supabase bucket: ${BUCKET}`
   );
+
   const getRandomImage = (fallback: string) => {
     if (remoteImages.length > 0) {
-      return remoteImages[Math.floor(Math.random() * remoteImages.length)];
+      const key = remoteImages[Math.floor(Math.random() * remoteImages.length)];
+      if (supabaseUrl && BUCKET) {
+        return `${supabaseUrl}/storage/v1/object/public/${BUCKET}/${key}`;
+      }
+      return key;
     }
     return fallback;
   };
