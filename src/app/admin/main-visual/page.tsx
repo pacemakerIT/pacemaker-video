@@ -87,6 +87,8 @@ function VisualRow({
       ? `${new Date(row.startDate).toLocaleDateString()}~${new Date(row.endDate).toLocaleDateString()}`
       : '-';
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -109,9 +111,9 @@ function VisualRow({
       </div>
 
       <div className="w-40 relative h-[106px] w-[159px]">
-        {resolveImageSrc({ thumbnail: row.thumbnail }) ? (
+        {imageSrc ? (
           <Image
-            src={resolveImageSrc({ thumbnail: row.thumbnail })!}
+            src={imageSrc}
             alt={row.title || ''}
             fill
             className="rounded object-cover"

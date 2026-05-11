@@ -37,11 +37,6 @@ export default function DetailHeroSection({
   priceLabel = '금액',
   itemType
 }: DetailHeroSectionProps) {
-  const effectiveBg = resolveImageSrc({
-    thumbnail: backgroundImage, // Hero section uses backgroundImage prop as primary thumbnail
-    itemType
-  });
-
   const isCourse = itemType === ItemType.COURSE;
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,12 +50,12 @@ export default function DetailHeroSection({
   return (
     <div className="w-full flex justify-between items-center h-[600px] relative overflow-hidden">
       {/* 배경 이미지 및 오버레이 */}
-      {effectiveBg ? (
+      {backgroundImage ? (
         <>
           <div
             className="absolute inset-0 w-full h-full"
             style={{
-              backgroundImage: `url('${effectiveBg}')`,
+              backgroundImage: `url('${backgroundImage}')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',

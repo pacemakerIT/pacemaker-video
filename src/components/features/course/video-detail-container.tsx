@@ -309,7 +309,10 @@ export default function VideoDetailContainer({
           data.instructors?.map((inst) => inst.name).join(', ') ||
           '페이스메이커'
         }
-        backgroundImage={data.course.thumbnailUrl || undefined}
+        backgroundImage={resolveImageSrc({
+          thumbnailUrl: data.course.thumbnailUrl,
+          itemType: ItemType.COURSE
+        })}
         onAddToCart={handleAddToCart}
         onToggleLike={handleToggleLike}
         isLiked={isLiked}
@@ -380,26 +383,25 @@ export default function VideoDetailContainer({
                         </div>
                       </div>
                       <div className="w-[30%]">
-                        {resolveImageSrc({
-                          thumbnail: instructor.profileImage
-                        }) ? (
-                          <div className="relative aspect-square">
-                            <Image
-                              src={
-                                resolveImageSrc({
-                                  thumbnail: instructor.profileImage
-                                })!
-                              }
-                              alt="instructor"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-full aspect-square bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
-                            No Image
-                          </div>
-                        )}
+                        {(() => {
+                          const profileImage = resolveImageSrc({
+                            thumbnail: instructor.profileImage
+                          });
+                          return profileImage ? (
+                            <div className="relative aspect-square">
+                              <Image
+                                src={profileImage}
+                                alt="instructor"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-full aspect-square bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
+                              No Image
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </CarouselItem>

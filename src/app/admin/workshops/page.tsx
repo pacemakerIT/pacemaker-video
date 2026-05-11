@@ -88,6 +88,8 @@ function VisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -116,9 +118,9 @@ function VisualRow({
 
       {/* 썸네일 */}
       <div className="w-40 relative h-[106px]">
-        {resolveImageSrc({ thumbnail: row.thumbnail }) ? (
+        {imageSrc ? (
           <Image
-            src={resolveImageSrc({ thumbnail: row.thumbnail })!}
+            src={imageSrc}
             alt={row.title}
             fill
             className="rounded object-cover"
