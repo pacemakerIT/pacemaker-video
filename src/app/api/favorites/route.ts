@@ -33,9 +33,9 @@ export async function GET(req: NextRequest) {
               }
             });
             break;
-          case ItemType.DOCUMENT:
-            item = await prisma.document.findUnique({
-              where: { id: favorite.itemId },
+          case ItemType.EBOOK:
+            item = await prisma.ebook.findUnique({
+              where: { ebookId: favorite.itemId },
               select: {
                 id: true,
                 title: true,
@@ -120,9 +120,9 @@ export async function POST(req: NextRequest) {
             }
           });
           break;
-        case ItemType.DOCUMENT:
-          item = await prisma.document.findUnique({
-            where: { id: newFavorite.itemId },
+        case ItemType.EBOOK:
+          item = await prisma.ebook.findUnique({
+            where: { ebookId: newFavorite.itemId },
             select: {
               id: true,
               title: true,

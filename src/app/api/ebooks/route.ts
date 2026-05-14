@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   const isMainParam = searchParams.get('isMain');
 
   try {
-    const documents = await prisma.document.findMany({
+    const ebookRecords = await prisma.ebook.findMany({
       where: {
         isPublic: true,
         ...(isMainParam === 'true' ? { isMain: true } : {})
@@ -15,13 +15,13 @@ export async function GET(request: NextRequest) {
         uploadDate: 'desc'
       }
     });
-    const ebooks = documents.map((doc) => ({
-      id: doc.id,
-      title: doc.title,
-      description: doc.description,
-      category: doc.category,
-      price: doc.price,
-      thumbnail: doc.thumbnail
+    const ebooks = ebookRecords.map((ebook) => ({
+      id: ebook.id,
+      title: ebook.title,
+      summary: ebook.description,
+      category: ebook.category,
+      price: ebook.price,
+      thumbnail: ebook.thumbnail
     }));
 
     return NextResponse.json(ebooks);

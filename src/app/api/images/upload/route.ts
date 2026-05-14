@@ -96,9 +96,9 @@ export async function POST(req: Request) {
           });
         }
         break;
-      case 'Document':
+      case 'Ebook':
         if (recordId && recordId.trim() !== '') {
-          updatedRecord = await prisma.document.update({
+          updatedRecord = await prisma.ebook.update({
             where: { id: recordId },
             data: { [column]: imageUrl }
           });

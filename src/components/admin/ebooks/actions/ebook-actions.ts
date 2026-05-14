@@ -1,13 +1,13 @@
 'use server';
 
 import prisma from '@/lib/prisma';
-import { DocumentCategory, TargetAudienceType } from '@prisma/client';
+import { EbookCategory, TargetAudienceType } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 export type EbookData = {
   id?: string;
-  category: DocumentCategory;
+  category: EbookCategory;
   isPublic: string;
   showOnMain: boolean;
   title: string;
@@ -53,9 +53,9 @@ export async function createEbook(data: EbookData) {
     // Filter out empty links (links are optional)
     const validLinks = links.filter((l) => l.url.trim() && l.name.trim());
 
-    await prisma.document.create({
+    await prisma.ebook.create({
       data: {
-        documentId: `ebook-${Date.now()}`,
+        ebookId: `ebook-${Date.now()}`,
         title,
         description: intro,
         category,
@@ -104,7 +104,7 @@ export async function updateEbook(id: string, data: EbookData) {
     // Filter out empty links (links are optional)
     const validLinks = links.filter((l) => l.url.trim() && l.name.trim());
 
-    await prisma.document.update({
+    await prisma.ebook.update({
       where: { id },
       data: {
         title,
@@ -135,16 +135,15 @@ export async function updateEbook(id: string, data: EbookData) {
 
 export async function getEbooks(page = 1, limit = 10) {
   const skip = (page - 1) * limit;
-  const total = await prisma.document.count();
+  const total = await prisma.ebook.count();
 
-  // 1) Fetch paginated documents
-  const documents = await prisma.document.findMany({
+  const ebooks = await prisma.ebook.findMany({
     skip,
     take: limit,
     orderBy: [{ uploadDate: 'desc' }, { id: 'desc' }]
   });
 
-  if (documents.length === 0) {
+  if (ebooks.length === 0) {
     return {
       items: [],
       total,
@@ -154,14 +153,14 @@ export async function getEbooks(page = 1, limit = 10) {
     };
   }
 
-  const documentIds = documents.map((doc) => doc.id);
+  const ebookIds = ebooks.map((ebook) => ebook.id);
 
   // 2) Aggregate likes in one query
   const likeCounts = await prisma.favorite.groupBy({
     by: ['itemId'],
     where: {
       itemType: 'EBOOK',
-      itemId: { in: documentIds }
+      itemId: { in: ebookIds }
     },
     _count: { _all: true }
   });
@@ -171,7 +170,7 @@ export async function getEbooks(page = 1, limit = 10) {
     by: ['itemId'],
     where: {
       itemType: 'EBOOK',
-      itemId: { in: documentIds },
+      itemId: { in: ebookIds },
       order: { status: 'COMPLETED' }
     },
     _count: { _all: true }
@@ -184,10 +183,10 @@ export async function getEbooks(page = 1, limit = 10) {
     purchaseCounts.map((row) => [row.itemId, row._count._all])
   );
 
-  const items = documents.map((doc) => ({
-    ...doc,
-    likes: likeCountMap.get(doc.id) ?? 0,
-    purchaseCount: purchaseCountMap.get(doc.id) ?? 0
+  const items = ebooks.map((ebook) => ({
+    ...ebook,
+    likes: likeCountMap.get(ebook.id) ?? 0,
+    purchaseCount: purchaseCountMap.get(ebook.id) ?? 0
   }));
 
   return {
@@ -204,15 +203,15 @@ export type EbookWithStats = Awaited<
 >['items'][number];
 
 export async function getEbook(id: string) {
-  const document = await prisma.document.findUnique({
+  const ebook = await prisma.ebook.findUnique({
     where: { id }
   });
-  return document;
+  return ebook;
 }
 
 export async function deleteEbook(id: string) {
   try {
-    await prisma.document.delete({
+    await prisma.ebook.delete({
       where: { id }
     });
     revalidatePath('/admin/ebooks');
@@ -227,7 +226,7 @@ export async function updateEbookStatuses(
   try {
     await prisma.$transaction(
       updates.map(({ id, isPublic }) =>
-        prisma.document.update({
+        prisma.ebook.update({
           where: { id },
           data: { isPublic }
         })

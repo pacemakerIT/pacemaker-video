@@ -1,6 +1,6 @@
 export const itemTypeLabels: Record<string, string> = {
   VIDEO: '온라인 강의',
-  DOCUMENT: '전자책',
+  EBOOK: '전자책',
   WORKSHOP: '워크샵'
 } as const;
 

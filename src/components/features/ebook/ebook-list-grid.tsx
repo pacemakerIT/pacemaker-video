@@ -80,7 +80,7 @@ export default function EbookListGrid() {
           <CardContainer
             layout={'grid'}
             cards={currentCards}
-            itemType={ItemType.DOCUMENT}
+            itemType={ItemType.EBOOK}
           />
         </>
       )}
