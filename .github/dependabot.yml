@@ -5,6 +5,7 @@ updates:
     pull-request-branch-name:
       separator: '-'
     directory: '/'
+    open-pull-requests-limit: 20
     schedule:
       interval: 'weekly'
     groups:
@@ -261,5 +262,6 @@ updates:
     pull-request-branch-name:
       separator: '-'
     directory: '/.github/workflows'
+    open-pull-requests-limit: 20
     schedule:
       interval: 'weekly'
