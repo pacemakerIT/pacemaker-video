@@ -28,39 +28,38 @@ function nodeReadableToWebReadable(
 export function createGetHandler(s3Client: S3Client) {
   return async function GET(
     req: Request,
-    { params }: { params: Promise<{ docId: string }> }
+    { params }: { params: Promise<{ ebookId: string }> }
   ) {
-    const docData = await params;
-    const docId = docData.docId;
+    const ebookData = await params;
+    const ebookId = ebookData.ebookId;
     const session = await auth();
 
     if (!session.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!docId) {
-      return NextResponse.json({ error: 'Missing docId' }, { status: 400 });
+    if (!ebookId) {
+      return NextResponse.json({ error: 'Missing ebookId' }, { status: 400 });
     }
 
     try {
-      const document = await prisma.document.findUnique({
+      const ebook = await prisma.ebook.findUnique({
         where: {
-          id: docId
+          id: ebookId
         },
         select: {
-          documentId: true
+          ebookId: true
         }
       });
 
       const command = new GetObjectCommand({
         Bucket: bucketName,
-        Key: document?.documentId
+        Key: ebook?.ebookId
       });
 
       const response = await s3Client.send(command);
       const stream = response.Body as Readable;
 
-      // Make sure browsers can read the pdf file
       const webStream = nodeReadableToWebReadable(stream);
 
       return new NextResponse(webStream, {

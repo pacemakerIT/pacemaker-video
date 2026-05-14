@@ -26,7 +26,7 @@ export default function MyPage() {
       completed: 3
     },
     {
-      type: 'document',
+      type: 'ebook',
       total: 8,
       inProgress: 4,
       notStarted: 4
@@ -91,13 +91,13 @@ export default function MyPage() {
     }
   ];
 
-  const documentCards: MyCard[] = [
+  const ebookCards: MyCard[] = [
     {
       id: '1',
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Marketing',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 4
@@ -107,7 +107,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Interview',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 8
@@ -117,7 +117,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
@@ -170,7 +170,7 @@ export default function MyPage() {
                     <div className="text-pace-stone-500 mb-4">
                       {card.type === 'video'
                         ? '온라인 강의'
-                        : card.type === 'document'
+                        : card.type === 'ebook'
                           ? '전자책'
                           : card.type === 'workshop'
                             ? '워크샵'
@@ -179,7 +179,7 @@ export default function MyPage() {
                     <div className="text-pace-stone-600 text-pace-sm">
                       {card.type === 'video'
                         ? `${card.inProgress} 강의 수강 중, ${card.completed} 강의 수강완료`
-                        : card.type === 'document'
+                        : card.type === 'ebook'
                           ? `${card.inProgress}개 강의 수강중, ${card.notStarted}개 강의 미수강`
                           : card.type === 'workshop'
                             ? workshopCards && workshopCards.length > 0
@@ -219,7 +219,7 @@ export default function MyPage() {
       </div>
 
       <MyList title="내 온라인 강의 목록" cards={courseCards} />
-      <MyList title="내 전자책 목록" cards={documentCards} />
+      <MyList title="내 전자책 목록" cards={ebookCards} />
 
       <div className="my-20 mx-10">
         <h1 className="text-pace-gray-700 font-bold text-pace-xl mb-6">
