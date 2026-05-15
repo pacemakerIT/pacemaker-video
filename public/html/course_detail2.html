@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html class="light" lang="en" style="--font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif">
+<head>
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | Course Detail</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: "#00263B",
+                        teal: "#00ADBD",
+                        orange: "#FF4F02",
+                        "orange-hover": "#E04400",
+                        "gray-soft": "#F2F4F7",
+                        body: "#475467"
+                    },
+                    fontFamily: {
+                        sans: ["Manrope", "sans-serif"],
+                        headline: ["Poppins", "sans-serif"],
+                        body: ["Source Sans 3", "sans-serif"],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scrollbar-gutter: stable; }
+        body {
+            max-width: 1920px;
+            margin: 0 auto;
+            background-color: white;
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        /* Copying existing CSS from course_list.html for consistency */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            border-bottom: 1px solid #f2f4f6;
+            padding: 12px 0;
+        }
+        .nav-inner, .page-container {
+            max-width: 1248px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 24px;
+            padding-right: 24px;
+            box-sizing: border-box;
+        }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo img { height: 32px; width: auto; display: block; }
+        .nav-center { display: flex; align-items: center; gap: 4px; }
+        .nav-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: "Poppins", sans-serif;
+            font-size: 0.925rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+        }
+        .nav-item:hover { background: #f3f4f6; color: #00263b; }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .btn-auth {
+            font-family: "Poppins", sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-login { color: #00263b; }
+        .btn-login:hover { background: #f3f4f6; }
+        .btn-signup { background: #00263b; color: #fff; }
+        .btn-signup:hover { background: #001e2f; }
+        .nav-mobile-top { display: none; align-items: center; justify-content: space-between; }
+        .nav-hamburger {
+            width: 40px; height: 40px; border: 1px solid #e5e7eb;
+            border-radius: 8px; background: #fff; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+        }
+        .mobile-nav-panel { display: none; }
+        .mobile-nav-panel.is-open {
+            display: block; width: 100%; flex-basis: 100%;
+            overflow: hidden; max-height: 42rem; opacity: 1;
+            padding-top: 12px; pointer-events: auto;
+            transition: max-height 0.3s ease-out, opacity 0.25s ease-out;
+        }
+        
+        /* Detail Page Specific CSS */
+        .curriculum-accordion summary::-webkit-details-marker { display: none; }
+        .curriculum-accordion summary { list-style: none; }
+        
+        @media (min-width: 768px) {
+            .sticky-purchase-card { position: sticky; top: 100px; z-index: 50; }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-center, .nav-right { display: none; }
+            .nav-mobile-top { display: flex; width: 100%; }
+            .nav-logo { display: none; }
+            .nav-hamburger [data-menu-close] { display: none; }
+            .nav-hamburger.is-open [data-menu-open] { display: none; }
+            .nav-hamburger.is-open [data-menu-close] { display: block; }
+        }
+    </style>
+</head>
+<body class="bg-white font-body text-body antialiased">
+
+    <a href="#main-content" class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal">Skip to content</a>
+
+    <!-- EXACT NAV FROM COURSE_LIST.HTML -->
+    <nav>
+        <div class="nav-inner">
+            <a aria-label="Pacemaker home" class="nav-logo" href="./main.html">
+                <img alt="Pacemaker Logo" src="../img/logo.webp" />
+            </a>
+            <div class="flex items-center ml-auto">
+                <div class="nav-center">
+                    <a class="nav-item" href="./main.html#workshopCarousel">Workshop</a>
+                    <a class="nav-item" href="./main.html#onlineCourseCarousel">Online Course</a>
+                    <a class="nav-item" href="./main.html#ebookCarousel">E-book</a>
+                </div>
+                <div class="nav-right ml-4">
+                    <a class="btn-auth btn-login" href="#">Login</a>
+                    <a class="btn-auth btn-signup" href="#">Sign Up</a>
+                </div>
+            </div>
+            <div class="nav-mobile-top">
+                <a href="./main.html" style="display: block;">
+                    <img alt="Pacemaker Logo" src="../img/logo.webp" style="height: 28px; width: auto;" />
+                </a>
+                <div class="flex items-center gap-2">
+                    <button aria-controls="mobile-nav-menu" aria-expanded="false" aria-label="Open menu" class="nav-hamburger" id="mobile-nav-toggle" type="button">
+                        <svg data-menu-open fill="none" height="18" stroke="#00263b" stroke-linecap="round" stroke-width="2.5" viewBox="0 0 24 24" width="18">
+                            <line x1="3" x2="21" y1="6" y2="6"></line>
+                            <line x1="3" x2="21" y1="12" y2="12"></line>
+                            <line x1="3" x2="21" y1="18" y2="18"></line>
+                        </svg>
+                        <svg data-menu-close fill="none" height="18" stroke="#00263b" stroke-linecap="round" stroke-width="2.5" viewBox="0 0 24 24" width="18">
+                            <line x1="6" x2="18" y1="6" y2="18"></line>
+                            <line x1="18" x2="6" y1="6" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-nav-panel" id="mobile-nav-menu">
+                <div class="rounded-none border border-gray-200 bg-white p-3">
+                    <div class="border-t border-gray-100 pt-2">
+                        <div class="py-1">
+                            <a class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy" href="./main.html"><span>HOME</span></a>
+                        </div>
+                        <div class="py-1">
+                            <button type="button" aria-expanded="false" class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy" data-target="mobile-nav-programs">
+                                <span>PROGRAMS</span>
+                                <svg class="mobile-nav-accordion-chevron w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6"></path>
+                                </svg>
+                            </button>
+                            <div class="mobile-nav-accordion-panel" id="mobile-nav-programs">
+                                <div class="overflow-hidden">
+                                    <div class="flex flex-col gap-1">
+                                        <a class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5" href="./main.html#workshopCarousel">
+                                            <div class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100">
+                                                <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-[0.95rem] font-bold text-navy mb-0.5">Workshops</span>
+                                                    <span class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0">chevron_right</span>
+                                                </div>
+                                                <p class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">Live sessions, practical events, and real-world feedback.</p>
+                                            </div>
+                                        </a>
+                                        <a class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5" href="./course_list.html">
+                                            <div class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100">
+                                                <span class="material-symbols-outlined text-[20px]">play_lesson</span>
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-[0.95rem] font-bold text-navy mb-0.5">Online Courses</span>
+                                                    <span class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0">chevron_right</span>
+                                                </div>
+                                                <p class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">Guided lessons to help with resumes, interviews, and career moves.</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="py-1">
+                            <a class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy" href="#"><span>LOGIN</span></a>
+                        </div>
+                        <div class="pt-3">
+                            <a class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#001e2f]" href="#">SIGN UP</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Detail Content Structure -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="relative bg-navy overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop" alt="Background" class="w-full h-full object-cover opacity-20">
+                <div class="absolute inset-0 bg-gradient-to-r from-navy via-navy/90 to-transparent"></div>
+            </div>
+
+            <div class="page-container relative z-10 py-20 md:py-32">
+                <div class="max-w-[700px]">
+                    <span class="inline-block bg-teal/10 text-teal px-5 py-2 rounded-full font-headline font-bold text-xs uppercase tracking-[0.18em] mb-6">Software Development</span>
+                    <h1 class="text-white font-headline font-extrabold text-[36px] md:text-[48px] leading-tight mb-6">
+                        North American Career Roadmap:<br/>From Resume to Job Offer
+                    </h1>
+                    <p class="text-white/80 text-lg leading-relaxed mb-8 max-w-[600px]">
+                        Master the art of North American hiring. Learn how to tailor your resume, ace cultural interviews, and negotiate like a pro.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="flex -space-x-3">
+                            <img src="https://i.pravatar.cc/100?u=1" class="w-10 h-10 rounded-full border-2 border-navy" alt="User">
+                            <img src="https://i.pravatar.cc/100?u=2" class="w-10 h-10 rounded-full border-2 border-navy" alt="User">
+                            <img src="https://i.pravatar.cc/100?u=3" class="w-10 h-10 rounded-full border-2 border-navy" alt="User">
+                        </div>
+                        <span class="text-white/70 text-sm font-medium">Joined by 1,200+ global learners</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Grid -->
+        <div class="page-container -mt-16 relative z-20 pb-24">
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-12">
+                
+                <!-- Left: Details -->
+                <div class="space-y-16 pt-24 md:pt-10">
+                    <section id="overview">
+                        <h2 class="text-navy font-headline font-extrabold text-[32px] mb-8 tracking-tight">Course Overview</h2>
+                        <div class="text-body text-lg leading-relaxed space-y-6">
+                            <p>Transitioning to the North American job market is not just about translating your resume; it's about translating your value proposition. This course provides a step-by-step framework used by hundreds of successful professionals to land roles at top tech companies.</p>
+                            <p>We dive deep into the cultural nuances of hiring in Canada and the US, providing you with the exact scripts and strategies needed to stand out in a sea of applicants.</p>
+                        </div>
+                    </section>
+
+                    <section id="curriculum">
+                        <h2 class="text-navy font-headline font-extrabold text-[28px] mb-8 tracking-tight">Course Curriculum</h2>
+                        <div class="space-y-4">
+                            <details class="curriculum-accordion group bg-white border border-gray-100 rounded-none overflow-hidden shadow-sm" open>
+                                <summary class="flex items-center justify-between p-6 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                    <span class="font-headline font-bold text-navy">Module 1: The North American Mindset</span>
+                                    <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                                </summary>
+                                <div class="p-6 border-t border-gray-100 space-y-4">
+                                    <div class="flex items-center gap-3 text-sm text-body">
+                                        <span class="material-symbols-outlined text-teal text-lg">play_circle</span>
+                                        <span>Understanding the recruiter's perspective (15:00)</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 text-sm text-body">
+                                        <span class="material-symbols-outlined text-teal text-lg">play_circle</span>
+                                        <span>Cultural values in the workplace (22:00)</span>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="curriculum-accordion group bg-white border border-gray-100 rounded-none overflow-hidden shadow-sm">
+                                <summary class="flex items-center justify-between p-6 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                                    <span class="font-headline font-bold text-navy">Module 2: Resume Transformation</span>
+                                    <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                                </summary>
+                                <div class="p-6 border-t border-gray-100 p-6 text-sm">Content loading...</div>
+                            </details>
+                        </div>
+                    </section>
+
+                    <section id="recommendation" class="bg-gray-soft p-10 rounded-none">
+                        <h2 class="text-navy font-headline font-extrabold text-[24px] mb-10 text-center tracking-tight">Recommended For</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="flex gap-5">
+                                <div class="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal shadow-sm">
+                                    <span class="material-symbols-outlined">developer_mode</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-headline font-bold text-navy mb-2">Developers</h3>
+                                    <p class="text-sm leading-relaxed">Software engineers looking to transition to international tech hubs.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5">
+                                <div class="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center text-teal shadow-sm">
+                                    <span class="material-symbols-outlined">description</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-headline font-bold text-navy mb-2">Career Changers</h3>
+                                    <p class="text-sm leading-relaxed">Professionals needing to re-brand their experience for a new market.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="instructor">
+                        <h2 class="text-navy font-headline font-extrabold text-[28px] mb-8 tracking-tight">Meet Your Instructor</h2>
+                        <div class="flex flex-col md:flex-row gap-10 bg-white border border-gray-100 p-8 shadow-sm">
+                            <div class="w-full md:w-[240px] flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" alt="Instructor" class="w-full aspect-square object-cover rounded-[20px] shadow-md">
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-navy font-headline font-bold text-xl mb-1">Raphael Lee</h3>
+                                <p class="text-teal font-headline font-bold text-xs mb-6 uppercase tracking-widest">Founder at Pacemaker</p>
+                                <p class="text-body leading-relaxed mb-6">I've been managing multicultural teams for over 10 years. My passion is helping talented individuals bridge the gap between their technical skills and cultural communication.</p>
+                                <div class="space-y-3 pt-6 border-t border-gray-100">
+                                    <div class="flex gap-4 text-sm"><span class="text-teal font-bold w-24 flex-shrink-0">2019-Present</span><span class="text-navy">Managing Director at Pacemaker</span></div>
+                                    <div class="flex gap-4 text-sm"><span class="text-teal font-bold w-24 flex-shrink-0">2015-2019</span><span class="text-navy">Director of Operations at MetaNet</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="related">
+                        <h2 class="text-navy font-headline font-extrabold text-[28px] mb-10 text-center tracking-tight">You might also like</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Simple Card Pattern -->
+                            <div class="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=2070&auto=format&fit=crop" class="w-full h-40 object-cover">
+                                <div class="p-6">
+                                    <span class="text-teal font-bold text-[10px] uppercase tracking-widest mb-2 block">Resume</span>
+                                    <h4 class="text-navy font-headline font-bold text-sm mb-4 line-clamp-2">Mastering the Tech Resume</h4>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-navy font-bold">$2,800</span>
+                                        <span class="material-symbols-outlined text-teal text-lg">arrow_forward</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070&auto=format&fit=crop" class="w-full h-40 object-cover">
+                                <div class="p-6">
+                                    <span class="text-orange font-bold text-[10px] uppercase tracking-widest mb-2 block">Networking</span>
+                                    <h4 class="text-navy font-headline font-bold text-sm mb-4 line-clamp-2">LinkedIn for Professionals</h4>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-navy font-bold">$2,800</span>
+                                        <span class="material-symbols-outlined text-teal text-lg">arrow_forward</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" class="w-full h-40 object-cover">
+                                <div class="p-6">
+                                    <span class="text-teal font-bold text-[10px] uppercase tracking-widest mb-2 block">Interview</span>
+                                    <h4 class="text-navy font-headline font-bold text-sm mb-4 line-clamp-2">Interview Scripts Bundle</h4>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-navy font-bold">$2,800</span>
+                                        <span class="material-symbols-outlined text-teal text-lg">arrow_forward</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="reviews">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                            <h2 class="text-navy font-headline font-extrabold text-[28px] tracking-tight">Reviews</h2>
+                            <div class="flex items-center gap-4">
+                                <div class="flex text-[#FDB022]">
+                                    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">star</span>
+                                    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">star</span>
+                                    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">star</span>
+                                    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">star</span>
+                                    <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">star</span>
+                                </div>
+                                <span class="text-navy font-extrabold text-xl">5.0</span>
+                                <span class="text-body text-sm">(120 Reviews)</span>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="bg-white border border-gray-100 p-8">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src="https://i.pravatar.cc/100?u=4" class="w-12 h-12 rounded-full" alt="User">
+                                        <div>
+                                            <h4 class="font-bold text-navy">Jay Park</h4>
+                                            <p class="text-xs text-body">April 15, 2024</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex text-[#FDB022]">
+                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+                                        <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1">star</span>
+                                    </div>
+                                </div>
+                                <p class="text-body leading-relaxed text-sm">This course completely changed my approach to job searching. The networking module alone is worth the price. Highly recommended!</p>
+                            </div>
+                        </div>
+                        <div class="mt-10 text-center">
+                            <button class="bg-navy/5 text-navy font-bold py-3 px-8 rounded-2xl hover:bg-navy/10 transition-all font-headline text-sm uppercase tracking-widest">Load More Reviews</button>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right: Purchase Sidebar -->
+                <div class="relative">
+                    <div class="sticky-purchase-card bg-white border border-gray-100 p-8 shadow-premium rounded-none">
+                        <div class="relative mb-6 group overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop" class="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined text-white text-5xl">play_circle</span>
+                            </div>
+                        </div>
+                        <div class="mb-8">
+                            <div class="flex items-baseline gap-2 mb-2">
+                                <span class="text-3xl font-extrabold text-navy font-headline">$2,800.00</span>
+                                <span class="text-body line-through text-sm">$3,500.00</span>
+                            </div>
+                            <p class="text-xs text-orange font-bold uppercase tracking-widest">20% Discount applied</p>
+                        </div>
+                        <div class="space-y-4">
+                            <button class="w-full bg-orange hover:bg-orange-hover text-white font-bold text-lg font-headline py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]">Purchase Now</button>
+                            <button class="w-full bg-white border-2 border-navy text-navy font-bold text-lg font-headline py-4 rounded-2xl transition-all hover:bg-navy/5">Add to Cart</button>
+                        </div>
+                        <div class="mt-10 space-y-4 border-t border-gray-100 pt-8">
+                            <h4 class="font-headline font-bold text-navy text-xs uppercase tracking-[0.15em] mb-4">This course includes:</h4>
+                            <div class="flex items-center gap-3 text-sm text-body"><span class="material-symbols-outlined text-teal text-lg">videocam</span><span>12 hours on-demand video</span></div>
+                            <div class="flex items-center gap-3 text-sm text-body"><span class="material-symbols-outlined text-teal text-lg">description</span><span>24 downloadable resources</span></div>
+                            <div class="flex items-center gap-3 text-sm text-body"><span class="material-symbols-outlined text-teal text-lg">all_inclusive</span><span>Full lifetime access</span></div>
+                            <div class="flex items-center gap-3 text-sm text-body"><span class="material-symbols-outlined text-teal text-lg">workspace_premium</span><span>Certificate of completion</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- EXACT FOOTER FROM COURSE_LIST.HTML -->
+    <footer>
+        <div class="bg-white border-t border-[#eaecf0] pt-[80px] pb-[60px]">
+            <div class="page-container">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                    <div>
+                        <div class="mb-7">
+                            <img src="../img/logo.webp" alt="Pacemaker Logo" class="h-8 w-auto block" />
+                        </div>
+                        <p class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4">Social</p>
+                        <div class="flex gap-3 flex-wrap">
+                            <a href="https://www.instagram.com/pacemaker_career" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy" aria-label="Instagram">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                </svg>
+                            </a>
+                            <a href="https://www.facebook.com/globalpacemaker" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy" aria-label="Facebook">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                                </svg>
+                            </a>
+                            <a href="https://www.youtube.com/channel/UCyc055VyNuwAMF27dd74smA" target="_blank" rel="noopener noreferrer" class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy" aria-label="YouTube">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                                    <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="w-full md:ml-auto md:w-fit md:text-right">
+                        <p class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4 md:text-right">Contact</p>
+                        <ul class="list-none flex flex-col gap-3 md:items-end">
+                            <li class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end">
+                                <span class="material-symbols-outlined text-[#667085] text-lg">mail</span>
+                                <a href="mailto:Hello@pacemakerca.com" class="text-[#344054] no-underline hover:text-navy transition-colors">Hello@pacemakerca.com</a>
+                            </li>
+                            <li class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end">
+                                <span class="material-symbols-outlined text-[#667085] text-lg">phone</span>
+                                <a href="tel:+16476120523" class="text-[#344054] no-underline hover:text-navy transition-colors">+1 647-612-0523</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-[0.9rem] text-[#98a2b3]">© 2026 Pacemaker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        (function mobileNav() {
+            var menuToggle = document.getElementById("mobile-nav-toggle");
+            var menu = document.getElementById("mobile-nav-menu");
+            if (!menuToggle || !menu) return;
+            function setMenuOpen(isOpen) {
+                menu.classList.toggle("is-open", isOpen);
+                menuToggle.classList.toggle("is-open", isOpen);
+                menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+            }
+            menuToggle.addEventListener("click", function () {
+                setMenuOpen(!menu.classList.contains("is-open"));
+            });
+            document.addEventListener("click", function (event) {
+                if (!menu.classList.contains("is-open")) return;
+                if (menu.contains(event.target) || menuToggle.contains(event.target)) return;
+                setMenuOpen(false);
+            });
+            Array.prototype.forEach.call(
+                document.querySelectorAll(".mobile-nav-accordion-toggle"),
+                function (toggle) {
+                    var panelId = toggle.getAttribute("data-target");
+                    var panel = panelId ? document.getElementById(panelId) : null;
+                    if (!panel) return;
+                    toggle.addEventListener("click", function () {
+                        var isOpen = toggle.getAttribute("aria-expanded") === "true";
+                        toggle.setAttribute("aria-expanded", isOpen ? "false" : "true");
+                        panel.classList.toggle("is-open", !isOpen);
+                    });
+                }
+            );
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 768) setMenuOpen(false);
+            });
+        })();
+    </script>
+</body>
+</html>
