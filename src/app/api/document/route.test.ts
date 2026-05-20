@@ -11,7 +11,7 @@ vi.mock('@clerk/nextjs/server', () => ({
 vi.mock('@/lib/prisma', () => {
   return {
     default: {
-      document: {
+      ebook: {
         findUnique: vi.fn()
       }
     }

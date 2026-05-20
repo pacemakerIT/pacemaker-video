@@ -27,8 +27,15 @@ vi.mock('@/components/common/card-container', () => ({
 }));
 
 vi.mock('@/components/common/list-header', () => ({
-  default: ({ title }: { title: string }) => (
-    <div data-testid="list-header">{title}</div>
+  default: ({
+    slides
+  }: {
+    slides?: { title?: string; highlight?: string }[];
+  }) => (
+    <div data-testid="list-header">
+      {slides?.[0]?.title}
+      {slides?.[0]?.highlight}
+    </div>
   )
 }));
 
@@ -250,9 +257,9 @@ describe('CoursesPage', () => {
     await waitFor(
       () => {
         const listHeader = screen.getByTestId('list-header');
-        expect(listHeader.textContent).toBe(
-          'Build a strong foundation\nfor your career abroad with Pacemaker'
-        );
+        expect(listHeader).toBeInTheDocument();
+        expect(listHeader.textContent).toContain('Build a strong foundation');
+        expect(listHeader.textContent).toContain('with Pacemaker');
       },
       { timeout: 5000 }
     );

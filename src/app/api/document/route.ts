@@ -8,8 +8,8 @@ import { bucketName, s3clientSupabase } from '@/lib/supabase';
 // Get all documents
 export async function GET() {
   try {
-    const documents = await prisma.document.findMany();
-    return NextResponse.json(documents, { status: 200 });
+    const ebooks = await prisma.ebook.findMany();
+    return NextResponse.json(ebooks, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to fetch documents: ${error}` },
@@ -53,9 +53,9 @@ export async function POST(req: Request) {
       expiresIn: 3600
     });
 
-    const newDocument = await prisma.document.create({
+    const newEbook = await prisma.ebook.create({
       data: {
-        documentId: titleWithTimestamp,
+        ebookId: titleWithTimestamp,
         title,
         description,
         price,
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: 'File uploaded successfully', document: newDocument },
+      { message: 'File uploaded successfully', document: newEbook },
       { status: 201 }
     );
   } catch (error) {

@@ -91,13 +91,13 @@ export default function MyPage() {
     }
   ];
 
-  const documentCards: MyCard[] = [
+  const ebookCards: MyCard[] = [
     {
       id: '1',
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Marketing',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 4
@@ -107,7 +107,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'UX Design Fundamentals',
       category: 'Interview',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 8
@@ -117,7 +117,7 @@ export default function MyPage() {
       itemId: '4e8wv1z7tl',
       title: 'Test3',
       category: 'Resume',
-      type: ItemType.DOCUMENT,
+      type: ItemType.EBOOK,
       purchased: true,
       totalChapters: 8,
       completedChapters: 0
@@ -219,7 +219,7 @@ export default function MyPage() {
       </div>
 
       <MyList title="내 온라인 강의 목록" cards={courseCards} />
-      <MyList title="내 전자책 목록" cards={documentCards} />
+      <MyList title="내 전자책 목록" cards={ebookCards} />
 
       <div className="my-20 mx-10">
         <h1 className="text-pace-gray-700 font-bold text-pace-xl mb-6">

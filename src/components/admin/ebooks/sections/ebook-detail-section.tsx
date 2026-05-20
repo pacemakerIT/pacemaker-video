@@ -58,7 +58,7 @@ export default function EbookDetailSection({
   ) => {
     const formData = new FormData();
     formData.append('image', file);
-    formData.append('table', 'Document');
+    formData.append('table', 'Ebook');
     formData.append('column', column);
 
     const res = await fetch('/api/images/upload', {

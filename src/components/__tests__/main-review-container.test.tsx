@@ -30,14 +30,14 @@ describe('MainReviewContainer', () => {
   it('renders the main heading', () => {
     render(<MainReviewContainer />);
     expect(
-      screen.getByText('Boost your career with Pacemaker Today!')
+      screen.getByText(/Boost your career with.*Pacemaker Today!/i)
     ).toBeInTheDocument();
   });
 
   it('renders the login button when user is not signed in', () => {
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /Log in to start programs/i })
+      screen.getByRole('button', { name: /Log in to start learning/i })
     ).toBeInTheDocument();
   });
 
@@ -51,7 +51,7 @@ describe('MainReviewContainer', () => {
 
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /Explore programs/i })
+      screen.getByRole('link', { name: /Browse online courses/i })
     ).toBeInTheDocument();
   });
 });

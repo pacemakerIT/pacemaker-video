@@ -40,9 +40,9 @@ export default function WorkshopList() {
         <div className="flex flex-col w-full max-w-7xl gap-8">
           <div className="flex flex-col justify-start w-full pt-12">
             <h5 className="text-pace-orange-600 text-lg">
-              {'Explore Career Topics'}
+              {'Workshops for every goal'}
             </h5>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
               <h3 className="text-pace-black-500 text-pace-3xl font-bold">
                 {'Pacemaker Workshop'}
               </h3>
@@ -50,7 +50,7 @@ export default function WorkshopList() {
                 href="/workshops"
                 className="w-fit flex items-center text-base text-pace-stone-500 font-normal gap-1"
               >
-                <span>{'View all Workshops'}</span>
+                <span>{'View all workshops'}</span>
                 <Image
                   src="/icons/arrow_right.svg"
                   alt="오른쪽 화살표 아이콘"

@@ -13,14 +13,14 @@ export default function EbookList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const fetchEbooks = async () => {
       try {
-        const res = await fetch('/api/ebooks?isMain=true');
+        const res = await fetch('/api/ebooks');
         if (res.ok) {
           const data = await res.json();
           setEbooks(data);
         } else {
-          toast('Failed to fetch videos');
+          toast('Failed to fetch ebooks');
         }
       } catch (error) {
         toast(`Failed to connect server: ${error}`);
@@ -29,29 +29,29 @@ export default function EbookList() {
       }
     };
 
-    fetchVideos();
+    fetchEbooks();
   }, []);
 
   return (
     <section className="w-full gap-8">
       {loading ? (
-        <p className="text-center">📡 전자책 불러오는 중...</p>
+        <p className="text-center">📡 Loading ebooks...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
           <div className="flex flex-col justify-start w-full pt-12">
             <h5 className="text-pace-orange-600 text-pace-lg">
-              {'Career Breakthroughs'}
+              {'Job search tips, plain and simple'}
             </h5>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
               <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-                {'Pacemaker E-books'}
+                {'Pacemaker e-books'}
               </h3>
               <Link
                 href="/ebooks"
                 className="w-fit flex items-center text-pace-base text-pace-stone-500 font-normal gap-1"
               >
-                <span>{'View all E-books'}</span>
+                <span>{'View all e-books'}</span>
                 <Image
                   src="/icons/arrow_right.svg"
                   alt="오른쪽 화살표 아이콘"
@@ -72,7 +72,7 @@ export default function EbookList() {
             <CardContainer
               layout={'horizontal'}
               cards={ebooks}
-              itemType={ItemType.DOCUMENT}
+              itemType={ItemType.EBOOK}
             />
           )}
         </div>

@@ -43,18 +43,18 @@ export function createGetHandler(s3Client: S3Client) {
     }
 
     try {
-      const document = await prisma.document.findUnique({
+      const ebook = await prisma.ebook.findUnique({
         where: {
           id: docId
         },
         select: {
-          documentId: true
+          ebookId: true
         }
       });
 
       const command = new GetObjectCommand({
         Bucket: bucketName,
-        Key: document?.documentId
+        Key: ebook?.ebookId
       });
 
       const response = await s3Client.send(command);

@@ -33,19 +33,19 @@ export default function CourseList() {
   }, []);
 
   return (
-    <section className="w-full  gap-8">
+    <section className="w-full gap-8">
       {loading ? (
-        <p className="text-center">📡 코스 불러오는 중...</p>
+        <p className="text-center">📡 Loading courses...</p>
       ) : (
         <div className="flex flex-col w-full max-w-7xl gap-8">
           {/* Header Section */}
           <div className="flex flex-col justify-center">
             <h5 className="text-pace-orange-600 text-lg">
-              {'Empowering Your Career'}
+              {'North America jobs A to Z'}
             </h5>
-            <div className="flex justify-between items-center ">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
               <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-                {'Pacemaker Online Courses'}
+                {'Pacemaker online courses'}
               </h3>
               <Link
                 href="/courses"
@@ -65,7 +65,7 @@ export default function CourseList() {
 
           {/* Card Container Section */}
           {courses.length === 0 ? (
-            <p className="text-center">📭 등록된 코스가 없습니다.</p>
+            <p className="text-center">📭 No registered courses.</p>
           ) : (
             <CardContainer
               layout={'horizontal'}

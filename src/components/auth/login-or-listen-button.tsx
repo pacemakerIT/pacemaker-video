@@ -11,17 +11,17 @@ export default function LoginOrListenButton() {
   return (
     <>
       {userId ? (
-        <Link href="/courses">
-          <button className="h-12 bg-pace-orange-600 text-white border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal">
-            Watch Courses
+        <Link href="/courses" className="w-full flex justify-center sm:w-auto">
+          <button className="w-1/2 sm:w-auto h-14 bg-orange text-white border-2 border-orange px-8 rounded-2xl flex justify-center items-center font-bold hover:bg-orange-hover transition-colors">
+            Start learning
           </button>
         </Link>
       ) : (
         <button
           onClick={() => setIsSignInModalOpen(true)}
-          className="h-12 bg-pace-orange-600 text-white border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal"
+          className="w-1/2 sm:w-auto h-14 bg-orange text-white border-2 border-orange px-8 rounded-2xl flex justify-center items-center font-bold hover:bg-orange-hover transition-colors"
         >
-          Log In to Watch Courses
+          Log in and start learning
         </button>
       )}
     </>

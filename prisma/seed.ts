@@ -3,7 +3,7 @@ import {
   ItemType,
   PrismaClient,
   CourseCategory,
-  DocumentCategory,
+  EbookCategory,
   WorkshopCategory,
   TargetAudienceType,
   WorkshopStatus
@@ -119,7 +119,7 @@ async function resetLocalSeedData() {
   await prisma.section.deleteMany({});
   await prisma.$executeRawUnsafe('DELETE FROM "_CourseToInstructor";');
   await prisma.course.deleteMany({});
-  await prisma.document.deleteMany({});
+  await prisma.ebook.deleteMany({});
   await prisma.workshop.deleteMany({});
   await prisma.instructor.deleteMany({});
 
@@ -315,15 +315,6 @@ async function main() {
       orderBy: { orderIndex: 'asc' }
     });
 
-    const sectionContentMap: Record<string, string> = {
-      'Case Studies of North American Developer Job Postings':
-        'Covers the North American style of resume writing in detail. Learn everything from keyword selection to pass ATS (Applicant Tracking Systems) to using action verbs to effectively showcase experiences.',
-      'Analysis of North American Developer Job Postings':
-        'Covers essential technical interview topics such as data structures and algorithms. Gain practical experience through analysis of past questions from big tech companies and model answers.',
-      'Actual Successful Resumes for North American Developer Jobs':
-        'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
-    };
-
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
       for (let s = 1; s <= 4; s++) {
@@ -349,7 +340,7 @@ async function main() {
   console.log('Generating English e-books...');
   const ebooks = [
     {
-      category: DocumentCategory.MARKETING,
+      category: EbookCategory.MARKETING,
       title:
         'The 94% Success Formula: A Proven Approach to Job & Career Transitions',
       subTitle: 'Branding & Networking for Marketers',
@@ -360,7 +351,7 @@ async function main() {
       visualTitle2: 'for Marketers'
     },
     {
-      category: DocumentCategory.DESIGN,
+      category: EbookCategory.DESIGN,
       title:
         'What Every Designer Should Know: Interviews That Shape Your Career',
       subTitle: 'Preparing for Design Interviews',
@@ -371,7 +362,7 @@ async function main() {
       visualTitle2: 'Design Interviews'
     },
     {
-      category: DocumentCategory.PUBLIC,
+      category: EbookCategory.PUBLIC,
       title: 'A Resume That Gets You Hired in the North American Public Sector',
       subTitle: 'Public Sector Resume',
       description:
@@ -381,7 +372,7 @@ async function main() {
       visualTitle2: 'Resume'
     },
     {
-      category: DocumentCategory.IT,
+      category: EbookCategory.IT,
       title: 'The 94% Success Formula: Resumes That Win Jobs and Interviews',
       subTitle: 'IT Resume & Interview Preparation',
       description:
@@ -391,7 +382,7 @@ async function main() {
       visualTitle2: 'Interview Preparation'
     },
     {
-      category: DocumentCategory.ACCOUNTING,
+      category: EbookCategory.ACCOUNTING,
       title:
         'A practical guide to Interviews for finance and accounting roles, learn once, use for life.',
       subTitle: 'Preparing for Accounting Interviews',
@@ -402,7 +393,7 @@ async function main() {
       visualTitle2: 'Accounting Interviews'
     },
     {
-      category: DocumentCategory.SERVICE,
+      category: EbookCategory.SERVICE,
       title:
         'The 94% success approach: communicate your value clearly in job searches and career moves.',
       subTitle: 'Resume & Networking for Service Roles',
@@ -439,10 +430,10 @@ async function main() {
     const ebook = ebooks[i];
     const documentRecordId = randomUUID();
 
-    await prisma.document.create({
+    await prisma.ebook.create({
       data: {
         id: documentRecordId,
-        documentId: `ebook-${i + 1}`,
+        ebookId: `ebook-${i + 1}`,
         title: ebook.title,
         description: ebook.description,
         price: ebook.price,
@@ -457,17 +448,17 @@ async function main() {
         tableOfContents: ebookToc,
         targetAudienceTypes: (() => {
           switch (ebook.category) {
-            case DocumentCategory.MARKETING:
+            case EbookCategory.MARKETING:
               return [TargetAudienceType.NETWORKING];
-            case DocumentCategory.IT:
+            case EbookCategory.IT:
               return [TargetAudienceType.IT];
-            case DocumentCategory.DESIGN:
+            case EbookCategory.DESIGN:
               return [TargetAudienceType.DESIGN];
-            case DocumentCategory.PUBLIC:
+            case EbookCategory.PUBLIC:
               return [TargetAudienceType.GOVERNMENT];
-            case DocumentCategory.ACCOUNTING:
+            case EbookCategory.ACCOUNTING:
               return [TargetAudienceType.FINANCE];
-            case DocumentCategory.SERVICE:
+            case EbookCategory.SERVICE:
               return [TargetAudienceType.SERVICE];
             default:
               return [];

@@ -25,13 +25,13 @@ describe('ImageOverlayCard', () => {
     expect(screen.getByText('Card 1')).toBeInTheDocument();
     expect(screen.getByText('WORKSHOP')).toBeInTheDocument();
     expect(screen.getByTestId('card-image')).toBeInTheDocument();
-    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('Live now')).toBeInTheDocument();
   });
 
   it('toggles like state when heart button is clicked', () => {
     render(<ImageOverlayCard {...mockCard} />);
     const likeButton = screen.getByRole('button', { name: /like/i });
     fireEvent.click(likeButton);
-    expect(likeButton.querySelector('svg')).toHaveClass('fill-pace-orange-800');
+    expect(likeButton.querySelector('svg')).toHaveClass('fill-orange');
   });
 });

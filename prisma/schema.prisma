@@ -88,16 +88,14 @@ model CourseToInstructor {
   @@map("_CourseToInstructor")
 }
 
-
-// Section은 Course 또는 Workshop 중 하나에 속함 (courseId / workshopId 중 하나만 설정)
 model Section {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId    String?   @db.Uuid
   title       String
   description String?
   orderIndex  Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  courseId    String?   @db.Uuid
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workshopId  String?   @db.Uuid
   course      Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   workshop    Workshop? @relation(fields: [workshopId], references: [id], onDelete: Cascade)
@@ -116,7 +114,7 @@ model Video {
   price         Float?
   category      VideoCategory?
   thumbnail     String?
-  courseId      String?        @db.Uuid
+  courseId      String         @db.Uuid
   sectionId     String?        @db.Uuid
   course        Course?        @relation("CourseToVideos", fields: [courseId], references: [id], onDelete: Cascade)
   section       Section?       @relation("SectionToVideos", fields: [sectionId], references: [id], onDelete: Cascade)
@@ -135,15 +133,15 @@ model WatchedVideo {
   @@unique([userId, videoId])
 }
 
-model Document {
-  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId          String               @unique
+model Ebook {
+  id                  String               @id(map: "Document_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ebookId             String               @unique(map: "Document_documentId_key")
   title               String?
   description         String?
   uploadDate          DateTime             @default(now())
   price               Float?
   bucketUrl           String
-  category            DocumentCategory?
+  category            EbookCategory?
   isMain              Boolean              @default(false)
   isPublic            Boolean              @default(false)
   subDescription      String?
@@ -157,32 +155,27 @@ model Document {
 }
 
 model Workshop {
-  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title          String
   description    String?
   startDate      DateTime
   endDate        DateTime
   price          Float?
   locationOrUrl  String?
-  status         WorkshopStatus    @default(RECRUITING)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  status         WorkshopStatus       @default(RECRUITING)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
   thumbnail      String?
   category       WorkshopCategory?
+  isMain         Boolean              @default(false)
   processContent String?
-  isMain         Boolean           @default(false)
-
-  // 강사: 한 워크샵에 여러 강사, 한 강사가 여러 워크샵 가능 (다대다)
-  instructors   WorkshopInstructor[]
-  // 참여자: 유저가 워크샵에 등록
-  userWorkshops UserWorkshop[]
-  // 섹션, 즐겨찾기, 장바구니
-  sectionsRel   Section[]
-  favorites     Favorite[]
-  cart          Cart[]
+  instructors    WorkshopInstructor[]
+  userWorkshops  UserWorkshop[]
+  sectionsRel    Section[]
+  favorites      Favorite[]
+  cart           Cart[]
 }
 
-// Workshop ↔ Instructor 다대다 중간 테이블
 model WorkshopInstructor {
   workshopId   String     @db.Uuid
   instructorId String     @db.Uuid
@@ -232,7 +225,6 @@ model OrderItem {
   order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
-// itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원
 model Favorite {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String    @db.Uuid
@@ -247,7 +239,6 @@ model Favorite {
   @@index([workshopId])
 }
 
-// itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원
 model Cart {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String    @db.Uuid
@@ -297,9 +288,9 @@ model Instructor {
 enum WorkshopStatus {
   RECRUITING
   CLOSED
-  ONGOING
   COMPLETED
   HIDDEN
+  ONGOING
 }
 
 enum CourseCategory {
@@ -314,7 +305,7 @@ enum VideoCategory {
   NETWORKING
 }
 
-enum DocumentCategory {
+enum EbookCategory {
   MARKETING
   IT
   DESIGN
@@ -351,7 +342,6 @@ enum OrderStatus {
 
 enum ItemType {
   VIDEO
-  DOCUMENT
   WORKSHOP
   COURSE
   EBOOK
