@@ -46,6 +46,31 @@ export async function POST(req: Request) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
 
+    const urlOnlyUploadTypes = new Set([
+      'COURSE_THUMBNAIL',
+      'WORKSHOP_THUMBNAIL',
+      'MAIN_VISUAL'
+    ]);
+
+    if (table && urlOnlyUploadTypes.has(table)) {
+      const newImage = await prisma.image.create({
+        data: {
+          fileName,
+          url: imageUrl
+        }
+      });
+
+      return NextResponse.json(
+        {
+          message: 'Image uploaded successfully',
+          url: imageUrl,
+          image: newImage,
+          updatedRecord: null
+        },
+        { status: 201 }
+      );
+    }
+
     // 레코드 ID가 있으면 업데이트, 없으면 새로 생성
     let updatedRecord;
 
