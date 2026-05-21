@@ -10,9 +10,21 @@ type Props = {
   switchToSignUp?: () => void; // 전환 콜백
 };
 
-const summarizeFactors = (
-  factors: Array<{ strategy?: string } | null> | null | undefined
-) => factors?.map((factor) => factor?.strategy ?? 'unknown') ?? [];
+type SignInAttemptResult = {
+  status:
+    | 'needs_identifier'
+    | 'needs_first_factor'
+    | 'needs_second_factor'
+    | 'needs_new_password'
+    | 'complete'
+    | null;
+  supportedSecondFactors?: Array<{
+    strategy: string;
+    emailAddressId?: string;
+    safeIdentifier?: string;
+  }> | null;
+  createdSessionId: string | null;
+};
 
 export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -20,44 +32,193 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
 
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
+  const [code, setCode] = useState('');
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const [secondFactorEmail, setSecondFactorEmail] = useState('');
+  const [secondFactorEmailId, setSecondFactorEmailId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+
+  const finishSignIn = async (sessionId: string | null) => {
+    if (!sessionId) {
+      setError('로그인 세션을 생성하지 못했어요. 다시 시도해주세요.');
+      return;
+    }
+
+    if (!setActive) {
+      setError('로그인 세션을 활성화하지 못했어요. 다시 시도해주세요.');
+      return;
+    }
+
+    await setActive({ session: sessionId });
+    closeModal?.();
+    router.push('/');
+  };
+
+  const prepareEmailSecondFactor = async (
+    currentSignIn: NonNullable<typeof signIn>,
+    result: SignInAttemptResult
+  ) => {
+    const emailCodeFactor = result.supportedSecondFactors?.find(
+      (factor) => factor.strategy === 'email_code'
+    );
+
+    if (!emailCodeFactor) {
+      setError('지원되는 이메일 인증 수단을 찾지 못했어요.');
+      return;
+    }
+
+    await currentSignIn.prepareSecondFactor({
+      strategy: 'email_code',
+      ...(emailCodeFactor.emailAddressId
+        ? { emailAddressId: emailCodeFactor.emailAddressId }
+        : {})
+    });
+
+    setSecondFactorEmail(emailCodeFactor.safeIdentifier ?? email);
+    setSecondFactorEmailId(emailCodeFactor.emailAddressId ?? '');
+    setCode('');
+    setIsVerifyingCode(true);
+    setError('');
+    setNotice('인증 코드를 이메일로 보냈어요.');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!isLoaded || !signIn) return;
+
+    setError('');
+    setNotice('');
+    setIsSubmitting(true);
 
     try {
-      const result = await signIn.create({ identifier: email, password: pw });
-
-      // Temporary production auth debugging. Remove after verifying Clerk status.
-      // eslint-disable-next-line no-console
-      console.info('[auth-debug] Clerk sign-in result', {
-        status: result.status,
-        supportedFirstFactors: summarizeFactors(result.supportedFirstFactors),
-        supportedSecondFactors: summarizeFactors(result.supportedSecondFactors),
-        firstFactorVerification: result.firstFactorVerification?.status,
-        secondFactorVerification: result.secondFactorVerification?.status
+      const result = await signIn.create({
+        strategy: 'password',
+        identifier: email,
+        password: pw
       });
 
       if (result.status === 'complete') {
-        await setActive({ session: result.createdSessionId });
-        closeModal?.();
-        router.push('/');
+        await finishSignIn(result.createdSessionId);
+      } else if (result.status === 'needs_second_factor') {
+        await prepareEmailSecondFactor(signIn, result);
+      } else if (result.status === 'needs_new_password') {
+        setError('새 비밀번호 설정이 필요합니다.');
       } else {
-        setError('추가 인증이 필요합니다.');
+        setError('로그인을 완료하려면 추가 인증 단계가 필요합니다.');
       }
     } catch (err: unknown) {
       const e = err as { errors?: { code?: string; message?: string }[] };
-      // eslint-disable-next-line no-console
-      console.info('[auth-debug] Clerk sign-in error', {
-        errors: e.errors?.map((error) => ({
-          code: error.code,
-          message: error.message
-        }))
-      });
       setError(e.errors?.[0]?.message || '로그인 실패');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleVerifySecondFactor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isLoaded || !signIn) return;
+
+    setError('');
+    setNotice('');
+    setIsSubmitting(true);
+
+    try {
+      const result = await signIn.attemptSecondFactor({
+        strategy: 'email_code',
+        code: code.trim()
+      });
+
+      if (result.status === 'complete') {
+        await finishSignIn(result.createdSessionId);
+      } else {
+        setError('인증을 완료하지 못했어요. 코드를 다시 확인해주세요.');
+      }
+    } catch (err: unknown) {
+      const e = err as { errors?: { message?: string }[] };
+      setError(e.errors?.[0]?.message || '인증 코드 확인에 실패했어요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendSecondFactor = async () => {
+    if (!isLoaded || !signIn) return;
+
+    setError('');
+    setNotice('');
+    setIsSubmitting(true);
+
+    try {
+      await signIn.prepareSecondFactor({
+        strategy: 'email_code',
+        ...(secondFactorEmailId ? { emailAddressId: secondFactorEmailId } : {})
+      });
+      setNotice('인증 코드를 다시 보냈어요.');
+    } catch (err: unknown) {
+      const e = err as { errors?: { message?: string }[] };
+      setError(e.errors?.[0]?.message || '인증 코드 재전송에 실패했어요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isVerifyingCode) {
+    return (
+      <div className="w-full flex flex-col items-center text-pace-base">
+        <form
+          onSubmit={handleVerifySecondFactor}
+          className="w-full flex flex-col items-center"
+        >
+          <p className="w-[400px] text-sm text-center text-pace-black-500 mb-6">
+            {secondFactorEmail || email}로 전송된 인증 코드를 입력해주세요.
+          </p>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="인증 코드"
+            className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 mb-0"
+            required
+          />
+          {notice && (
+            <p className="text-pace-stone-500 text-sm text-center">{notice}</p>
+          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-pace-orange-800 hover:bg-pace-orange-600 text-white rounded-full py-3 mt-6 mb-4 disabled:opacity-60"
+          >
+            인증하고 로그인
+          </button>
+        </form>
+
+        <button
+          type="button"
+          onClick={handleResendSecondFactor}
+          disabled={isSubmitting}
+          className="text-pace-gray-500 underline hover:text-pace-orange-800 disabled:opacity-60"
+        >
+          인증 코드 다시 보내기
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setIsVerifyingCode(false);
+            setCode('');
+            setNotice('');
+            setError('');
+          }}
+          className="mt-4 text-pace-stone-500 underline hover:text-pace-orange-800"
+        >
+          이메일로 다시 로그인하기
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center text-pace-base">
@@ -89,7 +250,8 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-pace-orange-800 hover:bg-pace-orange-600 text-white rounded-full py-3 mt-6 mb-6"
+          disabled={isSubmitting}
+          className="w-full bg-pace-orange-800 hover:bg-pace-orange-600 text-white rounded-full py-3 mt-6 mb-6 disabled:opacity-60"
         >
           로그인 하기
         </button>
