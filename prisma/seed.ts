@@ -572,13 +572,13 @@ async function main() {
     {
       id: '87921304-7f86-4398-9e22-420170acdb03',
       email: 'admin@paceupcareer.com',
-      clerkId: 'user_38K4nsQvRHKpUo2ORvKpSCEAEWs',
+      clerkId: 'user_3Da2QILT1uy7UoPa4AKEix2vX3K',
       roleId: 'ADMIN'
     },
     {
       id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
       email: 'user@paceupcareer.com',
-      clerkId: 'user_38K5898TBktdhW31nKDhgXUwZVF',
+      clerkId: 'user_3Da2QIjxxSbeuJWHg82WAfJzEXt',
       roleId: 'USER'
     }
   ];
