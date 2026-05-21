@@ -3,9 +3,9 @@
 import Image from 'next/image';
 
 const logos = [
-  { src: '/img/ibm.svg', alt: 'IBM' },
-  { src: '/img/kotra.svg', alt: 'KOTRA' },
-  { src: '/img/ontario.svg', alt: 'Ontario' }
+  { src: '/icons/ibm.svg', alt: 'IBM' },
+  { src: '/icons/kotra.svg', alt: 'KOTRA' },
+  { src: '/icons/ontario.svg', alt: 'Ontario' }
 ];
 
 export default function LogoMarquee() {

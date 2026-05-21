@@ -135,15 +135,15 @@ model WatchedVideo {
   @@unique([userId, videoId])
 }
 
-model Document {
+model Ebook {
   id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  documentId          String               @unique
+  ebookId             String               @unique
   title               String?
   description         String?
   uploadDate          DateTime             @default(now())
   price               Float?
   bucketUrl           String
-  category            DocumentCategory?
+  category            EbookCategory?
   isMain              Boolean              @default(false)
   isPublic            Boolean              @default(false)
   subDescription      String?
@@ -314,7 +314,7 @@ enum VideoCategory {
   NETWORKING
 }
 
-enum DocumentCategory {
+enum EbookCategory {
   MARKETING
   IT
   DESIGN
@@ -351,7 +351,6 @@ enum OrderStatus {
 
 enum ItemType {
   VIDEO
-  DOCUMENT
   WORKSHOP
   COURSE
   EBOOK

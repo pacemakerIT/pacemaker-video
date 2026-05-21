@@ -45,7 +45,7 @@ export async function getUsers(
       order.items.forEach((item) => {
         if (item.itemType === 'VIDEO' || item.itemType === 'COURSE') {
           lectures++;
-        } else if (item.itemType === 'DOCUMENT' || item.itemType === 'EBOOK') {
+        } else if (item.itemType === 'EBOOK') {
           ebooks++;
         } else if (item.itemType === 'WORKSHOP') {
           workshops++;
@@ -129,12 +129,11 @@ export async function getUserOrders(userId: string): Promise<OrderDetail[]> {
                 itemTitle = course?.title || 'Unknown Course';
                 break;
               }
-              case 'DOCUMENT':
               case 'EBOOK': {
-                const document = await prisma.document.findUnique({
+                const ebook = await prisma.ebook.findUnique({
                   where: { id: item.itemId }
                 });
-                itemTitle = document?.title || 'Unknown Document';
+                itemTitle = ebook?.title || 'Unknown Ebook';
                 break;
               }
               case 'WORKSHOP': {
