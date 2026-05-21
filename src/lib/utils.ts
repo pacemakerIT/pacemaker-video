@@ -25,7 +25,7 @@ export function resolveImageSrc({
     if (itemType === ItemType.VIDEO || itemType === ItemType.COURSE) {
       return '/img/course_image1.png';
     }
-    if (itemType === ItemType.DOCUMENT || itemType === ItemType.EBOOK) {
+    if (itemType === ItemType.EBOOK) {
       return '/img/ebook_image1.png';
     }
     return '';
