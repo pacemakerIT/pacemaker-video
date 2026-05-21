@@ -2,7 +2,9 @@ import Image from 'next/image';
 import { ArrowRight, Heart, Calendar, MapPin, User } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { ItemType } from '@prisma/client';
+import { resolveImageSrc } from '@/lib/utils';
 
 export default function ImageOverlayCard({
   id,
@@ -12,21 +14,18 @@ export default function ImageOverlayCard({
   startDate,
   locationOrUrl,
   status,
-  description
+  description,
+  thumbnail,
+  thumbnailUrl,
+  imageUrl
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
-
-  // 워크샵용 랜덤 이미지 선택
-  const randomImage = useMemo(() => {
-    const images = [
-      '/img/workshop_image1.png',
-      '/img/workshop_image2.png',
-      '/img/workshop_image3.png',
-      '/img/workshop_image4.png'
-    ];
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
-  }, []);
+  const imageSrc = resolveImageSrc({
+    thumbnail,
+    thumbnailUrl,
+    imageUrl,
+    itemType: ItemType.WORKSHOP
+  });
 
   const displayTitle = title || visualTitle2 || '';
   const formattedStatus =
@@ -63,7 +62,7 @@ export default function ImageOverlayCard({
 
           <div className="relative w-full h-[460px]">
             <Image
-              src={randomImage}
+              src={imageSrc}
               fill
               className="object-cover"
               alt="workshop img"

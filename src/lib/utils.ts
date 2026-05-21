@@ -17,25 +17,27 @@ export function resolveImageSrc({
   thumbnailUrl?: string | null;
   itemType?: ItemType;
 }) {
-  // 1. Local path check
-  if (thumbnail && thumbnail.startsWith('/img/')) {
-    return thumbnail;
-  }
+  const normalizeImage = (src?: string | null) => {
+    if (!src) return '';
+    if (src.startsWith('/')) return src;
+    if (/^https?:\/\//i.test(src)) {
+      return `/api/images/proxy?url=${encodeURIComponent(src)}`;
+    }
+    return `/api/images/proxy?fileName=${encodeURIComponent(src)}`;
+  };
 
-  // 2. Remote thumbnail check (Supabase Proxy)
-  if (thumbnail) {
-    return `/api/images/proxy?url=${encodeURIComponent(thumbnail)}`;
-  }
+  const resolvedImage = normalizeImage(thumbnail || thumbnailUrl || imageUrl);
+  if (resolvedImage) return resolvedImage;
 
-  // 3. Fallback to thumbnailUrl or imageUrl
-  const secondaryImage = thumbnailUrl || imageUrl;
-  if (secondaryImage) {
-    return secondaryImage;
-  }
-
-  // 4. Item type based default fallbacks
+  // Item type based default fallbacks
   if (itemType === ItemType.VIDEO || itemType === ItemType.COURSE) {
     return '/img/course_image1.png';
+  }
+  if (itemType === ItemType.EBOOK) {
+    return '/img/ebook-default.png';
+  }
+  if (itemType === ItemType.WORKSHOP) {
+    return '/img/workshop-card.svg';
   }
 
   return '';

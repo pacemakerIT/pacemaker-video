@@ -1,14 +1,29 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import prisma from '@/lib/prisma';
+import { bucketName, imgBucketName } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const rawUrl = searchParams.get('url');
+    let rawUrl = searchParams.get('url');
+    const fileName = searchParams.get('fileName');
+
+    if (!rawUrl && fileName) {
+      const image = await prisma.image.findFirst({
+        where: { fileName }
+      });
+
+      rawUrl =
+        image?.url ||
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${
+          imgBucketName || bucketName
+        }/${fileName}`;
+    }
 
     if (!rawUrl) {
       return NextResponse.json(
-        { error: 'url param is required' },
+        { error: 'url or fileName param is required' },
         { status: 400 }
       );
     }

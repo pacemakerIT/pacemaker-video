@@ -12,8 +12,8 @@ import { resolveImageSrc } from '@/lib/utils';
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
-  thumbnail?: string;
-  imageUrl?: string;
+  thumbnail?: string | null;
+  imageUrl?: string | null;
 }
 
 export default function Card({
