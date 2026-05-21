@@ -10,6 +10,10 @@ type Props = {
   switchToSignUp?: () => void; // 전환 콜백
 };
 
+const summarizeFactors = (
+  factors: Array<{ strategy?: string } | null> | null | undefined
+) => factors?.map((factor) => factor?.strategy ?? 'unknown') ?? [];
+
 export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
@@ -25,6 +29,16 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
     try {
       const result = await signIn.create({ identifier: email, password: pw });
 
+      // Temporary production auth debugging. Remove after verifying Clerk status.
+      // eslint-disable-next-line no-console
+      console.info('[auth-debug] Clerk sign-in result', {
+        status: result.status,
+        supportedFirstFactors: summarizeFactors(result.supportedFirstFactors),
+        supportedSecondFactors: summarizeFactors(result.supportedSecondFactors),
+        firstFactorVerification: result.firstFactorVerification?.status,
+        secondFactorVerification: result.secondFactorVerification?.status
+      });
+
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
         closeModal?.();
@@ -33,7 +47,14 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
         setError('추가 인증이 필요합니다.');
       }
     } catch (err: unknown) {
-      const e = err as { errors?: { message?: string }[] };
+      const e = err as { errors?: { code?: string; message?: string }[] };
+      // eslint-disable-next-line no-console
+      console.info('[auth-debug] Clerk sign-in error', {
+        errors: e.errors?.map((error) => ({
+          code: error.code,
+          message: error.message
+        }))
+      });
       setError(e.errors?.[0]?.message || '로그인 실패');
     }
   };
