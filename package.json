@@ -42,7 +42,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@supabase/supabase-js": "^2.106.2",
-    "@wistia/wistia-player-react": "^0.7.2",
+    "@wistia/wistia-player-react": "^0.7.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.2.1",
