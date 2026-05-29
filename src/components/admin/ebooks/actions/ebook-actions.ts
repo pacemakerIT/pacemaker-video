@@ -84,7 +84,6 @@ export async function createEbook(data: EbookData) {
 
     revalidatePath('/admin/ebooks');
   } catch (e) {
-    console.error('createEbook error:', e);
     throw new Error('Failed to create ebook');
   }
   redirect('/admin/ebooks');
