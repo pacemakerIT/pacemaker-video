@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { getWorkshops, WorkshopRow } from './actions';
 import { toast } from 'sonner';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 import {
   DndContext,
@@ -47,12 +48,14 @@ function VisualRow({
   row,
   index,
   toggleRow,
-  onStatusChange
+  onStatusChange,
+  onDeleteClick
 }: {
   row: Row;
   index: number;
   toggleRow: (id: string, checked: boolean) => void;
   onStatusChange: (id: string, status: string) => void;
+  onDeleteClick: (id: string) => void;
 }) {
   // Map database status to select value
   const getSelectValue = (status: string) => {
@@ -130,8 +133,10 @@ function VisualRow({
         <p className="font-medium text-pace-base pb-2">{row.title}</p>
 
         {/* 강의내용 */}
-        <p className="text-pace-sm text-pace-stone-500 pb-1">
-          {row.description}
+        <p className="text-pace-sm text-pace-stone-500 pb-1 line-clamp-2">
+          {row.description && row.description.length > 110
+            ? `${row.description.slice(0, 110)}...`
+            : row.description}
         </p>
 
         {/* 금액 / 찜 / 구매 */}
@@ -183,8 +188,10 @@ function VisualRow({
               수정
             </button>
           </Link>
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={() => onDeleteClick(row.id)}
+            className="w-[76px] h-[44px] bg-pace-white-500 !text-pace-base text-pace-stone-500 border border-pace-stone-500 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
         </div>
@@ -208,6 +215,11 @@ function VisualRow({
 export default function Page() {
   const [rows, setRows] = useState<Row[]>([]);
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | undefined>(
+    undefined
+  );
+  const [deleteMessage, setDeleteMessage] = useState('');
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -271,6 +283,55 @@ export default function Page() {
       const oldIndex = rows.findIndex((row) => row.id === active.id);
       const newIndex = rows.findIndex((row) => row.id === over.id);
       setRows((items) => arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
+  const handleDeleteClick = (id?: string) => {
+    const targetIds = id
+      ? [id]
+      : rows.filter((r) => r.selected).map((r) => r.id);
+
+    if (targetIds.length === 0) {
+      toast.info('삭제할 항목을 선택해주세요.');
+      return;
+    }
+
+    setDeleteTargetId(id);
+    setDeleteMessage(
+      id
+        ? '선택한 워크샵을 정말 삭제하시겠습니까?'
+        : `선택한 ${targetIds.length}개의 워크샵을 정말 삭제하시겠습니까?`
+    );
+    setDeleteModalOpen(true);
+  };
+
+  const executeDelete = async () => {
+    const targetIds = deleteTargetId
+      ? [deleteTargetId]
+      : rows.filter((r) => r.selected).map((r) => r.id);
+
+    try {
+      const res = await fetch('/api/workshops', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: targetIds })
+      });
+
+      if (res.ok) {
+        toast.success(
+          `${targetIds.length}개의 워크샵이 성공적으로 삭제되었습니다.`
+        );
+        const data = await getWorkshops();
+        setRows(data);
+      } else {
+        const error = await res.json();
+        toast.error(`삭제 실패: ${error.error}`);
+      }
+    } catch {
+      toast.error('삭제 중 오류가 발생했습니다.');
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTargetId(undefined);
     }
   };
 
@@ -355,6 +416,7 @@ export default function Page() {
                   index={index}
                   toggleRow={toggleRow}
                   onStatusChange={handleStatusChange}
+                  onDeleteClick={handleDeleteClick}
                 />
               ))}
             </SortableContext>
@@ -363,8 +425,10 @@ export default function Page() {
 
         {/* 삭제, 추가 버튼들 */}
         <div className="flex items-center gap-2 justify-end pb-6">
-          {/* TODO: DB 완료 후 삭제 기능 추가 */}
-          <button className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center">
+          <button
+            onClick={() => handleDeleteClick()}
+            className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center"
+          >
             삭제
           </button>
 
@@ -375,6 +439,16 @@ export default function Page() {
           </Link>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="워크샵 삭제"
+        description={deleteMessage}
+        onConfirm={executeDelete}
+        confirmText="삭제"
+        cancelText="취소"
+      />
     </div>
   );
 }
