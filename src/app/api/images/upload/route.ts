@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     const urlOnlyUploadTypes = new Set([
       'COURSE_THUMBNAIL',
       'WORKSHOP_THUMBNAIL',
+      'INSTRUCTOR',
       'MAIN_VISUAL'
     ]);
 

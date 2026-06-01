@@ -22,12 +22,7 @@ export function resolveImageSrc({
     return undefined;
   }
 
-  // 2. Remote thumbnail check (Supabase Proxy)
-  if (thumbnail) {
-    return `/api/images/proxy?url=${encodeURIComponent(thumbnail)}`;
-  }
-
-  // 3. Local path, proxy path and object URL check
+  // 2. Local path, proxy path and object URL check
   if (
     primaryImage.startsWith('/img/') ||
     primaryImage.startsWith('/api/') ||
@@ -36,6 +31,6 @@ export function resolveImageSrc({
     return primaryImage;
   }
 
-  // 4. Default fallback to proxy using url parameter
+  // 3. Default fallback to proxy using url parameter
   return `/api/images/proxy?url=${encodeURIComponent(primaryImage)}`;
 }
