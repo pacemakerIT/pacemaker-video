@@ -34,23 +34,23 @@ export function Header() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="sticky top-0 z-[100] bg-white border-b border-[#f2f4f6] p-0 ">
-      <div className="nav-inner relative z-[110] bg-white py-3 flex items-center justify-between w-full">
+    <nav className="sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
+      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between">
         {/* Logo - Stays fixed on the left */}
         <Link href="/" className="block">
           <Image
-            src="/icons/paceup-logo.svg"
+            src="/img/logo.webp"
             alt="Pacemaker Logo"
-            width={140}
-            height={30}
-            className="h-7 w-auto"
+            width={155}
+            height={32}
+            className="h-8 w-auto"
             priority
           />
         </Link>
 
         {/* Desktop Navigation - Hidden on mobile */}
-        <div className="hidden md:flex items-center gap-5">
-          <div className="flex items-center gap-1">
+        <div className="hidden md:flex items-center ml-auto">
+          <div className="nav-center">
             <Link href="/workshops" className="nav-item">
               Workshop
             </Link>
@@ -62,7 +62,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="nav-right ml-4">
             <SignedOut>
               <SignInModalButton className="btn-auth btn-login" />
               <SignUpModalButton className="btn-auth btn-signup" />

@@ -11,15 +11,15 @@ export default function LoginOrListenButton() {
   return (
     <>
       {userId ? (
-        <Link href="/courses" className="w-full flex justify-center sm:w-auto">
-          <button className="w-1/2 sm:w-auto h-14 bg-orange text-white border-2 border-orange px-8 rounded-2xl flex justify-center items-center font-bold hover:bg-orange-hover transition-colors">
+        <Link href="/courses" className="flex justify-center">
+          <button className="inline-flex items-center justify-center rounded-2xl bg-orange px-8 py-4 font-headline text-lg font-bold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-orange-hover">
             Start learning
           </button>
         </Link>
       ) : (
         <button
           onClick={() => setIsSignInModalOpen(true)}
-          className="w-1/2 sm:w-auto h-14 bg-orange text-white border-2 border-orange px-8 rounded-2xl flex justify-center items-center font-bold hover:bg-orange-hover transition-colors"
+          className="inline-flex items-center justify-center rounded-2xl bg-orange px-8 py-4 font-headline text-lg font-bold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-orange-hover"
         >
           Log in and start learning
         </button>

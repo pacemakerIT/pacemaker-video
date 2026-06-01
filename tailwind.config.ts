@@ -170,26 +170,48 @@ const config: Config = {
       },
       keyframes: {
         'services-hero-photo-pan': {
-          '0%': { transform: 'translate(0, 0)' },
-          '100%': { transform: 'translate(-5%, -5%)' }
+          '0%': {
+            transform: 'translate3d(-4%, -3%, 0) rotate(-2.5deg) scale(1.2)'
+          },
+          '50%': {
+            transform: 'translate3d(3%, 5%, 0) rotate(-1deg) scale(1.24)'
+          },
+          '100%': {
+            transform: 'translate3d(-4%, -3%, 0) rotate(-2.5deg) scale(1.2)'
+          }
         },
         'services-hero-gradient-flow': {
-          '0%, 100%': { backgroundPosition: '0% 0%, 100% 0%, 0% 50%' },
-          '50%': { backgroundPosition: '100% 100%, 0% 100%, 100% 50%' }
+          '0%': { backgroundPosition: '0% 0%, 100% 0%, 0% 50%' },
+          '25%': { backgroundPosition: '34% 10%, 82% 34%, 40% 60%' },
+          '50%': { backgroundPosition: '60% 30%, 48% 56%, 100% 50%' },
+          '75%': { backgroundPosition: '22% 56%, 10% 70%, 60% 40%' },
+          '100%': { backgroundPosition: '0% 0%, 100% 0%, 0% 50%' }
         },
         'services-hero-glow-drift': {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-          '33%': { transform: 'translate(4%, 6%) scale(1.1)' },
-          '66%': { transform: 'translate(-2%, 4%) scale(0.95)' }
+          '0%': { transform: 'translate3d(0, 0, 0) scale(1)', opacity: '0.86' },
+          '50%': {
+            transform: 'translate3d(-9%, 10%, 0) scale(1.14)',
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'translate3d(0, 0, 0) scale(1)',
+            opacity: '0.86'
+          }
         },
         'services-hero-glow-drift-reverse': {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-          '33%': { transform: 'translate(-5%, -3%) scale(1.05)' },
-          '66%': { transform: 'translate(3%, -5%) scale(0.9)' }
+          '0%': { transform: 'translate3d(0, 0, 0) scale(1)', opacity: '0.78' },
+          '50%': {
+            transform: 'translate3d(12%, -11%, 0) scale(1.12)',
+            opacity: '0.96'
+          },
+          '100%': {
+            transform: 'translate3d(0, 0, 0) scale(1)',
+            opacity: '0.78'
+          }
         },
         'services-hero-scroll-float': {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' }
+          '50%': { transform: 'translateY(-6px)' }
         },
         'footer-cta-exclaim-bounce': {
           '0%, 100%': { transform: 'translateY(0) scale(1, 1)' },

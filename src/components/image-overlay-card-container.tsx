@@ -83,12 +83,12 @@ export default function ImageOverlayCardContainer({
       {currentIndex > 0 && (
         <button
           aria-label="previous"
-          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute left-0 top-[230px] -translate-y-1/2 -translate-x-1/2 z-50 bg-white rounded-full shadow-md hover:bg-gray-100 w-12 h-12 ${
+          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-[background-color,color,transform] duration-[400ms] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input absolute left-0 top-[230px] -translate-y-1/2 -translate-x-1/2 z-50 h-16 w-16 rounded-full bg-white text-navy shadow-2xl hover:bg-orange hover:text-white ${
             isMobile ? 'left-2' : ''
           }`}
           onClick={handlePrev}
         >
-          <ChevronLeft className="h-6 w-6 text-gray-800" />
+          <ChevronLeft className="h-8 w-8" />
         </button>
       )}
 
@@ -117,7 +117,7 @@ export default function ImageOverlayCardContainer({
       {currentIndex < cards.length - (isMobile ? 1 : isTablet ? 1 : 2) && (
         <button
           aria-label="next"
-          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:text-accent-foreground absolute top-[230px] -translate-y-1/2 z-50 bg-white rounded-full shadow-md hover:bg-gray-100 w-12 h-12 ${
+          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-[background-color,color,transform] duration-[400ms] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input absolute top-[230px] -translate-y-1/2 z-50 h-16 w-16 rounded-full bg-white text-navy shadow-2xl hover:bg-orange hover:text-white ${
             isMobile
               ? '-right-4'
               : isTablet
@@ -126,7 +126,7 @@ export default function ImageOverlayCardContainer({
           }`}
           onClick={handleNext}
         >
-          <ChevronRight className="h-6 w-6 text-gray-800" />
+          <ChevronRight className="h-8 w-8" />
         </button>
       )}
     </div>

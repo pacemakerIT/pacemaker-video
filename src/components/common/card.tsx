@@ -81,35 +81,35 @@ export default function Card({
   const colorMap: Record<string, { bg: string; badge: string; text: string }> =
     {
       MARKETING: {
-        bg: 'bg-[#FFF5F1]',
-        badge: 'bg-[#FF8266]',
-        text: 'text-[#FF4F02]'
+        bg: 'bg-[#FFF5F2]',
+        badge: 'bg-[#FF7E54]',
+        text: 'text-[#FF6B3D]'
       },
       DESIGN: {
-        bg: 'bg-[#FFF0F0]',
-        badge: 'bg-[#FF7676]',
-        text: 'text-[#FF4D4D]'
+        bg: 'bg-[#FFF1F1]',
+        badge: 'bg-[#FF6666]',
+        text: 'text-[#FF7272]'
       },
       GOV: {
-        bg: 'bg-[#F0FFF4]',
-        badge: 'bg-[#48BB78]',
-        text: 'text-[#2F855A]'
+        bg: 'bg-[#F0FDF4]',
+        badge: 'bg-[#34D399]',
+        text: 'text-[#10B981]'
       },
-      IT: { bg: 'bg-[#F0F7FF]', badge: 'bg-[#4299E1]', text: 'text-[#2B6CB0]' },
+      IT: { bg: 'bg-[#F0F7FF]', badge: 'bg-[#36A6F7]', text: 'text-[#36A6F7]' },
       RESUME: {
-        bg: 'bg-[#F8FAFC]',
-        badge: 'bg-[#64748B]',
-        text: 'text-[#475569]'
+        bg: 'bg-white',
+        badge: 'bg-[#FF9631]',
+        text: 'text-navy'
       },
       INTERVIEW: {
-        bg: 'bg-[#EEF2FF]',
-        badge: 'bg-[#6366F1]',
-        text: 'text-[#4338CA]'
+        bg: 'bg-white',
+        badge: 'bg-[#36A6F7]',
+        text: 'text-navy'
       },
       NETWORKING: {
-        bg: 'bg-[#ECFDF5]',
-        badge: 'bg-[#10B981]',
-        text: 'text-[#047857]'
+        bg: 'bg-white',
+        badge: 'bg-[#9F5BE7]',
+        text: 'text-navy'
       },
       // Fallback
       DEFAULT: {
@@ -124,10 +124,10 @@ export default function Card({
   return (
     <div className="cursor-pointer group">
       <Link href={getLinkPath()}>
-        <div className="w-[calc(100vw-3rem)] sm:w-[384px] bg-white rounded-sm overflow-hidden shadow-card transition-all duration-300 hover:-translate-y-1">
+        <div className="flex w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-none border border-gray-100 bg-white shadow-card transition-all duration-500 ease-out hover:-translate-y-1 sm:w-[384px]">
           {/* Top Branded Section */}
           <div
-            className={`relative w-full h-[331px] ${colors.bg} p-6 flex flex-col items-start overflow-hidden`}
+            className={`relative h-[256px] w-full ${colors.bg} flex flex-col items-start overflow-hidden`}
           >
             {/* Database Image or NO IMAGE fallback */}
             {imageSrc ? (
@@ -150,7 +150,7 @@ export default function Card({
             <button
               role="button"
               aria-label="like"
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform duration-200 z-10"
+              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-200 hover:scale-110"
               onClick={handleToggleLike}
             >
               <Heart
@@ -165,7 +165,7 @@ export default function Card({
             {/* Category Badge */}
             {category && (
               <div
-                className={`relative z-50 ${colors.badge} text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider`}
+                className={`absolute left-4 top-4 z-50 ${colors.badge} rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white`}
               >
                 {category}
               </div>
@@ -173,12 +173,12 @@ export default function Card({
           </div>
 
           {/* Bottom Info Section */}
-          <div className="p-8 flex flex-col gap-4">
-            <div className="flex justify-between items-start gap-4">
-              <h3 className="text-xl font-bold text-gray-900 leading-tight flex-1 line-clamp-1">
+          <div className="flex flex-grow flex-col space-y-4 p-6">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="font-headline text-lg font-bold leading-tight text-navy">
                 {displayTitle}
               </h3>
-              <span className="text-xl font-bold text-gray-900 whitespace-nowrap">
+              <span className="whitespace-nowrap text-xl font-extrabold text-navy">
                 {`$${
                   typeof price === 'number'
                     ? price.toLocaleString()
@@ -189,12 +189,12 @@ export default function Card({
               </span>
             </div>
 
-            <p className="text-gray-500 text-[14px] line-clamp-2 leading-relaxed h-10">
+            <p className="line-clamp-2 font-body text-sm leading-relaxed text-[#667085]">
               {description}
             </p>
 
-            <div className="mt-2 flex items-center gap-2 text-teal font-bold text-lg hover:gap-3 transition-all duration-300">
-              Learn more <ArrowRight className="w-5 h-5" />
+            <div className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-teal transition-transform duration-300 ease-out hover:translate-x-1">
+              Learn more <ArrowRight className="h-4 w-4" />
             </div>
           </div>
         </div>

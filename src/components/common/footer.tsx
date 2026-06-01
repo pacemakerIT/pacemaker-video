@@ -8,110 +8,113 @@ interface FooterProps {
 
 export function Footer({ onLinkClick }: FooterProps) {
   return (
-    <footer className="bg-white pt-16 pb-12 border-t-[6px] md:border-t border-orange md:border-gray-100">
-      <div className="container mx-auto max-w-7xl px-6 md:px-12 flex flex-col md:flex-row justify-between items-start gap-12 md:gap-0">
-        {/* Left Side: Logo & Social */}
-        <div className="flex flex-col gap-10">
-          <div className="text-3xl font-extrabold text-[#111827] tracking-tight">
-            <Image
-              src="/icons/paceup-logo-black.svg"
-              alt="Pacemaker Logo"
-              width={140}
-              height={30}
-              className="h-7 w-auto"
-              priority
-            />
+    <footer className="border-t border-[#eaecf0] bg-white pb-[60px] pt-[80px]">
+      <div className="page-container">
+        <div className="mb-10 grid grid-cols-1 gap-10 md:grid-cols-2">
+          {/* Left Side: Logo & Social */}
+          <div>
+            <div className="mb-7">
+              <Image
+                src="/img/logo.webp"
+                alt="Pacemaker Logo"
+                width={155}
+                height={32}
+                className="block h-8 w-auto"
+                priority
+              />
+            </div>
+
+            <div>
+              <h5 className="mb-4 text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3]">
+                Social
+              </h5>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  {
+                    src: '/icons/instagram.svg',
+                    alt: 'Instagram',
+                    href: 'https://www.instagram.com/pacemaker_career'
+                  },
+                  {
+                    src: '/icons/facebook.svg',
+                    alt: 'Facebook',
+                    href: 'https://www.facebook.com/globalpacemaker'
+                  },
+                  {
+                    src: '/icons/youtube.svg',
+                    alt: 'YouTube',
+                    href: 'https://www.youtube.com/channel/UCyc055VyNuwAMF27dd74smA'
+                  },
+                  {
+                    label: '@',
+                    alt: 'Threads',
+                    href: 'https://www.threads.com/@pacemaker_career'
+                  }
+                ].map((social, i) => (
+                  <a
+                    key={i}
+                    href={social.href}
+                    onClick={(e) => onLinkClick?.(e, social.href)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.alt}
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d0d5dd] text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  >
+                    {social.src ? (
+                      <Image
+                        src={social.src}
+                        alt={social.alt || ''}
+                        width={20}
+                        height={20}
+                      />
+                    ) : (
+                      <span className="font-headline text-[0.85rem] font-extrabold">
+                        {social.label}
+                      </span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <h5 className="text-[13px] font-bold text-slate-400 uppercase tracking-widest">
-              SOCIAL
+          {/* Right Side: Contact */}
+          <div className="w-full md:ml-auto md:w-fit md:text-right">
+            <h5 className="mb-4 text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] md:text-right">
+              Contact
             </h5>
-            <div className="flex gap-3">
-              {[
-                {
-                  src: '/icons/instagram.svg',
-                  alt: 'Instagram',
-                  href: 'https://instagram.com/pacemaker_career'
-                },
-                {
-                  src: '/icons/facebook.svg',
-                  alt: 'Facebook',
-                  href: 'https://facebook.com/globalpacemaker'
-                },
-                {
-                  src: '/icons/youtube.svg',
-                  alt: 'YouTube',
-                  href: 'https://youtube.com/@pacemaker340'
-                },
-                {
-                  icon: <Mail className="w-5 h-5 text-slate-400" />,
-                  href: 'mailto:Hello@pacemakerca.com'
-                }
-              ].map((social, i) => (
+            <ul className="flex list-none flex-col gap-3 md:items-end">
+              <li className="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end">
+                <Mail className="h-4 w-4 flex-shrink-0 text-[#667085]" />
                 <a
-                  key={i}
-                  href={social.href}
-                  onClick={(e) => onLinkClick?.(e, social.href)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#344054] no-underline hover:text-navy transition-colors w-11 h-11 rounded-full flex items-center justify-center text-slate-600"
+                  href="mailto:Hello@pacemakerca.com"
+                  onClick={(e) =>
+                    onLinkClick?.(e, 'mailto:Hello@pacemakerca.com')
+                  }
+                  className="text-[#344054] no-underline transition-colors hover:text-navy"
                 >
-                  {social.src ? (
-                    <Image
-                      src={social.src}
-                      alt={social.alt || ''}
-                      width={20}
-                      height={20}
-                    />
-                  ) : (
-                    social.icon
-                  )}
+                  Hello@pacemakerca.com
                 </a>
-              ))}
-            </div>
+              </li>
+              <li className="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end">
+                <Phone className="h-4 w-4 flex-shrink-0 text-[#667085]" />
+                <a
+                  href="tel:+16476120523"
+                  onClick={(e) => onLinkClick?.(e, 'tel:+16476120523')}
+                  className="text-[#344054] no-underline transition-colors hover:text-navy"
+                >
+                  +1 647-612-0523
+                </a>
+              </li>
+              <li className="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end">
+                <MapPin className="h-4 w-4 flex-shrink-0 text-[#667085]" />
+                <span>Toronto, ON, Canada</span>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Right Side: Contact */}
-        <div className="flex flex-col gap-6">
-          <h5 className="text-[13px] font-medium text-slate-400 uppercase tracking-widest">
-            CONTACT
-          </h5>
-          <div className="flex flex-col gap-4 text-[17px] text-slate-700">
-            <div className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-slate-400" />
-              <a
-                href="mailto:Hello@pacemakerca.com"
-                onClick={(e) =>
-                  onLinkClick?.(e, 'mailto:Hello@pacemakerca.com')
-                }
-                className="hover:text-orange transition-colors"
-              >
-                Hello@pacemakerca.com
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone className="w-5 h-5 text-slate-400" />
-              <a
-                href="tel:+16476120523"
-                onClick={(e) => onLinkClick?.(e, 'tel:+16476120523')}
-                className="hover:text-orange transition-colors"
-              >
-                +1 647-612-0523
-              </a>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-slate-400" />
-              <span>Toronto, ON, Canada</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="container mx-auto max-w-7xl px-6 md:px-12 mt-20">
-        <p className="text-slate-400 text-[15px]">
+        <p className="text-[0.9rem] text-[#98a2b3]">
           &copy; {new Date().getFullYear()} Pacemaker. All rights reserved.
         </p>
       </div>

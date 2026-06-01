@@ -99,57 +99,85 @@ export default async function Home() {
         ];
 
   return (
-    <div className="w-full flex gap-20 flex-col bg-white">
+    <main className="bg-surface w-full flex flex-col">
       <ListHeader
         slides={slides}
         // autoPlayInterval={5000} // 5초마다 자동 전환
-        gradientColors={{
-          start: '#FFCDCE',
-          middle: '#FAE3D7',
-          end: '#FF823660'
-        }}
       />
-      <div className=" bg-white w-full max-w-[1200px] px-4 md:px-6 items-center mx-auto justify-center flex flex-col gap-8 md:gap-12">
-        <div className="w-full aspect-video rounded-2xl md:rounded-[32px] overflow-hidden shadow-2xl bg-black">
-          <iframe
-            width="100%"
-            height="100%"
-            src="https://www.youtube.com/embed/gk43OcYMes8?si=4rPZKvzBGS9H6Mhx&mute=1&autoplay=1"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-            className="w-full h-full border-0"
-          />
-        </div>
-
-        <div className="text-center flex flex-col items-center gap-4 md:gap-6">
-          <h1 className="text-[2.2rem] md:text-[2.75rem] font-bold text-navy font-headline leading-tight px-4 text-navy">
-            {'Real stories from people who got hired in North America'}
-          </h1>
-          <p className="max-w-[800px] font-light text-[0.95rem] md:text-pace-sm text-center whitespace-pre-wrap leading-[1.6] text-gray-500">
-            {
-              'Finding a job here can feel confusing. Where do you even start? On Pacemaker, mentors who work in IT, design, UX, marketing, accounting, and more share what actually worked for them. Whether you are in Korea, Canada, or anywhere else, you can learn on your own time and take the next step with us.'
-            }
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
-          <Button className="w-1/2 sm:w-auto h-14 bg-teal/5 text-teal border-2 border-teal px-8 rounded-2xl font-bold hover:bg-teal/10 transition-colors">
-            {'Browse online courses'}
-          </Button>
-          <div className="w-full flex justify-center sm:w-auto">
-            <LoginOrListenButton />
+      <div className="bg-gray-soft">
+        <section className="py-[80px]">
+          <div className="page-container">
+            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-[0_30px_70px_rgba(0,38,59,0.12)] bg-black">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/gk43OcYMes8?si=4rPZKvzBGS9H6Mhx&mute=1&autoplay=1"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section className="pb-24 mt-[40px]">
+          <div className="page-container flex flex-col items-center justify-center gap-8 md:gap-12">
+            <div className="text-center flex flex-col items-center gap-4 md:gap-6">
+              <h1 className="text-[2.2rem] md:text-[2.75rem] font-bold text-navy font-headline leading-tight px-4 whitespace-pre-wrap">
+                {'Real stories from people who got hired in \nNorth America'}
+              </h1>
+              <div className="text-[#667085] leading-relaxed space-y-4 text-[1.2rem] whitespace-pre-wrap">
+                <p>
+                  Finding a job here can feel confusing. Where do you even
+                  start?
+                  <br />
+                  {
+                    'On Pacemaker, mentors who work in IT, design, UX, marketing, accounting, and more share what actually \nworked for them.'
+                  }
+                </p>
+                <p>
+                  Whether you are in Korea, Canada, or anywhere else,
+                  <br />
+                  you can learn on your own time and take the next step with us.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-full flex-wrap items-center justify-center gap-6 pt-10">
+              <Button className="h-auto w-auto rounded-2xl border-2 border-teal bg-transparent px-8 py-4 font-headline text-lg font-bold text-teal transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-teal/5">
+                {'Browse online courses'}
+              </Button>
+              <div className="flex justify-center">
+                <LoginOrListenButton />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <div className="w-full max-w-[1200px] px-4 md:px-6 items-center mx-auto justify-center flex flex-col gap-20 py-20 bg-white">
-        <WorkshopList />
-        <CourseList />
-        <EbookList />
+      <section className="py-[80px] bg-surface overflow-hidden">
+        <div className="page-container">
+          <WorkshopList />
+        </div>
+      </section>
+
+      <section className="py-[80px] bg-white overflow-hidden">
+        <div className="page-container">
+          <CourseList />
+        </div>
+      </section>
+
+      <section className="py-[80px] bg-surface-container-low overflow-hidden">
+        <div className="page-container">
+          <EbookList />
+        </div>
+      </section>
+
+      <footer className="pt-[80px] bg-surface-container-low">
         <MainReviewContainer />
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 }

@@ -59,6 +59,37 @@ nav {
   box-shadow: 0 10px 30px rgba(0, 38, 59, 0.08);
 }
 
+@keyframes list-header-gradient-drop {
+  0% {
+    background-position:
+      0% 0%,
+      100% 0%,
+      0% 50%;
+  }
+  50% {
+    background-position:
+      34% 10%,
+      82% 34%,
+      40% 60%;
+  }
+  100% {
+    background-position:
+      60% 30%,
+      48% 56%,
+      100% 50%;
+  }
+}
+
+.list-header-gradient-drop {
+  animation: list-header-gradient-drop 14s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-header-gradient-drop {
+    animation: none;
+  }
+}
+
 .footer-cta-dynamic-wash {
   pointer-events: none;
   position: absolute;

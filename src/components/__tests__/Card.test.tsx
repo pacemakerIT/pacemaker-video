@@ -180,12 +180,12 @@ describe('Card', () => {
       const cardContainer = screen.getByTestId('card-link').firstChild;
       expect(cardContainer).toHaveClass('sm:w-[384px]');
       expect(cardContainer).toHaveClass('bg-white');
-      expect(cardContainer).toHaveClass('rounded-sm');
+      expect(cardContainer).toHaveClass('rounded-none');
       expect(cardContainer).toHaveClass('shadow-card');
 
       // Check image container styles
       const imageContainer = screen.getByTestId('card-image').parentElement;
-      expect(imageContainer).toHaveClass('h-[331px]');
+      expect(imageContainer).toHaveClass('h-[256px]');
 
       // Check image styles
       const image = screen.getByTestId('card-image');
@@ -193,13 +193,14 @@ describe('Card', () => {
 
       // Check title styles
       const title = screen.getByText('Test Course');
-      expect(title).toHaveClass('text-xl');
+      expect(title).toHaveClass('text-lg');
       expect(title).toHaveClass('font-bold');
+      expect(title).toHaveClass('text-navy');
 
       // Check price styles
       const price = screen.getByText('$49.99');
       expect(price).toHaveClass('text-xl');
-      expect(price).toHaveClass('font-bold');
+      expect(price).toHaveClass('font-extrabold');
     });
   });
 
