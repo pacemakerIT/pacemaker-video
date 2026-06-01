@@ -209,11 +209,10 @@ model UserWorkshop {
 model Order {
   id                      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                  String?        @db.Uuid
-  totalAmount             Float
-  totalAmountCents        Int?
-  subtotalAmount          Int?
-  discountAmount          Int?
-  taxAmount               Int?
+  totalAmountCents        Int
+  subtotalAmountCents     Int?
+  discountAmountCents     Int?
+  taxAmountCents          Int?
   currency                String         @default("cad")
   status                  OrderStatus    @default(PENDING)
   stripeCheckoutSessionId String?        @unique
@@ -230,13 +229,13 @@ model Order {
 }
 
 model OrderItem {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId         String   @db.Uuid
-  priceAtPurchase Float
-  quantity        Int      @default(1)
-  itemId          String
-  itemType        ItemType
-  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId              String   @db.Uuid
+  priceAtPurchaseCents Int
+  quantity             Int      @default(1)
+  itemId               String
+  itemType             ItemType
+  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 // itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원

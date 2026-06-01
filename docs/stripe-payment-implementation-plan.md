@@ -97,10 +97,11 @@ Notes:
 - Confirm local and deployed environments can read the Stripe keys.
 - Extend `Order` with fields needed for real Stripe reconciliation, such as:
   - `stripeCheckoutSessionId`
+  - `totalAmountCents`
   - `currency`
-  - `subtotalAmount`
-  - `discountAmount`
-  - `taxAmount`
+  - `subtotalAmountCents`
+  - `discountAmountCents`
+  - `taxAmountCents`
   - `receiptUrl` or equivalent receipt reference
 - Decide whether `stripeInvoiceId` remains useful for this flow or whether
   Stripe receipt URLs from PaymentIntent charges are enough.
