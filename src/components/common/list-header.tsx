@@ -9,7 +9,6 @@ import {
   CarouselItem,
   type CarouselApi
 } from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
 
 interface SlideData {
   tag: string;
@@ -116,6 +115,16 @@ export default function ListHeader({
     api.on('reInit', onSelect);
   }, [api, onSelect]);
 
+  useEffect(() => {
+    if (!api || autoPlayInterval <= 0 || slides.length <= 1) return;
+
+    const intervalId = window.setInterval(() => {
+      api.scrollNext();
+    }, autoPlayInterval);
+
+    return () => window.clearInterval(intervalId);
+  }, [api, autoPlayInterval, slides.length]);
+
   return (
     <section
       className={`relative isolate overflow-hidden bg-navy px-6 pb-[46px] pt-[70px]`}
@@ -152,12 +161,7 @@ export default function ListHeader({
       />
 
       <div className="relative z-[2] mx-auto w-full max-w-[740px] px-6">
-        <Carousel
-          setApi={setApi}
-          plugins={[Autoplay({ delay: autoPlayInterval })]}
-          className="w-full"
-          opts={{ loop: true }}
-        >
+        <Carousel setApi={setApi} className="w-full" opts={{ loop: true }}>
           <CarouselContent>
             {slides.map((slide, index) => (
               <CarouselItem key={index}>
