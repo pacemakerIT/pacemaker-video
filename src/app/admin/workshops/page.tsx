@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -24,6 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useNavigationBlocker } from '@/components/admin/common/navigation-blocker-context';
 
 type Row = WorkshopRow;
 
@@ -54,6 +55,7 @@ function VisualRow({
   toggleRow: (id: string, checked: boolean) => void;
   onStatusChange: (id: string, status: string) => void;
 }) {
+  const { attemptNavigation } = useNavigationBlocker();
   // Map database status to select value
   const getSelectValue = (status: string) => {
     switch (status) {
@@ -178,7 +180,13 @@ function VisualRow({
       <div className="flex items-center gap-6">
         {/* 버튼들 */}
         <div className="flex gap-2">
-          <Link href={`/admin/workshops/${row.id}`}>
+          <Link
+            href={`/admin/workshops/${row.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              attemptNavigation(`/admin/workshops/${row.id}`);
+            }}
+          >
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>
@@ -209,17 +217,33 @@ export default function Page() {
   const [rows, setRows] = useState<Row[]>([]);
   const [statusFilter, setStatusFilter] = useState('ALL');
 
+  const { isBlocked, setBlocked, attemptNavigation } = useNavigationBlocker();
+
+  // 브라우저 탭 닫기/새로고침 방지
   useEffect(() => {
-    const fetchWorkshops = async () => {
-      try {
-        const data = await getWorkshops();
-        setRows(data);
-      } catch (error) {
-        toast.error(`Failed to fetch workshops: ${error}`);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isBlocked) {
+        e.preventDefault();
+        e.returnValue = '';
       }
     };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isBlocked]);
+
+  const fetchWorkshops = useCallback(async () => {
+    try {
+      const data = await getWorkshops();
+      setRows(data);
+      setBlocked(false); // 초기화 시 변경상태 해제
+    } catch (error) {
+      toast.error(`Failed to fetch workshops: ${error}`);
+    }
+  }, [setBlocked]);
+
+  useEffect(() => {
     fetchWorkshops();
-  }, []);
+  }, [fetchWorkshops]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -263,6 +287,7 @@ export default function Page() {
           : row
       )
     );
+    setBlocked(true);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -271,6 +296,7 @@ export default function Page() {
       const oldIndex = rows.findIndex((row) => row.id === active.id);
       const newIndex = rows.findIndex((row) => row.id === over.id);
       setRows((items) => arrayMove(items, oldIndex, newIndex));
+      setBlocked(true);
     }
   };
 
@@ -368,7 +394,13 @@ export default function Page() {
             삭제
           </button>
 
-          <Link href="/admin/workshops/new">
+          <Link
+            href="/admin/workshops/new"
+            onClick={(e) => {
+              e.preventDefault();
+              attemptNavigation('/admin/workshops/new');
+            }}
+          >
             <button className="w-[112px] h-[60px] bg-pace-gray-700 !text-pace-lg text-pace-white-500 rounded-[4px] flex items-center justify-center">
               추가
             </button>

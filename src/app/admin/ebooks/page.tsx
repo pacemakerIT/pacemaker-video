@@ -30,6 +30,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useNavigationBlocker } from '@/components/admin/common/navigation-blocker-context';
 
 type Row = {
   id: string;
@@ -55,6 +56,7 @@ function VisualRow({
   toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
   onDelete?: (id: string) => void;
 }) {
+  const { attemptNavigation } = useNavigationBlocker();
   const [value, setValue] = useState(
     row.status === '공개중' ? 'public' : 'private'
   );
@@ -166,7 +168,13 @@ function VisualRow({
       <div className="flex items-center gap-6 pr-4">
         <div className="flex gap-2">
           {/* Edit Button */}
-          <Link href={`/admin/ebooks/${row.id}`}>
+          <Link
+            href={`/admin/ebooks/${row.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              attemptNavigation(`/admin/ebooks/${row.id}`);
+            }}
+          >
             <button className="w-[76px] h-[44px] bg-pace-stone-500 !text-pace-base text-pace-white-500 rounded-[4px] flex items-center justify-center">
               수정
             </button>
@@ -210,6 +218,20 @@ export default function AdminEbooksPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { isBlocked, setBlocked, attemptNavigation } = useNavigationBlocker();
+
+  // 브라우저 탭 닫기/새로고침 방지
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isBlocked) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isBlocked]);
+
   const fetchData = useCallback(
     async (page: number) => {
       setLoading(true);
@@ -232,13 +254,14 @@ export default function AdminEbooksPage() {
           selected: false
         }));
         setRows(mappedRows);
+        setBlocked(false); // 초기화 시 변경상태 해제
       } catch {
         // fetch failed silently
       } finally {
         setLoading(false);
       }
     },
-    [pageSize]
+    [pageSize, setBlocked]
   );
 
   useEffect(() => {
@@ -255,6 +278,7 @@ export default function AdminEbooksPage() {
     try {
       await updateEbookStatuses(updates);
       alert('저장되었습니다.');
+      setBlocked(false); // 저장 완료 시 변경상태 해제
       fetchData(currentPage); // Refresh
     } catch {
       alert('저장에 실패했습니다.');
@@ -297,6 +321,9 @@ export default function AdminEbooksPage() {
         return row;
       })
     );
+    if (newStatus !== undefined) {
+      setBlocked(true);
+    }
   };
 
   const toggleAll = (checked: boolean) => {
@@ -309,6 +336,7 @@ export default function AdminEbooksPage() {
       const oldIndex = rows.findIndex((row) => row.id === active.id);
       const newIndex = rows.findIndex((row) => row.id === over.id);
       setRows((items) => arrayMove(items, oldIndex, newIndex));
+      setBlocked(true);
     }
   };
 
@@ -446,7 +474,13 @@ export default function AdminEbooksPage() {
               삭제
             </button>
 
-            <Link href="/admin/ebooks/new">
+            <Link
+              href="/admin/ebooks/new"
+              onClick={(e) => {
+                e.preventDefault();
+                attemptNavigation('/admin/ebooks/new');
+              }}
+            >
               <button className="w-[112px] h-[60px] bg-pace-gray-700 !text-pace-lg text-pace-white-500 rounded-[4px] flex items-center justify-center">
                 추가
               </button>
