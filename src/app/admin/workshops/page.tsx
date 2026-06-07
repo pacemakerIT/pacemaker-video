@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
-import { getWorkshops, WorkshopRow } from './actions';
+import { getWorkshops, updateWorkshopStatuses, WorkshopRow } from './actions';
+import { generateKeyBetween } from 'fractional-indexing';
 import { toast } from 'sonner';
 
 import {
@@ -292,11 +293,43 @@ export default function Page() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = rows.findIndex((row) => row.id === active.id);
-      const newIndex = rows.findIndex((row) => row.id === over.id);
-      setRows((items) => arrayMove(items, oldIndex, newIndex));
-      setBlocked(true);
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = rows.findIndex((row) => row.id === active.id);
+    const newIndex = rows.findIndex((row) => row.id === over.id);
+    const newRows = arrayMove(rows, oldIndex, newIndex);
+
+    const before = newRows[newIndex - 1]?.orderKey ?? null;
+    const after = newRows[newIndex + 1]?.orderKey ?? null;
+    const newKey = generateKeyBetween(before, after);
+
+    setRows(
+      newRows.map((r) => (r.id === active.id ? { ...r, orderKey: newKey } : r))
+    );
+  };
+
+  const handleSave = async () => {
+    try {
+      const statusUpdates = rows.map((r) => ({ id: r.id, status: r.status }));
+      const orderUpdates = rows.map((r) => ({
+        id: r.id,
+        orderKey: r.orderKey
+      }));
+
+      await Promise.all([
+        updateWorkshopStatuses(statusUpdates),
+        fetch('/api/workshops/reorder', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: orderUpdates })
+        })
+      ]);
+
+      toast.success('저장되었습니다.');
+      const data = await getWorkshops();
+      setRows(data);
+    } catch {
+      toast.error('저장에 실패했습니다.');
     }
   };
 
@@ -310,8 +343,10 @@ export default function Page() {
     <div className="p-10">
       <div className="flex justify-between pb-10">
         <h1 className="text-pace-3xl font-bold">워크샵 관리</h1>
-        {/* TODO: DB 완료 후 저장 기능 추가 */}
-        <button className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded">
+        <button
+          onClick={handleSave}
+          className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded hover:bg-pace-orange-900 transition-colors"
+        >
           저장
         </button>
       </div>

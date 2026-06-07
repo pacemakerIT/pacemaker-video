@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { EbookCategory, TargetAudienceType } from '@prisma/client';
+import { generateKeyBetween } from 'fractional-indexing';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -53,6 +54,12 @@ export async function createEbook(data: EbookData) {
     // Filter out empty links (links are optional)
     const validLinks = links.filter((l) => l.url.trim() && l.name.trim());
 
+    const last = await prisma.ebook.findFirst({
+      orderBy: { orderKey: 'desc' },
+      select: { orderKey: true }
+    });
+    const nextKey = generateKeyBetween(last?.orderKey ?? null, null);
+
     await prisma.ebook.create({
       data: {
         ebookId: `ebook-${Date.now()}`,
@@ -70,12 +77,13 @@ export async function createEbook(data: EbookData) {
         visualTitle2: visualTitle2,
         targetAudienceTypes,
         tableOfContents: sections,
-        recommendedLinks: validLinks
+        recommendedLinks: validLinks,
+        orderKey: nextKey
       }
     });
 
     revalidatePath('/admin/ebooks');
-  } catch {
+  } catch (e) {
     throw new Error('Failed to create ebook');
   }
   redirect('/admin/ebooks');
@@ -140,7 +148,7 @@ export async function getEbooks(page = 1, limit = 10) {
   const ebooks = await prisma.ebook.findMany({
     skip,
     take: limit,
-    orderBy: [{ uploadDate: 'desc' }, { id: 'desc' }]
+    orderBy: [{ orderKey: 'asc' }]
   });
 
   if (ebooks.length === 0) {

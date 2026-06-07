@@ -8,6 +8,7 @@ import {
   TargetAudienceType,
   WorkshopStatus
 } from '@prisma/client';
+import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
 
@@ -69,6 +70,10 @@ type SeedCatalogEntry = {
   itemType: SeedOrderItemType;
   price: number;
 };
+
+function amountToCents(amount: number) {
+  return Math.round(amount * 100);
+}
 
 function isRemoteSupabaseUrl(url: string) {
   return (
@@ -249,6 +254,8 @@ async function main() {
     }
   });
 
+  const courseOrderKeys = generateNKeysBetween(null, null, 6);
+
   console.log('Generating English e-books...');
   const courseIds = Array.from({ length: 6 }, () => randomUUID());
 
@@ -269,6 +276,7 @@ async function main() {
         category: categoryString as CourseCategory,
         isPublic: true,
         showOnMain: true,
+        orderKey: courseOrderKeys[i - 1],
         title: `${TITLE} - Volume ${i}`,
         description: DESCRIPTION,
         processTitle: PROCESS_TITLE,
@@ -347,6 +355,7 @@ async function main() {
   }
 
   console.log('Generating English e-books...');
+  const ebookOrderKeys = generateNKeysBetween(null, null, 6);
   const ebooks = [
     {
       category: EbookCategory.MARKETING,
@@ -452,6 +461,7 @@ async function main() {
         isPublic: true,
         subTitle: ebook.subTitle,
         isMain: i < 4,
+        orderKey: ebookOrderKeys[i],
         visualTitle1: ebook.visualTitle1,
         visualTitle2: ebook.visualTitle2,
         tableOfContents: ebookToc,
@@ -586,6 +596,8 @@ async function main() {
   }
 
   console.log('Generating dummy workshops...');
+  const workshopOrderKeys = generateNKeysBetween(null, null, 8);
+  let workshopOrderIdx = 0;
   const uxDesignWorkshopData = [
     {
       title: 'UX Design Workshop',
@@ -637,6 +649,7 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         thumbnail: '/img/course_image1.png',
+        orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
         }
@@ -705,6 +718,7 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         thumbnail: ws.thumbnail,
+        orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
         }
@@ -737,20 +751,23 @@ async function main() {
         orderItems.push(item);
       }
 
-      const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
+      const totalAmountCents = orderItems.reduce(
+        (sum, item) => sum + amountToCents(item.price),
+        0
+      );
 
       await prisma.order.create({
         data: {
           id: randomUUID(),
           userId: user.id,
-          totalAmount,
+          totalAmountCents,
           status: 'COMPLETED',
           orderedAt: randomPastDate(rng, 10_000_000_000),
           items: {
             create: orderItems.map((item) => ({
               itemType: item.itemType as ItemType,
               itemId: item.id,
-              priceAtPurchase: item.price,
+              priceAtPurchaseCents: amountToCents(item.price),
               quantity: 1
             }))
           }
