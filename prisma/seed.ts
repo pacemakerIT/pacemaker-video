@@ -71,6 +71,10 @@ type SeedCatalogEntry = {
   price: number;
 };
 
+function amountToCents(amount: number) {
+  return Math.round(amount * 100);
+}
+
 function isRemoteSupabaseUrl(url: string) {
   return (
     url.includes('supabase.com') ||
@@ -747,20 +751,23 @@ async function main() {
         orderItems.push(item);
       }
 
-      const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
+      const totalAmountCents = orderItems.reduce(
+        (sum, item) => sum + amountToCents(item.price),
+        0
+      );
 
       await prisma.order.create({
         data: {
           id: randomUUID(),
           userId: user.id,
-          totalAmount,
+          totalAmountCents,
           status: 'COMPLETED',
           orderedAt: randomPastDate(rng, 10_000_000_000),
           items: {
             create: orderItems.map((item) => ({
               itemType: item.itemType as ItemType,
               itemId: item.id,
-              priceAtPurchase: item.price,
+              priceAtPurchaseCents: amountToCents(item.price),
               quantity: 1
             }))
           }

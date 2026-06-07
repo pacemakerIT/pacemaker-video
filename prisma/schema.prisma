@@ -89,7 +89,6 @@ model CourseToInstructor {
   @@map("_CourseToInstructor")
 }
 
-
 // Section은 Course 또는 Workshop 중 하나에 속함 (courseId / workshopId 중 하나만 설정)
 model Section {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -211,28 +210,35 @@ model UserWorkshop {
 }
 
 model Order {
-  id                    String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId                String?        @db.Uuid
-  totalAmount           Float
-  status                OrderStatus    @default(PENDING)
-  stripePaymentIntentId String?        @unique
-  stripeInvoiceId       String?        @unique
-  stripeInvoiceUrl      String?
-  orderedAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
-  user                  User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
-  items                 OrderItem[]
-  userWorkshops         UserWorkshop[]
+  id                      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                  String?        @db.Uuid
+  totalAmountCents        Int
+  subtotalAmountCents     Int?
+  discountAmountCents     Int?
+  taxAmountCents          Int?
+  currency                String         @default("cad")
+  status                  OrderStatus    @default(PENDING)
+  stripeCheckoutSessionId String?        @unique
+  stripePaymentIntentId   String?        @unique
+  stripeCustomerId        String?
+  stripeInvoiceId         String?        @unique
+  stripeInvoiceUrl        String?
+  stripeReceiptUrl        String?
+  orderedAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  user                    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items                   OrderItem[]
+  userWorkshops           UserWorkshop[]
 }
 
 model OrderItem {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orderId         String   @db.Uuid
-  priceAtPurchase Float
-  quantity        Int      @default(1)
-  itemId          String
-  itemType        ItemType
-  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId              String   @db.Uuid
+  priceAtPurchaseCents Int
+  quantity             Int      @default(1)
+  itemId               String
+  itemType             ItemType
+  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 // itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원
