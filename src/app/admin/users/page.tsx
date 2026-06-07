@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { getUsers, getUserOrders, OrderDetail } from './actions';
 import { toast } from 'sonner';
+import { formatMoneyFromCents } from '@/lib/money';
 import {
   Dialog,
   DialogContent,
@@ -391,7 +392,10 @@ export default function Page() {
 
                       <div className="flex flex-col gap-4 items-center justify-center">
                         <p className="text-pace-base font-semibold text-pace-gray-700">
-                          ${order.totalAmount.toFixed(2)}
+                          {formatMoneyFromCents(
+                            order.totalAmountCents,
+                            order.currency
+                          )}
                         </p>
                         <p className="text-pace-base font-medium">
                           {order.status === 'COMPLETED'
