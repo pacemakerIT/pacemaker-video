@@ -1,67 +1,66 @@
+import { auth } from '@clerk/nextjs/server';
 import PurchasesList from '@/components/features/mypage/purchases/purchases-list';
+import { getOrderDisplaysForUser } from '@/lib/order-display';
+import prisma from '@/lib/prisma';
 
-export default function Purchases() {
-  const orders = [
-    {
-      orderNumber: 'AA1000001',
-      items: [
-        'UX Design Fundamentals',
-        '자기소개서 작성 및 면접 준비까지 하나로!'
-      ],
-      amount: 4320,
-      status: '결제완료',
-      date: new Date(2025, 7, 1)
-    },
-    {
-      orderNumber: 'AA1000002',
-      items: [
-        '자기소개서 작성 및 면접 준비까지 하나로!',
-        '자기소개서 작성 및 면접 준비까지 하나로!'
-      ],
-      amount: 2800,
-      status: '환불진행중',
-      date: new Date(2025, 7, 3)
-    },
-    {
-      orderNumber: 'AA1000003',
-      items: [
-        '자기소개서 작성 및 면접 준비까지 하나로!',
-        '자기소개서 작성 및 면접 준비까지 하나로!'
-      ],
-      amount: 2800,
-      status: '환불완료',
-      date: new Date(2025, 7, 5)
-    },
-    {
-      orderNumber: 'AA1000004',
-      items: [
-        '자기소개서 작성 및 면접 준비까지 하나로!',
-        '자기소개서 작성 및 면접 준비까지 하나로!'
-      ],
-      amount: 2800,
-      status: '환불진행중',
-      date: new Date(2025, 7, 6)
-    },
-    {
-      orderNumber: 'AA1000005',
-      items: [
-        '자기소개서 작성 및 면접 준비까지 하나로!',
-        '자기소개서 작성 및 면접 준비까지 하나로!'
-      ],
-      amount: 2800,
-      status: '환불완료',
-      date: new Date(2025, 7, 10)
-    }
-  ];
+async function getCurrentUserOrders() {
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) return [];
+
+  const currentUser = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+    select: { id: true }
+  });
+
+  if (!currentUser) return [];
+
+  return getOrderDisplaysForUser(currentUser.id);
+}
+
+export default async function Purchases() {
+  const orders = await getCurrentUserOrders();
 
   return (
     <main className="mx-10 mt-20 mb-auto">
       <h1 className="text-pace-xl font-bold mb-6 text-pace-gray-700">
         구매내역
       </h1>
-      {orders.map((order, idx) => (
-        <PurchasesList key={idx} {...order} isFirst={idx === 0} />
-      ))}
+      {orders.length > 0 ? (
+        orders.map((order, idx) => (
+          <PurchasesList
+            key={order.id}
+            orderNumber={order.orderNumber}
+            items={order.items.map((item) => ({
+              id: item.id,
+              type: item.typeLabel,
+              title: item.title,
+              priceCents: item.priceCents,
+              quantity: item.quantity
+            }))}
+            amountCents={order.totalAmountCents}
+            status={order.status}
+            statusLabel={order.statusLabel}
+            date={order.orderedAt.toISOString().split('T')[0]}
+            currency={order.currency}
+            payment={{
+              subtotalCents: order.subtotalAmountCents,
+              discountCents: order.discountAmountCents,
+              taxCents: order.taxAmountCents,
+              method: 'Stripe Checkout',
+              installment: '-',
+              card: '-',
+              totalCents: order.totalAmountCents,
+              currency: order.currency
+            }}
+            receiptUrl={order.stripeReceiptUrl || order.stripeInvoiceUrl}
+            isFirst={idx === 0}
+          />
+        ))
+      ) : (
+        <p className="border-t border-pace-gray-700 py-10 text-pace-stone-500">
+          구매내역이 없습니다.
+        </p>
+      )}
     </main>
   );
 }
