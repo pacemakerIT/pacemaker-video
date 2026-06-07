@@ -1,6 +1,6 @@
 'use client';
 
-import AddForm from '@/components/admin/add-form';
+import WorkshopForm from '@/components/admin/workshops/workshop-form';
 
 export default function WorkshopNewPage() {
   return (
@@ -19,7 +19,7 @@ export default function WorkshopNewPage() {
           </span>
         </div>
 
-        <AddForm formType="workshop" />
+        <WorkshopForm />
       </div>
     </div>
   );
