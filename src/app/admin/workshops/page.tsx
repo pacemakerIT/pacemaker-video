@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { getWorkshops, updateWorkshopStatuses, WorkshopRow } from './actions';
-import AdminListLayout from '@/components/admin/common/AdminListLayout';
+import AdminListLayout from '@/components/admin/common/admin-list-layout';
 import AdminVisualRow, {
   RowLike
-} from '@/components/admin/common/AdminVisualRow';
+} from '@/components/admin/common/admin-visual-row';
 import { generateKeyBetween } from 'fractional-indexing';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';

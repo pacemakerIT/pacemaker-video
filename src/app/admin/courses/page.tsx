@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminVisualRow, {
   RowLike
-} from '@/components/admin/common/AdminVisualRow';
-import AdminListLayout from '@/components/admin/common/AdminListLayout';
+} from '@/components/admin/common/admin-visual-row';
+import AdminListLayout from '@/components/admin/common/admin-list-layout';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';

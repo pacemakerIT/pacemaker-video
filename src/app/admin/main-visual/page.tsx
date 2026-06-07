@@ -24,7 +24,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import AdminListLayout from '@/components/admin/common/AdminListLayout';
+import AdminListLayout from '@/components/admin/common/admin-list-layout';
 
 type MainVisual = {
   id: string;

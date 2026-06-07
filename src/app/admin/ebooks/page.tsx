@@ -28,9 +28,9 @@ import {
   arrayMove,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
-import AdminVisualRow from '@/components/admin/common/AdminVisualRow';
-import type { RowLike } from '@/components/admin/common/AdminVisualRow';
-import AdminListLayout from '@/components/admin/common/AdminListLayout';
+import AdminVisualRow from '@/components/admin/common/admin-visual-row';
+import type { RowLike } from '@/components/admin/common/admin-visual-row';
+import AdminListLayout from '@/components/admin/common/admin-list-layout';
 import { useNavigationBlocker } from '@/components/admin/common/navigation-blocker-context';
 
 type Row = {
