@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { ItemType, TargetAudienceType } from '@prisma/client';
+import { generateKeyBetween } from 'fractional-indexing';
 
 export async function GET() {
   try {
     const courses = await prisma.course.findMany({
       orderBy: {
-        createdAt: 'desc'
+        orderKey: 'asc'
       }
     });
 
@@ -58,8 +59,9 @@ export async function GET() {
       status: course.isPublic ? '공개중' : '비공개',
       thumbnail: course.thumbnailUrl || '',
       selected: false,
-      summary: course.description || '', // Keep mapping for UI compatibility if needed
-      category: course.category || 'NETWORKING'
+      summary: course.description || '',
+      category: course.category || 'NETWORKING',
+      orderKey: course.orderKey
     }));
 
     return NextResponse.json(rows, { status: 200 });
@@ -126,12 +128,19 @@ export async function POST(request: Request) {
       .map((label: string) => TARGET_AUDIENCE_MAP[label])
       .filter(Boolean);
 
+    const last = await prisma.course.findFirst({
+      orderBy: { orderKey: 'desc' },
+      select: { orderKey: true }
+    });
+    const nextKey = generateKeyBetween(last?.orderKey ?? null, null);
+
     // Perform creation in a transaction to ensure atomic execution and fix nested validation errors
     const newCourse = await prisma.$transaction(async (tx) => {
       // 1. Create the Course basic data and instructors
       const course = await tx.course.create({
         data: {
           category: category || 'NETWORKING',
+          orderKey: nextKey,
           isPublic,
           showOnMain,
           title,

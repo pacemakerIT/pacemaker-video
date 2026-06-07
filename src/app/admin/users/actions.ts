@@ -84,7 +84,8 @@ export async function getUsers(
 export interface OrderDetail {
   id: string;
   orderedAt: string;
-  totalAmount: number;
+  totalAmountCents: number;
+  currency: string;
   status: string;
   items: Array<{
     itemId: string;
@@ -164,7 +165,8 @@ export async function getUserOrders(userId: string): Promise<OrderDetail[]> {
           .toISOString()
           .split('T')[0]
           .replace(/-/g, '.'),
-        totalAmount: order.totalAmount,
+        totalAmountCents: order.totalAmountCents,
+        currency: order.currency,
         status: order.status,
         items: itemsWithTitles
       };

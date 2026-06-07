@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { WorkshopStatus } from '@prisma/client';
 
 export interface WorkshopRow {
   id: string;
@@ -16,6 +17,7 @@ export interface WorkshopRow {
   startDate: string;
   endDate: string;
   locationOrUrl: string | null;
+  orderKey: string;
 }
 
 export async function getWorkshops(): Promise<WorkshopRow[]> {
@@ -29,7 +31,7 @@ export async function getWorkshops(): Promise<WorkshopRow[]> {
       }
     },
     orderBy: {
-      createdAt: 'desc'
+      orderKey: 'asc'
     }
   });
 
@@ -62,10 +64,24 @@ export async function getWorkshops(): Promise<WorkshopRow[]> {
           .toISOString()
           .split('T')[0]
           .replace(/-/g, '.'),
-        locationOrUrl: workshop.locationOrUrl
+        locationOrUrl: workshop.locationOrUrl,
+        orderKey: workshop.orderKey
       };
     })
   );
 
   return workshopsWithData;
+}
+
+export async function updateWorkshopStatuses(
+  updates: { id: string; status: string }[]
+) {
+  await prisma.$transaction(
+    updates.map(({ id, status }) =>
+      prisma.workshop.update({
+        where: { id },
+        data: { status: status as WorkshopStatus }
+      })
+    )
+  );
 }
