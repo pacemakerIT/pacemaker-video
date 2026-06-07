@@ -1,29 +1,72 @@
+'use client';
+
 import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
-import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface PaymentSummaryProps {
   cartItems: CartItem[];
 }
 
 export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
-  const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const selectedItem = cartItems.filter((item) => item.selected);
   const subtotal = selectedItem.reduce(
     (acc, item) => acc + (Number(item.price) || 0),
     0
   );
-  const discount = 20;
-  const tax = subtotal * 0.13;
+  const discount = 0;
+  const tax = 0;
   const total = subtotal - discount + tax;
+  const isCheckoutDisabled = selectedItem.length === 0 || isCheckingOut;
 
-  const goToPaymentSuccess = () => {
-    router.push('/mypage/payment-success');
+  const startCheckout = async () => {
+    if (selectedItem.length === 0) {
+      const message = '결제할 항목을 선택해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedItems: selectedItem.map((item) => ({
+            itemId: item.itemId,
+            itemType: item.type
+          }))
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.checkoutUrl) {
+        throw new Error(data.error || '체크아웃을 시작하지 못했습니다.');
+      }
+
+      window.location.assign(data.checkoutUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '체크아웃을 시작하지 못했습니다.';
+
+      setCheckoutError(message);
+      toast.error(message);
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
+
   return (
     <>
       <aside className="hidden lg:block w-80 h-full border-l p-10 pt-20">
@@ -31,7 +74,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         <ul className="space-y-4 mb-6 font-normal border-b border-pace-gray-700 pb-6 text-pace-base text-pace-gray-700">
           <li className="flex justify-between">
             <span className="text-[#6B7280]">
-              소계 ({selectedItem.length}개의 강의)
+              소계 ({selectedItem.length}개 항목)
             </span>
             <span>${subtotal.toFixed(2)}</span>
           </li>
@@ -57,11 +100,15 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
           등록
         </button>
         <button
-          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full"
-          onClick={goToPaymentSuccess}
+          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
+          onClick={startCheckout}
+          disabled={isCheckoutDisabled}
         >
-          결제하기
+          {isCheckingOut ? '처리 중...' : '결제하기'}
         </button>
+        {checkoutError && (
+          <p className="mt-3 text-pace-sm text-red-600">{checkoutError}</p>
+        )}
         <div className="flex justify-center mt-6 text-pace-stone-700 text-[12px]">
           Secure payment powered by Stripe
         </div>
@@ -100,7 +147,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
               <ul className="space-y-4 font-normal text-pace-base text-pace-gray-700">
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">
-                    소계 ({selectedItem.length}개의 강의)
+                    소계 ({selectedItem.length}개 항목)
                   </span>
                   <span>${subtotal.toFixed(2)}</span>
                 </li>
@@ -136,13 +183,19 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
                 ${total.toFixed(2)}
               </span>
               <button
-                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg"
-                onClick={goToPaymentSuccess}
+                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg disabled:cursor-not-allowed disabled:bg-pace-stone-300"
+                onClick={startCheckout}
+                disabled={isCheckoutDisabled}
               >
-                결제하기
+                {isCheckingOut ? '처리 중...' : '결제하기'}
               </button>
             </div>
           </div>
+          {checkoutError && (
+            <p className="mt-3 w-2/3 text-right text-pace-sm text-red-600">
+              {checkoutError}
+            </p>
+          )}
         </div>
       </aside>
     </>
