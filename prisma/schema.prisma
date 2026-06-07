@@ -73,6 +73,7 @@ model Course {
   visualTitle         String?
   visualTitle2        String?
   recommendedLinks    Json?
+  orderKey            String               @default("a0")
   instructors         Instructor[]
   videos              Video[]              @relation("CourseToVideos")
   sectionsRel         Section[]
@@ -154,6 +155,7 @@ model Ebook {
   visualTitle2        String?
   recommendedLinks    Json?
   targetAudienceTypes TargetAudienceType[] @default([])
+  orderKey            String               @default("a0")
 }
 
 model Workshop {
@@ -171,6 +173,7 @@ model Workshop {
   category       WorkshopCategory?
   processContent String?
   isMain         Boolean           @default(false)
+  orderKey       String            @default("a0")
 
   // 강사: 한 워크샵에 여러 강사, 한 강사가 여러 워크샵 가능 (다대다)
   instructors   WorkshopInstructor[]

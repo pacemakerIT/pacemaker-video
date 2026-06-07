@@ -8,6 +8,7 @@ import {
   TargetAudienceType,
   WorkshopStatus
 } from '@prisma/client';
+import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
 
@@ -249,6 +250,8 @@ async function main() {
     }
   });
 
+  const courseOrderKeys = generateNKeysBetween(null, null, 6);
+
   console.log('Generating English e-books...');
   const courseIds = Array.from({ length: 6 }, () => randomUUID());
 
@@ -269,6 +272,7 @@ async function main() {
         category: categoryString as CourseCategory,
         isPublic: true,
         showOnMain: true,
+        orderKey: courseOrderKeys[i - 1],
         title: `${TITLE} - Volume ${i}`,
         description: DESCRIPTION,
         processTitle: PROCESS_TITLE,
@@ -347,6 +351,7 @@ async function main() {
   }
 
   console.log('Generating English e-books...');
+  const ebookOrderKeys = generateNKeysBetween(null, null, 6);
   const ebooks = [
     {
       category: EbookCategory.MARKETING,
@@ -452,6 +457,7 @@ async function main() {
         isPublic: true,
         subTitle: ebook.subTitle,
         isMain: i < 4,
+        orderKey: ebookOrderKeys[i],
         visualTitle1: ebook.visualTitle1,
         visualTitle2: ebook.visualTitle2,
         tableOfContents: ebookToc,
@@ -586,6 +592,8 @@ async function main() {
   }
 
   console.log('Generating dummy workshops...');
+  const workshopOrderKeys = generateNKeysBetween(null, null, 8);
+  let workshopOrderIdx = 0;
   const uxDesignWorkshopData = [
     {
       title: 'UX Design Workshop',
@@ -637,6 +645,7 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         thumbnail: '/img/course_image1.png',
+        orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
         }
@@ -705,6 +714,7 @@ async function main() {
         status,
         category: ws.category as WorkshopCategory,
         thumbnail: ws.thumbnail,
+        orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
         }
