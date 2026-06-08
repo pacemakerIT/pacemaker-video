@@ -177,22 +177,22 @@ Notes:
 
 ## Jira Tickets
 
-| Step | Jira Key | Summary                                       |
-| ---- | -------- | --------------------------------------------- |
-| 1    | PACE-259 | Foundation: SDK, env, order schema            |
-| 2    | PACE-260 | Checkout creation: API + cart UI handoff      |
-| 3    | PACE-261 | Webhook fulfillment + purchase entitlements   |
-| 4    | PACE-262 | Post-payment UX: success, purchases, receipts |
-| 5    | PACE-263 | Test coverage and operational validation      |
+| Jira Key | Summary                                           | Scope                                                                 |
+| -------- | ------------------------------------------------- | --------------------------------------------------------------------- |
+| PACE-259 | Foundation: SDK, env, order schema                | Completed foundation work.                                            |
+| PACE-260 | Checkout API, cart handoff, and post-payment UX   | Steps 2 and 4, plus checkout and post-payment UX test coverage.       |
+| PACE-261 | Webhook fulfillment, entitlements, and validation | Steps 3 and 5, plus webhook, entitlement, and operational validation. |
 
 Superseded tickets:
 
-| Old Jira Key | Merged Into | Original Scope                           |
-| ------------ | ----------- | ---------------------------------------- |
-| PACE-264     | PACE-262    | Payment success and cancel pages         |
-| PACE-265     | PACE-261    | Purchase entitlements and access control |
-| PACE-266     | PACE-262    | Purchases, receipts, and refund UI       |
-| PACE-267     | PACE-263    | Tests and operational validation         |
+| Old Jira Key | Merged Into  | Original Scope                           |
+| ------------ | ------------ | ---------------------------------------- |
+| PACE-262     | PACE-260     | Post-payment UX, purchases, receipts     |
+| PACE-263     | PACE-260/261 | Tests and operational validation         |
+| PACE-264     | PACE-260     | Payment success and cancel pages         |
+| PACE-265     | PACE-261     | Purchase entitlements and access control |
+| PACE-266     | PACE-260     | Purchases, receipts, and refund UI       |
+| PACE-267     | PACE-260/261 | Tests and operational validation         |
 
 ## Definition of Done
 
