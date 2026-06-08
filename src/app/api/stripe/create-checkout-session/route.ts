@@ -56,13 +56,8 @@ function errorResponse(error: unknown) {
     );
   }
 
-  const message =
-    error instanceof Error
-      ? error.message
-      : 'Failed to create checkout session';
-
   return NextResponse.json(
-    { error: `Failed to create checkout session: ${message}` },
+    { error: 'Failed to create checkout session' },
     { status: 500 }
   );
 }

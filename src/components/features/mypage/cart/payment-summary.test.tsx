@@ -96,6 +96,18 @@ describe('PaymentSummary', () => {
     ).toBeDisabled();
   });
 
+  it('shows CAD amounts without inactive promotion controls', () => {
+    render(<PaymentSummary cartItems={cartItems} />);
+
+    expect(screen.getAllByText('CA$49.99').length).toBeGreaterThan(0);
+    expect(
+      screen.queryByPlaceholderText('프로모션 코드 입력')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '등록' })
+    ).not.toBeInTheDocument();
+  });
+
   it('shows API errors without redirecting', async () => {
     (fetch as unknown as Mock).mockResolvedValue({
       ok: false,

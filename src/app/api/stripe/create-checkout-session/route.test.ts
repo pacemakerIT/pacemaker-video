@@ -290,8 +290,7 @@ describe('POST /api/stripe/create-checkout-session', () => {
 
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({
-      error:
-        'Failed to create checkout session: Stripe did not return a checkout URL'
+      error: 'Failed to create checkout session'
     });
     expect(prismaMock.order.update).toHaveBeenCalledWith({
       where: { id: orderId },

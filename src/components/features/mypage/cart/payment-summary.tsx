@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
+import { amountToCents, formatMoneyFromCents } from '@/lib/money';
 import { toast } from 'sonner';
 
 interface PaymentSummaryProps {
@@ -20,10 +21,13 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
     (acc, item) => acc + (Number(item.price) || 0),
     0
   );
-  const discount = 0;
-  const tax = 0;
-  const total = subtotal - discount + tax;
+  const subtotalCents = amountToCents(subtotal);
+  const discountCents = 0;
+  const taxCents = 0;
+  const totalCents = subtotalCents - discountCents + taxCents;
   const isCheckoutDisabled = selectedItem.length === 0 || isCheckingOut;
+  const formatCartAmount = (cents: number) =>
+    formatMoneyFromCents(cents, 'cad', 'en-US');
 
   const startCheckout = async () => {
     if (selectedItem.length === 0) {
@@ -76,31 +80,25 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
             <span className="text-[#6B7280]">
               소계 ({selectedItem.length}개 항목)
             </span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{formatCartAmount(subtotalCents)}</span>
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">할인 금액</span>
-            <span>-${discount.toFixed(2)}</span>
+            <span>-{formatCartAmount(discountCents)}</span>
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">세금</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>{formatCartAmount(taxCents)}</span>
           </li>
         </ul>
         <div className="flex justify-between text-pace-base font-semibold pb-6">
           <span className="text-pace-gray-700">총 결제 금액</span>
-          <span className="text-[#E86642] font-bold">${total.toFixed(2)}</span>
+          <span className="text-[#E86642] font-bold">
+            {formatCartAmount(totalCents)}
+          </span>
         </div>
-        <input
-          type="text"
-          placeholder="프로모션 코드 입력"
-          className="w-full flex-1 mb-1 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
-        />
-        <button className="w-full px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
-          등록
-        </button>
         <button
-          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
+          className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
           onClick={startCheckout}
           disabled={isCheckoutDisabled}
         >
@@ -149,29 +147,18 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
                   <span className="text-[#6B7280]">
                     소계 ({selectedItem.length}개 항목)
                   </span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatCartAmount(subtotalCents)}</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">할인 금액</span>
-                  <span>-${discount.toFixed(2)}</span>
+                  <span>-{formatCartAmount(discountCents)}</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">세금</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{formatCartAmount(taxCents)}</span>
                 </li>
               </ul>
-              <div className="border-b border-pace-gray-700 mb-4">
-                <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm ml-auto">
-                  <input
-                    type="text"
-                    placeholder="프로모션 코드 입력"
-                    className="flex-1 min-w-0 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
-                  />
-                  <button className="px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
-                    등록
-                  </button>
-                </div>
-              </div>
+              <div className="mt-4 border-b border-pace-gray-700" />
             </div>
           )}
 
@@ -180,7 +167,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
             <span className="font-medium">총 결제 금액</span>
             <div className="flex items-center gap-4">
               <span className="text-[#E86642] font-bold">
-                ${total.toFixed(2)}
+                {formatCartAmount(totalCents)}
               </span>
               <button
                 className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg disabled:cursor-not-allowed disabled:bg-pace-stone-300"

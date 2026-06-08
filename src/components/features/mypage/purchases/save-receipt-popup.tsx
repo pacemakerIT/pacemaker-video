@@ -25,8 +25,11 @@ export default function SaveReceiptPopup({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger className="flex-1 border border-orange-500 text-orange-500 rounded-full px-10 py-4 hover:bg-orange-50">
-        영수증 저장
+      <DialogTrigger
+        disabled={!hasReceipt}
+        className="flex-1 border border-orange-500 text-orange-500 rounded-full px-10 py-4 hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-pace-stone-300 disabled:text-pace-stone-500 disabled:hover:bg-transparent"
+      >
+        {hasReceipt ? '영수증 저장' : '영수증 준비중'}
       </DialogTrigger>
       <DialogContent
         showCloseButton={false}
