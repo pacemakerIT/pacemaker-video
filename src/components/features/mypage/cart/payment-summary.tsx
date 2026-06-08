@@ -14,9 +14,18 @@ interface PaymentSummaryProps {
 export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isApplyingPromotionCode, setIsApplyingPromotionCode] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [promotionCodeInput, setPromotionCodeInput] = useState('');
+  const [appliedPromotionCode, setAppliedPromotionCode] = useState<
+    string | null
+  >(null);
 
   const selectedItem = cartItems.filter((item) => item.selected);
+  const selectedItemsPayload = selectedItem.map((item) => ({
+    itemId: item.itemId,
+    itemType: item.type
+  }));
   const subtotal = selectedItem.reduce(
     (acc, item) => acc + (Number(item.price) || 0),
     0
@@ -28,10 +37,82 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const isCheckoutDisabled = selectedItem.length === 0 || isCheckingOut;
   const formatCartAmount = (cents: number) =>
     formatMoneyFromCents(cents, 'cad', 'en-US');
+  const trimmedPromotionCode = promotionCodeInput.trim();
+  const discountDisplay = appliedPromotionCode
+    ? 'Stripe에서 계산'
+    : `-${formatCartAmount(discountCents)}`;
+
+  const handlePromotionCodeChange = (value: string) => {
+    setPromotionCodeInput(value);
+
+    if (
+      appliedPromotionCode &&
+      value.trim().toLowerCase() !== appliedPromotionCode.toLowerCase()
+    ) {
+      setAppliedPromotionCode(null);
+    }
+  };
+
+  const applyPromotionCode = async () => {
+    if (selectedItem.length === 0) {
+      const message = '결제할 항목을 선택해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (!trimmedPromotionCode) {
+      const message = '프로모션 코드를 입력해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    setIsApplyingPromotionCode(true);
+    setCheckoutError(null);
+
+    try {
+      const response = await fetch('/api/stripe/validate-promotion-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedItems: selectedItemsPayload,
+          promotionCode: trimmedPromotionCode
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.promotionCode?.code) {
+        throw new Error(data.error || '프로모션 코드를 적용하지 못했습니다.');
+      }
+
+      setAppliedPromotionCode(data.promotionCode.code);
+      setPromotionCodeInput(data.promotionCode.code);
+      toast.success('프로모션 코드가 적용되었습니다.');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '프로모션 코드를 적용하지 못했습니다.';
+
+      setAppliedPromotionCode(null);
+      setCheckoutError(message);
+      toast.error(message);
+    } finally {
+      setIsApplyingPromotionCode(false);
+    }
+  };
 
   const startCheckout = async () => {
     if (selectedItem.length === 0) {
       const message = '결제할 항목을 선택해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (trimmedPromotionCode && !appliedPromotionCode) {
+      const message = '프로모션 코드를 먼저 등록해주세요.';
       setCheckoutError(message);
       toast.error(message);
       return;
@@ -45,10 +126,10 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          selectedItems: selectedItem.map((item) => ({
-            itemId: item.itemId,
-            itemType: item.type
-          }))
+          selectedItems: selectedItemsPayload,
+          ...(appliedPromotionCode
+            ? { promotionCode: appliedPromotionCode }
+            : {})
         })
       });
       const data = await response.json();
@@ -71,6 +152,41 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
     }
   };
 
+  const renderPromotionControls = (className = '') => (
+    <div className={className}>
+      <div className="flex gap-1 text-pace-sm">
+        <input
+          type="text"
+          value={promotionCodeInput}
+          onChange={(event) => handlePromotionCodeChange(event.target.value)}
+          placeholder="프로모션 코드 입력"
+          className="min-w-0 flex-1 rounded-full border border-[#EEEEEE] px-4 py-2 placeholder-[#757575] focus:border-[#6F6F6F] focus:outline-none"
+        />
+        <button
+          type="button"
+          className="shrink-0 rounded-full border border-[#EEEEEE] px-4 py-2 text-pace-gray-700 hover:border-[#6F6F6F] disabled:cursor-not-allowed disabled:text-pace-stone-500 disabled:hover:border-[#EEEEEE]"
+          onClick={applyPromotionCode}
+          disabled={
+            isApplyingPromotionCode ||
+            selectedItem.length === 0 ||
+            !trimmedPromotionCode
+          }
+        >
+          {isApplyingPromotionCode
+            ? '확인 중...'
+            : appliedPromotionCode
+              ? '변경'
+              : '등록'}
+        </button>
+      </div>
+      {appliedPromotionCode && (
+        <p className="mt-2 text-pace-sm text-pace-orange-600">
+          적용된 코드: {appliedPromotionCode}
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <>
       <aside className="hidden lg:block w-80 h-full border-l p-10 pt-20">
@@ -84,7 +200,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">할인 금액</span>
-            <span>-{formatCartAmount(discountCents)}</span>
+            <span>{discountDisplay}</span>
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">세금</span>
@@ -97,6 +213,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
             {formatCartAmount(totalCents)}
           </span>
         </div>
+        {renderPromotionControls('mb-4')}
         <button
           className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
           onClick={startCheckout}
@@ -151,13 +268,14 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">할인 금액</span>
-                  <span>-{formatCartAmount(discountCents)}</span>
+                  <span>{discountDisplay}</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">세금</span>
                   <span>{formatCartAmount(taxCents)}</span>
                 </li>
               </ul>
+              {renderPromotionControls('my-6 ml-auto w-60')}
               <div className="mt-4 border-b border-pace-gray-700" />
             </div>
           )}

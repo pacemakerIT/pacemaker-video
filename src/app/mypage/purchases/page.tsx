@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
+import { OrderStatus } from '@prisma/client';
 import PurchasesList from '@/components/features/mypage/purchases/purchases-list';
 import { getOrderDisplaysForUser } from '@/lib/order-display';
 import prisma from '@/lib/prisma';
@@ -14,7 +15,10 @@ async function getCurrentUserOrders() {
 
   if (!currentUser) return [];
 
-  return getOrderDisplaysForUser(currentUser.id);
+  return getOrderDisplaysForUser(currentUser.id, [
+    OrderStatus.COMPLETED,
+    OrderStatus.REFUNDED
+  ]);
 }
 
 export default async function Purchases() {

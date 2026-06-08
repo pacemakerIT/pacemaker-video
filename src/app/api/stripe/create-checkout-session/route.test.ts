@@ -26,6 +26,7 @@ const tx = {
     findMany: vi.fn()
   },
   order: {
+    findFirst: vi.fn(),
     create: vi.fn()
   }
 };
@@ -41,6 +42,7 @@ const prismaMock = {
 };
 
 const stripeSessionCreateMock = vi.fn();
+const promotionCodesListMock = vi.fn();
 
 vi.mock('@/lib/prisma', () => ({
   default: prismaMock
@@ -52,6 +54,9 @@ vi.mock('@/lib/stripe', () => ({
       sessions: {
         create: stripeSessionCreateMock
       }
+    },
+    promotionCodes: {
+      list: promotionCodesListMock
     }
   }))
 }));
@@ -108,8 +113,12 @@ describe('POST /api/stripe/create-checkout-session', () => {
       thumbnailUrl: null
     });
     tx.orderItem.findMany.mockResolvedValue([]);
+    tx.order.findFirst.mockResolvedValue(null);
     tx.order.create.mockResolvedValue({
       id: orderId
+    });
+    promotionCodesListMock.mockResolvedValue({
+      data: []
     });
     stripeSessionCreateMock.mockResolvedValue({
       id: 'cs_test_123',
@@ -185,6 +194,7 @@ describe('POST /api/stripe/create-checkout-session', () => {
         mode: 'payment',
         client_reference_id: orderId,
         customer_email: 'buyer@example.com',
+        allow_promotion_codes: true,
         success_url:
           'http://localhost:3000/mypage/payment-success?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: `http://localhost:3000/payment/cancel?order_id=${orderId}`
@@ -194,6 +204,67 @@ describe('POST /api/stripe/create-checkout-session', () => {
       where: { id: orderId },
       data: { stripeCheckoutSessionId: 'cs_test_123' }
     });
+  });
+
+  it('applies a validated Stripe promotion code to the checkout session', async () => {
+    promotionCodesListMock.mockResolvedValue({
+      data: [
+        {
+          id: 'promo_123',
+          code: 'SAVE10',
+          active: true,
+          customer: null,
+          customer_account: null,
+          expires_at: null,
+          max_redemptions: null,
+          times_redeemed: 0,
+          restrictions: {
+            currency_options: undefined,
+            first_time_transaction: false,
+            minimum_amount: null,
+            minimum_amount_currency: null
+          }
+        }
+      ]
+    });
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }],
+        promotionCode: 'SAVE10'
+      })
+    );
+
+    expect(response.status).toBe(201);
+    expect(promotionCodesListMock).toHaveBeenCalledWith({
+      code: 'SAVE10',
+      active: true,
+      limit: 10
+    });
+    expect(stripeSessionCreateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        discounts: [{ promotion_code: 'promo_123' }],
+        metadata: expect.objectContaining({
+          promotionCode: 'SAVE10'
+        })
+      })
+    );
+  });
+
+  it('rejects invalid promotion codes before creating an order', async () => {
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }],
+        promotionCode: 'MISSING'
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'Invalid promotion code'
+    });
+    expect(tx.order.create).not.toHaveBeenCalled();
+    expect(stripeSessionCreateMock).not.toHaveBeenCalled();
   });
 
   it('rejects already purchased items before creating a Stripe session', async () => {

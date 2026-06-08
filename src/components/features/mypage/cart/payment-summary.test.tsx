@@ -5,12 +5,14 @@ import type { CartItem } from '@/types/my-card';
 import PaymentSummary from './payment-summary';
 
 const mocks = vi.hoisted(() => ({
-  toastErrorMock: vi.fn()
+  toastErrorMock: vi.fn(),
+  toastSuccessMock: vi.fn()
 }));
 
 vi.mock('sonner', () => ({
   toast: {
-    error: mocks.toastErrorMock
+    error: mocks.toastErrorMock,
+    success: mocks.toastSuccessMock
   }
 }));
 
@@ -96,16 +98,103 @@ describe('PaymentSummary', () => {
     ).toBeDisabled();
   });
 
-  it('shows CAD amounts without inactive promotion controls', () => {
+  it('shows CAD amounts and promotion controls', () => {
     render(<PaymentSummary cartItems={cartItems} />);
 
     expect(screen.getAllByText('CA$49.99').length).toBeGreaterThan(0);
     expect(
-      screen.queryByPlaceholderText('프로모션 코드 입력')
-    ).not.toBeInTheDocument();
+      screen.getAllByPlaceholderText('프로모션 코드 입력').length
+    ).toBeGreaterThan(0);
     expect(
-      screen.queryByRole('button', { name: '등록' })
-    ).not.toBeInTheDocument();
+      screen.getAllByRole('button', { name: '등록' }).length
+    ).toBeGreaterThan(0);
+  });
+
+  it('validates and submits applied promotion codes', async () => {
+    (fetch as unknown as Mock)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          promotionCode: {
+            code: 'SAVE10'
+          }
+        })
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          checkoutUrl: 'https://checkout.stripe.test/session'
+        })
+      });
+
+    render(<PaymentSummary cartItems={cartItems} />);
+
+    fireEvent.change(screen.getAllByPlaceholderText('프로모션 코드 입력')[0], {
+      target: { value: 'SAVE10' }
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: '등록' })[0]);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenNthCalledWith(
+        1,
+        '/api/stripe/validate-promotion-code',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            selectedItems: [
+              {
+                itemId: '11111111-1111-4111-8111-111111111111',
+                itemType: 'COURSE'
+              }
+            ],
+            promotionCode: 'SAVE10'
+          })
+        })
+      );
+    });
+    expect(await screen.findAllByText('적용된 코드: SAVE10')).toHaveLength(1);
+    expect(mocks.toastSuccessMock).toHaveBeenCalledWith(
+      '프로모션 코드가 적용되었습니다.'
+    );
+
+    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenNthCalledWith(
+        2,
+        '/api/stripe/create-checkout-session',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            selectedItems: [
+              {
+                itemId: '11111111-1111-4111-8111-111111111111',
+                itemType: 'COURSE'
+              }
+            ],
+            promotionCode: 'SAVE10'
+          })
+        })
+      );
+    });
+    expect(locationAssignMock).toHaveBeenCalledWith(
+      'https://checkout.stripe.test/session'
+    );
+  });
+
+  it('requires typed promotion codes to be registered before checkout', () => {
+    render(<PaymentSummary cartItems={cartItems} />);
+
+    fireEvent.change(screen.getAllByPlaceholderText('프로모션 코드 입력')[0], {
+      target: { value: 'SAVE10' }
+    });
+    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+
+    expect(mocks.toastErrorMock).toHaveBeenCalledWith(
+      '프로모션 코드를 먼저 등록해주세요.'
+    );
+    expect(fetch).not.toHaveBeenCalled();
+    expect(locationAssignMock).not.toHaveBeenCalled();
   });
 
   it('shows API errors without redirecting', async () => {

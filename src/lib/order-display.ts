@@ -250,10 +250,14 @@ export async function getOrderDisplayById(orderId: string, userId: string) {
   return order ? toOrderDisplay(prisma, order) : null;
 }
 
-export async function getOrderDisplaysForUser(userId: string) {
+export async function getOrderDisplaysForUser(
+  userId: string,
+  statuses?: OrderStatus[]
+) {
   const orders = await prisma.order.findMany({
     where: {
-      userId
+      userId,
+      ...(statuses?.length ? { status: { in: statuses } } : {})
     },
     include: {
       items: true

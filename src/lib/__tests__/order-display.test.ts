@@ -87,6 +87,26 @@ describe('order display helpers', () => {
     ]);
   });
 
+  it('passes optional order status filters to the order query', async () => {
+    prismaMock.order.findMany.mockResolvedValue([]);
+
+    await getOrderDisplaysForUser('33333333-3333-4333-8333-333333333333', [
+      OrderStatus.COMPLETED,
+      OrderStatus.REFUNDED
+    ]);
+
+    expect(prismaMock.order.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          userId: '33333333-3333-4333-8333-333333333333',
+          status: {
+            in: [OrderStatus.COMPLETED, OrderStatus.REFUNDED]
+          }
+        }
+      })
+    );
+  });
+
   it('keeps fallback item data when catalog content is missing', async () => {
     prismaMock.order.findMany.mockResolvedValue([
       {

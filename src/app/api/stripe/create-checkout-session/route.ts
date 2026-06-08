@@ -19,6 +19,10 @@ import {
 } from '@/lib/checkout-utils';
 import prisma from '@/lib/prisma';
 import { getStripeClient } from '@/lib/stripe';
+import {
+  parseOptionalPromotionCode,
+  validateStripePromotionCode
+} from '@/lib/stripe-promotion-codes';
 
 export const runtime = 'nodejs';
 
@@ -76,6 +80,7 @@ export async function POST(req: Request) {
       throw new CheckoutError('Invalid request body', 400);
     });
     const selections = parseCheckoutSelections(body);
+    const promotionCode = parseOptionalPromotionCode(body);
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: clerkUserId },
@@ -98,17 +103,44 @@ export async function POST(req: Request) {
       await assertNoCompletedPurchases(tx, currentUser.id, checkoutItems);
 
       const totals = calculateCheckoutTotals(checkoutItems);
-      const order = await tx.order.create({
+      const completedOrder = await tx.order.findFirst({
+        where: {
+          userId: currentUser.id,
+          status: OrderStatus.COMPLETED
+        },
+        select: { id: true }
+      });
+
+      return {
+        checkoutItems,
+        hasCompletedOrder: Boolean(completedOrder),
+        totals
+      };
+    });
+
+    const appBaseUrl = getAppBaseUrl(req);
+    const stripe = getStripeClient();
+    const validatedPromotionCode = promotionCode
+      ? await validateStripePromotionCode(stripe, {
+          code: promotionCode,
+          subtotalAmountCents: preparedCheckout.totals.subtotalAmountCents,
+          currency: CHECKOUT_CURRENCY,
+          hasCompletedOrder: preparedCheckout.hasCompletedOrder
+        })
+      : null;
+
+    const order = await prisma.$transaction(async (tx) =>
+      tx.order.create({
         data: {
           userId: currentUser.id,
           currency: CHECKOUT_CURRENCY,
           status: OrderStatus.PENDING,
-          totalAmountCents: totals.totalAmountCents,
-          subtotalAmountCents: totals.subtotalAmountCents,
-          discountAmountCents: totals.discountAmountCents,
-          taxAmountCents: totals.taxAmountCents,
+          totalAmountCents: preparedCheckout.totals.totalAmountCents,
+          subtotalAmountCents: preparedCheckout.totals.subtotalAmountCents,
+          discountAmountCents: preparedCheckout.totals.discountAmountCents,
+          taxAmountCents: preparedCheckout.totals.taxAmountCents,
           items: {
-            create: checkoutItems.map((item) => ({
+            create: preparedCheckout.checkoutItems.map((item) => ({
               itemId: item.itemId,
               itemType: item.itemType,
               priceAtPurchaseCents: item.unitAmountCents,
@@ -116,19 +148,11 @@ export async function POST(req: Request) {
             }))
           }
         }
-      });
+      })
+    );
 
-      return {
-        checkoutItems,
-        order,
-        totals
-      };
-    });
+    pendingOrderId = order.id;
 
-    pendingOrderId = preparedCheckout.order.id;
-
-    const appBaseUrl = getAppBaseUrl(req);
-    const stripe = getStripeClient();
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: buildCheckoutLineItems(preparedCheckout.checkoutItems),
@@ -138,14 +162,18 @@ export async function POST(req: Request) {
       ),
       cancel_url: toAbsoluteUrl(
         appBaseUrl,
-        `/payment/cancel?order_id=${preparedCheckout.order.id}`
+        `/payment/cancel?order_id=${order.id}`
       ),
-      client_reference_id: preparedCheckout.order.id,
+      client_reference_id: order.id,
       customer_email: currentUser.email,
+      ...(validatedPromotionCode
+        ? { discounts: [{ promotion_code: validatedPromotionCode.id }] }
+        : { allow_promotion_codes: true }),
       metadata: {
-        orderId: getMetadataValue(preparedCheckout.order.id),
+        orderId: getMetadataValue(order.id),
         userId: getMetadataValue(currentUser.id),
         clerkUserId: getMetadataValue(clerkUserId),
+        promotionCode: getMetadataValue(validatedPromotionCode?.code),
         itemSummary: getMetadataValue(
           buildItemSummary(preparedCheckout.checkoutItems)
         )
@@ -157,7 +185,7 @@ export async function POST(req: Request) {
     }
 
     await prisma.order.update({
-      where: { id: preparedCheckout.order.id },
+      where: { id: order.id },
       data: {
         stripeCheckoutSessionId: session.id
       }
@@ -166,7 +194,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         checkoutUrl: session.url,
-        orderId: preparedCheckout.order.id,
+        orderId: order.id,
         sessionId: session.id,
         totals: preparedCheckout.totals
       },
