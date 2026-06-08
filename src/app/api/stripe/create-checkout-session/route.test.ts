@@ -131,6 +131,17 @@ describe('POST /api/stripe/create-checkout-session', () => {
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
 
+  it('rejects empty checkout selections', async () => {
+    const response = await POST(createRequest({ selectedItems: [] }));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'No checkout items selected'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    expect(stripeSessionCreateMock).not.toHaveBeenCalled();
+  });
+
   it('creates a pending order and Stripe checkout session', async () => {
     const response = await POST(
       createRequest({
@@ -205,5 +216,86 @@ describe('POST /api/stripe/create-checkout-session', () => {
     });
     expect(tx.order.create).not.toHaveBeenCalled();
     expect(stripeSessionCreateMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects selected items that are no longer in the cart', async () => {
+    tx.cart.findMany.mockResolvedValue([]);
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }]
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'Selected cart items were not found'
+    });
+    expect(tx.order.create).not.toHaveBeenCalled();
+    expect(stripeSessionCreateMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects cart items that no longer resolve to catalog content', async () => {
+    tx.course.findUnique.mockResolvedValue(null);
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }]
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'One or more selected items are unavailable'
+    });
+    expect(tx.order.create).not.toHaveBeenCalled();
+    expect(stripeSessionCreateMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects checkout items with invalid prices', async () => {
+    tx.course.findUnique.mockResolvedValue({
+      id: courseId,
+      title: 'Checkout Course',
+      description: 'Course description',
+      price: '0',
+      category: 'INTERVIEW',
+      thumbnailUrl: null
+    });
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }]
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'Checkout Course has an invalid price'
+    });
+    expect(tx.order.create).not.toHaveBeenCalled();
+    expect(stripeSessionCreateMock).not.toHaveBeenCalled();
+  });
+
+  it('marks the pending order failed when Stripe does not return a URL', async () => {
+    stripeSessionCreateMock.mockResolvedValue({
+      id: 'cs_test_123',
+      url: null
+    });
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }]
+      })
+    );
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      error:
+        'Failed to create checkout session: Stripe did not return a checkout URL'
+    });
+    expect(prismaMock.order.update).toHaveBeenCalledWith({
+      where: { id: orderId },
+      data: { status: OrderStatus.FAILED }
+    });
   });
 });
