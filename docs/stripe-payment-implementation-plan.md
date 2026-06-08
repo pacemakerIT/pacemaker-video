@@ -136,6 +136,11 @@ Notes:
 - Handle `checkout.session.completed`.
 - Mark the matching order `COMPLETED` only after the payment is paid or no
   payment is required.
+- Reconcile final Stripe Checkout amounts into `Order` during webhook
+  fulfillment. Use Stripe's final session/payment values such as
+  `amount_subtotal`, `amount_total`, `total_details.amount_discount`, and
+  `total_details.amount_tax` so promotion-code purchases display the actual
+  charged amount in success, receipt, and purchase history views.
 - Store Stripe identifiers and receipt references.
 - Remove purchased items from the cart.
 - Grant workshop registration where relevant.
@@ -167,6 +172,9 @@ Notes:
 
 - Add unit/API tests for checkout session creation.
 - Add webhook tests with mocked Stripe signature construction.
+- Add webhook tests that verify promotion-code discounts update
+  `subtotalAmountCents`, `discountAmountCents`, `taxAmountCents`, and
+  `totalAmountCents` from Stripe's final amounts.
 - Add idempotency tests for duplicate webhook delivery.
 - Add entitlement tests for purchased and unpurchased content.
 - Validate locally with Stripe CLI:
