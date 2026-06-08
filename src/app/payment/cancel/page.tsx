@@ -78,11 +78,14 @@ export default async function PaymentCancel({
             ))}
           </ul>
           <div className="mt-6 flex justify-between border-t border-pace-gray-100 pt-6 text-[20px] font-semibold text-pace-gray-700">
-            <span>총 결제 금액</span>
+            <span>주문 기준 금액</span>
             <span>
               {formatMoneyFromCents(order.totalAmountCents, order.currency)}
             </span>
           </div>
+          <p className="mt-3 text-right text-pace-sm text-pace-stone-500">
+            프로모션 할인 및 최종 청구 금액은 Stripe Checkout에서 확정됩니다.
+          </p>
         </div>
       )}
 

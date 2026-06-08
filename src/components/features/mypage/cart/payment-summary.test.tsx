@@ -153,6 +153,14 @@ describe('PaymentSummary', () => {
       );
     });
     expect(await screen.findAllByText('적용된 코드: SAVE10')).toHaveLength(1);
+    expect(
+      screen.getAllByText('Stripe Checkout에서 적용').length
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(
+        '프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.'
+      ).length
+    ).toBeGreaterThan(0);
     expect(mocks.toastSuccessMock).toHaveBeenCalledWith(
       '프로모션 코드가 적용되었습니다.'
     );

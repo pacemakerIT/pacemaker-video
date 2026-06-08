@@ -132,6 +132,9 @@ export default async function PaymentSuccess({
     return <EmptyState hasSessionId={Boolean(sessionId)} />;
   }
 
+  const isFinalizedOrder = order.status === 'COMPLETED';
+  const amountLabel = isFinalizedOrder ? '총 결제 금액' : '주문 기준 금액';
+
   return (
     <section className="flex-1 p-10 pt-20">
       <h1 className="mb-20 text-pace-xl font-bold text-pace-gray-700">
@@ -156,9 +159,14 @@ export default async function PaymentSuccess({
           입니다.
         </p>
         <p className="text-pace-base font-semibold text-pace-gray-700">
-          총 결제 금액:{' '}
+          {amountLabel}:{' '}
           {formatMoneyFromCents(order.totalAmountCents, order.currency)}
         </p>
+        {!isFinalizedOrder && (
+          <p className="text-pace-sm text-pace-stone-500">
+            프로모션 할인 및 최종 청구 금액은 Stripe 결제 내역에서 확인됩니다.
+          </p>
+        )}
       </div>
 
       <div className="flex mt-6 gap-4 items-center justify-center text-center">

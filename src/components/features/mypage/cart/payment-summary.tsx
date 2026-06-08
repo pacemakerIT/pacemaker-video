@@ -39,8 +39,11 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
     formatMoneyFromCents(cents, 'cad', 'en-US');
   const trimmedPromotionCode = promotionCodeInput.trim();
   const discountDisplay = appliedPromotionCode
-    ? 'Stripe에서 계산'
+    ? 'Stripe Checkout에서 적용'
     : `-${formatCartAmount(discountCents)}`;
+  const totalLabel = appliedPromotionCode
+    ? '할인 전 예상 금액'
+    : '총 결제 금액';
 
   const handlePromotionCodeChange = (value: string) => {
     setPromotionCodeInput(value);
@@ -208,11 +211,16 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
           </li>
         </ul>
         <div className="flex justify-between text-pace-base font-semibold pb-6">
-          <span className="text-pace-gray-700">총 결제 금액</span>
+          <span className="text-pace-gray-700">{totalLabel}</span>
           <span className="text-[#E86642] font-bold">
             {formatCartAmount(totalCents)}
           </span>
         </div>
+        {appliedPromotionCode && (
+          <p className="-mt-4 mb-4 text-pace-sm text-pace-stone-500">
+            프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
+          </p>
+        )}
         {renderPromotionControls('mb-4')}
         <button
           className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
@@ -282,7 +290,7 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
 
           {/* 총 금액 & 결제 버튼 */}
           <div className="w-2/3 flex justify-between items-center text-pace-xl">
-            <span className="font-medium">총 결제 금액</span>
+            <span className="font-medium">{totalLabel}</span>
             <div className="flex items-center gap-4">
               <span className="text-[#E86642] font-bold">
                 {formatCartAmount(totalCents)}
@@ -296,6 +304,11 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
               </button>
             </div>
           </div>
+          {appliedPromotionCode && (
+            <p className="mt-3 w-2/3 text-right text-pace-sm text-pace-stone-500">
+              프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
+            </p>
+          )}
           {checkoutError && (
             <p className="mt-3 w-2/3 text-right text-pace-sm text-red-600">
               {checkoutError}
