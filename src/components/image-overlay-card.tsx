@@ -5,6 +5,9 @@ import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
 
+import { resolveImageSrc } from '@/lib/utils';
+import { ItemType } from '@prisma/client';
+
 export default function ImageOverlayCard({
   id,
   title,
@@ -12,12 +15,14 @@ export default function ImageOverlayCard({
   category,
   startDate,
   locationOrUrl,
-  status
+  status,
+  thumbnail,
+  thumbnailUrl
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
 
-  // 워크샵용 랜덤 이미지 선택
-  const randomImage = useMemo(() => {
+  // 워크샵용 랜덤 이미지 선택 (폴백용)
+  const randomPlaceholder = useMemo(() => {
     const images = [
       '/img/workshop_image1.png',
       '/img/workshop_image2.png',
@@ -27,6 +32,13 @@ export default function ImageOverlayCard({
     const randomIndex = Math.floor(Math.random() * images.length);
     return images[randomIndex];
   }, []);
+
+  const imageSrc =
+    resolveImageSrc({
+      thumbnail,
+      thumbnailUrl,
+      itemType: ItemType.WORKSHOP
+    }) || randomPlaceholder;
 
   const displayTitle = title || visualTitle2 || '';
   const formattedStatus =
@@ -80,7 +92,7 @@ export default function ImageOverlayCard({
 
           <div className="relative w-full h-[331px]">
             <Image
-              src={randomImage}
+              src={imageSrc}
               fill
               className="object-cover"
               alt="courses img"
