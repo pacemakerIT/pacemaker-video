@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import {
-  ItemType,
   PrismaClient,
   CourseCategory,
   EbookCategory,
@@ -104,18 +103,6 @@ const SEEDED_INSTRUCTOR_IDS = {
 } as const;
 
 const SEEDED_REFERENCE_DATE = new Date('2026-03-25T12:00:00.000Z');
-const ORDER_ITEM_TYPES = ['COURSE', 'EBOOK', 'WORKSHOP'] as const;
-
-type SeedOrderItemType = (typeof ORDER_ITEM_TYPES)[number];
-type SeedCatalogEntry = {
-  id: string;
-  itemType: SeedOrderItemType;
-  price: number;
-};
-
-function amountToCents(amount: number) {
-  return Math.round(amount * 100);
-}
 
 function isRemoteSupabaseUrl(url: string) {
   return (
@@ -123,32 +110,6 @@ function isRemoteSupabaseUrl(url: string) {
     url.includes('pooler.supabase.com') ||
     url.includes('supabase.co')
   );
-}
-
-function createSeededRandom(seed: number) {
-  let state = seed >>> 0;
-
-  return () => {
-    state += 0x6d2b79f5;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function randomInt(rng: () => number, min: number, max: number) {
-  return Math.floor(rng() * (max - min + 1)) + min;
-}
-
-function randomPastDate(rng: () => number, maxOffsetMs: number) {
-  return new Date(
-    SEEDED_REFERENCE_DATE.getTime() - Math.floor(rng() * maxOffsetMs)
-  );
-}
-
-function pickOne<T>(rng: () => number, items: readonly T[]) {
-  return items[Math.floor(rng() * items.length)];
 }
 
 async function resetLocalSeedData() {
@@ -185,14 +146,6 @@ async function main() {
       'Remote Supabase database detected. Refusing to run destructive local seed on production/remote DB.'
     );
   }
-
-  const rng = createSeededRandom(20260325);
-  const seededCatalog: Record<SeedOrderItemType, SeedCatalogEntry[]> = {
-    COURSE: [],
-    EBOOK: [],
-    WORKSHOP: []
-  };
-  const seedOrderUsers: Array<{ id: string; roleId: string }> = [];
 
   const supabaseUrl = cleanEnv('NEXT_PUBLIC_SUPABASE_URL');
   const remoteImages = await getRemoteImages();
@@ -377,12 +330,6 @@ async function main() {
       }
     });
 
-    seededCatalog.COURSE.push({
-      id: courseId,
-      itemType: 'COURSE',
-      price: coursePrice
-    });
-
     const sections = await prisma.section.findMany({
       where: { courseId },
       orderBy: { orderIndex: 'asc' }
@@ -552,115 +499,11 @@ async function main() {
         })()
       }
     });
-
-    seededCatalog.EBOOK.push({
-      id: ebookRecordId,
-      itemType: 'EBOOK',
-      price: ebook.price
-    });
   }
 
-  console.log('Creating user roles...');
-  await prisma.userRole.upsert({
-    where: { id: 'ADMIN' },
-    update: {},
-    create: { id: 'ADMIN', label: 'ADMIN' }
-  });
-  await prisma.userRole.upsert({
-    where: { id: 'INSTRUCTOR' },
-    update: {},
-    create: { id: 'INSTRUCTOR', label: 'INSTRUCTOR' }
-  });
-  await prisma.userRole.upsert({
-    where: { id: 'USER' },
-    update: {},
-    create: { id: 'USER', label: 'USER' }
-  });
-
-  console.log('Generating stable test accounts...');
-  const stableUsers = [
-    {
-      id: '87921304-7f86-4398-9e22-420170acdb03',
-      email: 'admin@paceupcareer.com',
-      clerkId: 'user_3Da2QILT1uy7UoPa4AKEix2vX3K',
-      roleId: 'ADMIN'
-    },
-    {
-      id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
-      email: 'user@paceupcareer.com',
-      clerkId: 'user_3Da2QIjxxSbeuJWHg82WAfJzEXt',
-      roleId: 'USER'
-    }
-  ];
-
-  for (const u of stableUsers) {
-    await prisma.user.upsert({
-      where: { email: u.email },
-      update: {
-        clerkId: u.clerkId,
-        roleId: u.roleId,
-        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
-      },
-      create: {
-        id: u.id,
-        email: u.email,
-        clerkId: u.clerkId,
-        roleId: u.roleId,
-        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
-      }
-    });
-  }
-
-  console.log('Generating stable sample users...');
-  for (let i = 1; i <= 30; i++) {
-    const email = `user${i}@example.com`;
-    const name = `User ${i}`;
-    const nickname = `Nick${i}`;
-    const createdAt = randomPastDate(rng, 10_000_000_000);
-    const lastLoginAt = randomPastDate(rng, 14 * 24 * 60 * 60 * 1000);
-
-    let roleId;
-    const roleRandom = rng();
-    if (roleRandom < 0.1) {
-      roleId = 'ADMIN';
-    } else if (roleRandom < 0.3) {
-      roleId = 'INSTRUCTOR';
-    } else {
-      roleId = 'USER';
-    }
-
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {
-        name,
-        nickname,
-        image: null,
-        clerkId: `clerk_user_${i}`,
-        roleId,
-        isSubscribed: i % 3 === 0,
-        createdAt,
-        lastLoginAt
-      },
-      create: {
-        id: randomUUID(),
-        email,
-        name,
-        nickname,
-        image: null,
-        clerkId: `clerk_user_${i}`,
-        roleId,
-        isSubscribed: i % 3 === 0,
-        createdAt,
-        lastLoginAt
-      }
-    });
-
-    if (roleId !== 'ADMIN') {
-      seedOrderUsers.push({ id: user.id, roleId });
-    }
-  }
+  console.log(
+    'Skipping account seed data. User roles, Clerk users, sample orders, and mock reviews are managed separately.'
+  );
 
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
@@ -725,12 +568,6 @@ async function main() {
         )
       }
     });
-
-    seededCatalog.WORKSHOP.push({
-      id: workshopId,
-      itemType: 'WORKSHOP',
-      price: 20
-    });
   }
 
   const homeWorkshopData = [
@@ -793,105 +630,9 @@ async function main() {
         )
       }
     });
-
-    seededCatalog.WORKSHOP.push({
-      id: workshopId,
-      itemType: 'WORKSHOP',
-      price: 20
-    });
   }
 
-  console.log('Generating sample orders...');
-  for (const user of seedOrderUsers) {
-    if (user.roleId === 'ADMIN') {
-      continue;
-    }
-
-    const numOrders = randomInt(rng, 1, 5);
-
-    for (let orderIndex = 0; orderIndex < numOrders; orderIndex++) {
-      const numItems = randomInt(rng, 1, 3);
-      const orderItems: SeedCatalogEntry[] = [];
-
-      for (let itemIndex = 0; itemIndex < numItems; itemIndex++) {
-        const itemType = pickOne(rng, ORDER_ITEM_TYPES);
-        const item = pickOne(rng, seededCatalog[itemType]);
-
-        orderItems.push(item);
-      }
-
-      const totalAmountCents = orderItems.reduce(
-        (sum, item) => sum + amountToCents(item.price),
-        0
-      );
-
-      await prisma.order.create({
-        data: {
-          id: randomUUID(),
-          userId: user.id,
-          totalAmountCents,
-          status: 'COMPLETED',
-          orderedAt: randomPastDate(rng, 10_000_000_000),
-          items: {
-            create: orderItems.map((item) => ({
-              itemType: item.itemType as ItemType,
-              itemId: item.id,
-              priceAtPurchaseCents: amountToCents(item.price),
-              quantity: 1
-            }))
-          }
-        }
-      });
-    }
-  }
-
-  console.log('Creating mock reviews...');
-  const users = await prisma.user.findMany({
-    where: { roleId: 'USER' },
-    orderBy: { email: 'asc' }
-  });
-  const courses = await prisma.course.findMany({
-    orderBy: { createdAt: 'asc' }
-  });
-
-  const reviewContents = [
-    {
-      rating: 5,
-      content:
-        'This was incredibly helpful for writing my resume. Especially the ATS tips—I haven’t heard them anywhere else!'
-    },
-    {
-      rating: 4.5,
-      content:
-        'I was lost with interview prep, but this course gave me confidence. The mock interview questions were very similar to real ones.'
-    },
-    {
-      rating: 5,
-      content:
-        'I was impressed by the instructor’s advice based on their real experience. Highly recommend this to anyone preparing for a career abroad.'
-    }
-  ];
-
-  if (users.length > 0 && courses.length > 0) {
-    for (const course of courses) {
-      for (let i = 0; i < 3; i++) {
-        const user = users[i % users.length];
-        const reviewData = reviewContents[i % reviewContents.length];
-
-        await prisma.review.create({
-          data: {
-            userId: user.id,
-            courseId: course.id,
-            rating: reviewData.rating,
-            content: reviewData.content,
-            createdAt: randomPastDate(rng, 90 * 24 * 60 * 60 * 1000)
-          }
-        });
-      }
-    }
-
-    console.log('🎉 Seed data created successfully!');
-  }
+  console.log('🎉 Seed data created successfully!');
 }
 
 main()
