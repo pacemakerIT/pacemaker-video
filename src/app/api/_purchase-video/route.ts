@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { amountToCents } from '@/lib/money';
 
 export async function POST(req: Request) {
   try {
@@ -55,17 +56,19 @@ export async function POST(req: Request) {
       );
     }
 
+    const priceInCents = amountToCents(price);
+
     const newOrder = await prisma.order.create({
       data: {
         userId: currentUser.id,
-        totalAmount: price,
+        totalAmountCents: priceInCents,
         status: 'COMPLETED',
         items: {
           create: [
             {
               itemType: 'VIDEO',
               itemId: currentVideo.id,
-              priceAtPurchase: price,
+              priceAtPurchaseCents: priceInCents,
               quantity: 1
             }
           ]
