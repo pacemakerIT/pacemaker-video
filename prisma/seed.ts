@@ -716,7 +716,6 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        thumbnail: '/img/course_image1.png',
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
@@ -785,7 +784,6 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        thumbnail: ws.thumbnail,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
