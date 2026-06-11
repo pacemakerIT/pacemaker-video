@@ -12,7 +12,7 @@ export interface OnlineCards {
   processContent?: string;
   videoLink?: string;
   price: number;
-  time?: string;
+  thumbnail?: string;
   thumbnailUrl?: string;
   visualTitle?: string;
   visualTitle2?: string;

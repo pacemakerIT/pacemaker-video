@@ -8,7 +8,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-
+import { resolveImageSrc } from '@/lib/utils';
 import {
   DndContext,
   closestCenter,
@@ -76,6 +76,8 @@ function VisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -105,9 +107,9 @@ function VisualRow({
 
       {/* 썸네일 */}
       <div className="w-40 relative h-[106px]">
-        {row.thumbnail ? (
+        {imageSrc ? (
           <Image
-            src={row.thumbnail}
+            src={imageSrc}
             alt={row.title}
             fill
             className="rounded object-cover"

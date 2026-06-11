@@ -105,7 +105,8 @@ export default function DetailSection({
       if (!res.ok) throw new Error('Upload failed');
 
       const data = await res.json();
-      setThumbnailUrl(data.url);
+      // Proxy-compatible fileName if present, else URL
+      setThumbnailUrl(data.image?.fileName || data.image?.url || data.url);
     } catch (error) {
       // Intentionally silent for lint consistency
       void error;

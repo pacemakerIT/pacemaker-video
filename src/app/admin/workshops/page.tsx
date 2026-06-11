@@ -9,6 +9,7 @@ import { getWorkshops, updateWorkshopStatuses, WorkshopRow } from './actions';
 import { generateKeyBetween } from 'fractional-indexing';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
+import { resolveImageSrc } from '@/lib/utils';
 
 import {
   DndContext,
@@ -91,6 +92,8 @@ function VisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -118,14 +121,19 @@ function VisualRow({
       </div>
 
       {/* 썸네일 */}
-      <div className="w-40">
-        <Image
-          src={row.thumbnail || '/img/workshop_image3.png'}
-          alt={row.title}
-          width={159}
-          height={106}
-          className="rounded object-cover"
-        />
+      <div className="w-40 relative h-[106px]">
+        {imageSrc ? (
+          <Image
+            src={imageSrc}
+            alt={row.title}
+            fill
+            className="rounded object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* 강의제목 + 세부 정보 */}

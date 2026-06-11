@@ -53,7 +53,7 @@ export default function EbookDetailSection({
   const uploadImage = async (
     file: File,
     column: string,
-    onSuccess: (url: string) => void,
+    onSuccess: (image: { fileName: string; url: string }) => void,
     onError?: (msg: string) => void
   ) => {
     const formData = new FormData();
@@ -67,8 +67,8 @@ export default function EbookDetailSection({
     });
     const data = await res.json();
 
-    if (res.ok && data.image?.url) {
-      onSuccess(data.image.url);
+    if (res.ok && data.image) {
+      onSuccess(data.image);
     } else {
       onError?.(data.error || '업로드에 실패했습니다.');
     }
@@ -81,8 +81,8 @@ export default function EbookDetailSection({
     }
     setThumbnailUploading(true);
     try {
-      await uploadImage(file, 'thumbnail', (url) => {
-        setThumbnailUrl(url);
+      await uploadImage(file, 'thumbnailUrl', (image) => {
+        setThumbnailUrl(image.fileName || image.url); // fall back securely
       });
     } catch {
       // noop
@@ -103,8 +103,8 @@ export default function EbookDetailSection({
       await uploadImage(
         file,
         'bucketUrl',
-        (url: string) => {
-          setFileUrl(url);
+        (image) => {
+          setFileUrl(image.url);
           setUploadedFileName(file.name);
         },
         (msg: string) => setFileUploadError(msg)
