@@ -9,6 +9,7 @@ import {
   updateEbookStatuses,
   EbookWithStats
 } from '@/components/admin/ebooks/actions/ebook-actions';
+import { generateKeyBetween } from 'fractional-indexing';
 import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
@@ -42,6 +43,7 @@ type Row = {
   thumbnail: string;
   selected: boolean;
   category: string;
+  orderKey: string;
 };
 // Sortable Row Component
 function VisualRow({
@@ -87,6 +89,8 @@ function VisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -116,12 +120,13 @@ function VisualRow({
       {/* Thumbnail */}
       <div className="w-40 h-[106px] relative rounded overflow-hidden bg-gray-100">
         {/* Using a placeholder if thumbnail is empty or local path */}
-        <Image
-          src={resolveImageSrc({ thumbnail: row.thumbnail })}
-          alt={row.title}
-          fill
-          className="object-cover"
-        />
+        {imageSrc ? (
+          <Image src={imageSrc} alt={row.title} fill className="object-cover" />
+        ) : (
+          <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500">
+            No Image
+          </div>
+        )}
       </div>
 
       {/* Title & Description */}
@@ -229,7 +234,8 @@ export default function AdminEbooksPage() {
           purchaseCount: doc.purchaseCount || 0,
           likes: doc.likes || 0,
           status: doc.isPublic ? '공개중' : '비공개',
-          selected: false
+          selected: false,
+          orderKey: doc.orderKey
         }));
         setRows(mappedRows);
       } catch {
@@ -246,16 +252,24 @@ export default function AdminEbooksPage() {
   }, [currentPage, fetchData]);
 
   const handleSave = async () => {
-    // Identify modified statuses
-    const updates = rows.map((r) => ({
+    const statusUpdates = rows.map((r) => ({
       id: r.id,
       isPublic: r.status === '공개중'
     }));
 
+    const orderUpdates = rows.map((r) => ({ id: r.id, orderKey: r.orderKey }));
+
     try {
-      await updateEbookStatuses(updates);
+      await Promise.all([
+        updateEbookStatuses(statusUpdates),
+        fetch('/api/ebooks/reorder', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: orderUpdates })
+        })
+      ]);
       alert('저장되었습니다.');
-      fetchData(currentPage); // Refresh
+      fetchData(currentPage);
     } catch {
       alert('저장에 실패했습니다.');
     }
@@ -305,11 +319,19 @@ export default function AdminEbooksPage() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = rows.findIndex((row) => row.id === active.id);
-      const newIndex = rows.findIndex((row) => row.id === over.id);
-      setRows((items) => arrayMove(items, oldIndex, newIndex));
-    }
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = rows.findIndex((row) => row.id === active.id);
+    const newIndex = rows.findIndex((row) => row.id === over.id);
+    const newRows = arrayMove(rows, oldIndex, newIndex);
+
+    const before = newRows[newIndex - 1]?.orderKey ?? null;
+    const after = newRows[newIndex + 1]?.orderKey ?? null;
+    const newKey = generateKeyBetween(before, after);
+
+    setRows(
+      newRows.map((r) => (r.id === active.id ? { ...r, orderKey: newKey } : r))
+    );
   };
 
   const filteredRows = rows.filter((row) => {

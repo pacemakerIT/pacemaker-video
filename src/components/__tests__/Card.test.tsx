@@ -107,7 +107,8 @@ describe('Card', () => {
     uploadDate: new Date('2024-03-20'),
     watchedVideos: [],
     purchasedVideos: [],
-    itemType: ItemType.COURSE
+    itemType: ItemType.COURSE,
+    thumbnailUrl: '/img/test-course.png'
   };
 
   beforeEach(() => {

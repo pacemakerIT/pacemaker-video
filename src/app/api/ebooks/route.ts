@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
         ...(isMainParam === 'true' ? { isMain: true } : {})
       },
       orderBy: {
-        uploadDate: 'desc'
+        orderKey: 'asc'
       }
     });
 

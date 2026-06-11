@@ -20,12 +20,13 @@ export default function ImageOverlayCard({
   imageUrl
 }: OnlineCards) {
   const [isLiked, setIsLiked] = useState(false);
-  const imageSrc = resolveImageSrc({
-    thumbnail,
-    thumbnailUrl,
-    imageUrl,
-    itemType: ItemType.WORKSHOP
-  });
+  const imageSrc =
+    resolveImageSrc({
+      thumbnail,
+      thumbnailUrl,
+      imageUrl,
+      itemType: ItemType.WORKSHOP
+    }) || '/img/workshop_image1.png';
 
   const displayTitle = title || visualTitle2 || '';
   const formattedStatus =
@@ -57,7 +58,6 @@ export default function ImageOverlayCard({
     <div className="group cursor-pointer" data-testid="image-overlay-card">
       <Link href={`/workshops/${id}`}>
         <div className="flex w-full flex-col gap-5 transition-all duration-500 ease-out hover:-translate-y-1 sm:w-[588px]">
-          {/* Top Orange Border */}
           <div className="h-[clamp(420px,128vw,480px)] w-full flex-shrink-0 overflow-hidden border-t-[10px] border-orange bg-white shadow-card">
             <div className="relative h-full overflow-hidden bg-cover bg-center">
               <Image
@@ -128,7 +128,6 @@ export default function ImageOverlayCard({
             </div>
           </div>
 
-          {/* Status Row */}
           <div className="flex items-center justify-center bg-transparent">
             <span
               className={`text-center text-[1.05rem] font-bold tracking-wide ${

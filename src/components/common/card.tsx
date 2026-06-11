@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
 
 interface CardProps extends OnlineCards {
-  itemType?: ItemType; // WORKSHOP, DOCUMENT, VIDEO
+  itemType?: ItemType;
   thumbnail?: string | null;
   imageUrl?: string | null;
 }
@@ -46,7 +46,6 @@ export default function Card({
       if (isLiked) {
         await removeFavorite(id);
       } else {
-        // Fallback to COURSE if type is undefined, though it should be passed
         await addFavorite(id, itemType || ItemType.COURSE);
       }
     } catch {
@@ -54,7 +53,6 @@ export default function Card({
     }
   };
 
-  // Use the central utility for image source resolution
   const imageSrc = resolveImageSrc({
     thumbnail,
     thumbnailUrl,
@@ -71,13 +69,12 @@ export default function Card({
       case ItemType.WORKSHOP:
         return `/workshops/${id}`;
       default:
-        return '/'; // fallback
+        return '/';
     }
   };
 
   const displayTitle = visualTitle2 || title || '';
 
-  // Category-based color mapping
   const colorMap: Record<string, { bg: string; badge: string; text: string }> =
     {
       MARKETING: {
@@ -111,7 +108,6 @@ export default function Card({
         badge: 'bg-[#9F5BE7]',
         text: 'text-navy'
       },
-      // Fallback
       DEFAULT: {
         bg: 'bg-[#FFFFFF]',
         badge: 'bg-[#A0AEC0]',
@@ -125,11 +121,9 @@ export default function Card({
     <div className="cursor-pointer group">
       <Link href={getLinkPath()}>
         <div className="flex w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-none border border-gray-100 bg-white shadow-card transition-all duration-500 ease-out hover:-translate-y-1 sm:w-[384px]">
-          {/* Top Branded Section */}
           <div
             className={`relative h-[256px] w-full ${colors.bg} flex flex-col items-start overflow-hidden`}
           >
-            {/* Database Image or NO IMAGE fallback */}
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -146,7 +140,6 @@ export default function Card({
               </div>
             )}
 
-            {/* Favorite Button */}
             <button
               role="button"
               aria-label="like"
@@ -162,7 +155,6 @@ export default function Card({
               />
             </button>
 
-            {/* Category Badge */}
             {category && (
               <div
                 className={`absolute left-4 top-4 z-50 ${colors.badge} rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white`}
@@ -172,7 +164,6 @@ export default function Card({
             )}
           </div>
 
-          {/* Bottom Info Section */}
           <div className="flex flex-grow flex-col space-y-4 p-6">
             <div className="flex items-start justify-between gap-4">
               <h3 className="font-headline text-lg font-bold leading-tight text-navy">

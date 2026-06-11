@@ -8,7 +8,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-
+import { resolveImageSrc } from '@/lib/utils';
 import {
   DndContext,
   closestCenter,
@@ -26,20 +26,22 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useNavigationBlocker } from '@/components/admin/common/navigation-blocker-context';
+import { generateKeyBetween } from 'fractional-indexing';
 
 const CATEGORY_LABELS = itemCategoryLabel.en;
 
 type Row = {
   id: string;
-  title: string; // 강의제목
-  description: string; // 강의내용
-  price: string; // 금액
-  likes: number; // 찜
-  purchases: number; // 구매
+  title: string;
+  description: string;
+  price: string;
+  likes: number;
+  purchases: number;
   status: '공개중' | '비공개' | string;
   thumbnail: string;
-  selected: boolean; // 선택 여부 필드 추가
-  category: string; // 카테고리 필드 추가 (Enum 키값)
+  selected: boolean;
+  category: string;
+  orderKey: string;
 };
 
 // Sortable Row
@@ -74,6 +76,8 @@ function VisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
+  const imageSrc = resolveImageSrc({ thumbnail: row.thumbnail });
+
   return (
     <div
       ref={setNodeRef}
@@ -103,9 +107,9 @@ function VisualRow({
 
       {/* 썸네일 */}
       <div className="w-40 relative h-[106px]">
-        {row.thumbnail ? (
+        {imageSrc ? (
           <Image
-            src={row.thumbnail}
+            src={imageSrc}
             alt={row.title}
             fill
             className="rounded object-cover"
@@ -326,34 +330,38 @@ export default function Page() {
 
   const handleSave = async () => {
     try {
+      const orderUpdates = rows.map((r) => ({
+        id: r.id,
+        orderKey: r.orderKey
+      }));
       const selectedRows = rows.filter((row) => row.selected);
 
-      if (selectedRows.length === 0) {
-        toast.info('저장할 항목을 선택해주세요.');
-        return;
+      const promises: Promise<unknown>[] = [
+        fetch('/api/courses/reorder', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: orderUpdates })
+        })
+      ];
+
+      if (selectedRows.length > 0) {
+        const updates = selectedRows.map((row) => ({
+          id: row.id,
+          status: row.status
+        }));
+        promises.push(
+          fetch('/api/courses', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updates })
+          })
+        );
       }
 
-      const updates = selectedRows.map((row) => ({
-        id: row.id,
-        status: row.status
-      }));
-
-      const res = await fetch('/api/courses', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ updates })
-      });
-
-      if (res.ok) {
-        toast.success('저장되었습니다.');
-        await fetchCourses();
-        setBlocked(false); // 저장 완료 시 변경상태 해제
-      } else {
-        const errorData = await res.json();
-        toast.error(`저장 실패: ${errorData.error || 'Unknown error'}`);
-      }
+      await Promise.all(promises);
+      toast.success('저장되었습니다.');
+      await fetchCourses();
+      setBlocked(false);
     } catch {
       toast.error('저장 중 오류가 발생했습니다.');
     }
@@ -361,12 +369,20 @@ export default function Page() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const oldIndex = rows.findIndex((row) => row.id === active.id);
-      const newIndex = rows.findIndex((row) => row.id === over.id);
-      setRows((items) => arrayMove(items, oldIndex, newIndex));
-      setBlocked(true);
-    }
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = rows.findIndex((row) => row.id === active.id);
+    const newIndex = rows.findIndex((row) => row.id === over.id);
+    const newRows = arrayMove(rows, oldIndex, newIndex);
+
+    const before = newRows[newIndex - 1]?.orderKey ?? null;
+    const after = newRows[newIndex + 1]?.orderKey ?? null;
+    const newKey = generateKeyBetween(before, after);
+
+    setRows(
+      newRows.map((r) => (r.id === active.id ? { ...r, orderKey: newKey } : r))
+    );
+    setBlocked(true);
   };
 
   // 카테고리별로 필터링된 rows

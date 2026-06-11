@@ -9,36 +9,28 @@ export function cn(...inputs: ClassValue[]) {
 export function resolveImageSrc({
   thumbnail,
   imageUrl,
-  thumbnailUrl,
-  itemType
+  thumbnailUrl
 }: {
   thumbnail?: string | null;
   imageUrl?: string | null;
   thumbnailUrl?: string | null;
   itemType?: ItemType;
 }) {
-  const normalizeImage = (src?: string | null) => {
-    if (!src) return '';
-    if (src.startsWith('/')) return src;
-    if (/^https?:\/\//i.test(src)) {
-      return `/api/images/proxy?url=${encodeURIComponent(src)}`;
-    }
-    return `/api/images/proxy?fileName=${encodeURIComponent(src)}`;
-  };
+  const primaryImage = thumbnail || thumbnailUrl || imageUrl;
 
-  const resolvedImage = normalizeImage(thumbnail || thumbnailUrl || imageUrl);
-  if (resolvedImage) return resolvedImage;
-
-  // Item type based default fallbacks
-  if (itemType === ItemType.VIDEO || itemType === ItemType.COURSE) {
-    return '/img/course_image1.png';
-  }
-  if (itemType === ItemType.EBOOK) {
-    return '/img/ebook-default.png';
-  }
-  if (itemType === ItemType.WORKSHOP) {
-    return '/img/workshop-card.svg';
+  if (!primaryImage) {
+    return undefined;
   }
 
-  return '';
+  // 2. Local path, proxy path and object URL check
+  if (
+    primaryImage.startsWith('/img/') ||
+    primaryImage.startsWith('/api/') ||
+    primaryImage.startsWith('blob:')
+  ) {
+    return primaryImage;
+  }
+
+  // 3. Default fallback to proxy using url parameter
+  return `/api/images/proxy?url=${encodeURIComponent(primaryImage)}`;
 }

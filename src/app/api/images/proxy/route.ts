@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import prisma from '@/lib/prisma';
-import { bucketName, imgBucketName } from '@/lib/supabase';
+import { bucketName, imgBucketName, s3clientSupabase } from '@/lib/supabase';
 
 export async function GET(req: Request) {
   try {
@@ -28,44 +29,69 @@ export async function GET(req: Request) {
       );
     }
 
-    const match = rawUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
-    if (!match) {
-      return NextResponse.json(
-        { error: 'Invalid Supabase storage URL' },
-        { status: 400 }
-      );
-    }
-    const [, bucket, filePath] = match;
-
-    // Supabase 클라이언트 생성
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-
-    // Signed URL 생성
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(filePath, 3600); // 1시간 유효
-
-    if (error || !data) {
-      return NextResponse.json(
-        { error: 'Failed to create signed URL' },
-        { status: 500 }
-      );
+    let decodedUrl = rawUrl;
+    try {
+      decodedUrl = decodeURIComponent(rawUrl);
+    } catch {
+      decodedUrl = rawUrl;
     }
 
-    // Signed URL로 이미지 가져오기
-    const response = await fetch(data.signedUrl);
+    const isExternalUrl = /^https?:\/\//i.test(decodedUrl);
+    const match = decodedUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
+    let targetBucket = bucketName;
+    let filePath = decodedUrl;
+
+    if (match) {
+      targetBucket = match[1];
+      filePath = match[2];
+    } else if (isExternalUrl) {
+      const response = await fetch(decodedUrl);
+
+      if (!response.ok) {
+        return NextResponse.json(
+          { error: 'Failed to fetch external image' },
+          { status: 404 }
+        );
+      }
+
+      const imageBuffer = await response.arrayBuffer();
+
+      return new NextResponse(imageBuffer, {
+        headers: {
+          'Content-Type': response.headers.get('Content-Type') || 'image/png',
+          'Cache-Control': 'public, max-age=3600, immutable'
+        }
+      });
+    }
+
+    const getCommand = new GetObjectCommand({
+      Bucket: targetBucket,
+      Key: filePath
+    });
+
+    const signedUrl = await getSignedUrl(s3clientSupabase, getCommand, {
+      expiresIn: 3600
+    });
+
+    const response = await fetch(signedUrl);
 
     if (!response.ok) {
+      // eslint-disable-next-line no-console
+      console.error(
+        'Fetch from S3 signed URL failed:',
+        response.status,
+        response.statusText,
+        'Bucket:',
+        targetBucket,
+        'Key:',
+        filePath
+      );
       return NextResponse.json(
-        { error: 'Failed to fetch image' },
+        { error: 'Failed to fetch image from storage' },
         { status: 404 }
       );
     }
 
-    // 이미지 데이터를 그대로 반환
     const imageBuffer = await response.arrayBuffer();
 
     return new NextResponse(imageBuffer, {
@@ -74,7 +100,9 @@ export async function GET(req: Request) {
         'Cache-Control': 'public, max-age=3600, immutable'
       }
     });
-  } catch {
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Proxy image error:', error);
     return NextResponse.json(
       { error: 'Failed to proxy image' },
       { status: 500 }

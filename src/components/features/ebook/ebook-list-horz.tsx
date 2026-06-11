@@ -66,7 +66,7 @@ export default function EbookList() {
           {/* Card Container Section */}
           {ebooks.length === 0 ? (
             <p className="text-center text-pace-base">
-              📭 등록된 전자책이 없습니다.
+              📭 No registered ebooks.
             </p>
           ) : (
             <CardContainer
