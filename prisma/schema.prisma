@@ -172,7 +172,6 @@ model Workshop {
   category       WorkshopCategory?
   isMain         Boolean              @default(false)
   processContent String?
-  isMain         Boolean           @default(false)
   orderKey       String            @default("a0")
 
   // 강사: 한 워크샵에 여러 강사, 한 강사가 여러 워크샵 가능 (다대다)

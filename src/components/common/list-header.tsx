@@ -127,7 +127,7 @@ export default function ListHeader({
 
   return (
     <section
-      className={`relative isolate overflow-hidden bg-navy px-6 pb-[46px] pt-[70px]`}
+      className={`relative isolate h-[520px] overflow-hidden bg-navy px-6 pb-[46px] pt-[70px]`}
       data-testid="list-header"
       style={
         gradientColors
@@ -165,7 +165,7 @@ export default function ListHeader({
           <CarouselContent>
             {slides.map((slide, index) => (
               <CarouselItem key={index}>
-                <div className="text-center transition-all duration-700 min-h-[220px] md:min-h-[240px] flex flex-col justify-center items-center">
+                <div className="flex h-[240px] flex-col items-center justify-center overflow-hidden text-center transition-all duration-700">
                   <p
                     className="mb-4 text-[0.82rem] font-bold uppercase tracking-[0.2em] md:text-[0.9rem]"
                     style={{ color: slide.tagColor }}
