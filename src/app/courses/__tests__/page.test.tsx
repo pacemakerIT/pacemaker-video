@@ -36,19 +36,21 @@ vi.mock('@/components/features/course/course-header', () => ({
   default: ({
     category,
     currentCategory,
-    setCurrentCategory
+    setCurrentCategory,
+    setSortBy
   }: {
     category: string[];
     currentCategory: string;
     setCurrentCategory: (category: string) => void;
+    setSortBy: (sort: string) => void;
   }) => (
     <div>
-      <h5 className="text-pace-orange-600 text-lg">
-        {'다양한 강의를 한 자리에서'}
-      </h5>
-      <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-        {'페이스메이커 온라인 강의'}
-      </h3>
+      <p className="text-[#FF4F02] font-bold text-[18px]">
+        {'Explore Our Programs'}
+      </p>
+      <h2 className="text-[32px] font-extrabold text-[#00263B]">
+        {'Pacemaker online courses'}
+      </h2>
       {category.map((cat) => (
         <div
           key={cat}
@@ -63,6 +65,9 @@ vi.mock('@/components/features/course/course-header', () => ({
           {cat}
         </div>
       ))}
+      <button data-testid="sort-by-date" onClick={() => setSortBy('Date')}>
+        Date
+      </button>
     </div>
   )
 }));
@@ -176,11 +181,9 @@ describe('CoursesPage', () => {
     await waitFor(
       () => {
         expect(
-          screen.getByText('페이스메이커 온라인 강의')
+          screen.getByText('Pacemaker online courses')
         ).toBeInTheDocument();
-        expect(
-          screen.getByText('다양한 강의를 한 자리에서')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Explore Our Programs')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
@@ -251,7 +254,7 @@ describe('CoursesPage', () => {
       () => {
         const listHeader = screen.getByTestId('list-header');
         expect(listHeader.textContent).toBe(
-          'Build a strong foundation\nfor your career abroad with Pacemaker'
+          'Build a strong foundation\nfor your career abroad'
         );
       },
       { timeout: 5000 }
@@ -266,6 +269,32 @@ describe('CoursesPage', () => {
         expect(screen.getByTestId('select-component')).toBeDefined();
         expect(screen.getByTestId('select-button')).toBeDefined();
         expect(screen.getByTestId('select-value')).toBeDefined();
+      },
+      { timeout: 5000 }
+    );
+  });
+
+  it('sorts cards by newest date when Date sort is selected', async () => {
+    render(<CoursesPage />);
+
+    await waitFor(
+      () => {
+        const cards = screen.getAllByTestId('card');
+        expect(cards.length).toBe(2);
+        // Default order follows API response order
+        expect(cards[0]).toHaveTextContent('Test Course 1');
+      },
+      { timeout: 5000 }
+    );
+
+    fireEvent.click(screen.getByTestId('sort-by-date'));
+
+    await waitFor(
+      () => {
+        const cards = screen.getAllByTestId('card');
+        // Course 2 (2024-03-21) is newer than Course 1 (2024-03-20)
+        expect(cards[0]).toHaveTextContent('Test Course 2');
+        expect(cards[1]).toHaveTextContent('Test Course 1');
       },
       { timeout: 5000 }
     );

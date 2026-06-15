@@ -37,6 +37,17 @@ export async function GET() {
       }
     });
 
+    // Fetch average review rating per course
+    const ratingGroups = await prisma.review.groupBy({
+      by: ['courseId'],
+      where: {
+        courseId: { in: courseIds }
+      },
+      _avg: {
+        rating: true
+      }
+    });
+
     // Create Maps for O(1) lookup
     const favoritesMap = new Map<string, number>();
     favoritesGroups.forEach((group) => {
@@ -46,6 +57,11 @@ export async function GET() {
     const purchasesMap = new Map<string, number>();
     purchasesGroups.forEach((group) => {
       purchasesMap.set(group.itemId, group._sum.quantity || 0);
+    });
+
+    const ratingMap = new Map<string, number>();
+    ratingGroups.forEach((group) => {
+      ratingMap.set(group.courseId, group._avg.rating || 0);
     });
 
     const rows = courses.map((course) => ({
@@ -61,7 +77,9 @@ export async function GET() {
       selected: false,
       summary: course.description || '',
       category: course.category || 'NETWORKING',
-      orderKey: course.orderKey
+      orderKey: course.orderKey,
+      uploadDate: course.createdAt,
+      rating: ratingMap.get(course.id) || 0
     }));
 
     return NextResponse.json(rows, { status: 200 });
