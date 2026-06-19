@@ -12,6 +12,7 @@ import AdminVisualRow, {
 import { generateKeyBetween } from 'fractional-indexing';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
+import { resolveImageSrc } from '@/lib/utils';
 
 import {
   DndContext,

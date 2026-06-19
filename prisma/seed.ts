@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import {
-  ItemType,
   PrismaClient,
   CourseCategory,
   EbookCategory,
@@ -11,6 +10,7 @@ import {
 import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
+import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
 const connectionString =
   process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || '';
@@ -21,6 +21,41 @@ if (!connectionString) {
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString })
 });
+
+const cleanEnv = (key: string) => {
+  const val = process.env[key];
+  if (!val) return '';
+  return val.replace(/^['"](.*)['"]$/, '$1');
+};
+
+const s3Client = new S3Client({
+  forcePathStyle: true,
+  region: cleanEnv('SUPABASE_S3_REGION') || 'ca-central-1',
+  endpoint: cleanEnv('SUPABASE_S3_ENDPOINT'),
+  credentials: {
+    accessKeyId: cleanEnv('SUPABASE_S3_ACCESS_KEY'),
+    secretAccessKey: cleanEnv('SUPABASE_S3_SECRET_KEY')
+  }
+});
+
+const BUCKET =
+  cleanEnv('SUPABASE_S3_BUCKET') || cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
+
+async function getRemoteImages() {
+  if (!BUCKET) return [];
+  try {
+    const command = new ListObjectsV2Command({ Bucket: BUCKET });
+    const response = await s3Client.send(command);
+    return (
+      (response.Contents?.map((item) => item.Key).filter(
+        (key) => key && /\.(png|jpg|jpeg|webp)$/i.test(key)
+      ) as string[]) || []
+    );
+  } catch (err) {
+    console.error('Failed to fetch images from S3:', err);
+    return [];
+  }
+}
 
 const TITLE = 'Resume + Interview Prep (All-in-One)';
 const DESCRIPTION =
@@ -50,6 +85,12 @@ const EBOOK_THUMBNAILS = [
   '/img/ebook_image6.png'
 ];
 
+const WORKSHOP_THUMBNAILS = [
+  '/img/course_image1.png',
+  '/img/course_image2.png',
+  '/img/course_image3.png'
+];
+
 const SECTION_TITLES = [
   'Case Studies of North American Developer Job Postings',
   'Analysis of North American Developer Job Postings',
@@ -62,18 +103,6 @@ const SEEDED_INSTRUCTOR_IDS = {
 } as const;
 
 const SEEDED_REFERENCE_DATE = new Date('2026-03-25T12:00:00.000Z');
-const ORDER_ITEM_TYPES = ['COURSE', 'EBOOK', 'WORKSHOP'] as const;
-
-type SeedOrderItemType = (typeof ORDER_ITEM_TYPES)[number];
-type SeedCatalogEntry = {
-  id: string;
-  itemType: SeedOrderItemType;
-  price: number;
-};
-
-function amountToCents(amount: number) {
-  return Math.round(amount * 100);
-}
 
 function isRemoteSupabaseUrl(url: string) {
   return (
@@ -81,32 +110,6 @@ function isRemoteSupabaseUrl(url: string) {
     url.includes('pooler.supabase.com') ||
     url.includes('supabase.co')
   );
-}
-
-function createSeededRandom(seed: number) {
-  let state = seed >>> 0;
-
-  return () => {
-    state += 0x6d2b79f5;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function randomInt(rng: () => number, min: number, max: number) {
-  return Math.floor(rng() * (max - min + 1)) + min;
-}
-
-function randomPastDate(rng: () => number, maxOffsetMs: number) {
-  return new Date(
-    SEEDED_REFERENCE_DATE.getTime() - Math.floor(rng() * maxOffsetMs)
-  );
-}
-
-function pickOne<T>(rng: () => number, items: readonly T[]) {
-  return items[Math.floor(rng() * items.length)];
 }
 
 async function resetLocalSeedData() {
@@ -132,21 +135,34 @@ async function resetLocalSeedData() {
 }
 
 async function main() {
-  const dbUrl = process.env.DATABASE_URL || '';
-
-  if (isRemoteSupabaseUrl(dbUrl)) {
+  if (isRemoteSupabaseUrl(connectionString)) {
+    // Masking credentials for security in logs
+    const maskedUrl = connectionString.replace(
+      /:\/\/([^:]+):([^@]+)@/,
+      '://$1:****@'
+    );
+    console.error('❌ Remote Supabase database detected:', maskedUrl);
     throw new Error(
-      'Remote Supabase database detected. Refusing to run destructive local seed.'
+      'Remote Supabase database detected. Refusing to run destructive local seed on production/remote DB.'
     );
   }
 
-  const rng = createSeededRandom(20260325);
-  const seededCatalog: Record<SeedOrderItemType, SeedCatalogEntry[]> = {
-    COURSE: [],
-    EBOOK: [],
-    WORKSHOP: []
+  const supabaseUrl = cleanEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const remoteImages = await getRemoteImages();
+  console.log(
+    `📸 Found ${remoteImages.length} images in Supabase bucket: ${BUCKET}`
+  );
+
+  const getRandomImage = (fallback: string) => {
+    if (remoteImages.length > 0) {
+      const key = remoteImages[Math.floor(Math.random() * remoteImages.length)];
+      if (supabaseUrl && BUCKET) {
+        return `${supabaseUrl}/storage/v1/object/public/${BUCKET}/${key}`;
+      }
+      return key; // Fallback to raw key if URL/Bucket missing, resolver will handle it
+    }
+    return fallback;
   };
-  const seedOrderUsers: Array<{ id: string; roleId: string }> = [];
 
   await resetLocalSeedData();
 
@@ -185,7 +201,7 @@ async function main() {
     where: { id: instructorId },
     update: {
       name: 'Raphael. Lee',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -207,7 +223,7 @@ async function main() {
     create: {
       id: instructorId,
       name: 'Raphael. Lee',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -233,7 +249,7 @@ async function main() {
     where: { id: instructorId2 },
     update: {
       name: 'Sujin Ku',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -244,7 +260,7 @@ async function main() {
     create: {
       id: instructorId2,
       name: 'Sujin Ku',
-      profileImage: '/img/instructor-image.png',
+      profileImage: getRandomImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -262,7 +278,9 @@ async function main() {
   for (let i = 1; i <= 6; i++) {
     const courseId = courseIds[i - 1];
     const coursePrice = 2800;
-    const thumbnail = COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length];
+    const thumbnail = getRandomImage(
+      COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length]
+    );
     const categories = Object.values(CourseCategory);
     const categoryString = categories[(i - 1) % categories.length];
 
@@ -310,12 +328,6 @@ async function main() {
           }))
         }
       }
-    });
-
-    seededCatalog.COURSE.push({
-      id: courseId,
-      itemType: 'COURSE',
-      price: coursePrice
     });
 
     const sections = await prisma.section.findMany({
@@ -457,7 +469,9 @@ async function main() {
         price: ebook.price,
         bucketUrl: `https://example-bucket.s3.amazonaws.com/ebooks/guide-${i + 1}.pdf`,
         category: ebook.category,
-        thumbnail: EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length],
+        thumbnail: getRandomImage(
+          EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length]
+        ),
         isPublic: true,
         subTitle: ebook.subTitle,
         isMain: i < 4,
@@ -485,115 +499,11 @@ async function main() {
         })()
       }
     });
-
-    seededCatalog.EBOOK.push({
-      id: ebookRecordId,
-      itemType: 'EBOOK',
-      price: ebook.price
-    });
   }
 
-  console.log('Creating user roles...');
-  await prisma.userRole.upsert({
-    where: { id: 'ADMIN' },
-    update: {},
-    create: { id: 'ADMIN', label: 'ADMIN' }
-  });
-  await prisma.userRole.upsert({
-    where: { id: 'INSTRUCTOR' },
-    update: {},
-    create: { id: 'INSTRUCTOR', label: 'INSTRUCTOR' }
-  });
-  await prisma.userRole.upsert({
-    where: { id: 'USER' },
-    update: {},
-    create: { id: 'USER', label: 'USER' }
-  });
-
-  console.log('Generating stable test accounts...');
-  const stableUsers = [
-    {
-      id: '87921304-7f86-4398-9e22-420170acdb03',
-      email: 'admin@paceupcareer.com',
-      clerkId: 'user_38K4nsQvRHKpUo2ORvKpSCEAEWs',
-      roleId: 'ADMIN'
-    },
-    {
-      id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
-      email: 'user@paceupcareer.com',
-      clerkId: 'user_38K5898TBktdhW31nKDhgXUwZVF',
-      roleId: 'USER'
-    }
-  ];
-
-  for (const u of stableUsers) {
-    await prisma.user.upsert({
-      where: { email: u.email },
-      update: {
-        clerkId: u.clerkId,
-        roleId: u.roleId,
-        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
-      },
-      create: {
-        id: u.id,
-        email: u.email,
-        clerkId: u.clerkId,
-        roleId: u.roleId,
-        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
-      }
-    });
-  }
-
-  console.log('Generating stable sample users...');
-  for (let i = 1; i <= 30; i++) {
-    const email = `user${i}@example.com`;
-    const name = `User ${i}`;
-    const nickname = `Nick${i}`;
-    const createdAt = randomPastDate(rng, 10_000_000_000);
-    const lastLoginAt = randomPastDate(rng, 14 * 24 * 60 * 60 * 1000);
-
-    let roleId;
-    const roleRandom = rng();
-    if (roleRandom < 0.1) {
-      roleId = 'ADMIN';
-    } else if (roleRandom < 0.3) {
-      roleId = 'INSTRUCTOR';
-    } else {
-      roleId = 'USER';
-    }
-
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: {
-        name,
-        nickname,
-        image: null,
-        clerkId: `clerk_user_${i}`,
-        roleId,
-        isSubscribed: i % 3 === 0,
-        createdAt,
-        lastLoginAt
-      },
-      create: {
-        id: randomUUID(),
-        email,
-        name,
-        nickname,
-        image: null,
-        clerkId: `clerk_user_${i}`,
-        roleId,
-        isSubscribed: i % 3 === 0,
-        createdAt,
-        lastLoginAt
-      }
-    });
-
-    if (roleId !== 'ADMIN') {
-      seedOrderUsers.push({ id: user.id, roleId });
-    }
-  }
+  console.log(
+    'Skipping account seed data. User roles, Clerk users, sample orders, and mock reviews are managed separately.'
+  );
 
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
@@ -625,7 +535,8 @@ async function main() {
     }
   ];
 
-  for (const ws of uxDesignWorkshopData) {
+  for (let i = 0; i < uxDesignWorkshopData.length; i++) {
+    const ws = uxDesignWorkshopData[i];
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
@@ -648,18 +559,14 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        thumbnail: '/img/course_image1.png',
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
-        }
+        },
+        thumbnail: getRandomImage(
+          WORKSHOP_THUMBNAILS[i % WORKSHOP_THUMBNAILS.length]
+        )
       }
-    });
-
-    seededCatalog.WORKSHOP.push({
-      id: workshopId,
-      itemType: 'WORKSHOP',
-      price: 20
     });
   }
 
@@ -668,33 +575,30 @@ async function main() {
       title: 'Mind Training for Success',
       category: 'NETWORKING',
       status: 'ONGOING',
-      thumbnail: '/img/course_image2.png',
       date: '2026-03-16T19:00:00Z'
     },
     {
       title: "Let's Connect!",
       category: 'NETWORKING',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image3.png',
       date: '2026-05-15T19:00:00Z'
     },
     {
       title: 'Build an English Resume for Career Transitions',
       category: 'RESUME',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image1.png',
       date: '2026-08-10T19:00:00Z'
     },
     {
       title: 'Resume Workshop for International Opportunities',
       category: 'NETWORKING',
       status: 'RECRUITING',
-      thumbnail: '/img/course_image2.png',
       date: '2026-11-05T19:00:00Z'
     }
   ];
 
-  for (const ws of homeWorkshopData) {
+  for (let i = 0; i < homeWorkshopData.length; i++) {
+    const ws = homeWorkshopData[i];
     const startDate = new Date(ws.date);
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
 
@@ -717,112 +621,18 @@ async function main() {
         locationOrUrl: 'North York centre',
         status,
         category: ws.category as WorkshopCategory,
-        thumbnail: ws.thumbnail,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
           create: [{ instructorId: instructorId2 }]
-        }
+        },
+        thumbnail: getRandomImage(
+          WORKSHOP_THUMBNAILS[(i + 2) % WORKSHOP_THUMBNAILS.length]
+        )
       }
     });
-
-    seededCatalog.WORKSHOP.push({
-      id: workshopId,
-      itemType: 'WORKSHOP',
-      price: 20
-    });
   }
 
-  console.log('Generating sample orders...');
-  for (const user of seedOrderUsers) {
-    if (user.roleId === 'ADMIN') {
-      continue;
-    }
-
-    const numOrders = randomInt(rng, 1, 5);
-
-    for (let orderIndex = 0; orderIndex < numOrders; orderIndex++) {
-      const numItems = randomInt(rng, 1, 3);
-      const orderItems: SeedCatalogEntry[] = [];
-
-      for (let itemIndex = 0; itemIndex < numItems; itemIndex++) {
-        const itemType = pickOne(rng, ORDER_ITEM_TYPES);
-        const item = pickOne(rng, seededCatalog[itemType]);
-
-        orderItems.push(item);
-      }
-
-      const totalAmountCents = orderItems.reduce(
-        (sum, item) => sum + amountToCents(item.price),
-        0
-      );
-
-      await prisma.order.create({
-        data: {
-          id: randomUUID(),
-          userId: user.id,
-          totalAmountCents,
-          status: 'COMPLETED',
-          orderedAt: randomPastDate(rng, 10_000_000_000),
-          items: {
-            create: orderItems.map((item) => ({
-              itemType: item.itemType as ItemType,
-              itemId: item.id,
-              priceAtPurchaseCents: amountToCents(item.price),
-              quantity: 1
-            }))
-          }
-        }
-      });
-    }
-  }
-
-  console.log('Creating mock reviews...');
-  const users = await prisma.user.findMany({
-    where: { roleId: 'USER' },
-    orderBy: { email: 'asc' }
-  });
-  const courses = await prisma.course.findMany({
-    orderBy: { createdAt: 'asc' }
-  });
-
-  const reviewContents = [
-    {
-      rating: 5,
-      content:
-        '이력서 작성에 정말 큰 도움이 되었습니다. 특히 ATS 관련 팁은 어디서도 듣지 못한 내용이었어요!'
-    },
-    {
-      rating: 4.5,
-      content:
-        '면접 준비가 막막했는데, 이 강의 덕분에 자신감을 얻었습니다. 모의 면접 질문들이 실제와 매우 비슷했습니다.'
-    },
-    {
-      rating: 5,
-      content:
-        '강사님의 경험에서 우러나오는 조언들이 인상 깊었습니다. 해외 취업을 준비하는 분들께 강력 추천합니다.'
-    }
-  ];
-
-  if (users.length > 0 && courses.length > 0) {
-    for (const course of courses) {
-      for (let i = 0; i < 3; i++) {
-        const user = users[i % users.length];
-        const reviewData = reviewContents[i % reviewContents.length];
-
-        await prisma.review.create({
-          data: {
-            userId: user.id,
-            courseId: course.id,
-            rating: reviewData.rating,
-            content: reviewData.content,
-            createdAt: randomPastDate(rng, 90 * 24 * 60 * 60 * 1000)
-          }
-        });
-      }
-    }
-
-    console.log('🎉 Seed data created successfully!');
-  }
+  console.log('🎉 Seed data created successfully!');
 }
 
 main()
