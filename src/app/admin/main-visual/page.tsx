@@ -115,7 +115,7 @@ function VisualRow({
       <div className="relative h-[106px] w-[159px]">
         {row.thumbnail ? (
           <Image
-            src={imageSrc}
+            src={imageSrc!}
             alt={row.title || ''}
             fill
             className="rounded object-cover"
