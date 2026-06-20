@@ -142,11 +142,9 @@ export default function Page() {
   // Status UI used by AdminVisualRow
   const WorkshopStatus = ({
     row,
-    toggleRow: _toggle,
     onStatusChange: _onStatusChange
   }: {
     row: RowLike;
-    toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
     onStatusChange?: (id: string, newStatus: string) => void;
   }) => {
     const getSelectValue = (status?: string) => {

@@ -6,7 +6,7 @@ import ErrorText from '@/components/ui/admin/error-text';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import { itemCategoryLabel } from '@/constants/labels';
-import { FormType } from '@/components/admin/add-form';
+type FormType = 'course' | 'ebook' | 'workshop';
 
 type Props = {
   formType: FormType;

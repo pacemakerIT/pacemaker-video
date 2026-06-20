@@ -16,12 +16,14 @@ type LinkItem = {
 type RecommendedLinkSectionProps = {
   value?: LinkItem[];
   onChange?: (links: LinkItem[]) => void;
+  required?: boolean;
 };
 
 export default function RecommendedLinkSection({
   value,
   onChange,
-  error
+  error,
+  required = true
 }: RecommendedLinkSectionProps & { error?: string }) {
   const [localLinks, setLocalLinks] = useState<LinkItem[]>([
     { url: '', name: '', errors: {} }
@@ -113,15 +115,15 @@ export default function RecommendedLinkSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-6">
-        {effectiveLinks.map((link, i) => (
-          <div key={i} className="flex items-start gap-6">
-            <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-              추천 컨텐츠 링크 연결
-              <RequiredMark />
-            </label>
+      <div className="flex items-start gap-6">
+        <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
+          추천 컨텐츠 링크 연결
+          {required && <RequiredMark />}
+        </label>
 
-            <div className="flex flex-col flex-1 gap-2 rounded">
+        <div className="flex-1 flex flex-col gap-6">
+          {effectiveLinks.map((link, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded">
               {editStates[i] ? (
                 /* Edit Mode */
                 <>
@@ -196,17 +198,13 @@ export default function RecommendedLinkSection({
                 </div>
               )}
             </div>
-          </div>
-        ))}
-        {error && (
-          <div className="pl-[240px] -mt-4">
-            <p className="text-pace-orange-500 text-sm">{error}</p>
-          </div>
-        )}
+          ))}
 
-        {/* 링크 추가 버튼 */}
-        <div className="flex justify-end">
-          <AddButton label="링크 추가" onClick={handleAddRecommendlink} />
+          {error && <p className="text-pace-orange-500 text-sm">{error}</p>}
+
+          <div className="flex justify-end">
+            <AddButton label="링크 추가" onClick={handleAddRecommendlink} />
+          </div>
         </div>
       </div>
     </div>

@@ -2,8 +2,6 @@
 
 import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
-import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
-
 import RequiredMark from '@/components/ui/admin/required-mark';
 
 type Props = {
@@ -11,10 +9,10 @@ type Props = {
   setVisualTitle: (v: string) => void;
   visualTitle2: string;
   setVisualTitle2: (v: string) => void;
-  errors?: EbookFormErrors;
+  errors?: { visualTitle?: string; visualTitle2?: string };
 };
 
-export default function EbookVisualSection({
+export default function VisualSection({
   visualTitle,
   setVisualTitle,
   visualTitle2,

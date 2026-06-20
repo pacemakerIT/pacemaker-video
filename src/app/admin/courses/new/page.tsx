@@ -1,6 +1,6 @@
 'use client';
 
-import AddForm from '@/components/admin/add-form';
+import CourseForm from '@/components/admin/courses/course-form';
 
 export default function CourseNewPage() {
   return (
@@ -20,7 +20,7 @@ export default function CourseNewPage() {
           </span>
         </div>
 
-        <AddForm formType="course" />
+        <CourseForm />
       </div>
     </div>
   );

@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
-import EbookSectionList from './sections/ebook-section-list';
+import SectionList from '@/components/admin/common/section-list';
 import EbookRecommendedSelect from './sections/ebook-recommended-select';
-import EbookRecommendedLinkSection from './sections/ebook-recommended-link-section';
+import RecommendedLinkSection from '@/components/admin/common/recommended-link-section';
 import EbookBasicSection from './sections/ebook-basic-section';
 import EbookDetailSection from './sections/ebook-detail-section';
-import EbookVisualSection from './sections/ebook-visual-section';
-import EbookActionButtons from './sections/ebook-action-buttons';
+import VisualSection from '@/components/admin/common/visual-section';
+import ActionButtons from '@/components/admin/common/action-buttons';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import {
   createEbook,
@@ -64,7 +64,7 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       visualTitle2: '',
       recommended: [],
       sections: [{ title: '', content: '' }],
-      links: []
+      links: [{ url: '', name: '', errors: {} }]
     }
   );
 
@@ -203,11 +203,11 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       />
 
       {/* Visual Title */}
-      <EbookVisualSection
+      <VisualSection
         visualTitle={ebookData.visualTitle}
-        setVisualTitle={(v) => updateEbookData('visualTitle', v)}
+        setVisualTitle={(v: string) => updateEbookData('visualTitle', v)}
         visualTitle2={ebookData.visualTitle2}
-        setVisualTitle2={(v) => updateEbookData('visualTitle2', v)}
+        setVisualTitle2={(v: string) => updateEbookData('visualTitle2', v)}
         errors={errors}
       />
 
@@ -220,24 +220,28 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       />
 
       {/* Sections */}
-      <EbookSectionList
+      <SectionList
+        label="섹션 별 내용"
+        itemLabel="섹션"
+        addLabel="섹션 추가"
         value={ebookData.sections}
         onChange={(v) => updateEbookData('sections', v)}
         errors={errors.sections}
       />
 
       {/* Recommended Links */}
-      <EbookRecommendedLinkSection
+      <RecommendedLinkSection
         value={ebookData.links}
         onChange={(v) => updateEbookData('links', v)}
         error={errors.links}
       />
 
       {/* Actions */}
-      <EbookActionButtons
+      <ActionButtons
         onSubmit={handleSubmit}
         cancelHref="/admin/ebooks"
-        submitLabel={submitLabel}
+        submitLabel={submitLabel ?? '수정'}
+        submitBehavior="callback"
       />
     </div>
   );
