@@ -25,6 +25,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import AdminListLayout from '@/components/admin/common/admin-list-layout';
 
 type MainVisual = {
   id: string;
@@ -110,10 +111,11 @@ function VisualRow({
         {index + 1}
       </div>
 
-      <div className="w-40 relative h-[106px] w-[159px]">
-        {imageSrc ? (
+      {/* 썸네일 */}
+      <div className="relative h-[106px] w-[159px]">
+        {row.thumbnail ? (
           <Image
-            src={imageSrc}
+            src={imageSrc!}
             alt={row.title || ''}
             fill
             className="rounded object-cover"
@@ -346,27 +348,18 @@ export default function Page() {
   if (loading) return <div className="p-10">Loading...</div>;
 
   return (
-    <div className="p-10">
-      <div className="flex justify-between pb-10">
-        <h1 className="text-pace-3xl font-bold">메인 비주얼 관리</h1>
-        <button
-          onClick={handleSaveOrder}
-          className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded"
-        >
-          저장
-        </button>
-      </div>
-
-      <div>
-        {/* 메인 비주얼 리스트 */}
+    <AdminListLayout
+      title="메인 비주얼 관리"
+      onSave={handleSaveOrder}
+      listTitle={
         <div className="border-b border-pace-gray-700 pb-5">
           <span className="text-pace-xl font-bold leading-[52px]">
             메인 비주얼 리스트
           </span>
         </div>
-
-        {/* 전체 선택 */}
-        <div className="pt-6 pb-6 flex items-center">
+      }
+      leftControls={
+        <div className="flex items-center">
           <Checkbox
             checked={rows.length > 0 && rows.every((row) => row.selected)}
             onCheckedChange={(checked) => toggleAll(!!checked)}
@@ -374,43 +367,19 @@ export default function Page() {
           />
           <span className="ml-2 text-pace-sm text-pace-gray-700">전체선택</span>
         </div>
-
-        <div className="w-full pb-6">
-          {/* 헤더 */}
-          <div className="flex items-center border-b border-t border-pace-gray-100 text-pace-base text-pace-gray-500 h-[56px] pl-6 gap-x-6 text-center">
-            <div className="w-8">선택</div>
-            <div className="w-8">순서</div>
-            <div className="w-40 relative">썸네일</div>
-            <div className="flex-1">제목</div>
-            <div className="w-32">공개여부</div>
-            <div className="w-48"></div>
-          </div>
-
-          {/* 드래그 가능한 데이터 Rows */}
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={rows.map((r) => r.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {rows.map((row, index) => (
-                <VisualRow
-                  key={row.id}
-                  row={row}
-                  index={index}
-                  toggleRow={toggleRow}
-                  onDelete={handleDelete}
-                  onStatusChange={handleStatusChange}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+      }
+      tableHeader={
+        <div className="flex items-center border-b border-t border-pace-gray-100 text-pace-base text-pace-gray-500 h-[56px] pl-6 gap-x-6 text-center">
+          <div className="w-8">선택</div>
+          <div className="w-8">순서</div>
+          <div className="w-40 relative">썸네일</div>
+          <div className="flex-1">제목</div>
+          <div className="w-32">공개여부</div>
+          <div className="w-48"></div>
         </div>
-
-        <div className="flex items-center gap-2 justify-end pb-6">
+      }
+      footerRight={
+        <>
           <button
             onClick={handleDeleteSelected}
             className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center"
@@ -423,8 +392,32 @@ export default function Page() {
               추가
             </button>
           </Link>
-        </div>
+        </>
+      }
+    >
+      <div className="w-full pb-6">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={rows.map((r) => r.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {rows.map((row, index) => (
+              <VisualRow
+                key={row.id}
+                row={row}
+                index={index}
+                toggleRow={toggleRow}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
       </div>
-    </div>
+    </AdminListLayout>
   );
 }
