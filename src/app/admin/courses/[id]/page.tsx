@@ -148,12 +148,7 @@ export default function CourseEditPage({
           </span>
         </div>
 
-        <AddForm
-          formType="course"
-          initialData={courseData}
-          isEdit={true}
-          courseId={id}
-        />
+        <CourseForm initialData={courseData} isEdit={true} courseId={id} />
       </div>
     </div>
   );

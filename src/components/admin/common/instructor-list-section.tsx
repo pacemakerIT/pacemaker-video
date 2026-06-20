@@ -2,7 +2,7 @@
 
 import ExpandableCards from '@/components/common/expandable-cards';
 import AddButton from '@/components/ui/admin/add-button';
-import InstructorSection from '@/components/admin/courses/sections/instructor-section';
+import InstructorSection from '@/components/admin/common/instructor-section';
 import RequiredMark from '@/components/ui/admin/required-mark';
 
 export type InstructorData = {
