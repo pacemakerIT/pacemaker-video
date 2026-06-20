@@ -2,64 +2,58 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import type { OrderStatus } from '@prisma/client';
+import { formatMoneyFromCents } from '@/lib/money';
 import PurchaseDetailsPopup from './purchase-details-popup';
+
+export type PurchaseListItem = {
+  id: string;
+  type: string;
+  title: string;
+  priceCents: number;
+  quantity: number;
+};
+
+export type PurchasePaymentInfo = {
+  subtotalCents: number;
+  discountCents: number;
+  taxCents: number;
+  method: string;
+  installment: string;
+  card: string;
+  totalCents: number;
+  currency: string;
+};
 
 type PurchasesListProps = {
   orderNumber: string;
-  items: string[];
-  amount: number;
-  status: string;
-  date: Date;
+  items: PurchaseListItem[];
+  amountCents: number;
+  status: OrderStatus;
+  statusLabel: string;
+  date: string;
+  currency: string;
+  payment: PurchasePaymentInfo;
+  receiptUrl: string | null;
   isFirst: boolean;
 };
 
 export default function PurchasesList({
   orderNumber,
   items,
-  amount,
+  amountCents,
   status,
+  statusLabel,
   date,
+  currency,
+  payment,
+  receiptUrl,
   isFirst
 }: PurchasesListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isRefunded = status === '환불완료';
+  const isRefunded = status === 'REFUNDED';
   const textColorClass = isRefunded ? 'text-pace-stone-800' : '';
-
-  const orderDetailData = {
-    orderNumber: 'No.ABCD123456',
-    date: '2025-05-30',
-    items: [
-      {
-        type: '온라인 강의',
-        title: '자기소개서 작성 및 면접 준비까지 하나로!',
-        price: 99.99
-      },
-      {
-        type: '전자책',
-        title: '자기소개서 작성 및 면접 준비까지 하나로!',
-        price: 99.99
-      },
-      {
-        type: '워크샵',
-        title: '자기소개서 작성 및 면접 준비까지 하나로!',
-        price: 99.99
-      },
-      {
-        type: '온라인 강의',
-        title: '자기소개서 작성 및 면접 준비까지 하나로!',
-        price: 99.99
-      }
-    ],
-    payment: {
-      subtotal: 99.99,
-      discount: 99.99,
-      tax: 99.99,
-      method: '신용카드',
-      installment: '일시불',
-      card: 'visa 000 0000 000',
-      total: 999.99
-    }
-  };
+  const firstTitle = items[0]?.title ?? '구매 항목';
 
   return (
     <div className={`border-b pt-6 pb-8 ${isFirst ? 'border-t' : ''}`}>
@@ -68,14 +62,14 @@ export default function PurchasesList({
           <div
             className={`text-pace-sm font-light space-x-4 text-pace-stone-500 ${textColorClass}`}
           >
-            <span>날짜 : {date.toISOString().split('T')[0]} 결제</span>
-            <span>주문번호 : No. {orderNumber}</span>
+            <span>날짜 : {date} 결제</span>
+            <span>주문번호 : {orderNumber}</span>
           </div>
 
           <h2
             className={`text-[20px] font-medium mt-1 text-pace-gray-500 ${textColorClass}`}
           >
-            {items[0]}
+            {firstTitle}
           </h2>
 
           <button
@@ -100,8 +94,10 @@ export default function PurchasesList({
 
           {isExpanded && (
             <ul className={`mt-2 font-light space-y-2 ${textColorClass}`}>
-              {items.map((item, idx) => (
-                <li key={idx}>{item}</li>
+              {items.map((item) => (
+                <li key={item.id}>
+                  {item.type} · {item.title}
+                </li>
               ))}
             </ul>
           )}
@@ -110,21 +106,22 @@ export default function PurchasesList({
             <span
               className={`text-pace-lg font-bold text-pace-gray-500 ${textColorClass}`}
             >
-              ${amount}
+              {formatMoneyFromCents(amountCents, currency)}
             </span>
             <span
               className={`ml-2 font-light text-pace-sm text-pace-gray-700 ${textColorClass}`}
             >
-              {status}
+              {statusLabel}
             </span>
           </div>
         </div>
 
         <PurchaseDetailsPopup
-          orderNumber={orderDetailData.orderNumber}
-          date={orderDetailData.date}
-          items={orderDetailData.items}
-          payment={orderDetailData.payment}
+          orderNumber={orderNumber}
+          date={date}
+          items={items}
+          payment={payment}
+          receiptUrl={receiptUrl}
         />
       </div>
     </div>

@@ -8,37 +8,25 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
+import { formatMoneyFromCents } from '@/lib/money';
 import RefundPopup from './refund-popup';
 import SaveReceiptPopup from './save-receipt-popup';
-
-type PurchaseItem = {
-  type: string;
-  title: string;
-  price: number;
-};
-
-type PaymentInfo = {
-  subtotal: number;
-  discount: number;
-  tax: number;
-  method: string;
-  installment: string;
-  card: string;
-  total: number;
-};
+import type { PurchaseListItem, PurchasePaymentInfo } from './purchases-list';
 
 type DetailPopupProps = {
   orderNumber: string;
   date: string;
-  items: PurchaseItem[];
-  payment: PaymentInfo;
+  items: PurchaseListItem[];
+  payment: PurchasePaymentInfo;
+  receiptUrl: string | null;
 };
 
 export default function PurchaseDetailsPopup({
   orderNumber,
   date,
   items,
-  payment
+  payment,
+  receiptUrl
 }: DetailPopupProps) {
   const [isRefundPopupOpen, setIsRefundPopupOpen] = useState(false);
   const [isReceiptPopupOpen, setIsReceiptPopupOpen] = useState(false);
@@ -72,11 +60,13 @@ export default function PurchaseDetailsPopup({
               구매강의 리스트
             </h3>
             <ul className="space-y-2 pb-6 border-b border-pace-gray-700">
-              {items.map((item, idx) => (
-                <li key={idx} className="grid grid-cols-[80px_1fr_auto]">
+              {items.map((item) => (
+                <li key={item.id} className="grid grid-cols-[80px_1fr_auto]">
                   <span>{item.type}</span>
                   <span>{item.title}</span>
-                  <span className="text-right">${item.price.toFixed(2)}</span>
+                  <span className="text-right">
+                    {formatMoneyFromCents(item.priceCents, payment.currency)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -89,15 +79,27 @@ export default function PurchaseDetailsPopup({
             <div className="space-y-2 pb-6 mb-6 border-b border-pace-gray-200">
               <div className="flex justify-between">
                 <span>소계</span>
-                <span>${payment.subtotal.toFixed(2)}</span>
+                <span>
+                  {formatMoneyFromCents(
+                    payment.subtotalCents,
+                    payment.currency
+                  )}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>할인금액</span>
-                <span>${payment.discount.toFixed(2)}</span>
+                <span>
+                  {formatMoneyFromCents(
+                    payment.discountCents,
+                    payment.currency
+                  )}
+                </span>
               </div>
               <div className="flex justify-between mb-4">
                 <span>세금</span>
-                <span>${payment.tax.toFixed(2)}</span>
+                <span>
+                  {formatMoneyFromCents(payment.taxCents, payment.currency)}
+                </span>
               </div>
             </div>
             <div>
@@ -118,7 +120,9 @@ export default function PurchaseDetailsPopup({
 
           <div className="flex justify-between items-center font-medium text-[20px] text-pace-gray-500">
             <span>총 결제 금액</span>
-            <span>${payment.total.toFixed(2)}</span>
+            <span>
+              {formatMoneyFromCents(payment.totalCents, payment.currency)}
+            </span>
           </div>
         </div>
 
@@ -126,6 +130,7 @@ export default function PurchaseDetailsPopup({
           <SaveReceiptPopup
             open={isReceiptPopupOpen}
             onOpenChange={setIsReceiptPopupOpen}
+            receiptUrl={receiptUrl}
           />
           <RefundPopup
             open={isRefundPopupOpen}
