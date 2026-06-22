@@ -1,29 +1,195 @@
+'use client';
+
 import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
-import { useRouter } from 'next/navigation';
+import { amountToCents, formatMoneyFromCents } from '@/lib/money';
+import { toast } from 'sonner';
 
 interface PaymentSummaryProps {
   cartItems: CartItem[];
 }
 
 export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
-  const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isApplyingPromotionCode, setIsApplyingPromotionCode] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [promotionCodeInput, setPromotionCodeInput] = useState('');
+  const [appliedPromotionCode, setAppliedPromotionCode] = useState<
+    string | null
+  >(null);
 
   const selectedItem = cartItems.filter((item) => item.selected);
+  const selectedItemsPayload = selectedItem.map((item) => ({
+    itemId: item.itemId,
+    itemType: item.type
+  }));
   const subtotal = selectedItem.reduce(
     (acc, item) => acc + (Number(item.price) || 0),
     0
   );
-  const discount = 20;
-  const tax = subtotal * 0.13;
-  const total = subtotal - discount + tax;
+  const subtotalCents = amountToCents(subtotal);
+  const discountCents = 0;
+  const taxCents = 0;
+  const totalCents = subtotalCents - discountCents + taxCents;
+  const isCheckoutDisabled = selectedItem.length === 0 || isCheckingOut;
+  const formatCartAmount = (cents: number) =>
+    formatMoneyFromCents(cents, 'cad', 'en-US');
+  const trimmedPromotionCode = promotionCodeInput.trim();
+  const discountDisplay = appliedPromotionCode
+    ? 'Stripe Checkout에서 적용'
+    : `-${formatCartAmount(discountCents)}`;
+  const totalLabel = appliedPromotionCode
+    ? '할인 전 예상 금액'
+    : '총 결제 금액';
 
-  const goToPaymentSuccess = () => {
-    router.push('/mypage/payment-success');
+  const handlePromotionCodeChange = (value: string) => {
+    setPromotionCodeInput(value);
+
+    if (
+      appliedPromotionCode &&
+      value.trim().toLowerCase() !== appliedPromotionCode.toLowerCase()
+    ) {
+      setAppliedPromotionCode(null);
+    }
   };
+
+  const applyPromotionCode = async () => {
+    if (selectedItem.length === 0) {
+      const message = '결제할 항목을 선택해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (!trimmedPromotionCode) {
+      const message = '프로모션 코드를 입력해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    setIsApplyingPromotionCode(true);
+    setCheckoutError(null);
+
+    try {
+      const response = await fetch('/api/stripe/validate-promotion-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedItems: selectedItemsPayload,
+          promotionCode: trimmedPromotionCode
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.promotionCode?.code) {
+        throw new Error(data.error || '프로모션 코드를 적용하지 못했습니다.');
+      }
+
+      setAppliedPromotionCode(data.promotionCode.code);
+      setPromotionCodeInput(data.promotionCode.code);
+      toast.success('프로모션 코드가 적용되었습니다.');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '프로모션 코드를 적용하지 못했습니다.';
+
+      setAppliedPromotionCode(null);
+      setCheckoutError(message);
+      toast.error(message);
+    } finally {
+      setIsApplyingPromotionCode(false);
+    }
+  };
+
+  const startCheckout = async () => {
+    if (selectedItem.length === 0) {
+      const message = '결제할 항목을 선택해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    if (trimmedPromotionCode && !appliedPromotionCode) {
+      const message = '프로모션 코드를 먼저 등록해주세요.';
+      setCheckoutError(message);
+      toast.error(message);
+      return;
+    }
+
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+
+    try {
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedItems: selectedItemsPayload,
+          ...(appliedPromotionCode
+            ? { promotionCode: appliedPromotionCode }
+            : {})
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.checkoutUrl) {
+        throw new Error(data.error || '체크아웃을 시작하지 못했습니다.');
+      }
+
+      window.location.assign(data.checkoutUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '체크아웃을 시작하지 못했습니다.';
+
+      setCheckoutError(message);
+      toast.error(message);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  const renderPromotionControls = (className = '') => (
+    <div className={className}>
+      <div className="flex gap-1 text-pace-sm">
+        <input
+          type="text"
+          value={promotionCodeInput}
+          onChange={(event) => handlePromotionCodeChange(event.target.value)}
+          placeholder="프로모션 코드 입력"
+          className="min-w-0 flex-1 rounded-full border border-[#EEEEEE] px-4 py-2 placeholder-[#757575] focus:border-[#6F6F6F] focus:outline-none"
+        />
+        <button
+          type="button"
+          className="shrink-0 rounded-full border border-[#EEEEEE] px-4 py-2 text-pace-gray-700 hover:border-[#6F6F6F] disabled:cursor-not-allowed disabled:text-pace-stone-500 disabled:hover:border-[#EEEEEE]"
+          onClick={applyPromotionCode}
+          disabled={
+            isApplyingPromotionCode ||
+            selectedItem.length === 0 ||
+            !trimmedPromotionCode
+          }
+        >
+          {isApplyingPromotionCode
+            ? '확인 중...'
+            : appliedPromotionCode
+              ? '변경'
+              : '등록'}
+        </button>
+      </div>
+      {appliedPromotionCode && (
+        <p className="mt-2 text-pace-sm text-pace-orange-600">
+          적용된 코드: {appliedPromotionCode}
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <>
       <aside className="hidden lg:block w-80 h-full border-l p-10 pt-20">
@@ -31,37 +197,41 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
         <ul className="space-y-4 mb-6 font-normal border-b border-pace-gray-700 pb-6 text-pace-base text-pace-gray-700">
           <li className="flex justify-between">
             <span className="text-[#6B7280]">
-              소계 ({selectedItem.length}개의 강의)
+              소계 ({selectedItem.length}개 항목)
             </span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{formatCartAmount(subtotalCents)}</span>
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">할인 금액</span>
-            <span>-${discount.toFixed(2)}</span>
+            <span>{discountDisplay}</span>
           </li>
           <li className="flex justify-between">
             <span className="text-[#6B7280]">세금</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>{formatCartAmount(taxCents)}</span>
           </li>
         </ul>
         <div className="flex justify-between text-pace-base font-semibold pb-6">
-          <span className="text-pace-gray-700">총 결제 금액</span>
-          <span className="text-[#E86642] font-bold">${total.toFixed(2)}</span>
+          <span className="text-pace-gray-700">{totalLabel}</span>
+          <span className="text-[#E86642] font-bold">
+            {formatCartAmount(totalCents)}
+          </span>
         </div>
-        <input
-          type="text"
-          placeholder="프로모션 코드 입력"
-          className="w-full flex-1 mb-1 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
-        />
-        <button className="w-full px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
-          등록
-        </button>
+        {appliedPromotionCode && (
+          <p className="-mt-4 mb-4 text-pace-sm text-pace-stone-500">
+            프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
+          </p>
+        )}
+        {renderPromotionControls('mb-4')}
         <button
-          className="w-full h-[56px] bg-orange-500 text-white py-2 mt-6 rounded-full"
-          onClick={goToPaymentSuccess}
+          className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
+          onClick={startCheckout}
+          disabled={isCheckoutDisabled}
         >
-          결제하기
+          {isCheckingOut ? '처리 중...' : '결제하기'}
         </button>
+        {checkoutError && (
+          <p className="mt-3 text-pace-sm text-red-600">{checkoutError}</p>
+        )}
         <div className="flex justify-center mt-6 text-pace-stone-700 text-[12px]">
           Secure payment powered by Stripe
         </div>
@@ -100,49 +270,50 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
               <ul className="space-y-4 font-normal text-pace-base text-pace-gray-700">
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">
-                    소계 ({selectedItem.length}개의 강의)
+                    소계 ({selectedItem.length}개 항목)
                   </span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatCartAmount(subtotalCents)}</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">할인 금액</span>
-                  <span>-${discount.toFixed(2)}</span>
+                  <span>{discountDisplay}</span>
                 </li>
                 <li className="flex justify-between">
                   <span className="text-[#6B7280]">세금</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{formatCartAmount(taxCents)}</span>
                 </li>
               </ul>
-              <div className="border-b border-pace-gray-700 mb-4">
-                <div className="w-60 h-[37px] flex gap-1 my-6 text-pace-sm ml-auto">
-                  <input
-                    type="text"
-                    placeholder="프로모션 코드 입력"
-                    className="flex-1 min-w-0 px-4 py-2 placeholder-[#757575] rounded-full border border-[#EEEEEE] focus:border-[#6F6F6F] focus:outline-none"
-                  />
-                  <button className="px-4 py-2 text-pace-gray-700 rounded-full border border-[#EEEEEE] hover:border-[#6F6F6F]">
-                    등록
-                  </button>
-                </div>
-              </div>
+              {renderPromotionControls('my-6 ml-auto w-60')}
+              <div className="mt-4 border-b border-pace-gray-700" />
             </div>
           )}
 
           {/* 총 금액 & 결제 버튼 */}
           <div className="w-2/3 flex justify-between items-center text-pace-xl">
-            <span className="font-medium">총 결제 금액</span>
+            <span className="font-medium">{totalLabel}</span>
             <div className="flex items-center gap-4">
               <span className="text-[#E86642] font-bold">
-                ${total.toFixed(2)}
+                {formatCartAmount(totalCents)}
               </span>
               <button
-                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg"
-                onClick={goToPaymentSuccess}
+                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg disabled:cursor-not-allowed disabled:bg-pace-stone-300"
+                onClick={startCheckout}
+                disabled={isCheckoutDisabled}
               >
-                결제하기
+                {isCheckingOut ? '처리 중...' : '결제하기'}
               </button>
             </div>
           </div>
+          {appliedPromotionCode && (
+            <p className="mt-3 w-2/3 text-right text-pace-sm text-pace-stone-500">
+              프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
+            </p>
+          )}
+          {checkoutError && (
+            <p className="mt-3 w-2/3 text-right text-pace-sm text-red-600">
+              {checkoutError}
+            </p>
+          )}
         </div>
       </aside>
     </>

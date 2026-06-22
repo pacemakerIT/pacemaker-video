@@ -1,46 +1,140 @@
 import Image from 'next/image';
-import { CustomBadge } from '@/components/common/custom-badge';
-import { CartItem } from '@/types/my-card';
 import Link from 'next/link';
+import { auth } from '@clerk/nextjs/server';
+import { CustomBadge } from '@/components/common/custom-badge';
+import { itemCategoryLabel } from '@/constants/labels';
+import { getOrderDisplayBySessionId, OrderDisplay } from '@/lib/order-display';
+import { formatMoneyFromCents } from '@/lib/money';
+import prisma from '@/lib/prisma';
+import { resolveImageSrc } from '@/lib/utils';
 
-const items: CartItem[] = [
-  {
-    id: '1',
-    itemId: '4e8wv1z7tl',
-    title: 'UX Design Fundamentals',
-    price: 2800,
-    category: 'Marketing',
-    type: '전자책'
-  },
-  {
-    id: '2',
-    itemId: '4e8wv1z7tl',
-    title: 'UX Design Fundamentals',
-    price: 15.99,
-    category: 'Interview',
-    type: '온라인 강의'
-  },
-  {
-    id: '3',
-    itemId: '4e8wv1z7tl',
-    title: '성공을 부르는 마인드 트레이닝',
-    price: 20,
-    category: '',
-    date: new Date('2025-05-10'),
-    type: '워크샵'
-  },
-  {
-    id: '4',
-    itemId: '4e8wv1z7tl',
-    title: 'Test3',
-    price: 9.57,
-    category: 'Resume',
-    type: '온라인 강의'
+type PaymentSuccessProps = {
+  searchParams: Promise<{
+    session_id?: string | string[];
+  }>;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+async function getOrder(sessionId: string | undefined) {
+  if (!sessionId) return null;
+
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) return null;
+
+  const currentUser = await prisma.user.findUnique({
+    where: { clerkId: clerkUserId },
+    select: { id: true }
+  });
+
+  if (!currentUser) return null;
+
+  return getOrderDisplayBySessionId(sessionId, currentUser.id);
+}
+
+function EmptyState({ hasSessionId }: { hasSessionId: boolean }) {
+  return (
+    <section className="flex-1 p-10 pt-20">
+      <h1 className="mb-20 text-pace-xl font-bold text-pace-gray-700">
+        장바구니
+      </h1>
+      <div className="flex flex-col gap-4 items-center justify-center text-center">
+        <h2 className="text-[20px] font-medium text-pace-gray-700">
+          결제 정보를 찾을 수 없습니다.
+        </h2>
+        <p className="text-pace-stone-500">
+          {hasSessionId
+            ? '현재 계정에서 확인할 수 있는 주문이 없습니다.'
+            : 'Stripe 결제 세션 정보가 없습니다.'}
+        </p>
+        <Link
+          href="/mypage/cart"
+          className="mt-4 bg-pace-orange-800 px-10 py-4 rounded-full text-pace-white-500 hover:bg-pace-orange-600"
+        >
+          장바구니로 돌아가기
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function OrderItems({ order }: { order: OrderDisplay }) {
+  return (
+    <div className="mt-20 space-y-4 text-[20px] text-pace-gray-500">
+      {order.items.map((item, index) => {
+        const imageSrc =
+          resolveImageSrc({
+            thumbnail: item.thumbnail,
+            itemType: item.itemType
+          }) || '/img/resume_lecture.jpeg';
+        const category =
+          item.category &&
+          (itemCategoryLabel.en[item.category] ?? item.category);
+
+        return (
+          <div
+            key={item.id}
+            className={`flex items-center border-b p-4 !m-0 ${index === 0 ? 'border-t' : ''}`}
+          >
+            <div className="w-20 h-4 text-pace-sm text-center text-pace-stone-500 mx-6">
+              {item.typeLabel}
+            </div>
+            <Image
+              src={imageSrc}
+              alt={item.title}
+              width={160}
+              height={106}
+              className="w-40 h-[106px] rounded-lg object-cover"
+            />
+            <div className="ml-6">
+              {category && (
+                <CustomBadge
+                  variant={category}
+                  className="w-fit flex justify-center items-center py-2 px-3"
+                >
+                  {category}
+                </CustomBadge>
+              )}
+              {item.startsAt && (
+                <div className="text-pace-sm">
+                  {item.startsAt.toISOString().slice(0, 10).replace(/-/g, '.')}
+                </div>
+              )}
+
+              <div className="mt-2">{item.title}</div>
+              <div className="mt-2 font-bold text-pace-gray-500 text-pace-lg">
+                {formatMoneyFromCents(item.priceCents, order.currency)}
+              </div>
+            </div>
+            <Link
+              href={item.actionHref}
+              className="min-w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
+            >
+              {item.actionLabel}
+            </Link>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default async function PaymentSuccess({
+  searchParams
+}: PaymentSuccessProps) {
+  const params = await searchParams;
+  const sessionId = firstParam(params.session_id);
+  const order = await getOrder(sessionId);
+
+  if (!order) {
+    return <EmptyState hasSessionId={Boolean(sessionId)} />;
   }
-];
 
-export default function PaymentSuccess() {
-  const paymentNumber = 'AA0000';
+  const isFinalizedOrder = order.status === 'COMPLETED';
+  const amountLabel = isFinalizedOrder ? '총 결제 금액' : '주문 기준 금액';
+
   return (
     <section className="flex-1 p-10 pt-20">
       <h1 className="mb-20 text-pace-xl font-bold text-pace-gray-700">
@@ -53,13 +147,26 @@ export default function PaymentSuccess() {
           width={32}
           height={32}
         />
-        <h1 className="text-[20px] font-medium text-pace-gray-700">결제완료</h1>
+        <h2 className="text-[20px] font-medium text-pace-gray-700">
+          {order.status === 'COMPLETED' ? '결제완료' : order.statusLabel}
+        </h2>
         <p className="text-pace-stone-500">
-          결제가 완료되었습니다.
+          주문 정보가 접수되었습니다.
           <br />
-          결제번호는 <span className="font-semibold">{paymentNumber}</span>{' '}
+          주문번호는 <span className="font-semibold">
+            {order.orderNumber}
+          </span>{' '}
           입니다.
         </p>
+        <p className="text-pace-base font-semibold text-pace-gray-700">
+          {amountLabel}:{' '}
+          {formatMoneyFromCents(order.totalAmountCents, order.currency)}
+        </p>
+        {!isFinalizedOrder && (
+          <p className="text-pace-sm text-pace-stone-500">
+            프로모션 할인 및 최종 청구 금액은 Stripe 결제 내역에서 확인됩니다.
+          </p>
+        )}
       </div>
 
       <div className="flex mt-6 gap-4 items-center justify-center text-center">
@@ -77,57 +184,7 @@ export default function PaymentSuccess() {
         </Link>
       </div>
 
-      <div className="mt-20 space-y-4 text-[20px] text-pace-gray-500">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className={`flex items-center border-b p-4 !m-0 ${index == 0 ? 'border-t' : ''}`}
-          >
-            <div className="w-20 h-4 text-pace-sm text-center text-pace-stone-500 mx-6">
-              {item.type}
-            </div>
-            <Image
-              src="/img/resume_lecture.jpeg"
-              alt={item.title}
-              width={160}
-              height={106}
-              className="w-40 h-[106px] rounded-lg object-cover"
-            />
-            <div className="ml-6">
-              {item.category && (
-                <CustomBadge
-                  variant={item.category}
-                  className="w-fit flex justify-center items-center py-2 px-3"
-                >
-                  {item.category}
-                </CustomBadge>
-              )}
-              {item.date && (
-                <div className="text-pace-sm">
-                  {item.date && (
-                    <div className="text-pace-sm">
-                      {item.date.toISOString().slice(0, 10).replace(/-/g, '.')}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="mt-2">{item.title}</div>
-              <div className="mt-2 font-bold text-pace-gray-500 text-pace-lg">
-                ${item.price}
-              </div>
-            </div>
-            <Link
-              href="/purchase"
-              className="min-w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
-            >
-              {item.type === '워크샵' ? 'View detail' : '수강하러 가기'}
-            </Link>
-
-            <button className=""></button>
-          </div>
-        ))}
-      </div>
+      <OrderItems order={order} />
     </section>
   );
 }

@@ -1,5 +1,30 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
+
+const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
+  모집중: WorkshopStatus.RECRUITING,
+  모집완료: WorkshopStatus.CLOSED,
+  진행중: WorkshopStatus.ONGOING,
+  진행완료: WorkshopStatus.COMPLETED
+};
+
+interface InstructorInput {
+  name: string;
+  intro: string;
+  photoUrl: string;
+  careers?: {
+    startDate: string;
+    endDate: string;
+    isCurrent: boolean;
+    description: string;
+  }[];
+}
+
+interface SectionInput {
+  title: string;
+  content: string;
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -156,6 +181,126 @@ export async function GET(req: Request) {
     console.error(`[API ERROR] /api/workshops:`, error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const {
+      category,
+      recruitStatus,
+      showOnMain,
+      title,
+      description,
+      startDate,
+      endDate,
+      location,
+      processContent,
+      price,
+      thumbnailUrl,
+      sections,
+      instructors
+    } = body;
+
+    if (!title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+    if (!startDate || !endDate) {
+      return NextResponse.json(
+        { error: 'startDate and endDate are required' },
+        { status: 400 }
+      );
+    }
+
+    const newWorkshop = await prisma.$transaction(async (tx) => {
+      const workshop = await tx.workshop.create({
+        data: {
+          category: (category as WorkshopCategory) || null,
+          status:
+            RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.RECRUITING,
+          isMain: showOnMain ?? false,
+          title,
+          description,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          locationOrUrl: location || null,
+          processContent: processContent || null,
+          price: price != null ? parseFloat(price) : null,
+          thumbnail: thumbnailUrl || null,
+          instructors: {
+            create: (instructors || []).map((inst: InstructorInput) => ({
+              instructor: {
+                create: {
+                  name: inst.name,
+                  description: inst.intro,
+                  profileImage: inst.photoUrl || null,
+                  careers: inst.careers || []
+                }
+              }
+            }))
+          }
+        }
+      });
+
+      if (sections && sections.length > 0) {
+        for (let i = 0; i < sections.length; i++) {
+          const s: SectionInput = sections[i];
+          await tx.section.create({
+            data: {
+              title: s.title,
+              description: s.content,
+              orderIndex: i,
+              workshopId: workshop.id
+            }
+          });
+        }
+      }
+
+      return workshop;
+    });
+
+    return NextResponse.json(
+      { message: 'Workshop created successfully', workshop: newWorkshop },
+      { status: 201 }
+    );
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`[API ERROR] POST /api/workshops:`, error);
+    return NextResponse.json(
+      { error: `Failed to create workshop: ${error}` },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { ids } = await request.json();
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { error: 'No IDs provided for deletion' },
+        { status: 400 }
+      );
+    }
+
+    const { count } = await prisma.workshop.deleteMany({
+      where: {
+        id: { in: ids }
+      }
+    });
+
+    return NextResponse.json({
+      message: `${count} workshops deleted successfully`
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`[API ERROR] DELETE /api/workshops:`, error);
+    return NextResponse.json(
+      { error: `Failed to delete workshops: ${error}` },
       { status: 500 }
     );
   }

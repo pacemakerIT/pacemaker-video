@@ -34,8 +34,6 @@ type Props = {
   setWorkshopLocation?: (v: string) => void;
   workshopProcessContent?: string;
   setWorkshopProcessContent?: (v: string) => void;
-  priceNote?: string;
-  setPriceNote?: (v: string) => void;
   // shared
   // Shared
   price: string;
@@ -69,8 +67,6 @@ export default function DetailSection({
   setWorkshopLocation,
   workshopProcessContent,
   setWorkshopProcessContent,
-  priceNote,
-  setPriceNote,
   price,
   setPrice,
   time,
@@ -295,17 +291,7 @@ export default function DetailSection({
             <ErrorText message={errors?.price} />
           </div>
 
-          {isWorkshop ? (
-            <div className="flex flex-col flex-1">
-              <Input
-                type="text"
-                value={priceNote ?? ''}
-                onChange={(e) => setPriceNote?.(e.target.value)}
-                placeholder="추가 내용 입력"
-                className="w-full"
-              />
-            </div>
-          ) : (
+          {!isWorkshop && (
             <div className="flex flex-col">
               <TimeInput
                 value={time}
