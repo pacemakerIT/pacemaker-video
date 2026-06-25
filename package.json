@@ -62,7 +62,7 @@
     "react-hook-form": "^7.80.0",
     "react-pdf": "^10.4.0",
     "sonner": "^2.0.7",
-    "stripe": "^22.2.1",
+    "stripe": "^22.2.3",
     "svix": "^1.95.2",
     "tailwind-merge": "^3.6.0",
     "uuid": "^14.0.1",
