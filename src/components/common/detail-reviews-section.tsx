@@ -22,6 +22,8 @@ interface DetailReviewsSectionProps {
   initialVisibleCount?: number;
   loadMoreCount?: number;
   loadMoreButtonText?: string;
+  headerClassName?: string;
+  cardClassName?: string;
 }
 
 export default function DetailReviewsSection({
@@ -31,7 +33,9 @@ export default function DetailReviewsSection({
   reviewCount = 0,
   initialVisibleCount = 5,
   loadMoreCount = 5,
-  loadMoreButtonText = '리뷰 더보기'
+  loadMoreButtonText = '리뷰 더보기',
+  headerClassName,
+  cardClassName
 }: DetailReviewsSectionProps) {
   const [visibleReviews, setVisibleReviews] = useState(initialVisibleCount);
 
@@ -42,7 +46,7 @@ export default function DetailReviewsSection({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col sm:flex-row justify-start sm:items-center gap-3 sm:gap-0">
-        <SectionHeader title={title} className={'!w-fit'} />
+        <SectionHeader title={title} className={headerClassName ?? '!w-fit'} />
         <div className="flex flex-wrap items-center justify-start gap-2 sm:ml-4 pr-12">
           <span className="text-xl font-medium shrink-0 whitespace-nowrap">
             {rating} / 5
@@ -75,6 +79,7 @@ export default function DetailReviewsSection({
               rating={review.rating}
               reviewDate={review.reviewDate}
               reviewContent={review.reviewContent}
+              className={cardClassName}
             />
           ))}
         </div>

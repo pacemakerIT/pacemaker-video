@@ -4,18 +4,7 @@ import {
   ChevronUp,
   ChevronDown,
   CirclePlay,
-  ChevronLeft,
-  CodeXml,
-  FileSignature,
-  HelpCircle,
-  Code2,
-  Users,
-  BarChart3,
-  Palette,
-  FileText,
-  MessageSquare,
-  Share2,
-  Heart
+  ChevronLeft
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -24,7 +13,6 @@ import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
 import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
-import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 import { resolveImageSrc } from '@/lib/utils';
@@ -248,41 +236,6 @@ export default function VideoDetailContainer({
       content: section.description || ''
     })) || [];
 
-  // Icon mapping for recommendation items
-  const getIcon = (iconName: string | null) => {
-    switch (iconName) {
-      case 'CodeXml':
-        return CodeXml;
-      case 'FileSignature':
-        return FileSignature;
-      case 'Code2':
-        return Code2;
-      case 'Users':
-        return Users;
-      case 'BarChart3':
-        return BarChart3;
-      case 'Palette':
-        return Palette;
-      case 'FileText':
-        return FileText;
-      case 'MessageSquare':
-        return MessageSquare;
-      case 'Share2':
-        return Share2;
-      case 'Heart':
-        return Heart;
-      default:
-        return HelpCircle;
-    }
-  };
-
-  const recommendationItems =
-    data.course.targetAudiences?.map((item) => ({
-      icon: getIcon(item.icon),
-      label: item.label,
-      text: item.content
-    })) || [];
-
   const relatedContentItems =
     data.course.resolvedRecommendedCourses &&
     data.course.resolvedRecommendedCourses.length > 0
@@ -297,92 +250,132 @@ export default function VideoDetailContainer({
           thumbnail: course.thumbnail
         })) || [];
 
+  const isWatchingVideo = Boolean(isSignedIn && selectedMediaId);
+
+  let selectedVideoTitle = data.course.title || '';
+  let selectedSectionTitle = '';
+  for (const section of data.course.sections) {
+    const video = section.videos.find((v) => v.videoId === selectedMediaId);
+    if (video) {
+      selectedVideoTitle = video.title || selectedVideoTitle;
+      selectedSectionTitle = section.title;
+      break;
+    }
+  }
+
+  const totalLessonsCount = data.course.sections.reduce(
+    (sum, section) => sum + section.videos.length,
+    0
+  );
+
   return (
     <div className="flex flex-col w-full h-full relative">
-      <DetailHeroSection
-        visualTitle={data.course.visualTitle || undefined}
-        visualTitle2={data.course.visualTitle2}
-        title={data.course.title || ''}
-        description={data.course.description || ''}
-        price={data.course.price || ''}
-        instructor={
-          data.instructors?.map((inst) => inst.name).join(', ') ||
-          '페이스메이커'
-        }
-        backgroundImage={resolveImageSrc({
-          thumbnailUrl: data.course.thumbnailUrl,
-          itemType: ItemType.COURSE
-        })}
-        onAddToCart={handleAddToCart}
-        onToggleLike={handleToggleLike}
-        isLiked={isLiked}
-        buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
-        itemType={ItemType.COURSE}
-      />
-
-      <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
-        {isSignedIn && selectedMediaId && (
-          <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
-            <WistiaPlayer
-              mediaId={selectedMediaId}
-              id="wistia-player-container-1"
-            />
+      {isWatchingVideo ? (
+        <section className="w-full bg-[#f2f4f7] py-10 border-b border-gray-200">
+          <div className="max-w-[1200px] mx-auto px-6">
+            <div className="flex flex-col shadow-2xl relative overflow-hidden bg-white rounded-2xl">
+              <div className="relative w-full aspect-video bg-black">
+                <WistiaPlayer
+                  mediaId={selectedMediaId}
+                  id="wistia-player-container-1"
+                />
+              </div>
+              <div className="p-6 bg-white border-t border-gray-100">
+                <h2 className="text-2xl font-bold text-[#00263b] mb-1 leading-tight">
+                  {selectedVideoTitle}
+                </h2>
+                {selectedSectionTitle && (
+                  <p className="text-sm text-gray-700 font-medium leading-normal">
+                    {selectedSectionTitle}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-        )}
+        </section>
+      ) : (
+        <DetailHeroSection
+          visualTitle={data.course.visualTitle || undefined}
+          visualTitle2={data.course.visualTitle2}
+          title={data.course.title || ''}
+          description={data.course.description || ''}
+          price={data.course.price || ''}
+          instructor={
+            data.instructors?.map((inst) => inst.name).join(', ') ||
+            '페이스메이커'
+          }
+          backgroundImage={resolveImageSrc({
+            thumbnailUrl: data.course.thumbnailUrl,
+            itemType: ItemType.COURSE
+          })}
+          onAddToCart={handleAddToCart}
+          onToggleLike={handleToggleLike}
+          isLiked={isLiked}
+          buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
+          itemType={ItemType.COURSE}
+        />
+      )}
 
-        <div className="flex flex-col gap-8">
+      <div className="max-w-[1200px] mx-auto px-6 py-20 space-y-20">
+        <div>
           <SectionHeader
             subtitle="How the Course Works"
             title={
               data.course.processTitle ||
               'Step by Step: From a Strong Developer Resume to Interviews'
             }
+            className="mb-12 [&_h5]:text-[#ff4f02] [&_h5]:font-bold [&_h5]:text-base [&_h3]:text-[#00263b] [&_h3]:text-3xl"
           />
-          <div className="flex gap-4">
-            <div className="w-[60%] text-pace-stone-500 whitespace-pre-wrap">
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-16">
+            <div className="w-full lg:w-[680px] text-gray-500 leading-relaxed whitespace-pre-wrap">
               {data.course.processContent ||
                 'Detailed course description not available.'}
             </div>
-            <ExpandableCards items={contentItems} />
+            <ExpandableCards
+              items={contentItems}
+              className="w-full lg:w-[480px] max-w-none mx-0"
+              itemClassName="bg-white rounded-none border border-gray-200"
+              titleClassName="text-[#00263b]"
+              labelClassName="text-gray-500"
+            />
           </div>
         </div>
 
         {data.instructors && data.instructors.length > 0 && (
-          <div className="flex flex-col w-full gap-8">
-            <SectionHeader title="Instructor Introduction" />
+          <div className="flex flex-col w-full">
+            <SectionHeader
+              title="Instructor Introduction"
+              className="mb-12 [&_h3]:text-[#00263b] [&_h3]:text-3xl"
+            />
             <Carousel setApi={setApi} className="w-full">
               <CarouselContent>
                 {data.instructors.map((instructor, idx) => (
                   <CarouselItem key={instructor.id || idx}>
-                    <div className="w-full flex gap-10">
-                      <div className="w-[70%] gap-6">
-                        <h3 className="font-semibold text-[20px]">
+                    <div className="w-full flex flex-col lg:flex-row lg:justify-between gap-16">
+                      <div className="w-full lg:w-[680px]">
+                        <h3 className="text-2xl font-bold text-[#00263b] mb-4">
                           {instructor.name}
                         </h3>
-                        <p className="text-pace-stone-500 leading-relaxed">
+                        <p className="text-gray-500 mb-8 leading-relaxed">
                           {instructor.description}
                         </p>
-                        <div className="mt-6">
-                          <h4 className="text-pace-base font-regular mb-4">
-                            Career
-                          </h4>
-                          <table className="w-full">
-                            <tbody className="text-pace-stone-500">
-                              {instructor.careers.map((careerItem, index) => (
-                                <tr key={index}>
-                                  <td className="py-1 pr-4">
-                                    {careerItem.period}
-                                  </td>
-                                  <td className="py-1">
-                                    {careerItem.position}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                        <h4 className="font-bold text-[#00263b] mb-4">
+                          Career
+                        </h4>
+                        <table className="w-full text-sm">
+                          <tbody className="text-gray-500">
+                            {instructor.careers.map((careerItem, index) => (
+                              <tr key={index}>
+                                <td className="py-1 pr-8 w-24">
+                                  {careerItem.period}
+                                </td>
+                                <td className="py-1">{careerItem.position}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
-                      <div className="w-[30%]">
+                      <div className="w-full lg:w-[480px] flex flex-col">
                         {(() => {
                           const profileImage = resolveImageSrc({
                             thumbnail: instructor.profileImage
@@ -397,8 +390,17 @@ export default function VideoDetailContainer({
                               />
                             </div>
                           ) : (
-                            <div className="w-full aspect-square bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
-                              No Image
+                            <div className="w-full flex-1 min-h-[400px] bg-gray-50 flex items-center justify-center p-8 text-center">
+                              <div>
+                                <p className="text-2xl font-bold text-[#00263b] mb-2">
+                                  Profile Photo
+                                </p>
+                                <p className="text-gray-400">
+                                  Recommended: Avatar-style image
+                                  <br />
+                                  (e.g., ZEPETO)
+                                </p>
+                              </div>
                             </div>
                           );
                         })()}
@@ -410,14 +412,14 @@ export default function VideoDetailContainer({
             </Carousel>
 
             {count > 1 && (
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex justify-center gap-3 mt-16">
                 {Array.from({ length: count }).map((_, i) => (
                   <button
                     key={i}
-                    className={`w-4 h-4 rounded-full transition-all ${
+                    className={`w-[18px] h-[18px] rounded-full transition-colors duration-300 ${
                       current === i
-                        ? 'bg-pace-orange-600'
-                        : 'bg-pace-gray-100 hover:bg-pace-orange-600'
+                        ? 'bg-[#ff4f02]'
+                        : 'bg-[#eeeeee] hover:bg-gray-300'
                     }`}
                     onClick={() => api?.scrollTo(i)}
                     aria-label={`Go to slide ${i + 1}`}
@@ -428,15 +430,17 @@ export default function VideoDetailContainer({
           </div>
         )}
 
-        <DetailRecommendationSection items={recommendationItems} />
-
         <DetailRelatedContentSection
           title={'You May Also Like'}
           items={relatedContentItems}
+          headerClassName="mb-12 [&_h3]:text-[#00263b] [&_h3]:text-3xl"
+          cardClassName="rounded-none shadow-[0_10px_30px_rgba(0,38,59,0.08)] border-gray-100"
         />
 
         <DetailReviewsSection
           title="Student Reviews"
+          headerClassName="!w-fit [&_h3]:text-[#00263b] [&_h3]:text-3xl"
+          cardClassName="rounded-none border-gray-200"
           reviews={
             data.course.reviews?.map((review) => ({
               id: review.id,
@@ -453,13 +457,14 @@ export default function VideoDetailContainer({
         />
       </div>
 
-      {isSignedIn && !isPlaylistOpen && (
+      {isWatchingVideo && !isPlaylistOpen && (
         <button
           type="button"
+          aria-label="Open Table of Contents"
           onClick={() => setIsPlaylistOpen(true)}
-          className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
+          className="fixed right-0 top-1/2 -translate-y-1/2 z-[60] w-8 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md flex items-center justify-center text-gray-500 hover:text-[#ff4f02] hover:shadow-lg transition-all duration-300"
         >
-          <ChevronLeft className="h-5 w-5 text-pace-base" />
+          <ChevronLeft className="h-5 w-5" />
         </button>
       )}
 
@@ -472,92 +477,100 @@ export default function VideoDetailContainer({
       >
         <button
           type="button"
+          aria-label="Close Table of Contents"
           onClick={() => setIsPlaylistOpen(false)}
-          className={`relative top-[40%] z-40 h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50 ${
+          className={`hidden sm:flex relative top-1/2 -translate-y-1/2 z-40 w-10 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-[#ff4f02] hover:shadow-lg transition-all duration-300 ${
             isPlaylistOpen
               ? 'opacity-100 translate-x-0'
               : 'opacity-0 translate-x-full'
           }`}
         >
-          <ChevronRight className="h-5 w-5 text-pace-base" />
+          <ChevronRight className="h-5 w-5" />
         </button>
         <div
-          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ease-in-out ${
+          className={`absolute inset-0 bg-black/55 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
             isPlaylistOpen ? 'opacity-100' : 'opacity-0'
           }`}
           role="presentation"
           onClick={() => setIsPlaylistOpen(false)}
         />
         <aside
-          className={`relative h-full w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
+          className={`relative h-full w-full max-w-sm bg-[#f2f4f7] shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${
             isPlaylistOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <div className="flex flex-col gap-2">
-              {data.course.sections.map((section) => {
-                const isExpanded = expandedSessions.has(section.id);
-                return (
-                  <div
-                    key={section.id}
-                    className="border border-pace-gray-100 rounded-lg overflow-hidden bg-white"
+          <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white shadow-sm z-10">
+            <h3 className="font-bold text-[#00263b] text-base">
+              Course Outline
+            </h3>
+            <span className="text-xs font-semibold text-gray-400">
+              {totalLessonsCount} Lessons
+            </span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-[10px]">
+            {data.course.sections.map((section) => {
+              const isExpanded = expandedSessions.has(section.id);
+              return (
+                <div
+                  key={section.id}
+                  className="border border-gray-100 rounded-none shadow-[0_10px_30px_rgba(0,38,59,0.08)] overflow-hidden bg-white"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleSession(section.id)}
+                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#f2f4f7] transition-colors"
                   >
-                    <button
-                      type="button"
-                      onClick={() => toggleSession(section.id)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-pace-gray-50 transition-colors"
-                    >
-                      <span className="text-sm font-semibold text-gray-900">
-                        {section.title}
-                      </span>
-                      {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                      )}
-                    </button>
-                    <div
-                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        isExpanded
-                          ? 'max-h-[1000px] opacity-100'
-                          : 'max-h-0 opacity-0'
-                      }`}
-                    >
-                      <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
-                        {section.videos.map((video) => {
-                          const isActive = video.videoId === selectedMediaId;
-                          return (
-                            <button
-                              key={video.videoId}
-                              type="button"
-                              onClick={() => {
-                                setSelectedMediaId(video.videoId);
-                                setIsPlaylistOpen(false);
-                              }}
-                              className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
-                                isActive
-                                  ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
-                                  : 'hover:bg-white text-pace-stone-700'
+                    <span className="text-[18px] font-bold text-[#00263b]">
+                      {section.title}
+                    </span>
+                    {isExpanded ? (
+                      <ChevronUp className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    )}
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      isExpanded
+                        ? 'max-h-[1000px] opacity-100'
+                        : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="px-5 pb-5 flex flex-col gap-0.5">
+                      {section.videos.map((video) => {
+                        const isActive = video.videoId === selectedMediaId;
+                        return (
+                          <button
+                            key={video.videoId}
+                            type="button"
+                            onClick={() => {
+                              setSelectedMediaId(video.videoId);
+                              setIsPlaylistOpen(false);
+                            }}
+                            className={`lesson-item w-full py-2 text-left flex justify-between items-start rounded transition-colors duration-200 ${
+                              isActive ? 'bg-[#f2f4f7]' : 'hover:bg-[#f2f4f7]'
+                            }`}
+                          >
+                            <span
+                              className={`text-[14px] font-medium leading-snug truncate pr-2 ${
+                                isActive ? 'text-[#00263b]' : 'text-gray-400'
                               }`}
                             >
-                              <div
-                                className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
-                                  isActive ? 'bg-pace-base' : 'bg-pace-gray-300'
-                                }`}
-                              />
-                              <span className="text-sm font-medium truncate w-full">
-                                {video.title}
-                              </span>
-                              <CirclePlay className="h-4 w-4" />
-                            </button>
-                          );
-                        })}
-                      </div>
+                              {video.title}
+                            </span>
+                            <CirclePlay
+                              className={`h-[18px] w-[18px] flex-shrink-0 ${
+                                isActive ? 'text-[#00adbd]' : 'text-gray-400'
+                              }`}
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         </aside>
       </div>

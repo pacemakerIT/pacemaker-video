@@ -501,9 +501,58 @@ async function main() {
     });
   }
 
-  console.log(
-    'Skipping account seed data. User roles, Clerk users, sample orders, and mock reviews are managed separately.'
-  );
+  console.log('Creating user roles...');
+  await prisma.userRole.upsert({
+    where: { id: 'ADMIN' },
+    update: {},
+    create: { id: 'ADMIN', label: 'ADMIN' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'INSTRUCTOR' },
+    update: {},
+    create: { id: 'INSTRUCTOR', label: 'INSTRUCTOR' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'USER' },
+    update: {},
+    create: { id: 'USER', label: 'USER' }
+  });
+
+  console.log('Generating stable test accounts...');
+  const stableUsers = [
+    {
+      id: '87921304-7f86-4398-9e22-420170acdb03',
+      email: 'admin@paceupcareer.com',
+      clerkId: 'user_3Da2QILT1uy7UoPa4AKEix2vX3K',
+      roleId: 'ADMIN'
+    },
+    {
+      id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
+      email: 'user@paceupcareer.com',
+      clerkId: 'user_3Da2QIjxxSbeuJWHg82WAfJzEXt',
+      roleId: 'USER'
+    }
+  ];
+
+  for (const u of stableUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {
+        clerkId: u.clerkId,
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+      },
+      create: {
+        id: u.id,
+        email: u.email,
+        clerkId: u.clerkId,
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+      }
+    });
+  }
 
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
-import { resolveImageSrc } from '@/lib/utils';
+import { resolveImageSrc, cn } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
 import { CustomBadge } from '@/components/common/custom-badge';
 
@@ -14,6 +14,7 @@ interface RelatedContentCardProps {
   linkUrl?: string;
   thumbnailUrl?: string | null;
   thumbnail?: string | null;
+  className?: string;
 }
 
 export default function RelatedContentCard({
@@ -23,7 +24,8 @@ export default function RelatedContentCard({
   category,
   linkUrl,
   thumbnailUrl,
-  thumbnail
+  thumbnail,
+  className
 }: RelatedContentCardProps) {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -44,7 +46,10 @@ export default function RelatedContentCard({
   return (
     <div className="w-full cursor-pointer font-normal">
       <div
-        className="w-full bg-white rounded-lg overflow-hidden shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative"
+        className={cn(
+          'w-full bg-white rounded-lg overflow-hidden shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative',
+          className
+        )}
         onClick={handleCardClick}
       >
         <button

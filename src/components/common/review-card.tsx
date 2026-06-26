@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface ReviewCardProps {
   profileImage: string;
@@ -6,6 +7,7 @@ interface ReviewCardProps {
   rating: number;
   reviewDate: string;
   reviewContent: string;
+  className?: string;
 }
 
 export default function ReviewCard({
@@ -13,10 +15,16 @@ export default function ReviewCard({
   profileName,
   rating,
   reviewDate,
-  reviewContent
+  reviewContent,
+  className
 }: ReviewCardProps) {
   return (
-    <div className="w-full max-w-[1200px] bg-white border border-pace-gray-100 rounded-lg p-6 shadow-sm">
+    <div
+      className={cn(
+        'w-full max-w-[1200px] bg-white border border-pace-gray-100 rounded-lg p-6 shadow-sm',
+        className
+      )}
+    >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
