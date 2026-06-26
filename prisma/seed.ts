@@ -501,9 +501,109 @@ async function main() {
     });
   }
 
-  console.log(
-    'Skipping account seed data. User roles, Clerk users, sample orders, and mock reviews are managed separately.'
-  );
+  console.log('Creating user roles...');
+  await prisma.userRole.upsert({
+    where: { id: 'ADMIN' },
+    update: {},
+    create: { id: 'ADMIN', label: 'ADMIN' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'INSTRUCTOR' },
+    update: {},
+    create: { id: 'INSTRUCTOR', label: 'INSTRUCTOR' }
+  });
+  await prisma.userRole.upsert({
+    where: { id: 'USER' },
+    update: {},
+    create: { id: 'USER', label: 'USER' }
+  });
+
+  console.log('Generating stable test accounts...');
+  const stableUsers = [
+    {
+      id: '87921304-7f86-4398-9e22-420170acdb03',
+      email: 'admin@paceupcareer.com',
+      clerkId: 'user_38K4nsQvRHKpUo2ORvKpSCEAEWs',
+      roleId: 'ADMIN'
+    },
+    {
+      id: '70fd529d-154d-43e5-8dcc-2127aa7651fc',
+      email: 'user@paceupcareer.com',
+      clerkId: 'user_3Da2QIjxxSbeuJWHg82WAfJzEXt',
+      roleId: 'USER'
+    }
+  ];
+
+  for (const u of stableUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {
+        clerkId: u.clerkId,
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+      },
+      create: {
+        id: u.id,
+        email: u.email,
+        clerkId: u.clerkId,
+        roleId: u.roleId,
+        name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+      }
+    });
+  }
+
+  console.log('Generating dummy reviews...');
+  const reviewData = [
+    {
+      rating: 5,
+      content:
+        'This course completely changed how I approach job applications. The resume templates and interview prep sections are gold. Got my first North American tech offer within 2 months!'
+    },
+    {
+      rating: 5,
+      content:
+        'Incredibly practical. Every lesson felt relevant to real hiring processes. The instructor breaks down complex topics in a way that is easy to follow. Highly recommend to anyone transitioning into tech.'
+    },
+    {
+      rating: 4,
+      content:
+        'Great content overall. The resume section was especially helpful for understanding what Canadian employers actually look for. Would love more mock interview examples.'
+    },
+    {
+      rating: 5,
+      content:
+        'I was skeptical at first but this course delivered beyond my expectations. The step-by-step approach made the whole job search process feel manageable.'
+    },
+    {
+      rating: 4,
+      content:
+        'Solid course with actionable advice. The networking section gave me strategies I could apply immediately. A few videos felt a bit long but the value is definitely there.'
+    },
+    {
+      rating: 5,
+      content:
+        'Worth every penny. Landed a software developer role at a mid-size company after following the course roadmap. The real job posting analysis was eye-opening.'
+    }
+  ];
+
+  await prisma.review.deleteMany({
+    where: { userId: { in: stableUsers.map((u) => u.id) } }
+  });
+
+  for (let i = 0; i < reviewData.length; i++) {
+    const userId = stableUsers[i % stableUsers.length].id;
+    const courseId = courseIds[i % courseIds.length];
+    await prisma.review.create({
+      data: {
+        userId,
+        courseId,
+        rating: reviewData[i].rating,
+        content: reviewData[i].content
+      }
+    });
+  }
 
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
