@@ -5,6 +5,41 @@ import AddForm, { CourseData } from '@/components/admin/add-form';
 import { useEffect, useState, use } from 'react';
 import { toast } from 'sonner';
 
+type NormalizedCareer = {
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  description: string;
+};
+
+// Older courses stored careers as `{ period, position }`; the current admin
+// form reads/writes `{ startDate, endDate, isCurrent, description }`.
+function normalizeCareer(career: unknown): NormalizedCareer {
+  const c = (career || {}) as Record<string, unknown>;
+
+  if ('startDate' in c || 'endDate' in c || 'description' in c) {
+    return {
+      startDate: typeof c.startDate === 'string' ? c.startDate : '',
+      endDate: typeof c.endDate === 'string' ? c.endDate : '',
+      isCurrent: Boolean(c.isCurrent),
+      description: typeof c.description === 'string' ? c.description : ''
+    };
+  }
+
+  // Legacy shape: { period: '2019 ~ 2021', position: 'Role at Company' }
+  const period = typeof c.period === 'string' ? c.period : '';
+  const position = typeof c.position === 'string' ? c.position : '';
+  const [start = '', end = ''] = period.split('~').map((s) => s.trim());
+  const isCurrent = period.includes('~') && !end;
+
+  return {
+    startDate: start,
+    endDate: isCurrent ? '' : end,
+    isCurrent,
+    description: position
+  };
+}
+
 export default function CourseEditPage({
   params
 }: {
@@ -81,9 +116,10 @@ export default function CourseEditPage({
                       name: inst.name,
                       intro: inst.description || '',
                       careers: inst.careers
-                        ? typeof inst.careers === 'string'
-                          ? JSON.parse(inst.careers)
-                          : inst.careers
+                        ? (typeof inst.careers === 'string'
+                            ? JSON.parse(inst.careers)
+                            : inst.careers
+                          ).map(normalizeCareer)
                         : [
                             {
                               startDate: '',

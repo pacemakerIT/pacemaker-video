@@ -8,12 +8,16 @@ interface DetailRelatedContentSectionProps {
   title?: string;
   items?: RelatedContentItem[];
   gridCols?: '1' | '2' | '3';
+  headerClassName?: string;
+  cardClassName?: string;
 }
 
 export default function DetailRelatedContentSection({
   title = '이 컨텐츠와 함께 보면 좋아요!',
   items = [],
-  gridCols = '3'
+  gridCols = '3',
+  headerClassName,
+  cardClassName
 }: DetailRelatedContentSectionProps) {
   const getGridClass = () => {
     switch (gridCols) {
@@ -29,7 +33,7 @@ export default function DetailRelatedContentSection({
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <SectionHeader title={title} />
+      <SectionHeader title={title} className={headerClassName} />
       <div className={`grid ${getGridClass()} gap-6`}>
         {items.map((item, index) => (
           <RelatedContentCard
@@ -40,6 +44,7 @@ export default function DetailRelatedContentSection({
             category={item.category}
             linkUrl={item.linkUrl}
             thumbnail={item.thumbnail}
+            className={cardClassName}
           />
         ))}
       </div>
