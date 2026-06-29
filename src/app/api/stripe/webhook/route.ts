@@ -15,6 +15,18 @@ function webhookSecret() {
   return secret;
 }
 
+function logStripeWebhookError(
+  context: string,
+  error: unknown,
+  details: Record<string, string | undefined> = {}
+) {
+  // eslint-disable-next-line no-console
+  console.error(`[API ERROR] POST /api/stripe/webhook: ${context}`, {
+    ...details,
+    error
+  });
+}
+
 export async function POST(req: Request) {
   const signature = req.headers.get('stripe-signature');
 
@@ -37,6 +49,8 @@ export async function POST(req: Request) {
       error instanceof Error
         ? error.message
         : 'Stripe webhook is not configured';
+
+    logStripeWebhookError('configuration failed', error);
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
@@ -66,6 +80,11 @@ export async function POST(req: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to fulfill checkout';
+
+    logStripeWebhookError('fulfillment failed', error, {
+      eventId: event.id,
+      eventType: event.type
+    });
 
     return NextResponse.json({ error: message }, { status: 500 });
   }

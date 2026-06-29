@@ -36,6 +36,7 @@ describe('POST /api/stripe/webhook', () => {
       status: 'completed'
     });
     constructEventMock.mockReturnValue({
+      id: 'evt_test_123',
       type: 'checkout.session.completed',
       data: {
         object: {
@@ -93,5 +94,62 @@ describe('POST /api/stripe/webhook', () => {
       error: 'Invalid signature'
     });
     expect(fulfillCheckoutSessionMock).not.toHaveBeenCalled();
+  });
+
+  it('logs configuration failures before signature verification', async () => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    try {
+      const response = await POST(
+        request({ 'stripe-signature': 'valid-signature' })
+      );
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toEqual({
+        error: 'Missing STRIPE_WEBHOOK_SECRET configuration'
+      });
+      expect(constructEventMock).not.toHaveBeenCalled();
+      expect(fulfillCheckoutSessionMock).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        '[API ERROR] POST /api/stripe/webhook: configuration failed',
+        {
+          error: expect.any(Error)
+        }
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  it('logs fulfillment failures before returning a server error', async () => {
+    const error = new Error('Fulfillment failed');
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    fulfillCheckoutSessionMock.mockRejectedValue(error);
+
+    try {
+      const response = await POST(
+        request({ 'stripe-signature': 'valid-signature' })
+      );
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toEqual({
+        error: 'Fulfillment failed'
+      });
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        '[API ERROR] POST /api/stripe/webhook: fulfillment failed',
+        {
+          eventId: 'evt_test_123',
+          eventType: 'checkout.session.completed',
+          error
+        }
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 });

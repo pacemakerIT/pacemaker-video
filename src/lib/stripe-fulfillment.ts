@@ -116,26 +116,46 @@ async function cartCleanupFilters(
   order: OrderWithItems
 ) {
   const filters: Prisma.CartWhereInput[] = [];
+  const videoItemIds = order.items
+    .filter((item) => item.itemType === ItemType.VIDEO)
+    .map((item) => item.itemId);
+  const ebookItemIds = order.items
+    .filter((item) => item.itemType === ItemType.EBOOK)
+    .map((item) => item.itemId);
+  const [videos, ebooks] = await Promise.all([
+    videoItemIds.length
+      ? tx.video.findMany({
+          where: { id: { in: videoItemIds } },
+          select: { id: true, videoId: true }
+        })
+      : Promise.resolve([] as { id: string; videoId: string }[]),
+    ebookItemIds.length
+      ? tx.ebook.findMany({
+          where: { id: { in: ebookItemIds } },
+          select: { id: true, ebookId: true }
+        })
+      : Promise.resolve([] as { id: string; ebookId: string }[])
+  ]);
+  const videoIdsById = new Map(
+    videos.map((video) => [video.id, video.videoId])
+  );
+  const ebookIdsById = new Map(
+    ebooks.map((ebook) => [ebook.id, ebook.ebookId])
+  );
 
   for (const item of order.items) {
     const itemIds = new Set([item.itemId]);
 
     if (item.itemType === ItemType.VIDEO) {
-      const video = await tx.video.findUnique({
-        where: { id: item.itemId },
-        select: { videoId: true }
-      });
+      const videoId = videoIdsById.get(item.itemId);
 
-      if (video?.videoId) itemIds.add(video.videoId);
+      if (videoId) itemIds.add(videoId);
     }
 
     if (item.itemType === ItemType.EBOOK) {
-      const ebook = await tx.ebook.findUnique({
-        where: { id: item.itemId },
-        select: { ebookId: true }
-      });
+      const ebookId = ebookIdsById.get(item.itemId);
 
-      if (ebook?.ebookId) itemIds.add(ebook.ebookId);
+      if (ebookId) itemIds.add(ebookId);
     }
 
     for (const itemId of itemIds) {

@@ -14,10 +14,10 @@ const tx = {
     deleteMany: vi.fn()
   },
   video: {
-    findUnique: vi.fn()
+    findMany: vi.fn()
   },
   ebook: {
-    findUnique: vi.fn()
+    findMany: vi.fn()
   }
 };
 
@@ -111,8 +111,18 @@ describe('fulfillCheckoutSession', () => {
     tx.order.update.mockResolvedValue({});
     tx.userWorkshop.upsert.mockResolvedValue({});
     tx.cart.deleteMany.mockResolvedValue({ count: 3 });
-    tx.video.findUnique.mockResolvedValue({ videoId: 'wistia_video_123' });
-    tx.ebook.findUnique.mockResolvedValue({ ebookId: 'ebook-file.pdf' });
+    tx.video.findMany.mockResolvedValue([
+      {
+        id: '44444444-4444-4444-8444-444444444444',
+        videoId: 'wistia_video_123'
+      }
+    ]);
+    tx.ebook.findMany.mockResolvedValue([
+      {
+        id: '55555555-5555-4555-8555-555555555555',
+        ebookId: 'ebook-file.pdf'
+      }
+    ]);
   });
 
   it('marks paid checkout orders complete and grants fulfillment side effects', async () => {
@@ -149,6 +159,18 @@ describe('fulfillCheckoutSession', () => {
         workshopId: '66666666-6666-4666-8666-666666666666',
         orderId: '22222222-2222-4222-8222-222222222222'
       }
+    });
+    expect(tx.video.findMany).toHaveBeenCalledWith({
+      where: {
+        id: { in: ['44444444-4444-4444-8444-444444444444'] }
+      },
+      select: { id: true, videoId: true }
+    });
+    expect(tx.ebook.findMany).toHaveBeenCalledWith({
+      where: {
+        id: { in: ['55555555-5555-4555-8555-555555555555'] }
+      },
+      select: { id: true, ebookId: true }
     });
     expect(tx.cart.deleteMany).toHaveBeenCalledWith({
       where: {
@@ -262,5 +284,75 @@ describe('fulfillCheckoutSession', () => {
     const updateData = tx.order.update.mock.calls[0][0].data;
     expect(updateData).not.toHaveProperty('stripeInvoiceUrl');
     expect(updateData).not.toHaveProperty('stripeReceiptUrl');
+  });
+
+  it('does not query video or ebook aliases when order has only workshops', async () => {
+    tx.order.findFirst.mockResolvedValue({
+      ...pendingOrder(),
+      items: [
+        {
+          id: 'item-workshop',
+          itemId: '66666666-6666-4666-8666-666666666666',
+          itemType: ItemType.WORKSHOP
+        }
+      ]
+    });
+
+    const result = await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession()
+    );
+
+    expect(result).toEqual({
+      orderId: '22222222-2222-4222-8222-222222222222',
+      status: 'completed'
+    });
+    expect(tx.video.findMany).not.toHaveBeenCalled();
+    expect(tx.ebook.findMany).not.toHaveBeenCalled();
+    expect(tx.cart.deleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: '33333333-3333-4333-8333-333333333333',
+        OR: [
+          {
+            itemId: '66666666-6666-4666-8666-666666666666',
+            itemType: ItemType.WORKSHOP
+          }
+        ]
+      }
+    });
+  });
+
+  it('falls back to canonical order item ids when alias lookups miss', async () => {
+    tx.video.findMany.mockResolvedValue([]);
+    tx.ebook.findMany.mockResolvedValue([]);
+
+    const result = await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession()
+    );
+
+    expect(result).toEqual({
+      orderId: '22222222-2222-4222-8222-222222222222',
+      status: 'completed'
+    });
+    expect(tx.cart.deleteMany).toHaveBeenCalledWith({
+      where: {
+        userId: '33333333-3333-4333-8333-333333333333',
+        OR: [
+          {
+            itemId: '44444444-4444-4444-8444-444444444444',
+            itemType: ItemType.VIDEO
+          },
+          {
+            itemId: '55555555-5555-4555-8555-555555555555',
+            itemType: ItemType.EBOOK
+          },
+          {
+            itemId: '66666666-6666-4666-8666-666666666666',
+            itemType: ItemType.WORKSHOP
+          }
+        ]
+      }
+    });
   });
 });
