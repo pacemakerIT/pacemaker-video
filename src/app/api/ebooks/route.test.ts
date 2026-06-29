@@ -8,13 +8,21 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
 }));
 
+const prismaMock = vi.hoisted(() => ({
+  ebook: {
+    findUnique: vi.fn()
+  },
+  user: {
+    findUnique: vi.fn()
+  },
+  orderItem: {
+    findFirst: vi.fn()
+  }
+}));
+
 vi.mock('@/lib/prisma', () => {
   return {
-    default: {
-      ebook: {
-        findUnique: vi.fn()
-      }
-    }
+    default: prismaMock
   };
 });
 
@@ -36,6 +44,17 @@ describe('GET /api/ebooks/[ebookId]', () => {
 
     (auth as unknown as Mock).mockResolvedValue({
       userId: 'user_123'
+    });
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: ebookId,
+      ebookId: 'ebook-file.pdf',
+      price: 25
+    });
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'app-user-123'
+    });
+    prismaMock.orderItem.findFirst.mockResolvedValue({
+      id: 'order-item-123'
     });
 
     GET = createGetHandler(mockS3ClientInstance as unknown as S3Client);

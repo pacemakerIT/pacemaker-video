@@ -12,7 +12,6 @@ import AdminVisualRow, {
 import { generateKeyBetween } from 'fractional-indexing';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-import { resolveImageSrc } from '@/lib/utils';
 
 import {
   DndContext,
@@ -143,7 +142,6 @@ export default function Page() {
   // Status UI used by AdminVisualRow
   const WorkshopStatus = ({
     row,
-    toggleRow: _toggle,
     onStatusChange: _onStatusChange
   }: {
     row: RowLike;
