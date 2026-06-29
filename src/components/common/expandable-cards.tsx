@@ -16,6 +16,7 @@ interface ExpandableCardProps {
   itemClassName?: string;
   titleClassName?: string;
   labelClassName?: string;
+  iconClassName?: string;
   contentClassName?: string;
   onDelete?: (id: string) => void;
 }
@@ -28,6 +29,7 @@ export default function ExpandableCards({
   itemClassName,
   titleClassName,
   labelClassName,
+  iconClassName,
   contentClassName,
   onDelete
 }: ExpandableCardProps) {
@@ -86,9 +88,9 @@ export default function ExpandableCards({
                     {expandedItems.has(item.id) ? collapseLabel : expandLabel}
                   </span>
                   {expandedItems.has(item.id) ? (
-                    <ChevronUp className="w-5 h-5" />
+                    <ChevronUp className={cn('w-5 h-5', iconClassName)} />
                   ) : (
-                    <ChevronDown className="w-5 h-5" />
+                    <ChevronDown className={cn('w-5 h-5', iconClassName)} />
                   )}
                 </div>
               </button>

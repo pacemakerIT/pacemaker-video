@@ -334,9 +334,11 @@ export default function VideoDetailContainer({
             <ExpandableCards
               items={contentItems}
               className="w-full lg:w-[480px] max-w-none mx-0"
-              itemClassName="bg-white rounded-none border border-gray-200"
+              itemClassName="bg-gray-50 rounded-none border border-gray-200"
               titleClassName="text-[#00263b]"
-              labelClassName="text-gray-500"
+              labelClassName="gap-1 text-sm text-gray-500"
+              iconClassName="w-4 h-4 transition-transform duration-300"
+              contentClassName="border-gray-200 bg-white"
             />
           </div>
         </div>
