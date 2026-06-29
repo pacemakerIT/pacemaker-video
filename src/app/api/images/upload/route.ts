@@ -75,6 +75,21 @@ export async function POST(req: Request) {
     // 레코드 ID가 있으면 업데이트, 없으면 새로 생성
     let updatedRecord;
 
+    // URL만 반환하면 되는 타입 (DB 레코드 없이 폼 제출 시 함께 저장)
+    if (table === 'INSTRUCTOR' || table === 'WORKSHOP_THUMBNAIL') {
+      const newImage = await prisma.image.create({
+        data: { fileName, url: imageUrl }
+      });
+      return NextResponse.json(
+        {
+          message: 'Image uploaded successfully',
+          url: imageUrl,
+          image: newImage
+        },
+        { status: 201 }
+      );
+    }
+
     if (!column) {
       return NextResponse.json(
         { error: 'Column not specified' },

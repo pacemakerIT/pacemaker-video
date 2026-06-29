@@ -136,6 +136,11 @@ Notes:
 - Handle `checkout.session.completed`.
 - Mark the matching order `COMPLETED` only after the payment is paid or no
   payment is required.
+- Reconcile final Stripe Checkout amounts into `Order` during webhook
+  fulfillment. Use Stripe's final session/payment values such as
+  `amount_subtotal`, `amount_total`, `total_details.amount_discount`, and
+  `total_details.amount_tax` so promotion-code purchases display the actual
+  charged amount in success, receipt, and purchase history views.
 - Store Stripe identifiers and receipt references.
 - Remove purchased items from the cart.
 - Grant workshop registration where relevant.
@@ -167,6 +172,9 @@ Notes:
 
 - Add unit/API tests for checkout session creation.
 - Add webhook tests with mocked Stripe signature construction.
+- Add webhook tests that verify promotion-code discounts update
+  `subtotalAmountCents`, `discountAmountCents`, `taxAmountCents`, and
+  `totalAmountCents` from Stripe's final amounts.
 - Add idempotency tests for duplicate webhook delivery.
 - Add entitlement tests for purchased and unpurchased content.
 - Validate locally with Stripe CLI:
@@ -177,22 +185,22 @@ Notes:
 
 ## Jira Tickets
 
-| Step | Jira Key | Summary                                       |
-| ---- | -------- | --------------------------------------------- |
-| 1    | PACE-259 | Foundation: SDK, env, order schema            |
-| 2    | PACE-260 | Checkout creation: API + cart UI handoff      |
-| 3    | PACE-261 | Webhook fulfillment + purchase entitlements   |
-| 4    | PACE-262 | Post-payment UX: success, purchases, receipts |
-| 5    | PACE-263 | Test coverage and operational validation      |
+| Jira Key | Summary                                           | Scope                                                                 |
+| -------- | ------------------------------------------------- | --------------------------------------------------------------------- |
+| PACE-259 | Foundation: SDK, env, order schema                | Completed foundation work.                                            |
+| PACE-260 | Checkout API, cart handoff, and post-payment UX   | Steps 2 and 4, plus checkout and post-payment UX test coverage.       |
+| PACE-261 | Webhook fulfillment, entitlements, and validation | Steps 3 and 5, plus webhook, entitlement, and operational validation. |
 
 Superseded tickets:
 
-| Old Jira Key | Merged Into | Original Scope                           |
-| ------------ | ----------- | ---------------------------------------- |
-| PACE-264     | PACE-262    | Payment success and cancel pages         |
-| PACE-265     | PACE-261    | Purchase entitlements and access control |
-| PACE-266     | PACE-262    | Purchases, receipts, and refund UI       |
-| PACE-267     | PACE-263    | Tests and operational validation         |
+| Old Jira Key | Merged Into  | Original Scope                           |
+| ------------ | ------------ | ---------------------------------------- |
+| PACE-262     | PACE-260     | Post-payment UX, purchases, receipts     |
+| PACE-263     | PACE-260/261 | Tests and operational validation         |
+| PACE-264     | PACE-260     | Payment success and cancel pages         |
+| PACE-265     | PACE-261     | Purchase entitlements and access control |
+| PACE-266     | PACE-260     | Purchases, receipts, and refund UI       |
+| PACE-267     | PACE-260/261 | Tests and operational validation         |
 
 ## Definition of Done
 

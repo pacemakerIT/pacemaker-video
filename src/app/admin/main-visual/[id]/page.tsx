@@ -87,12 +87,13 @@ export default function EditMainVisualPage({
     <div className="p-10">
       <div className="flex justify-between items-center pb-10">
         <h1 className="text-pace-3xl font-bold">메인 비주얼 관리</h1>
-        <button
+        {/* TODO: 임시저장 기능 구현필요 (PACE-231) */}
+        {/* <button
           onClick={() => formRef.current?.submit()}
           className="w-[100px] h-[40px] bg-pace-orange-800 text-pace-white-500 rounded text-pace-base font-bold"
         >
           저장
-        </button>
+        </button> */}
       </div>
 
       <div>

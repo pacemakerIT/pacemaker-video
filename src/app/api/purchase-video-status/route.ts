@@ -1,23 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
 import { ItemType } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const clerkId = searchParams.get('clerkId');
+    const { userId: authenticatedClerkId } = await auth();
 
-    if (!clerkId) {
-      return NextResponse.json(
-        { error: 'User ID is required' },
-        { status: 400 }
-      );
+    if (!authenticatedClerkId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (clerkId && clerkId !== authenticatedClerkId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Find user by clerk ID
     const currentUser = await prisma.user.findFirst({
       where: {
-        clerkId: clerkId
+        clerkId: authenticatedClerkId
       },
       select: {
         id: true

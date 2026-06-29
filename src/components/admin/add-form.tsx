@@ -4,16 +4,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import SectionList from '@/components/admin/courses/sections/section-list';
 import RecommendedSelect from '@/components/admin/courses/sections/recommended-select';
-import InstructorSection from '@/components/admin/courses/sections/instructor-section';
-import ExpandableCards from '@/components/common/expandable-cards';
-import AddButton from '@/components/ui/admin/add-button';
 import RecommendedLinkSection from '@/components/admin/courses/sections/recommended-link-section';
+import InstructorListSection from '@/components/admin/shared/instructor-list-section';
 import CourseBasicSection from '@/components/admin/basic-section';
 import CourseDetailSection from '@/components/admin/detail-section';
 import CourseVisualSection from '@/components/admin/courses/sections/course-visual-section';
 import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
-import RequiredMark from '../ui/admin/required-mark';
 
 export type FormType = 'course' | 'workshop';
 
@@ -33,7 +30,6 @@ export type CourseData = {
   workshopTime?: string;
   workshopLocation?: string;
   workshopProcessContent?: string;
-  priceNote?: string;
 
   // shared
   category: string;
@@ -99,7 +95,6 @@ export default function AddForm({
       workshopTime: '',
       workshopLocation: '',
       workshopProcessContent: '',
-      priceNote: '',
       price: '',
       time: '',
       thumbnail: null,
@@ -130,7 +125,6 @@ export default function AddForm({
 
   const [errors, setErrors] = useState<CourseFormErrors>({});
 
-  // 제출 함수
   const handleSubmit = async () => {
     const newErrors: CourseFormErrors = {};
 
@@ -236,8 +230,6 @@ export default function AddForm({
     }
 
     try {
-      // TODO: 파일 업로드(이미지 등)가 필요한 경우, 먼저 S3 등에 업로드 후 URL을 받아와서 FormData 대신 JSON으로 전송하거나, 서버 API에서 멀티파트를 처리해야 합니다.
-      // 일단은 현재 폼 데이터를 POST로 보내는 기본 기능을 구현합니다.
       const payload = {
         category: courseData.category,
         isPublic: courseData.isPublic === '공개',
@@ -252,10 +244,10 @@ export default function AddForm({
         thumbnailUrl: courseData.thumbnailUrl,
         visualTitle: courseData.visualTitle,
         visualTitle2: courseData.visualTitle2,
-        recommended: courseData.recommended, // Target audience labels
+        recommended: courseData.recommended,
         sections: courseData.sections,
         instructors: courseData.instructors,
-        links: courseData.links // Recommended links
+        links: courseData.links
       };
 
       const url =
@@ -290,31 +282,6 @@ export default function AddForm({
     if (errors[key as keyof CourseFormErrors]) {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }
-  };
-
-  const handleAddInstructor = () => {
-    updateCourseData('instructors', [
-      ...courseData.instructors,
-      {
-        name: '',
-        intro: '',
-        careers: [
-          {
-            startDate: '',
-            endDate: '',
-            description: '',
-            isCurrent: false
-          }
-        ],
-        photo: null,
-        photoUrl: ''
-      }
-    ]);
-  };
-
-  const handleDeleteInstructor = (index: number) => {
-    const newInstructors = courseData.instructors.filter((_, i) => i !== index);
-    updateCourseData('instructors', newInstructors);
   };
 
   return (
@@ -376,8 +343,6 @@ export default function AddForm({
         setWorkshopProcessContent={(v) =>
           updateCourseData('workshopProcessContent', v)
         }
-        priceNote={courseData.priceNote}
-        setPriceNote={(v) => updateCourseData('priceNote', v)}
         price={courseData.price}
         setPrice={(v) => updateCourseData('price', v)}
         time={courseData.time}
@@ -418,45 +383,12 @@ export default function AddForm({
         errors={errors.sections}
       />
 
-      {/* 강사소개 섹션 */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-start gap-6">
-          <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-            강사 소개
-            <RequiredMark />
-          </label>
-          <div className="flex-1 flex flex-col gap-6">
-            <ExpandableCards
-              items={courseData.instructors.map((instructor, i) => ({
-                id: i.toString(),
-                title: instructor.name || `강사 ${i + 1}`,
-                content: (
-                  <InstructorSection
-                    value={instructor}
-                    onChange={(updatedInstructor) => {
-                      const newInstructors = [...courseData.instructors];
-                      newInstructors[i] = updatedInstructor;
-                      updateCourseData('instructors', newInstructors);
-                    }}
-                    error={errors.instructors?.[i]}
-                  />
-                )
-              }))}
-              expandLabel="수정"
-              collapseLabel="닫기"
-              className="max-w-none mx-0"
-              onDelete={
-                courseData.instructors.length > 1
-                  ? (id) => handleDeleteInstructor(parseInt(id))
-                  : undefined
-              }
-            />
-            <div className="flex justify-end">
-              <AddButton label="강사 추가" onClick={handleAddInstructor} />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 강사 소개 */}
+      <InstructorListSection
+        instructors={courseData.instructors}
+        onChange={(v) => updateCourseData('instructors', v)}
+        errors={errors.instructors}
+      />
 
       {/* 추천 컨텐츠 링크 (강의 전용) */}
       {isCourse && (
