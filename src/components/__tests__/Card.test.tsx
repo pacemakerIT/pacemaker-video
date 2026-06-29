@@ -179,7 +179,7 @@ describe('Card', () => {
     await waitFor(() => {
       // Check card container styles
       const cardContainer = screen.getByTestId('card-link').firstChild;
-      expect(cardContainer).toHaveClass('sm:w-[384px]');
+      expect(cardContainer).toHaveClass('w-full');
       expect(cardContainer).toHaveClass('bg-white');
       expect(cardContainer).toHaveClass('rounded-none');
       expect(cardContainer).toHaveClass('shadow-card');

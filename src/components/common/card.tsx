@@ -117,8 +117,8 @@ export default function Card({
 
   return (
     <div className="cursor-pointer group">
-      <Link href={getLinkPath()}>
-        <div className="flex w-[calc(100vw-3rem)] flex-col overflow-hidden rounded-none border border-gray-100 bg-white shadow-card transition-all duration-500 ease-out hover:-translate-y-1 sm:w-[384px]">
+      <Link href={getLinkPath()} className="block w-full">
+        <div className="pm-card-lift flex w-full flex-col overflow-hidden rounded-none border border-gray-100 bg-white shadow-card">
           <div
             className={`relative h-[256px] w-full ${colors.bg} flex flex-col items-start overflow-hidden`}
           >
@@ -141,14 +141,14 @@ export default function Card({
             <button
               role="button"
               aria-label="like"
-              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-200 hover:scale-110"
+              className="group absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg"
               onClick={handleToggleLike}
             >
               <Heart
                 className={`w-5 h-5 transition-colors duration-200 ${
                   isLiked
                     ? 'text-orange fill-orange'
-                    : 'text-gray-300 hover:text-orange'
+                    : 'text-gray-300 group-hover:text-orange'
                 }`}
               />
             </button>

@@ -29,16 +29,35 @@ export default function ImageOverlayCard({
     }) || '/img/workshop_image1.png';
 
   const displayTitle = title || visualTitle2 || '';
-  const formattedStatus =
-    status === 'RECRUITING'
-      ? 'Live now'
-      : status === 'CLOSED'
-        ? 'Closed'
-        : status === 'ONGOING'
-          ? 'Ongoing'
-          : status === 'COMPLETED'
-            ? 'Completed'
-            : status;
+  const statusDisplay = (() => {
+    switch (status) {
+      case 'RECRUITING':
+        return {
+          label: 'Coming soon',
+          cardClass: 'border-navy',
+          textClass: 'text-navy'
+        };
+      case 'ONGOING':
+        return {
+          label: 'Ongoing',
+          cardClass: 'border-orange',
+          textClass: 'text-orange'
+        };
+      case 'CLOSED':
+      case 'COMPLETED':
+        return {
+          label: 'Ended',
+          cardClass: 'border-slate-400 opacity-[0.85] saturate-50',
+          textClass: 'text-slate-400'
+        };
+      default:
+        return {
+          label: status,
+          cardClass: 'border-slate-400',
+          textClass: 'text-slate-400'
+        };
+    }
+  })();
 
   function formatDateTime(dateStr: string | Date | undefined | null) {
     if (!dateStr) return 'TBA';
@@ -58,7 +77,9 @@ export default function ImageOverlayCard({
     <div className="group cursor-pointer" data-testid="image-overlay-card">
       <Link href={`/workshops/${id}`}>
         <div className="flex w-full flex-col gap-5 transition-all duration-500 ease-out hover:-translate-y-1 sm:w-[588px]">
-          <div className="h-[clamp(420px,128vw,480px)] w-full flex-shrink-0 overflow-hidden border-t-[10px] border-orange bg-white shadow-card">
+          <div
+            className={`h-[clamp(420px,128vw,480px)] w-full flex-shrink-0 overflow-hidden border-t-[10px] bg-white shadow-card ${statusDisplay.cardClass}`}
+          >
             <div className="relative h-full overflow-hidden bg-cover bg-center">
               <Image
                 src={imageSrc}
@@ -72,7 +93,7 @@ export default function ImageOverlayCard({
               <button
                 role="button"
                 aria-label="like"
-                className="absolute right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-transform duration-500 ease-out hover:scale-110"
+                className="group absolute right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-500 ease-out hover:scale-110 hover:shadow-xl"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsLiked(!isLiked);
@@ -82,7 +103,7 @@ export default function ImageOverlayCard({
                   className={`h-6 w-6 transition-colors duration-200 ${
                     isLiked
                       ? 'fill-orange text-orange'
-                      : 'text-gray-400 hover:text-orange'
+                      : 'text-gray-400 group-hover:text-orange'
                   }`}
                 />
               </button>
@@ -130,11 +151,9 @@ export default function ImageOverlayCard({
 
           <div className="flex items-center justify-center bg-transparent">
             <span
-              className={`text-center text-[1.05rem] font-bold tracking-wide ${
-                status === 'RECRUITING' ? 'text-orange' : 'text-gray-500'
-              }`}
+              className={`text-center text-[1.05rem] font-bold tracking-wide ${statusDisplay.textClass}`}
             >
-              {formattedStatus}
+              {statusDisplay.label}
             </span>
           </div>
         </div>

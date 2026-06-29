@@ -13,11 +13,11 @@ type CalendarStyle = {
 export const calendarStyleMap: Record<CalendarEvent['status'], CalendarStyle> =
   {
     RECRUITING: {
-      event: 'bg-pace-orange-50 text-pace-orange-500',
-      popup: 'bg-pace-orange-50 text-pace-orange-500',
-      button: 'bg-pace-orange-600 hover:bg-pace-orange-900',
-      text: 'text-pace-orange-500',
-      border: 'border-pace-orange-500'
+      event: 'bg-navy/10 text-navy',
+      popup: 'bg-navy/10 text-navy',
+      button: 'bg-navy hover:bg-navy/90',
+      text: 'text-navy',
+      border: 'border-navy'
     },
     CLOSED: {
       event: 'bg-pace-stone-200 text-pace-stone-800',
@@ -27,11 +27,11 @@ export const calendarStyleMap: Record<CalendarEvent['status'], CalendarStyle> =
       border: 'border-pace-stone-800'
     },
     ONGOING: {
-      event: 'bg-pace-mint-500/10 text-pace-mint-500',
-      popup: 'bg-pace-mint-50 text-pace-mint-500',
-      button: 'bg-pace-mint-500 hover:bg-pace-mint-500',
-      text: 'text-pace-mint-500',
-      border: 'border-pace-mint-500'
+      event: 'bg-pace-orange-50 text-pace-orange-500',
+      popup: 'bg-pace-orange-50 text-pace-orange-500',
+      button: 'bg-pace-orange-600 hover:bg-pace-orange-900',
+      text: 'text-pace-orange-500',
+      border: 'border-pace-orange-500'
     },
     COMPLETED: {
       event: 'bg-pace-stone-200 text-pace-stone-800',

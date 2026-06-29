@@ -22,6 +22,8 @@ export default function CardContainer({
   const [isMobile, setIsMobile] = React.useState(false);
   const [isTablet, setIsTablet] = React.useState(false);
   const gap = 24;
+  const visibleCardCount = isMobile ? 1 : 3;
+  const maxIndex = Math.max(cards.length - visibleCardCount, 0);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -59,14 +61,14 @@ export default function CardContainer({
   };
 
   const handleNext = () => {
-    if (currentIndex < cards.length - 1) {
+    if (currentIndex < maxIndex) {
       setCurrentIndex((prev) => prev + 1);
     }
   };
 
   if (layout === 'grid') {
     return (
-      <div className="justify-center grid grid-cols-4 md:grid-cols-2 gap-6 w-full py-4">
+      <div className="grid w-full grid-cols-1 gap-x-12 gap-y-16 py-4 md:grid-cols-2">
         {cards.map((card) => (
           <Card key={card.id} {...card} itemType={itemType} />
         ))}
@@ -111,7 +113,7 @@ export default function CardContainer({
       </div>
 
       {/* Next Button */}
-      {currentIndex < cards.length - 1 && (
+      {currentIndex < maxIndex && (
         <button
           aria-label="next"
           className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-[background-color,color,transform] duration-[400ms] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input absolute top-[230px] -translate-y-1/2 z-50 h-14 w-14 rounded-full bg-white text-navy shadow-2xl hover:bg-orange hover:text-white ${

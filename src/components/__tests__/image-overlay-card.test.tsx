@@ -25,7 +25,8 @@ describe('ImageOverlayCard', () => {
     expect(screen.getByText('Card 1')).toBeInTheDocument();
     expect(screen.getByText('WORKSHOP')).toBeInTheDocument();
     expect(screen.getByTestId('card-image')).toBeInTheDocument();
-    expect(screen.getByText('Live now')).toBeInTheDocument();
+    expect(screen.getByText('Coming soon')).toBeInTheDocument();
+    expect(screen.getByText('Coming soon')).toHaveClass('text-navy');
   });
 
   it('toggles like state when heart button is clicked', () => {
@@ -33,5 +34,15 @@ describe('ImageOverlayCard', () => {
     const likeButton = screen.getByRole('button', { name: /like/i });
     fireEvent.click(likeButton);
     expect(likeButton.querySelector('svg')).toHaveClass('fill-orange');
+  });
+
+  it('uses orange for ongoing workshops and gray for ended workshops', () => {
+    const { rerender } = render(
+      <ImageOverlayCard {...mockCard} status="ONGOING" />
+    );
+    expect(screen.getByText('Ongoing')).toHaveClass('text-orange');
+
+    rerender(<ImageOverlayCard {...mockCard} status="COMPLETED" />);
+    expect(screen.getByText('Ended')).toHaveClass('text-slate-400');
   });
 });

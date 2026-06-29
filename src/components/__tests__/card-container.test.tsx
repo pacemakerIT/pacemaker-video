@@ -57,6 +57,22 @@ describe('CardContainer', () => {
       purchasedVideos: []
     }
   ];
+  const mockCardsWithOverflow: OnlineCards[] = [
+    ...mockCards,
+    {
+      id: '4',
+      visualTitle2: 'Test Card 4',
+      description: 'Test Description 4',
+      price: 79.99,
+      category: 'INTERVIEW',
+      uploadDate: new Date(),
+      itemId: 'video4',
+      isPublic: true,
+      showOnMain: true,
+      watchedVideos: [],
+      purchasedVideos: []
+    }
+  ];
 
   it('renders grid layout correctly', () => {
     render(<CardContainer layout="grid" cards={mockCards} />);
@@ -65,7 +81,7 @@ describe('CardContainer', () => {
   });
 
   it('renders horizontal layout with navigation buttons', () => {
-    render(<CardContainer layout="horizontal" cards={mockCards} />);
+    render(<CardContainer layout="horizontal" cards={mockCardsWithOverflow} />);
 
     // 초기에는 이전 버튼이 보이지 않아야 함
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
@@ -78,22 +94,24 @@ describe('CardContainer', () => {
 
   it('shows/hides navigation buttons based on current index', () => {
     const { rerender } = render(
-      <CardContainer layout="horizontal" cards={mockCards} />
+      <CardContainer layout="horizontal" cards={mockCardsWithOverflow} />
     );
 
     // 초기 상태에서는 이전 버튼이 없고 다음 버튼이 있어야 함
     expect(screen.queryByRole('button', { name: /previous/i })).toBeNull();
     expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument();
 
-    // 카드가 1개만 있을 때는 다음 버튼이 없어야 함 (currentIndex < 1 - 1 = 0이므로)
-    rerender(<CardContainer layout="horizontal" cards={[mockCards[0]]} />);
+    // 카드가 한 화면에 모두 보일 때는 다음 버튼이 없어야 함
+    rerender(<CardContainer layout="horizontal" cards={mockCards} />);
+    expect(screen.queryByRole('button', { name: /next/i })).toBeNull();
 
-    // 카드가 1개일 때는 다음 버튼이 없어야 함
+    // 카드가 1개만 있을 때도 다음 버튼이 없어야 함
+    rerender(<CardContainer layout="horizontal" cards={[mockCards[0]]} />);
     expect(screen.queryByRole('button', { name: /next/i })).toBeNull();
   });
 
   it('handles navigation button clicks correctly', () => {
-    render(<CardContainer layout="horizontal" cards={mockCards} />);
+    render(<CardContainer layout="horizontal" cards={mockCardsWithOverflow} />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
 

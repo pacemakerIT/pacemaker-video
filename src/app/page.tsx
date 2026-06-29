@@ -7,6 +7,7 @@ import EbookList from '@/components/features/ebook/ebook-list-horz';
 import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 import CourseList from '@/components/features/course/course-list-horz';
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 
 import { MainVisual } from '@prisma/client';
 
@@ -146,8 +147,11 @@ export default async function Home() {
             </div>
 
             <div className="flex w-full flex-wrap items-center justify-center gap-6 pt-10">
-              <Button className="h-auto w-auto rounded-2xl border-2 border-teal bg-transparent px-8 py-4 font-headline text-lg font-bold text-teal transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-teal/5">
-                {'Browse online courses'}
+              <Button
+                asChild
+                className="h-auto w-auto rounded-2xl border-2 border-teal bg-transparent px-8 py-4 font-headline text-lg font-bold text-teal transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-teal/5"
+              >
+                <Link href="/courses">{'Browse online courses'}</Link>
               </Button>
               <div className="flex justify-center">
                 <LoginOrListenButton />
