@@ -41,11 +41,13 @@ export default function DetailReviewsSection({
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex justify-start items-center">
+      <div className="flex flex-col sm:flex-row justify-start sm:items-center gap-3 sm:gap-0">
         <SectionHeader title={title} className={'!w-fit'} />
-        <div className="flex items-center justify-start gap-2 ml-4">
-          <span className="text-xl font-medium">{rating} / 5</span>
-          <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center justify-start gap-2 sm:ml-4 pr-12">
+          <span className="text-xl font-medium shrink-0 whitespace-nowrap">
+            {rating} / 5
+          </span>
+          <div className="flex items-center gap-1 shrink-0">
             {Array.from({ length: rating }).map((_, i) => (
               <Image
                 key={i}
@@ -56,7 +58,9 @@ export default function DetailReviewsSection({
               />
             ))}
           </div>
-          <span className="text-gray-600 text-sm">({reviewCount}개 후기)</span>
+          <span className="text-gray-600 text-sm whitespace-nowrap shrink-0">
+            ({reviewCount}개 후기)
+          </span>
         </div>
       </div>
 

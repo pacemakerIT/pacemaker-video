@@ -161,7 +161,8 @@ export default function DetailSection({
       if (!res.ok) throw new Error('Upload failed');
 
       const data = await res.json();
-      setThumbnailUrl(data.url);
+      // Proxy-compatible fileName if present, else URL
+      setThumbnailUrl(data.image?.fileName || data.image?.url || data.url);
     } catch (error) {
       void error;
     } finally {
@@ -477,7 +478,7 @@ export default function DetailSection({
           ) : (
             <ImageUploadInput
               value={thumbnail ?? null}
-              imageUrl={thumbnailUrl}
+              imageUrl={resolveImageSrc({ thumbnail: thumbnailUrl })}
               placeholder={isUploading ? '업로드 중...' : '파일 선택'}
               onChange={handleThumbnailChange}
             />

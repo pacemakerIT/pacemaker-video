@@ -367,7 +367,7 @@ export default function AdminEbooksPage() {
                     itemCategoryLabel.ko[cat?.toUpperCase() || ''] || cat || ''
                   }
                   resolveThumbnail={(r: RowLike) =>
-                    resolveImageSrc({ thumbnail: r.thumbnail })
+                    resolveImageSrc({ thumbnail: r.thumbnail }) || ''
                   }
                 />
               );

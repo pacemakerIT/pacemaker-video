@@ -11,7 +11,6 @@ import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-
 import {
   DndContext,
   closestCenter,

@@ -83,8 +83,8 @@ export async function createEbook(data: EbookData) {
     });
 
     revalidatePath('/admin/ebooks');
-  } catch (e) {
-    throw new Error(`Failed to create ebook: ${e}`);
+  } catch {
+    throw new Error('Failed to create ebook');
   }
   redirect('/admin/ebooks');
 }

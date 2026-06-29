@@ -9,6 +9,7 @@ import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import { WorkshopFormErrors } from '@/types/admin/workshop-form-errors';
+import { resolveImageSrc } from '@/lib/utils';
 
 type Props = {
   title: string;
@@ -246,7 +247,7 @@ export default function WorkshopDetailSection({
         <div className="flex flex-col gap-2 flex-1">
           <ImageUploadInput
             value={thumbnail}
-            imageUrl={thumbnailUrl}
+            imageUrl={resolveImageSrc({ thumbnail: thumbnailUrl })}
             placeholder={isUploading ? '업로드 중...' : '파일 선택'}
             onChange={handleThumbnailChange}
           />

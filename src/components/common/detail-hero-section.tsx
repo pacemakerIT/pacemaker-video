@@ -2,7 +2,6 @@
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
 import { ItemType } from '@prisma/client';
-import { resolveImageSrc } from '@/lib/utils';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
@@ -37,11 +36,6 @@ export default function DetailHeroSection({
   priceLabel = '금액',
   itemType
 }: DetailHeroSectionProps) {
-  const effectiveBg = resolveImageSrc({
-    thumbnail: backgroundImage, // Hero section uses backgroundImage prop as primary thumbnail
-    itemType
-  });
-
   const isCourse = itemType === ItemType.COURSE;
   const handleLikeToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -54,22 +48,29 @@ export default function DetailHeroSection({
 
   return (
     <div className="w-full flex justify-between items-center h-[600px] relative overflow-hidden">
-      {/* 배경 이미지 */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{
-          backgroundImage: `url('${effectiveBg}')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          minWidth: '100%',
-          minHeight: '100%'
-        }}
-      ></div>
-      {/* 배경 오버레이 */}
-      <div
-        className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
-      ></div>
+      {/* 배경 이미지 및 오버레이 */}
+      {backgroundImage ? (
+        <>
+          <div
+            className="absolute inset-0 w-full h-full"
+            style={{
+              backgroundImage: `url('${backgroundImage}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              minWidth: '100%',
+              minHeight: '100%'
+            }}
+          ></div>
+          <div
+            className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
+          ></div>
+        </>
+      ) : (
+        <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+          No Image
+        </div>
+      )}
       <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
         <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
