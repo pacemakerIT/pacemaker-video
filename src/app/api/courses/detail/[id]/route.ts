@@ -212,13 +212,19 @@ export async function GET(
       }
     }
 
+    const {
+      videos: courseVideos,
+      sectionsRel: courseSections,
+      ...courseBase
+    } = courseData;
+
     // DB 구조를 Frontend 구조로 변환
     const course = {
-      ...courseData,
-      videos: courseData.videos.map((video) =>
+      ...courseBase,
+      videos: courseVideos.map((video) =>
         applyVideoEntitlement(video, accessibleVideoIds)
       ),
-      sections: (courseData.sectionsRel || []).map((section) => ({
+      sections: (courseSections || []).map((section) => ({
         ...section,
         videos: (section.videos || []).map((video) =>
           applyVideoEntitlement(video, accessibleVideoIds)
