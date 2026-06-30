@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | UX Design Workshop</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&amp;family=Source+Sans+3:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02',
+              'orange-hover': '#e04400',
+              'gray-soft': '#f2f4f7',
+              'on-error': '#ffffff',
+              'surface-container-high': '#e6e8eb',
+              'inverse-surface': '#2d3133',
+              'surface-container-highest': '#e0e3e6',
+              tertiary: '#210400',
+              'on-background': '#191c1e',
+              outline: '#73787d',
+              'primary-fixed-dim': '#abcae5',
+              'on-primary': '#ffffff',
+              'on-tertiary': '#ffffff',
+              'on-secondary': '#ffffff',
+              secondary: '#006973',
+              'secondary-fixed-dim': '#54d8e8',
+              'primary-container': '#00263b',
+              'on-primary-container': '#6f8ea7',
+              'on-primary-fixed': '#001e2f',
+              'on-surface': '#191c1e',
+              'surface-container-lowest': '#ffffff',
+              'inverse-on-surface': '#eff1f4',
+              'on-secondary-fixed': '#001f23',
+              'on-primary-fixed-variant': '#2b4a60',
+              'error-container': '#ffdad6',
+              'on-surface-variant': '#42474c',
+              'secondary-container': '#6cecfc',
+              'surface-container': '#eceef1',
+              'inverse-primary': '#abcae5',
+              'on-secondary-fixed-variant': '#004f57',
+              background: '#f7f9fc',
+              'outline-variant': '#c2c7cd',
+              'on-tertiary-fixed-variant': '#842500',
+              'surface-tint': '#436279',
+              'surface-bright': '#f7f9fc',
+              primary: '#ff4f02',
+              'surface-dim': '#d8dadd',
+              'primary-fixed': '#cae6ff',
+              'on-error-container': '#93000a',
+              'secondary-fixed': '#91f1ff',
+              'tertiary-fixed-dim': '#ffb59e',
+              'on-tertiary-fixed': '#3a0b00',
+              'on-tertiary-container': '#fa4d00',
+              'tertiary-fixed': '#ffdbd0',
+              'surface-container-low': '#f2f4f7',
+              'surface-variant': '#e0e3e6',
+              surface: '#f7f9fc',
+              'tertiary-container': '#470f00',
+              'on-secondary-container': '#006974',
+              error: '#ba1a1a',
+              body: '#475467',
+              'background-light': '#ffffff',
+              'background-dark': '#00263b',
+              'card-light': '#f8f9fa',
+              'card-dark': '#0a3650',
+              'text-light': '#00263b',
+              'text-dark': '#ffffff',
+              'text-muted-light': '#6b7280',
+              'text-muted-dark': '#9ca3af',
+              'border-light': '#e5e7eb',
+              'border-dark': '#374151'
+            },
+            fontFamily: {
+              headline: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif'],
+              label: ['Poppins', 'sans-serif'],
+              display: ['Poppins', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              '2xl': '16px',
+              full: '9999px'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      html {
+        scrollbar-gutter: stable;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #ffffff;
+        border-bottom: 1px solid #f2f4f6;
+        padding: 12px 0;
+      }
+      .nav-inner,
+      .page-container {
+        max-width: 1248px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 24px;
+        padding-right: 24px;
+        box-sizing: border-box;
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+      .nav-center {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.925rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        background: none;
+      }
+      .nav-item:hover {
+        background: #f3f4f6;
+        color: #00263b;
+      }
+      .nav-item.is-active {
+        background: none;
+        color: #ff4f02;
+        font-weight: 700;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn-auth {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-login {
+        color: #00263b;
+      }
+      .btn-login:hover {
+        background: #f3f4f6;
+      }
+      .btn-signup {
+        background: #00263b;
+        color: #fff;
+      }
+      .btn-signup:hover {
+        background: #001e2f;
+      }
+      .nav-mobile-top {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-hamburger {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .mobile-nav-panel {
+        display: none;
+      }
+      .mobile-nav-accordion-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition:
+          grid-template-rows 0.3s ease-out,
+          opacity 0.3s ease-out;
+      }
+      .mobile-nav-accordion-panel.is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .mobile-nav-accordion-chevron {
+        transition: transform 0.3s ease;
+      }
+      .mobile-nav-accordion-toggle[aria-expanded='true']
+        .mobile-nav-accordion-chevron {
+        transform: rotate(180deg);
+      }
+      @media (max-width: 768px) {
+        .nav-inner {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .nav-center,
+        .nav-right {
+          display: none;
+        }
+        .nav-mobile-top {
+          display: flex;
+          width: 100%;
+        }
+        .nav-logo {
+          display: none;
+        }
+        .mobile-nav-panel {
+          display: block;
+          width: 100%;
+          flex-basis: 100%;
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          padding-top: 0;
+          pointer-events: none;
+          transition:
+            max-height 0.3s ease-out,
+            opacity 0.25s ease-out,
+            padding-top 0.25s ease-out;
+        }
+        .mobile-nav-panel.is-open {
+          max-height: 42rem;
+          opacity: 1;
+          padding-top: 12px;
+          pointer-events: auto;
+        }
+        .nav-hamburger [data-menu-close] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-open] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-close] {
+          display: block;
+        }
+      }
+      .pm-card-lift {
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        transition:
+          box-shadow 0.55s cubic-bezier(0.33, 1, 0.53, 1),
+          transform 0.55s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      .pm-card-lift:hover {
+        box-shadow: 0 28px 56px rgba(0, 38, 59, 0.13);
+        transform: translate3d(0, -6px, 0);
+      }
+      .favorite-heart .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #9ca3af;
+        transition:
+          color 0.3s ease,
+          font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      .favorite-heart:hover .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02;
+      }
+      .favorite-heart--liked .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02;
+      }
+      .favorite-heart--liked:hover .material-symbols-outlined {
+        color: #e04400;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-body min-h-screen"
+  >
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+      >Skip to content</a
+    >
+    <nav>
+      <div class="nav-inner">
+        <!-- Desktop Logo -->
+        <a aria-label="Pacemaker home" class="nav-logo" href="../main.html">
+          <img
+            alt="Pacemaker Logo"
+            src="../../img/logo.webp"
+            style="height: 32px; width: auto; display: block"
+          />
+        </a>
+        <!-- Navigation Menu & Auth (Right-aligned container) -->
+        <div class="flex items-center ml-auto">
+          <div class="nav-center">
+            <a class="nav-item is-active" aria-current="page" href="./workshop_list.html"
+              >Workshops</a
+            >
+            <a
+              class="nav-item"
+              href="../courses/course_list.html"
+              >Online Courses</a
+            >
+            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+          </div>
+          <!-- Auth Links -->
+          <div class="nav-right ml-4">
+            <a class="btn-auth btn-login" href="../main.html">Login</a>
+            <a class="btn-auth btn-signup" href="../main.html">Sign Up</a>
+          </div>
+        </div>
+        <!-- Mobile -->
+        <div class="nav-mobile-top">
+          <a href="../main.html" style="display: block">
+            <img
+              alt="Pacemaker Logo"
+              src="../../img/logo.webp"
+              style="height: 28px; width: auto"
+            />
+          </a>
+          <div class="flex items-center gap-2">
+            <button
+              aria-controls="mobile-nav-menu"
+              aria-expanded="false"
+              aria-label="Open menu"
+              class="nav-hamburger"
+              id="mobile-nav-toggle"
+              type="button"
+            >
+              <svg
+                data-menu-open
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="18"
+              >
+                <line x1="3" x2="21" y1="6" y2="6"></line>
+                <line x1="3" x2="21" y1="12" y2="12"></line>
+                <line x1="3" x2="21" y1="18" y2="18"></line>
+              </svg>
+              <svg
+                data-menu-close
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="18"
+              >
+                <line x1="6" x2="18" y1="6" y2="18"></line>
+                <line x1="18" x2="6" y1="6" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="mobile-nav-panel" id="mobile-nav-menu">
+          <div class="rounded-none border border-gray-200 bg-white p-3">
+            <div class="border-t border-gray-100 pt-2">
+              <div class="py-1">
+                <a
+                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  href="../main.html"
+                  ><span>Home</span></a
+                >
+              </div>
+              <div class="py-1">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  data-target="mobile-nav-programs"
+                >
+                  <span>Programs</span>
+                  <svg
+                    class="mobile-nav-accordion-chevron w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </button>
+                <div
+                  class="mobile-nav-accordion-panel"
+                  id="mobile-nav-programs"
+                >
+                  <div class="overflow-hidden">
+                    <div class="flex flex-col gap-1">
+                      <a
+                        aria-current="page"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
+                        href="./workshop_list.html"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >calendar_month</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-orange mb-0.5"
+                              >Workshops</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Live sessions, practical events, and real-world
+                            feedback.
+                          </p>
+                        </div>
+                      </a>
+                      <a
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../courses/course_list.html"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >play_lesson</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              >Online Courses</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Guided lessons to help with resumes, interviews, and
+                            career moves.
+                          </p>
+                        </div>
+                      </a>
+                      <a
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../main.html#ebookCarousel"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >menu_book</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              >E-books</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Quick reads with practical tips for searching and
+                            applying with confidence.
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="py-1">
+                <a
+                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  href="../main.html"
+                  ><span>Login</span></a
+                >
+              </div>
+              <div class="pt-3">
+                <a
+                  class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#001e2f]"
+                  href="../main.html"
+                  >Sign Up</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="relative h-[600px] w-full overflow-hidden">
+      <!-- Background Image -->
+      <img
+        alt="UX Design Background"
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        src="../../img/video-bg.png"
+      />
+
+      <div
+        class="page-container h-full relative flex items-center justify-between"
+      >
+        <!-- Left Text Content -->
+        <div class="max-w-2xl text-white z-10">
+          <p
+            class="text-[28px] mb-4 font-medium opacity-100 tracking-wide font-[family-name:var(--font-heading)]"
+          >
+            Turning Dreams Into Reality
+          </p>
+          <h1
+            class="text-[40px] font-[family-name:var(--font-heading)] font-bold leading-[1.3] tracking-tight"
+          >
+            UX Design Workshop:<br />
+            Create Impactful Interfaces
+          </h1>
+        </div>
+
+        <!-- Right Purchase Card -->
+        <div
+          class="bg-white rounded-none p-7 w-[360px] min-h-[382px] shadow-card relative z-10 flex flex-col justify-between hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300 border border-gray-100"
+        >
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-2 py-0.5 text-[11px] font-bold text-orange bg-orange/5 border border-orange/20 rounded">Open</span>
+              <span class="text-[11px] font-semibold text-orange tracking-wide">Networking</span>
+            </div>
+            <h2
+              class="text-[1.5rem] font-[family-name:var(--font-heading)] font-bold text-navy leading-tight mb-4"
+            >
+              UX Design Workshop
+            </h2>
+
+            <div class="space-y-3 mb-4">
+              <div class="flex items-start gap-3 text-[0.875rem]">
+                <span class="font-bold text-navy min-w-[80px]"
+                  >Instructor</span
+                >
+                <span class="text-gray-600 font-medium"
+                  >Sujin Ku</span
+                >
+              </div>
+              <div class="flex items-start gap-3 text-[0.875rem]">
+                <span class="font-bold text-navy min-w-[80px]"
+                  >Date</span
+                >
+                <span class="text-gray-600 font-medium"
+                  >May 20, 2026 - 7:00 PM</span
+                >
+              </div>
+              <div class="flex items-start gap-3 text-[0.875rem]">
+                <span class="font-bold text-navy min-w-[80px]"
+                  >Location</span
+                >
+                <span class="text-gray-600 font-medium"
+                  >North York Centre</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-auto">
+            <div
+              class="flex justify-between items-center pt-3 border-t border-gray-100 mb-5"
+            >
+              <span class="font-bold text-navy text-sm">Admission fee</span>
+              <span
+                class="text-2xl font-[family-name:var(--font-heading)] font-bold text-navy"
+                >$20.00 <span class="text-xs text-gray-400 font-medium">CAD</span></span>
+            </div>
+
+            <div class="flex gap-3 items-center">
+              <button
+                id="register-btn"
+                class="flex-1 bg-orange text-white font-bold py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-orange-hover hover:scale-[1.02] transition-all text-lg font-[family-name:var(--font-heading)]"
+              >
+                Register
+              </button>
+              <button
+                class="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl text-orange hover:bg-orange/5 transition-all shadow-sm hover:-translate-y-[3px]"
+                onclick="
+                  const span = this.querySelector('span');
+                  const isFilled =
+                    span.style.fontVariationSettings.includes('1');
+                  span.style.fontVariationSettings = isFilled
+                    ? '\'FILL\' 0, \'wght\' 400'
+                    : '\'FILL\' 1, \'wght\' 400';
+                "
+              >
+                <span
+                  class="material-symbols-outlined text-2xl text-orange"
+                  style="
+                    font-variation-settings:
+                      'FILL' 0,
+                      'wght' 400;
+                  "
+                  >favorite</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <main
+      id="main-content"
+      class="max-w-[1200px] mx-auto px-6 py-20 space-y-20"
+    >
+      <!-- How the Workshop Works -->
+      <section>
+        <p class="text-orange font-bold mb-2">How the Workshop Works</p>
+        <h2
+          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
+        >
+          Step by Step: Practical Event Curriculum
+        </h2>
+        <div class="flex flex-col lg:flex-row lg:justify-between gap-16">
+          <div
+            class="w-full lg:w-[680px] text-text-muted-light dark:text-text-muted-dark leading-relaxed space-y-6"
+          >
+            <p>
+              In today's tech environment, functional designs and responsive layouts are critical to software success. This workshop focuses on the intersection of UX and engineering. We'll guide you through standard usability metrics and Figma workflows used by leading companies in Canada.
+            </p>
+            <p>
+              Whether you are an engineer looking to enhance your design empathy or a designer wanting to collaborate better with developers, this hands-on, live 3-hour session will give you actionable insights.
+            </p>
+          </div>
+          <div class="w-full lg:w-[480px] space-y-4">
+            <div
+              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+            >
+              <div
+                class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onclick="
+                  const p = this.nextElementSibling;
+                  const icon = this.querySelector('.material-icons');
+                  if (p.style.maxHeight) {
+                    p.style.maxHeight = null;
+                    icon.textContent = 'expand_more';
+                  } else {
+                    p.style.maxHeight = p.scrollHeight + 'px';
+                    icon.textContent = 'expand_less';
+                  }
+                "
+              >
+                <h3 class="font-bold text-lg">
+                  Module 1: Introduction to UX (1 Hour)
+                </h3>
+                <span
+                  class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
+                  >View
+                  <span
+                    class="material-icons text-sm transition-transform duration-300"
+                    >expand_more</span
+                  ></span
+                >
+              </div>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+              >
+                <div
+                  class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
+                >
+                  Core usability concepts, persona creation, and empathy mapping. Learn how to identify user pain points and map user journeys before launching Figma.
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+            >
+              <div
+                class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onclick="
+                  const p = this.nextElementSibling;
+                  const icon = this.querySelector('.material-icons');
+                  if (p.style.maxHeight) {
+                    p.style.maxHeight = null;
+                    icon.textContent = 'expand_more';
+                  } else {
+                    p.style.maxHeight = p.scrollHeight + 'px';
+                    icon.textContent = 'expand_less';
+                  }
+                "
+              >
+                <h3 class="font-bold text-lg">
+                  Module 2: Prototyping in Figma (1 Hour)
+                </h3>
+                <span
+                  class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
+                  >View
+                  <span
+                    class="material-icons text-sm transition-transform duration-300"
+                    >expand_more</span
+                  ></span
+                >
+              </div>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+              >
+                <div
+                  class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
+                >
+                  Hands-on session using auto-layout, wireframes, and building interactive, clickable component flows in Figma.
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+            >
+              <div
+                class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onclick="
+                  const p = this.nextElementSibling;
+                  const icon = this.querySelector('.material-icons');
+                  if (p.style.maxHeight) {
+                    p.style.maxHeight = null;
+                    icon.textContent = 'expand_more';
+                  } else {
+                    p.style.maxHeight = p.scrollHeight + 'px';
+                    icon.textContent = 'expand_less';
+                  }
+                "
+              >
+                <h3 class="font-bold text-lg">
+                  Module 3: Portfolio & Career Feedback (1 Hour)
+                </h3>
+                <span
+                  class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
+                  >View
+                  <span
+                    class="material-icons text-sm transition-transform duration-300"
+                    >expand_more</span
+                  ></span
+                >
+              </div>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+              >
+                <div
+                  class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
+                >
+                  Present your prototype, receive real-time peer reviews, and get customized advice on showcasing design projects to North American recruiters.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recommended For -->
+      <section>
+        <h2
+          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
+        >
+          Recommended For
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div
+            class="border border-border-light dark:border-border-dark p-8 flex items-start gap-6"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center border-2 border-text-light dark:border-text-dark"
+            >
+              <span class="material-icons text-3xl">brush</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Aspiring Designers</h3>
+              <p class="text-text-muted-light dark:text-text-muted-dark">
+                Build a portfolio project that stands out to hiring managers.
+              </p>
+            </div>
+          </div>
+          <div
+            class="border border-border-light dark:border-border-dark p-8 flex items-start gap-6"
+          >
+            <div
+              class="w-16 h-16 flex items-center justify-center border-2 border-text-light dark:border-text-dark"
+            >
+              <span class="material-icons text-3xl">code</span>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Frontend Developers</h3>
+              <p class="text-text-muted-light dark:text-text-muted-dark">
+                Learn design fundamentals to build cleaner interfaces and code efficiently.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Instructor Profile -->
+      <section>
+        <h2
+          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
+        >
+          Instructor Profile
+        </h2>
+        <div class="overflow-hidden w-full relative">
+          <div
+            class="flex flex-col lg:flex-row lg:justify-between gap-16 px-1"
+          >
+            <div class="w-full lg:w-[680px]">
+              <h3 class="text-2xl font-bold mb-4">Sujin Ku</h3>
+              <p
+                class="text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed"
+              >
+                Lead Product Designer with over 8 years of experience leading UI/UX design in fast-growing tech companies in Toronto. Passionate about teaching developers and designers how to create products users love.
+              </p>
+              <h4 class="font-bold mb-4">Experience</h4>
+              <ul class="space-y-4 text-sm">
+                <li class="flex gap-8">
+                  <span
+                    class="text-text-muted-light dark:text-text-muted-dark w-24"
+                    >2022 ~</span
+                  >
+                  <span>Design Mentor at Pacemaker</span>
+                </li>
+                <li class="flex gap-8">
+                  <span
+                    class="text-text-muted-light dark:text-text-muted-dark w-24"
+                    >2018 ~ 2022</span
+                  >
+                  <span>Senior Product Designer at WaveHQ</span>
+                </li>
+                <li class="flex gap-8">
+                  <span
+                    class="text-text-muted-light dark:text-text-muted-dark w-24"
+                    >2015 ~ 2018</span
+                  >
+                  <span>UI/UX Designer at Shopify</span>
+                </li>
+              </ul>
+            </div>
+            <div class="w-full lg:w-[480px] flex flex-col">
+              <div
+                class="bg-card-light dark:bg-card-dark flex-1 min-h-[300px] flex items-center justify-center p-8 text-center border border-border-light dark:border-border-dark"
+              >
+                <div>
+                  <span class="material-symbols-outlined text-6xl text-gray-300 mb-2">account_circle</span>
+                  <p class="text-2xl font-bold mb-1">Sujin Ku</p>
+                  <p class="text-text-muted-light dark:text-text-muted-dark text-sm">
+                    UX Design Lead & Instructor
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- You May Also Like -->
+      <section>
+        <h2
+          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
+        >
+          You May Also Like
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div
+            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+          >
+            <div class="relative h-[256px]">
+              <img
+                alt="Resume workshop"
+                class="w-full h-full object-cover"
+                src="../../img/online-course-1.png"
+              />
+              <div class="absolute top-4 left-4 z-10">
+                <span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-orange"
+                  >Resume</span
+                >
+              </div>
+            </div>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Resume & Cover Letter Workshop
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$20</span>
+              </div>
+              <a
+                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./workshop_list.html"
+              >
+                Learn more
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
+          </div>
+
+          <div
+            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+          >
+            <div class="relative h-[256px]">
+              <img
+                alt="Mock Interview"
+                class="w-full h-full object-cover"
+                src="../../img/online-course-2.png"
+              />
+              <div class="absolute top-4 left-4 z-10">
+                <span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-teal"
+                  >Interview</span
+                >
+              </div>
+            </div>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Mock Technical Interview prep
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$20</span>
+              </div>
+              <a
+                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./workshop_list.html"
+              >
+                Learn more
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
+          </div>
+
+          <div
+            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+          >
+            <div class="relative h-[256px]">
+              <img
+                alt="Salary negotiation"
+                class="w-full h-full object-cover"
+                src="../../img/online-course-3.png"
+              />
+              <div class="absolute top-4 left-4 z-10">
+                <span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-purple-600"
+                  >Salary</span
+                >
+              </div>
+            </div>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Salary Negotiation Workshop
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$20</span>
+              </div>
+              <a
+                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./workshop_list.html"
+              >
+                Learn more
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reviews -->
+      <section>
+        <div class="flex items-end gap-4 mb-8">
+          <h2 class="text-3xl font-[family-name:var(--font-heading)] font-bold">
+            Student Reviews
+          </h2>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl font-bold">4.9 / 5</span>
+            <div class="flex text-orange">
+              <span class="material-icons text-sm">star</span>
+              <span class="material-icons text-sm">star</span>
+              <span class="material-icons text-sm">star</span>
+              <span class="material-icons text-sm">star</span>
+              <span class="material-icons text-sm">star</span>
+            </div>
+            <span
+              class="text-text-muted-light dark:text-text-muted-dark text-sm"
+              >(45 reviews)</span
+            >
+          </div>
+        </div>
+        <div id="reviewsList" class="space-y-4">
+          <div class="border border-border-light dark:border-border-dark p-8">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-3xl text-orange">account_circle</span>
+                <span class="font-bold text-orange">Jay</span>
+              </div>
+              <div class="text-right">
+                <div class="flex text-yellow-400 mb-1">
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                </div>
+                <span
+                  class="text-text-muted-light dark:text-text-muted-dark text-xs"
+                  >06.12.2026</span
+                >
+              </div>
+            </div>
+            <p
+              class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
+            >
+              The Figma hands-on exercises were amazing. The feedback from Sujin helped me structure my case studies properly. High-quality content!
+            </p>
+          </div>
+          
+          <div class="border border-border-light dark:border-border-dark p-8">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-4">
+                <span class="material-symbols-outlined text-3xl text-orange">account_circle</span>
+                <span class="font-bold text-orange">Sarah</span>
+              </div>
+              <div class="text-right">
+                <div class="flex text-yellow-400 mb-1">
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                  <span class="material-icons text-sm">star</span>
+                </div>
+                <span
+                  class="text-text-muted-light dark:text-text-muted-dark text-xs"
+                  >05.28.2026</span
+                >
+              </div>
+            </div>
+            <p
+              class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
+            >
+              Excellent intro to auto-layout in Figma. I finally feel confident collaborating with my design teammates.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="bg-white border-t border-[#eaecf0] pt-[80px] pb-[60px]">
+        <div class="page-container">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <!-- Left: Logo + Social -->
+            <div>
+              <div class="mb-7">
+                <img
+                  src="../../img/logo.webp"
+                  alt="Pacemaker Logo"
+                  class="h-8 w-auto block"
+                />
+              </div>
+              <p class="text-body font-[family-name:var(--font-heading)] font-bold text-lg mb-8 leading-snug">
+                Accelerating North American careers for international developers.
+              </p>
+            </div>
+            <!-- Right: Menu -->
+            <div class="grid grid-cols-2 gap-8">
+              <div>
+                <h4 class="text-gray-500 font-bold text-[13px] tracking-wide uppercase mb-4">Program</h4>
+                <ul class="space-y-3 font-[family-name:var(--font-heading)] font-semibold text-sm">
+                  <li><a href="./workshop_list.html" class="text-navy hover:text-orange transition-colors">Workshops</a></li>
+                  <li><a href="../courses/course_list.html" class="text-navy hover:text-orange transition-colors">Online Courses</a></li>
+                  <li><a href="../main.html#ebookCarousel" class="text-navy hover:text-orange transition-colors">E-books</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="text-gray-500 font-bold text-[13px] tracking-wide uppercase mb-4">Support</h4>
+                <ul class="space-y-3 font-[family-name:var(--font-heading)] font-semibold text-sm">
+                  <li><a href="#" class="text-navy hover:text-orange transition-colors">FAQ</a></li>
+                  <li><a href="#" class="text-navy hover:text-orange transition-colors">Contact</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-[#f2f4f7] pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-400 font-[family-name:var(--font-heading)]">
+            <p>&copy; 2026 Pacemaker. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Navigation Menu Toggle Logic
+      (function() {
+        const toggle = document.getElementById('mobile-nav-toggle');
+        const menu = document.getElementById('mobile-nav-menu');
+        if (toggle && menu) {
+          toggle.addEventListener('click', () => {
+            const isOpen = menu.classList.contains('is-open');
+            toggle.classList.toggle('is-open', !isOpen);
+            menu.classList.toggle('is-open', !isOpen);
+          });
+        }
+      })();
+
+      // Accordion dropdown menu for mobile
+      (function() {
+        const toggles = document.querySelectorAll('.mobile-nav-accordion-toggle');
+        toggles.forEach(toggle => {
+          toggle.addEventListener('click', () => {
+            const targetId = toggle.getAttribute('data-target');
+            const panel = document.getElementById(targetId);
+            const isOpen = panel.classList.contains('is-open');
+            toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+            panel.classList.toggle('is-open', !isOpen);
+          });
+        });
+      })();
+
+      // Register Button toggle logic (Register <-> In Cart)
+      (function() {
+        const registerBtn = document.getElementById('register-btn');
+        if (registerBtn) {
+          registerBtn.addEventListener('click', () => {
+            const isInCart = registerBtn.classList.contains('bg-teal');
+            if (isInCart) {
+              registerBtn.classList.remove('bg-teal');
+              registerBtn.classList.add('bg-orange', 'hover:bg-orange-hover');
+              registerBtn.textContent = 'Register';
+            } else {
+              registerBtn.classList.remove('bg-orange', 'hover:bg-orange-hover');
+              registerBtn.classList.add('bg-teal');
+              registerBtn.textContent = 'In Cart';
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1152,6 +1152,20 @@
         });
       })();
 
+      // 7. CARD CLICK NAVIGATION
+      (function cardClickNavigation() {
+        const cards = document.querySelectorAll('.workshop-card');
+        cards.forEach(card => {
+          card.classList.add('cursor-pointer');
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.cart-btn') || e.target.closest('.favorite-heart')) {
+              return;
+            }
+            window.location.href = './workshop_detail.html';
+          });
+        });
+      })();
+
       // 5. CALENDAR NAVIGATION AND DYNAMIC RENDERING
       (function calendarLogic() {
         const prevBtn = document.getElementById('prev-month-btn');
@@ -1454,27 +1468,7 @@
                 viewDetailsBtn.addEventListener('click', (e) => {
                   e.stopPropagation();
                   closePopup();
-                  
-                  const cards = document.querySelectorAll('.workshop-card');
-                  let foundCard = null;
-                  cards.forEach(card => {
-                    const titleEl = card.querySelector('h3');
-                    if (titleEl && titleEl.textContent.trim().toLowerCase().includes(eventTitle.substring(0, 8).toLowerCase())) {
-                      foundCard = card;
-                    }
-                  });
-
-                  if (foundCard) {
-                    foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    foundCard.style.transition = 'all 0.5s';
-                    const origBorder = foundCard.style.borderColor;
-                    foundCard.style.borderColor = '#ff4f02';
-                    foundCard.style.boxShadow = '0 0 15px rgba(255, 79, 2, 0.3)';
-                    setTimeout(() => {
-                      foundCard.style.borderColor = origBorder;
-                      foundCard.style.boxShadow = '';
-                    }, 2000);
-                  }
+                  window.location.href = './workshop_detail.html';
                 });
               });
             } else {
