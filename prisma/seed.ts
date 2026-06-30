@@ -335,15 +335,6 @@ async function main() {
       orderBy: { orderIndex: 'asc' }
     });
 
-    const sectionContentMap: Record<string, string> = {
-      'Case Studies of North American Developer Job Postings':
-        'Covers the North American style of resume writing in detail. Learn everything from keyword selection to pass ATS (Applicant Tracking Systems) to using action verbs to effectively showcase experiences.',
-      'Analysis of North American Developer Job Postings':
-        'Covers essential technical interview topics such as data structures and algorithms. Gain practical experience through analysis of past questions from big tech companies and model answers.',
-      'Actual Successful Resumes for North American Developer Jobs':
-        'Learn how to logically explain your experiences using the STAR technique. Provides answering strategies for key evaluation criteria such as leadership, conflict resolution, and teamwork.'
-    };
-
     for (let sectionIdx = 0; sectionIdx < sections.length; sectionIdx++) {
       const section = sections[sectionIdx];
       for (let s = 1; s <= 4; s++) {
@@ -458,11 +449,11 @@ async function main() {
 
   for (let i = 0; i < ebooks.length; i++) {
     const ebook = ebooks[i];
-    const ebookRecordId = randomUUID();
+    const documentRecordId = randomUUID();
 
     await prisma.ebook.create({
       data: {
-        id: ebookRecordId,
+        id: documentRecordId,
         ebookId: `ebook-${i + 1}`,
         title: ebook.title,
         description: ebook.description,

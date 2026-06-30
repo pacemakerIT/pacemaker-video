@@ -138,7 +138,7 @@ describe('Card', () => {
       // Check if image is rendered
       const image = screen.getByTestId('card-image');
       expect(image).toBeInTheDocument();
-      expect(image).toHaveAttribute('alt', 'courses img');
+      expect(image).toHaveAttribute('alt', 'course img');
       // Next.js Image 컴포넌트는 width/height 속성을 DOM에 직접 노출하지 않음
       // expect(image).toHaveAttribute('width', '588');
       // expect(image).toHaveAttribute('height', '331');
@@ -164,13 +164,12 @@ describe('Card', () => {
     });
   });
 
-  it('renders "View detail" button', async () => {
+  it('renders "Learn more" button', async () => {
     render(<Card {...mockCard} />);
 
     await waitFor(() => {
-      const button = screen.getByText('View detail');
+      const button = screen.getByText('Learn more');
       expect(button).toBeDefined();
-      expect(button).toHaveClass('text-pace-orange-650');
     });
   });
 
@@ -180,36 +179,29 @@ describe('Card', () => {
     await waitFor(() => {
       // Check card container styles
       const cardContainer = screen.getByTestId('card-link').firstChild;
-      expect(cardContainer).toHaveClass('w-[588px]');
+      expect(cardContainer).toHaveClass('w-full');
       expect(cardContainer).toHaveClass('bg-white');
-      expect(cardContainer).toHaveClass('rounded-lg');
-      expect(cardContainer).toHaveClass('shadow-sm');
-      expect(cardContainer).toHaveClass('border-pace-gray-100');
+      expect(cardContainer).toHaveClass('rounded-none');
+      expect(cardContainer).toHaveClass('shadow-card');
 
       // Check image container styles
       const imageContainer = screen.getByTestId('card-image').parentElement;
-      expect(imageContainer).toHaveClass('h-[331px]');
+      expect(imageContainer).toHaveClass('h-[256px]');
 
       // Check image styles
       const image = screen.getByTestId('card-image');
-      // Next.js Image 컴포넌트는 fill prop을 사용하므로 w-full, h-[331px] 클래스가 없음
-      // expect(image).toHaveClass('w-full');
-      // expect(image).toHaveClass('h-[331px]');
       expect(image).toHaveClass('object-cover');
-      expect(image).toHaveClass('object-center');
-      // Next.js Image 컴포넌트는 rounded-lg 클래스를 직접 적용하지 않음
-      // expect(image).toHaveClass('rounded-lg');
 
       // Check title styles
       const title = screen.getByText('Test Course');
-      expect(title).toHaveClass('text-2xl');
-      expect(title).toHaveClass('font-semibold');
-      expect(title).toHaveClass('pace-gray-500');
+      expect(title).toHaveClass('text-lg');
+      expect(title).toHaveClass('font-bold');
+      expect(title).toHaveClass('text-navy');
 
       // Check price styles
       const price = screen.getByText('$49.99');
-      expect(price).toHaveClass('text-[28px]');
-      expect(price).toHaveClass('font-bold');
+      expect(price).toHaveClass('text-xl');
+      expect(price).toHaveClass('font-extrabold');
     });
   });
 
@@ -224,19 +216,16 @@ describe('Card', () => {
 
     // Check initial state
     const heartIcon = likeButton.querySelector('svg');
-    expect(heartIcon).toHaveClass('text-pace-gray-200');
+    expect(heartIcon).toHaveClass('text-gray-300');
 
     // Click the button
     fireEvent.click(likeButton);
 
     // Wait for state change
     await waitFor(() => {
-      // Since we are mocking the context and it doesn't update the favorites list automatically,
-      // the visual state won't change in this unit test unless we re-render with new mocks.
-      // Instead, we verify that the addFavorite function was called.
       expect(mockAddFavorite).toHaveBeenCalledWith(
         mockCard.id,
-        mockCard.itemType
+        mockCard.itemType || ItemType.COURSE
       );
     });
   });

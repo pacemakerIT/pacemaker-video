@@ -87,7 +87,7 @@
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.58.1",
     "@vitejs/plugin-react": "^5.1.4",
-    "autoprefixer": "^10.5.0",
+    "autoprefixer": "^10.4.23",
     "eslint": "^9.39.2",
     "eslint-config-next": "^15.5.19",
     "eslint-config-prettier": "^10.1.8",
@@ -113,9 +113,6 @@
     "@hono/node-server": "1.19.14",
     "@prisma/dev": "0.24.3",
     "effect": "^3.21.0",
-    "next": {
-      "postcss": "8.5.14"
-    },
     "node-polyfill-webpack-plugin": "^4.1.0"
   },
   "lint-staged": {

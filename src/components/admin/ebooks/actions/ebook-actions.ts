@@ -145,6 +145,7 @@ export async function getEbooks(page = 1, limit = 10) {
   const skip = (page - 1) * limit;
   const total = await prisma.ebook.count();
 
+  // 1) Fetch paginated ebooks
   const ebooks = await prisma.ebook.findMany({
     skip,
     take: limit,
@@ -161,7 +162,7 @@ export async function getEbooks(page = 1, limit = 10) {
     };
   }
 
-  const ebookIds = ebooks.map((ebook) => ebook.id);
+  const ebookIds = ebooks.map((doc) => doc.id);
 
   // 2) Aggregate likes in one query
   const likeCounts = await prisma.favorite.groupBy({
@@ -191,10 +192,10 @@ export async function getEbooks(page = 1, limit = 10) {
     purchaseCounts.map((row) => [row.itemId, row._count._all])
   );
 
-  const items = ebooks.map((ebook) => ({
-    ...ebook,
-    likes: likeCountMap.get(ebook.id) ?? 0,
-    purchaseCount: purchaseCountMap.get(ebook.id) ?? 0
+  const items = ebooks.map((doc) => ({
+    ...doc,
+    likes: likeCountMap.get(doc.id) ?? 0,
+    purchaseCount: purchaseCountMap.get(doc.id) ?? 0
   }));
 
   return {

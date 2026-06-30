@@ -20,24 +20,27 @@ describe('MainReviewContainer', () => {
     });
   });
 
-  it('renders the main review image', () => {
+  it('renders the review card deck', () => {
     render(<MainReviewContainer />);
-    const img = screen.getByAltText('background');
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', '/img/main-review.png');
+    expect(screen.getByText('Dan')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Pacemaker has been extremely helpful/i)
+    ).toBeInTheDocument();
   });
 
   it('renders the main heading', () => {
     render(<MainReviewContainer />);
     expect(
-      screen.getByText('Boost your career with Pacemaker Today!')
+      screen.getByRole('heading', {
+        name: /Boost your career with\s+Pacemaker Today\s*!/i
+      })
     ).toBeInTheDocument();
   });
 
   it('renders the login button when user is not signed in', () => {
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /Log in to start programs/i })
+      screen.getByRole('button', { name: /Log in and start learning/i })
     ).toBeInTheDocument();
   });
 
@@ -51,7 +54,7 @@ describe('MainReviewContainer', () => {
 
     render(<MainReviewContainer />);
     expect(
-      screen.getByRole('button', { name: /Explore programs/i })
+      screen.getByRole('link', { name: /Browse online courses/i })
     ).toBeInTheDocument();
   });
 });

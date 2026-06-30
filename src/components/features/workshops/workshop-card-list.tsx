@@ -115,7 +115,7 @@ export default function WorkshopCardList({
               <div className="w-[384px] h-[320px] py-8 flex-shrink-0">
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
-                    src={w.thumbnail ?? '/icons/workshop-card.svg'}
+                    src={w.thumbnail ?? '/img/workshop-card.svg'}
                     alt={w.title}
                     fill
                     className="object-cover"

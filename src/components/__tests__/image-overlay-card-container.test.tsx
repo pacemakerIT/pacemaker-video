@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ImageOverlayCardContainer from '../image-overlay-card-container';
 import { OnlineCards } from '@/types/online';
@@ -41,6 +41,11 @@ const mockCards: OnlineCards[] = [
 ];
 
 describe('ImageOverlayCardContainer', () => {
+  beforeEach(() => {
+    global.innerWidth = 1280;
+    global.dispatchEvent(new Event('resize'));
+  });
+
   it('renders grid layout', () => {
     render(<ImageOverlayCardContainer layout="grid" cards={mockCards} />);
     const all = screen.getAllByTestId('image-overlay-card');
