@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import CourseBasicSection from '@/components/admin/basic-section';
 import WorkshopDetailSection from '@/components/admin/workshops/sections/workshop-detail-section';
-import SectionList from '@/components/admin/courses/sections/section-list';
+import SectionList from '@/components/admin/common/section-list';
 import InstructorListSection, {
   InstructorData
-} from '@/components/admin/shared/instructor-list-section';
-import CourseActionButtons from '@/components/admin/courses/sections/course-action-buttons';
+} from '@/components/admin/common/instructor-list-section';
+import ActionButtons from '@/components/admin/common/action-buttons';
 import { WorkshopFormErrors } from '@/types/admin/workshop-form-errors';
 
 export type WorkshopData = {
@@ -29,7 +29,7 @@ export type WorkshopData = {
   sections: {
     title: string;
     content: string;
-    videos: { title: string; link: string }[];
+    videos?: { title: string; link: string }[];
   }[];
   instructors: InstructorData[];
 };
@@ -254,7 +254,10 @@ export default function WorkshopForm({
 
       {/* 커리큘럼 */}
       <SectionList
-        formType="workshop"
+        label="커리큘럼"
+        itemLabel="섹션"
+        addLabel="섹션 추가"
+        showVideos
         value={data.sections}
         onChange={(v) => update('sections', v)}
         errors={errors.sections}
@@ -268,9 +271,10 @@ export default function WorkshopForm({
       />
 
       {/* 버튼 */}
-      <CourseActionButtons
+      <ActionButtons
         cancelHref="/admin/workshops"
         submitLabel={isEdit ? '수정' : '등록'}
+        submitBehavior="submit"
       />
     </form>
   );

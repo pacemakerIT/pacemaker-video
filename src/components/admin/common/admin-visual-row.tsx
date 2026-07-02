@@ -116,7 +116,7 @@ export default function AdminVisualRow({
             금액
             <span className="font-semibold">
               {row.price?.toLocaleString
-                ? `$${row.price.toLocaleString()}`
+                ? ` $${row.price.toLocaleString()}`
                 : row.price}
             </span>
           </span>
@@ -124,7 +124,7 @@ export default function AdminVisualRow({
             찜 <span className="font-semibold">{row.likes ?? 0}</span>
           </span>
           <span>
-            구매
+            구매{' '}
             <span className="font-semibold">
               {row.purchaseCount ?? row.purchases ?? 0}
             </span>
