@@ -43,12 +43,12 @@ vi.mock('@/components/features/course/course-header', () => ({
     setCurrentCategory: (category: string) => void;
   }) => (
     <div>
-      <h5 className="text-pace-orange-600 text-lg">
-        {'다양한 강의를 한 자리에서'}
-      </h5>
-      <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-        {'페이스메이커 온라인 강의'}
-      </h3>
+      <p className="text-[#FF4F02] font-bold text-[18px]">
+        {'Explore Our Programs'}
+      </p>
+      <h2 className="text-[32px] font-extrabold text-[#00263B]">
+        {'Pacemaker online courses'}
+      </h2>
       {category.map((cat) => (
         <div
           key={cat}
@@ -176,11 +176,9 @@ describe('CoursesPage', () => {
     await waitFor(
       () => {
         expect(
-          screen.getByText('페이스메이커 온라인 강의')
+          screen.getByText('Pacemaker online courses')
         ).toBeInTheDocument();
-        expect(
-          screen.getByText('다양한 강의를 한 자리에서')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Explore Our Programs')).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
@@ -251,7 +249,7 @@ describe('CoursesPage', () => {
       () => {
         const listHeader = screen.getByTestId('list-header');
         expect(listHeader.textContent).toBe(
-          'Build a strong foundation\nfor your career abroad with Pacemaker'
+          'Build a strong foundation\nfor your career abroad'
         );
       },
       { timeout: 5000 }
