@@ -2,6 +2,8 @@ import EbookDetailContainer, {
   TOCItem
 } from '@/components/features/ebook/ebook-detail-container';
 import prisma from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
+import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
 import { notFound } from 'next/navigation';
 import { RelatedContentItem } from '@/types/video-detail';
 
@@ -17,6 +19,7 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
   const ebook = await prisma.ebook.findUnique({
     where: { id: ebookId },
     select: {
+      id: true,
       title: true,
       description: true,
       price: true,
@@ -33,6 +36,15 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
   if (!ebook) {
     notFound();
   }
+
+  const { userId: clerkUserId } = await auth();
+  const userId = clerkUserId
+    ? await findUserIdByClerkId(prisma, clerkUserId)
+    : null;
+  const canAccessEbook = await userCanAccessEbook(prisma, userId, {
+    id: ebook.id,
+    price: ebook.price
+  });
 
   const relatedDocs = await prisma.ebook.findMany({
     where: {
@@ -63,6 +75,7 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <EbookDetailContainer
+        id={ebook.id}
         title={ebook.title || undefined}
         description={ebook.description || undefined}
         price={ebook.price?.toString()}
@@ -74,6 +87,7 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
         targetAudienceTypes={ebook.targetAudienceTypes}
         tableOfContents={(ebook.tableOfContents as unknown as TOCItem[]) || []}
         relatedItems={relatedItems}
+        canAccessEbook={canAccessEbook}
       />
     </div>
   );
