@@ -125,6 +125,9 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data.data.course.videos[0].canAccessVideo).toBe(false);
     expect(data.data.course.sections[0].videos[0].videoId).toBe('');
     expect(data.data.course.sections[0].videos[0].canAccessVideo).toBe(false);
+    expect(data.data.course.sectionsRel).toBeUndefined();
+    expect(JSON.stringify(data.data.course)).not.toContain('wistia123');
+    expect(JSON.stringify(data.data.course)).not.toContain('wistia456');
   });
 
   it('keeps all playable video ids for completed course purchasers', async () => {
@@ -146,6 +149,7 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data.data.course.videos[1].videoId).toBe('wistia456');
     expect(data.data.course.videos[1].canAccessVideo).toBe(true);
     expect(data.data.course.sections[0].videos[0].videoId).toBe('wistia123');
+    expect(data.data.course.sectionsRel).toBeUndefined();
   });
 
   it('keeps only individually purchased video ids when the course is not purchased', async () => {
@@ -171,5 +175,27 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data.data.course.videos[1].canAccessVideo).toBe(true);
     expect(data.data.course.sections[0].videos[0].videoId).toBe('');
     expect(data.data.course.sections[0].videos[1].videoId).toBe('wistia456');
+    expect(data.data.course.sectionsRel).toBeUndefined();
+    expect(JSON.stringify(data.data.course)).not.toContain('wistia123');
+  });
+
+  it('keeps playable video ids for free courses without exposing raw sectionsRel', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+    prismaMock.course.findUnique.mockResolvedValue({
+      ...courseFixture(),
+      price: '0'
+    });
+
+    const response = await GET(new Request('http://localhost'), context());
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data.entitlements).toEqual({
+      requiresPurchase: false,
+      canAccessCourse: true
+    });
+    expect(data.data.course.videos[0].videoId).toBe('wistia123');
+    expect(data.data.course.sections[0].videos[0].videoId).toBe('wistia123');
+    expect(data.data.course.sectionsRel).toBeUndefined();
   });
 });
