@@ -39,6 +39,7 @@ function courseFixture() {
     visualTitle: null,
     visualTitle2: 'Paid Course Hero',
     category: 'INTERVIEW',
+    isPublic: true,
     targetAudienceTypes: [],
     recommendedLinks: null,
     instructors: [],
@@ -197,5 +198,102 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data.data.course.videos[0].videoId).toBe('wistia123');
     expect(data.data.course.sections[0].videos[0].videoId).toBe('wistia123');
     expect(data.data.course.sectionsRel).toBeUndefined();
+  });
+
+  it('hides private courses from public detail requests', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+    prismaMock.course.findUnique.mockResolvedValue({
+      ...courseFixture(),
+      isPublic: false
+    });
+
+    const response = await GET(new Request('http://localhost'), context());
+    const data = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(data).toEqual({
+      success: false,
+      error: 'Course not found',
+      message: '코스를 찾을 수 없습니다.'
+    });
+    expect(prismaMock.course.findMany).not.toHaveBeenCalled();
+    expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('allows admins to load private courses through admin scope', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'user-123',
+      roleId: 'ADMIN'
+    });
+    prismaMock.course.findUnique.mockResolvedValue({
+      ...courseFixture(),
+      isPublic: false
+    });
+
+    const response = await GET(
+      new Request('http://localhost?scope=admin'),
+      context()
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.data.course.isPublic).toBe(false);
+    expect(data.data.course.videos[0].videoId).toBe('wistia123');
+    expect(data.data.course.entitlements).toBeUndefined();
+    expect(data.data.entitlements).toEqual({
+      requiresPurchase: true,
+      canAccessCourse: true
+    });
+    expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('requires admin access for admin-scoped course detail requests', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_user_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'USER' });
+
+    const response = await GET(
+      new Request('http://localhost?scope=admin'),
+      context()
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(403);
+    expect(data).toEqual({
+      success: false,
+      error: 'Forbidden',
+      message: '관리자 권한이 필요합니다.'
+    });
+    expect(prismaMock.course.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('only resolves public related and recommended courses for public detail requests', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+    prismaMock.course.findUnique.mockResolvedValue({
+      ...courseFixture(),
+      recommendedLinks: [
+        { name: 'Public recommendation', url: '/courses/course-public' },
+        { name: 'Private recommendation', url: '/courses/course-private' }
+      ]
+    });
+
+    await GET(new Request('http://localhost'), context());
+
+    expect(prismaMock.course.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          category: 'INTERVIEW',
+          isPublic: true
+        })
+      })
+    );
+    expect(prismaMock.course.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          id: { in: ['course-public', 'course-private'] },
+          isPublic: true
+        })
+      })
+    );
   });
 });

@@ -2,10 +2,26 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { ItemType, TargetAudienceType } from '@prisma/client';
 import { generateKeyBetween } from 'fractional-indexing';
+import { requireAdminUser } from '@/lib/admin-auth';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const isAdminScope = searchParams.get('scope') === 'admin';
+
+    if (isAdminScope) {
+      const adminAccess = await requireAdminUser();
+
+      if (!adminAccess.ok) {
+        return NextResponse.json(
+          { error: adminAccess.error },
+          { status: adminAccess.status }
+        );
+      }
+    }
+
     const courses = await prisma.course.findMany({
+      where: isAdminScope ? undefined : { isPublic: true },
       orderBy: {
         orderKey: 'asc'
       }

@@ -14,8 +14,8 @@ interface EbookPageProps {
 export default async function EbookDetailPage({ params }: EbookPageProps) {
   const { ebookId } = await params;
 
-  const ebook = await prisma.ebook.findUnique({
-    where: { id: ebookId },
+  const ebook = await prisma.ebook.findFirst({
+    where: { id: ebookId, isPublic: true },
     select: {
       title: true,
       description: true,

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
 import { auth } from '@clerk/nextjs/server';
 import { TargetAudienceType } from '@prisma/client';
+import { requireAdminUser } from '@/lib/admin-auth';
 import {
   findUserIdByClerkId,
   getAccessibleCourseVideoIds,
@@ -74,6 +75,24 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const isAdminScope = searchParams.get('scope') === 'admin';
+
+    if (isAdminScope) {
+      const adminAccess = await requireAdminUser();
+
+      if (!adminAccess.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: adminAccess.error,
+            message: '관리자 권한이 필요합니다.'
+          },
+          { status: adminAccess.status }
+        );
+      }
+    }
+
     const { userId: clerkUserId } = await auth();
 
     const courseData = await prisma.course.findUnique({
@@ -105,7 +124,7 @@ export async function GET(
       }
     });
 
-    if (!courseData) {
+    if (!courseData || (!isAdminScope && !courseData.isPublic)) {
       return NextResponse.json(
         {
           success: false,
@@ -124,23 +143,33 @@ export async function GET(
         )
       ])
     ];
-    const userId = clerkUserId
-      ? await findUserIdByClerkId(prisma, clerkUserId)
-      : null;
     const courseEntitlement = {
       id: courseData.id,
       price: courseData.price
     };
-    const [canAccessCourse, accessibleVideoIds] = await Promise.all([
-      userCanAccessCourse(prisma, userId, courseEntitlement),
-      getAccessibleCourseVideoIds(prisma, userId, courseEntitlement, videoIds)
-    ]);
+    const userId =
+      !isAdminScope && clerkUserId
+        ? await findUserIdByClerkId(prisma, clerkUserId)
+        : null;
+    let canAccessCourse: boolean;
+    let accessibleVideoIds: Set<string>;
+
+    if (isAdminScope) {
+      canAccessCourse = true;
+      accessibleVideoIds = new Set(videoIds);
+    } else {
+      [canAccessCourse, accessibleVideoIds] = await Promise.all([
+        userCanAccessCourse(prisma, userId, courseEntitlement),
+        getAccessibleCourseVideoIds(prisma, userId, courseEntitlement, videoIds)
+      ]);
+    }
 
     // 관련 강의 가져오기 (같은 카테고리 우선, 현재 강의 제외)
     let relatedCoursesData = await prisma.course.findMany({
       where: {
         id: { not: id },
-        category: courseData.category
+        category: courseData.category,
+        ...(isAdminScope ? {} : { isPublic: true })
       },
       take: 3,
       orderBy: { createdAt: 'desc' }
@@ -151,7 +180,8 @@ export async function GET(
       const moreCourses = await prisma.course.findMany({
         where: {
           // 이미 가져온 강의들과 현재 강의를 제외해야 함
-          id: { notIn: [id, ...relatedCoursesData.map((c) => c.id)] }
+          id: { notIn: [id, ...relatedCoursesData.map((c) => c.id)] },
+          ...(isAdminScope ? {} : { isPublic: true })
         },
         take: 3 - relatedCoursesData.length,
         orderBy: { createdAt: 'desc' }
@@ -178,7 +208,10 @@ export async function GET(
 
       if (internalCourseIds.length > 0) {
         const courses = await prisma.course.findMany({
-          where: { id: { in: internalCourseIds } }
+          where: {
+            id: { in: internalCourseIds },
+            ...(isAdminScope ? {} : { isPublic: true })
+          }
         });
 
         resolvedRecommendedCourses = recommendedLinksJson.map((link) => {

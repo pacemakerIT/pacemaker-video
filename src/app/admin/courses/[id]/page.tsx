@@ -17,7 +17,7 @@ export default function CourseEditPage({
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch(`/api/courses/detail/${id}`);
+        const res = await fetch(`/api/courses/detail/${id}?scope=admin`);
         if (!res.ok) {
           throw new Error('Failed to fetch course');
         }

@@ -84,7 +84,7 @@ const tx = {
     deleteMany: vi.fn()
   },
   course: {
-    findUnique: vi.fn()
+    findFirst: vi.fn()
   },
   ebook: {
     findFirst: vi.fn(),
@@ -349,7 +349,7 @@ function installPrismaBehavior() {
         .map(({ id, ebookId }) => ({ id, ebookId }))
     )
   );
-  tx.course.findUnique.mockResolvedValue(null);
+  tx.course.findFirst.mockResolvedValue(null);
   tx.workshop.findUnique.mockResolvedValue(null);
   tx.orderItem.findMany.mockImplementation(({ where }) =>
     Promise.resolve(

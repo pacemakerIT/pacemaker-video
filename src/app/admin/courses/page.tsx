@@ -109,7 +109,7 @@ export default function Page() {
 
   const fetchCourses = useCallback(async () => {
     try {
-      const res = await fetch('/api/courses');
+      const res = await fetch('/api/courses?scope=admin');
       if (res.ok) {
         const data = await res.json();
         setRows(data);
