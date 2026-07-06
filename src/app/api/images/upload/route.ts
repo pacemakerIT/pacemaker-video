@@ -9,8 +9,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = (formData.get('image') || formData.get('file')) as File | null;
     const table = (formData.get('table') || formData.get('type')) as
-      | string
-      | null;
+      string | null;
     const column = formData.get('column') as string | null;
     const recordId = formData.get('recordId') as string | null;
     const courseId = formData.get('courseId') as string | null;
