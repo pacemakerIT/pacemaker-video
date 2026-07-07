@@ -453,7 +453,7 @@ export default function VideoDetailContainer({
         <DetailRelatedContentSection
           title="You May Also Like"
           items={relatedContentItems}
-          headerClassName="mb-12"
+          headerClassName="mb-4"
         />
 
         <DetailReviewsSection
