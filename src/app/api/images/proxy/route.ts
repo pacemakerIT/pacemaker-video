@@ -37,6 +37,8 @@ export async function GET(req: Request) {
     }
 
     const isExternalUrl = /^https?:\/\//i.test(decodedUrl);
+
+    // Parse Supabase public URL: .../object/public/[bucket]/[path]
     const match = decodedUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
     let targetBucket = bucketName;
     let filePath = decodedUrl;
@@ -64,6 +66,7 @@ export async function GET(req: Request) {
       });
     }
 
+    // S3 GetObject 커맨드 생성
     const getCommand = new GetObjectCommand({
       Bucket: targetBucket,
       Key: filePath

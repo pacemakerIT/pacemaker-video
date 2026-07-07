@@ -9,6 +9,7 @@ import PaceSelect from '@/components/ui/admin/select';
 import { getUsers, getUserOrders, OrderDetail } from './actions';
 import { toast } from 'sonner';
 import { formatMoneyFromCents } from '@/lib/money';
+import { resolveImageSrc } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,9 @@ function UserTableRow({
   onRoleChange: (id: string, role: string) => void;
   onPurchaseClick: (userId: string, userName: string) => void;
 }) {
+  const userImageSrc =
+    resolveImageSrc({ thumbnail: user.image }) ?? '/icons/user.svg';
+
   return (
     <div className="flex items-center border-b border-pace-gray-100 text-pace-base text-pace-gray-500 h-[120px] pl-6 gap-x-6">
       {/* 체크박스 */}
@@ -48,7 +52,7 @@ function UserTableRow({
       {/* 회원 정보 */}
       <div className="flex-1 flex items-center gap-4">
         <Image
-          src={user.image}
+          src={userImageSrc}
           alt={user.name}
           width={40}
           height={40}
