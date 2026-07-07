@@ -136,7 +136,7 @@ export default function VideoDetailContainer({
       if (nextState) {
         await addFavorite(id, ItemType.COURSE);
       } else {
-        await removeFavorite(id);
+        await removeFavorite(id, ItemType.COURSE);
       }
     } catch {
       showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');

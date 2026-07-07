@@ -2,9 +2,11 @@ import Image from 'next/image';
 import { ArrowRight, Heart, Calendar, MapPin, User } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
-import { useState } from 'react';
 import { ItemType } from '@prisma/client';
 import { resolveImageSrc } from '@/lib/utils';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { useUserContext } from '@/app/context/user-context';
+import { toast } from 'sonner';
 
 export default function ImageOverlayCard({
   id,
@@ -19,13 +21,18 @@ export default function ImageOverlayCard({
   thumbnailUrl,
   imageUrl
 }: OnlineCards) {
-  const [isLiked, setIsLiked] = useState(false);
+  const itemType = ItemType.WORKSHOP;
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+  const { user } = useUserContext();
+  const isLiked = favorites.some(
+    (f) => f.itemId === id && f.itemType === itemType
+  );
   const imageSrc =
     resolveImageSrc({
       thumbnail,
       thumbnailUrl,
       imageUrl,
-      itemType: ItemType.WORKSHOP
+      itemType
     }) || '/img/workshop_image1.png';
 
   const displayTitle = title || visualTitle2 || '';
@@ -73,6 +80,19 @@ export default function ImageOverlayCard({
     return date.toLocaleDateString('en-US', options).replace(' at ', ',');
   }
 
+  const toggleLike = () => {
+    if (!user?.id) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (isLiked) {
+      removeFavorite(id, itemType);
+    } else {
+      addFavorite(id, itemType);
+    }
+  };
+
   return (
     <div className="group cursor-pointer" data-testid="image-overlay-card">
       <Link href={`/workshops/${id}`}>
@@ -96,7 +116,7 @@ export default function ImageOverlayCard({
                 className="group absolute right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-500 ease-out hover:scale-110 hover:shadow-xl"
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsLiked(!isLiked);
+                  toggleLike();
                 }}
               >
                 <Heart

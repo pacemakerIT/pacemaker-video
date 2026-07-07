@@ -57,7 +57,7 @@ export default function MyPageCard({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id);
+      removeFavorite(id, type);
     } else {
       addFavorite(id, type);
     }

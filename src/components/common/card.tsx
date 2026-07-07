@@ -6,7 +6,7 @@ import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { ItemType } from '@prisma/client';
 import { useFavoriteContext } from '@/app/context/favorite-context';
-import { useUser } from '@clerk/nextjs';
+import { useUserContext } from '@/app/context/user-context';
 import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
 
@@ -27,14 +27,17 @@ export default function Card({
   imageUrl
 }: CardProps) {
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
-  const { isSignedIn } = useUser();
+  const { user } = useUserContext();
   const router = useRouter();
+  const resolvedItemType = itemType || ItemType.COURSE;
 
-  const isLiked = favorites.some((f) => f.itemId === id);
+  const isLiked = favorites.some(
+    (f) => f.itemId === id && f.itemType === resolvedItemType
+  );
 
   const handleToggleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isSignedIn) {
+    if (!user?.id) {
       alert('로그인이 필요한 서비스입니다.');
       router.push('/sign-in');
       return;
@@ -42,9 +45,9 @@ export default function Card({
 
     try {
       if (isLiked) {
-        await removeFavorite(id);
+        await removeFavorite(id, resolvedItemType);
       } else {
-        await addFavorite(id, itemType || ItemType.COURSE);
+        await addFavorite(id, resolvedItemType);
       }
     } catch {
       // Failed to toggle like

@@ -1,8 +1,25 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ImageOverlayCard from '../image-overlay-card';
 import { OnlineCards } from '@/types/online';
 import { ItemType } from '@prisma/client';
+
+const mockAddFavorite = vi.fn();
+const mockRemoveFavorite = vi.fn();
+
+vi.mock('@/app/context/favorite-context', () => ({
+  useFavoriteContext: () => ({
+    favorites: [],
+    addFavorite: mockAddFavorite,
+    removeFavorite: mockRemoveFavorite
+  })
+}));
+
+vi.mock('@/app/context/user-context', () => ({
+  useUserContext: () => ({
+    user: { id: 'user_1' }
+  })
+}));
 
 const mockCard: OnlineCards = {
   id: '1',
@@ -20,6 +37,11 @@ const mockCard: OnlineCards = {
 };
 
 describe('ImageOverlayCard', () => {
+  beforeEach(() => {
+    mockAddFavorite.mockClear();
+    mockRemoveFavorite.mockClear();
+  });
+
   it('renders overlay card content', () => {
     render(<ImageOverlayCard {...mockCard} />);
     expect(screen.getByText('Card 1')).toBeInTheDocument();
@@ -33,7 +55,7 @@ describe('ImageOverlayCard', () => {
     render(<ImageOverlayCard {...mockCard} />);
     const likeButton = screen.getByRole('button', { name: /like/i });
     fireEvent.click(likeButton);
-    expect(likeButton.querySelector('svg')).toHaveClass('fill-orange');
+    expect(mockAddFavorite).toHaveBeenCalledWith('1', ItemType.WORKSHOP);
   });
 
   it('uses orange for ongoing workshops and gray for ended workshops', () => {
