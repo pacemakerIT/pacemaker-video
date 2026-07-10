@@ -1,7 +1,14 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
+import { auth } from '@clerk/nextjs/server';
 import { TargetAudienceType } from '@prisma/client';
+import {
+  findUserIdByClerkId,
+  getAccessibleCourseVideoIds,
+  isFreePrice,
+  userCanAccessCourse
+} from '@/lib/entitlements';
 
 const TARGET_AUDIENCE_REVERSE_MAP: Record<TargetAudienceType, string> = {
   [TargetAudienceType.IT]: 'IT 개발',
@@ -48,12 +55,26 @@ interface ResolvedCourse {
   linkUrl: string;
 }
 
+function applyVideoEntitlement<T extends { id: string; videoId: string }>(
+  video: T,
+  accessibleVideoIds: Set<string>
+) {
+  const canAccessVideo = accessibleVideoIds.has(video.id);
+
+  return {
+    ...video,
+    canAccessVideo,
+    videoId: canAccessVideo ? video.videoId : ''
+  };
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+    const { userId: clerkUserId } = await auth();
 
     const courseData = await prisma.course.findUnique({
       where: { id },
@@ -94,6 +115,26 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    const videoIds = [
+      ...new Set([
+        ...courseData.videos.map((video) => video.id),
+        ...courseData.sectionsRel.flatMap((section) =>
+          section.videos.map((video) => video.id)
+        )
+      ])
+    ];
+    const userId = clerkUserId
+      ? await findUserIdByClerkId(prisma, clerkUserId)
+      : null;
+    const courseEntitlement = {
+      id: courseData.id,
+      price: courseData.price
+    };
+    const [canAccessCourse, accessibleVideoIds] = await Promise.all([
+      userCanAccessCourse(prisma, userId, courseEntitlement),
+      getAccessibleCourseVideoIds(prisma, userId, courseEntitlement, videoIds)
+    ]);
 
     // 관련 강의 가져오기 (같은 카테고리 우선, 현재 강의 제외)
     let relatedCoursesData = await prisma.course.findMany({
@@ -171,12 +212,23 @@ export async function GET(
       }
     }
 
+    const {
+      videos: courseVideos,
+      sectionsRel: courseSections,
+      ...courseBase
+    } = courseData;
+
     // DB 구조를 Frontend 구조로 변환
     const course = {
-      ...courseData,
-      sections: (courseData.sectionsRel || []).map((section) => ({
+      ...courseBase,
+      videos: courseVideos.map((video) =>
+        applyVideoEntitlement(video, accessibleVideoIds)
+      ),
+      sections: (courseSections || []).map((section) => ({
         ...section,
-        videos: section.videos || []
+        videos: (section.videos || []).map((video) =>
+          applyVideoEntitlement(video, accessibleVideoIds)
+        )
       })),
       targetAudiences: (courseData.targetAudienceTypes || []).map((type) => {
         const mapping = TARGET_AUDIENCE_MAPPING[type as TargetAudienceType];
@@ -210,7 +262,11 @@ export async function GET(
         success: true,
         data: {
           course,
-          instructors: course.instructors
+          instructors: course.instructors,
+          entitlements: {
+            requiresPurchase: !isFreePrice(courseData.price),
+            canAccessCourse
+          }
         }
       },
       { status: 200 }

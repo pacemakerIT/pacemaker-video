@@ -34,14 +34,61 @@ export async function POST(req: Request) {
     });
 
     // S3에 파일 업로드
-    await s3clientSupabase.send(putCommand);
+    try {
+      await s3clientSupabase.send(putCommand);
+    } catch (s3Error) {
+      // eslint-disable-next-line no-console
+      console.error('S3 Upload Error details:', s3Error);
+      throw s3Error;
+    }
 
     // Supabase Storage URL 생성
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
 
+    const urlOnlyUploadTypes = new Set([
+      'COURSE_THUMBNAIL',
+      'WORKSHOP_THUMBNAIL',
+      'INSTRUCTOR',
+      'MAIN_VISUAL'
+    ]);
+
+    if (table && urlOnlyUploadTypes.has(table)) {
+      const newImage = await prisma.image.create({
+        data: {
+          fileName,
+          url: imageUrl
+        }
+      });
+
+      return NextResponse.json(
+        {
+          message: 'Image uploaded successfully',
+          url: imageUrl,
+          image: newImage,
+          updatedRecord: null
+        },
+        { status: 201 }
+      );
+    }
+
     // 레코드 ID가 있으면 업데이트, 없으면 새로 생성
     let updatedRecord;
+
+    // URL만 반환하면 되는 타입 (DB 레코드 없이 폼 제출 시 함께 저장)
+    if (table === 'INSTRUCTOR' || table === 'WORKSHOP_THUMBNAIL') {
+      const newImage = await prisma.image.create({
+        data: { fileName, url: imageUrl }
+      });
+      return NextResponse.json(
+        {
+          message: 'Image uploaded successfully',
+          url: imageUrl,
+          image: newImage
+        },
+        { status: 201 }
+      );
+    }
 
     if (!column) {
       return NextResponse.json(
