@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Heart, ChevronDown, ChevronUp } from 'lucide-react';
-import { calendarStyleMap } from '@/components/ui/calendar-style-map';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
@@ -84,6 +83,34 @@ export default function WorkshopCardList({
     return `${year}.${month}.${day} ${hour12}${minuteStr}${ampm}`;
   }
 
+  const getStatusLabel = (status: WorkshopStatus) => {
+    switch (status) {
+      case WorkshopStatus.RECRUITING:
+        return 'Open';
+      case WorkshopStatus.CLOSED:
+        return 'Closed';
+      case WorkshopStatus.ONGOING:
+        return 'Ongoing';
+      case WorkshopStatus.COMPLETED:
+        return 'Completed';
+      default:
+        return status;
+    }
+  };
+
+  const getStatusClass = (status: WorkshopStatus) => {
+    switch (status) {
+      case WorkshopStatus.RECRUITING:
+        return 'border-[#FF4F02]/20 bg-[#FF4F02]/[0.05] text-[#FF4F02]';
+      case WorkshopStatus.CLOSED:
+      case WorkshopStatus.ONGOING:
+        return 'border-teal-500/20 bg-teal-50 text-teal-600';
+      case WorkshopStatus.COMPLETED:
+      default:
+        return 'border-gray-200 bg-gray-100/70 text-gray-400';
+    }
+  };
+
   useEffect(() => {
     if (selectedTitle) {
       const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
@@ -98,13 +125,13 @@ export default function WorkshopCardList({
   }, [selectedTitle, workshops]);
 
   return (
-    <div className="w-full max-w-[1200px] flex flex-col">
+    <div className="flex w-full flex-col space-y-6">
       {filtered.map((w) => {
         const isOpen = openCardId === w.id;
-        const style = calendarStyleMap[w.status];
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
+        const instructorName = w.instructors[0]?.instructor?.name;
 
         return (
           <div
@@ -112,196 +139,97 @@ export default function WorkshopCardList({
             ref={(el) => {
               cardRefs.current[w.id] = el;
             }} // 각 카드에 ref 연결
-            className="w-full border border-pace-stone-200 rounded-xl overflow-hidden"
+            className="pm-card-lift flex flex-col border border-gray-100 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(0,38,59,0.08)] md:min-h-[220px] md:flex-row md:items-center md:gap-5"
           >
-            <div className="flex">
-              {/* 썸네일 + 좋아요 */}
-              <div className="w-[384px] h-[320px] py-8 flex-shrink-0">
-                <div className="relative w-full h-full rounded-xl overflow-hidden">
-                  <Image
-                    src={thumbnailSrc}
-                    alt={w.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <button
-                    onClick={() => toggleLike(w.id)}
-                    className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md"
-                  >
-                    {/* 찜 상태 */}
-                    <Heart
-                      className={`w-5 h-5 transition-colors duration-200 ${
-                        isLiked(w.id)
-                          ? 'text-pace-orange-800 fill-pace-orange-800'
-                          : 'text-pace-gray-200 hover:text-pace-orange-800'
-                      }`}
-                      fill={isLiked(w.id) ? 'currentColor' : 'none'}
-                    />
-                  </button>
-                </div>
-              </div>
+            {/* 썸네일 + 좋아요 */}
+            <div className="relative h-[180px] w-full flex-shrink-0 bg-gray-50 md:w-[260px]">
+              <Image
+                src={thumbnailSrc}
+                alt={w.title}
+                fill
+                className="object-cover"
+              />
+              <button
+                onClick={() => toggleLike(w.id)}
+                aria-label="like"
+                className="group absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md"
+              >
+                <Heart
+                  className={`h-[18px] w-[18px] transition-colors duration-200 ${
+                    isLiked(w.id)
+                      ? 'fill-[#FF4F02] text-[#FF4F02] group-hover:text-[#E04400]'
+                      : 'text-gray-400 group-hover:fill-[#FF4F02] group-hover:text-[#FF4F02]'
+                  }`}
+                />
+              </button>
+            </div>
 
-              {/* 정보 */}
-              <div className="flex-1 py-12 px-6 flex flex-col justify-between gap-2">
+            {/* 정보 */}
+            <div className="flex min-w-0 flex-grow flex-col pt-5 md:pt-0">
+              <div>
                 {/* 뱃지 + 카테고리 + D-day + 장바구니 */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="flex h-[38px] flex-wrap items-center gap-2 md:gap-4">
                     <span
-                      className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
+                      className={`font-body rounded border px-2 py-0.5 text-[12px] font-bold md:text-[14px] ${getStatusClass(w.status)}`}
                     >
-                      {w.status === 'RECRUITING'
-                        ? 'Open'
-                        : w.status === 'CLOSED'
-                          ? 'Closed'
-                          : w.status === 'ONGOING'
-                            ? 'Ongoing'
-                            : 'Completed'}
+                      {getStatusLabel(w.status)}
                     </span>
-                    {/* TO-DO: category 필드 생기면 대체 */}
-                    <span className="text-pace-orange-800 text-pace-sm">
+                    <span className="font-body text-[12px] font-medium tracking-wide text-[#FF4F02] md:text-[14px]">
                       {w.category ?? 'Networking'}
                     </span>
-                    <span className="text-pace-stone-500 text-pace-sm">
+                    <span className="font-body text-[12px] font-medium text-gray-400 md:text-[14px]">
                       {getDday(w.startDate)}
                     </span>
                   </div>
 
-                  {/* TO-DO: 장바구니 아이콘 기능 확인 */}
-                  <div className="flex items-center pr-4">
+                  <button className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#333333] transition-colors hover:bg-gray-100">
                     <Image
                       src="/icons/cart.svg"
                       alt="장바구니"
-                      width={28}
-                      height={28}
-                      className="cursor-pointer mr-2"
+                      width={18}
+                      height={16}
+                      className="cursor-pointer"
                     />
-                  </div>
+                  </button>
                 </div>
 
                 {/* 제목 + 가격 */}
-                <div className="flex items-center justify-between px-3">
-                  <h2 className="text-pace-xl font-semibold text-pace-black-500">
+                <div className="mb-1.5 flex items-start justify-between gap-4">
+                  <h2 className="min-w-0 truncate font-headline text-[18px] font-medium leading-[26px] text-[#00263B] md:text-[24px] md:leading-[36px]">
                     {w.title}
                   </h2>
-                  <p className="text-[28px] font-bold text-pace-black-500">
+                  <p className="shrink-0 font-headline text-[22px] font-bold leading-[24px] text-[#00263B] md:text-[28px] md:leading-[30px]">
                     {w.price ? `$${w.price}` : 'Free'}
                   </p>
                 </div>
 
                 {/* 일정 / 장소 */}
-                <p className="text-pace-base text-pace-stone-500 px-3">
-                  Date | {formatDateTime(w.startDate)}
-                  {w.instructors[0]?.instructor?.name &&
-                    w.instructors[0].instructor.name.toUpperCase() !=
-                      'UNKNOWN' && (
-                      <>
-                        &nbsp;&nbsp; Instructor |{' '}
-                        {w.instructors[0].instructor.name}
-                      </>
+                <div className="mb-2.5 flex min-h-[24px] flex-wrap items-center gap-x-3 gap-y-1 text-[13px] font-medium text-gray-500 md:gap-2 md:text-[16px]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-400">Date</span>
+                    <span className="text-gray-300">|</span>
+                    <span>{formatDateTime(w.startDate)}</span>
+                  </div>
+                  {instructorName &&
+                    instructorName.toUpperCase() !== 'UNKNOWN' && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-gray-400">Instructor</span>
+                        <span className="text-gray-300">|</span>
+                        <span>{instructorName}</span>
+                      </div>
                     )}
-                  &nbsp;&nbsp; Location | {w.locationOrUrl ?? 'TBD'}
-                </p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-gray-400">Location</span>
+                    <span className="text-gray-300">|</span>
+                    <span>{w.locationOrUrl ?? 'TBD'}</span>
+                  </div>
+                </div>
 
                 {/* 설명 */}
-                <p className="text-pace-base text-pace-stone-500 px-3">
-                  Turning Dreams Into Reality{' '}
-                  {/* TO-DO: 워크숍 subTitle 문구 필드 생기면 대체 */}
+                <p className="mb-1 mt-2 line-clamp-1 text-[14px] font-medium italic text-[#FF4F02] md:mt-3 md:text-[16px]">
+                  {w.description || 'Turning Dreams Into Reality'}
                 </p>
-
-                {/* 펼치기 버튼 - 닫혀있을 때만 표시 */}
-                {!isOpen && (
-                  <button
-                    onClick={() => setOpenCardId(w.id)}
-                    className="text-sm font-light text-pace-stone-800 bg-pace-ivory-500 w-full h-10 px-2 rounded-md hover:opacity-90 transition flex items-center justify-center gap-1"
-                  >
-                    More detail <ChevronDown size={14} className="ml-1" />
-                  </button>
-                )}
-
-                {/* 펼쳐졌을 때 하단 설명 */}
-                {isOpen && (
-                  <div className="mt-2 bg-pace-ivory-500 text-sm text-pace-stone-600 p-6 rounded-b-xl">
-                    <div className="flex flex-col md:flex-row justify-between gap-6">
-                      {/* 강사 정보 */}
-                      {w.instructors.length > 0 && (
-                        <div className="flex-1 space-y-1">
-                          <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                            Instructor
-                          </h4>
-                          <p className="font-bold text-pace-base text-pace-black-500 mb-2">
-                            {w.instructors[0].instructor.name}
-                          </p>
-                          <p>
-                            Employer Strategy & Engagement Specialist at
-                            University of Toronto, Career Coach
-                          </p>
-                          {/* TO-DO: instructor.title, organization 필드 필요 */}
-                        </div>
-                      )}
-
-                      {/* 커리큘럼 */}
-                      {/* TO-DO: instrutor가 아닌 커리큘럼 관련 컬럼으로 변경 필요 */}
-                      {w.instructors.length > 0 && (
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-pace-sm text-pace-black-500 mb-2">
-                            Curriculum
-                          </h4>
-                          <ul className="space-y-1">
-                            {[
-                              'Session 01',
-                              'Session 02',
-                              'Session 03',
-                              'Session 04'
-                            ].map((s, i) => (
-                              <li
-                                key={i}
-                                className="flex justify-between items-center"
-                              >
-                                <div className="flex items-center gap-4">
-                                  <span className="text-pace-gray-700 text-pace-sm">
-                                    {s}
-                                  </span>
-                                  {/* TO-DO: Start 버튼 클릭 시 이동 */}
-                                  <button className="text-pace-stone-500 text-pace-sm">
-                                    Start
-                                  </button>
-                                </div>
-                                {/* TO-DO: 재생 버튼 클릭 시 이동 */}
-                                <button className="text-pace-stone-500 text-pace-sm">
-                                  <Image
-                                    src="/icons/video-circle.svg"
-                                    alt="재생"
-                                    width={16}
-                                    height={16}
-                                    className="cursor-pointer mr-2"
-                                  />
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                          {/* TO-DO: 실제 커리큘럼 리스트 연결 */}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 강의 소개 멘트 */}
-                    <div className="mt-6 text-pace-sm text-pace-gray-700 whitespace-pre-line leading-relaxed">
-                      {w.description}
-                    </div>
-
-                    {/* 닫기 버튼 */}
-                    <button
-                      onClick={() => {
-                        setOpenCardId(null);
-                        onCloseDetail?.();
-                      }}
-                      className="mt-6 text-sm font-light text-pace-stone-800 bg-pace-ivory-500 w-full h-10 px-2 rounded-md hover:opacity-90 transition flex items-center justify-center gap-1"
-                    >
-                      Close <ChevronUp size={14} className="ml-1" />
-                    </button>
-                    {/* TO-DO: instructor.bio */}
-                  </div>
-                )}
               </div>
             </div>
           </div>

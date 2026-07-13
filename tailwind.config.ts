@@ -84,7 +84,18 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: ['Pretendard', 'sans-serif']
+        sans: ['Pretendard', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
+        headline: ['Poppins', 'sans-serif'],
+        body: ['"Source Sans 3"', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+        pretendard: [
+          'Pretendard',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'sans-serif'
+        ]
       },
 
       // fontWeight는 Tailwind 기본 디자인 시스템 (font-normal, font-medium, font-bold 등) 사용

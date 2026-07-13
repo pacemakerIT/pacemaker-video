@@ -10,6 +10,8 @@ import { Header } from '@/components/common/header';
 import { Footer } from '@/components/common/footer';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import '@/components/features/workshops/calendar-custom.css';
 
 export default function RootLayoutWrapper({
   children
