@@ -20,7 +20,7 @@ export type Favorite = {
 interface FavoriteContextType {
   favorites: Favorite[];
   addFavorite: (itemId: string, itemType: ItemType) => Promise<void>;
-  removeFavorite: (itemId: string) => Promise<void>;
+  removeFavorite: (itemId: string, itemType: ItemType) => Promise<void>;
 }
 
 const FavoriteContext = createContext<FavoriteContextType | undefined>(
@@ -56,6 +56,14 @@ export const FavoriteProvider = ({
   }, [userId]);
 
   const addFavorite = async (itemId: string, itemType: ItemType) => {
+    const alreadyFavorited = favorites.some(
+      (f) => f.itemId === itemId && f.itemType === itemType
+    );
+
+    if (alreadyFavorited) {
+      return;
+    }
+
     try {
       const res = await fetch('/api/favorites', {
         method: 'POST',
@@ -74,7 +82,11 @@ export const FavoriteProvider = ({
       }
 
       const newItem: Favorite = await res.json();
-      setFavorites((prev) => [...prev, newItem]);
+      setFavorites((prev) =>
+        prev.some((f) => f.itemId === itemId && f.itemType === itemType)
+          ? prev
+          : [...prev, newItem]
+      );
 
       toast.success('Added to favorites!');
     } catch (err) {
@@ -82,12 +94,17 @@ export const FavoriteProvider = ({
     }
   };
 
-  const removeFavorite = async (itemId: string) => {
+  const removeFavorite = async (itemId: string, itemType: ItemType) => {
     try {
-      await fetch(`/api/favorites?userId=${userId}&itemId=${itemId}`, {
-        method: 'DELETE'
-      });
-      setFavorites((prev) => prev.filter((f) => !(f.itemId === itemId)));
+      await fetch(
+        `/api/favorites?userId=${userId}&itemId=${itemId}&itemType=${itemType}`,
+        {
+          method: 'DELETE'
+        }
+      );
+      setFavorites((prev) =>
+        prev.filter((f) => !(f.itemId === itemId && f.itemType === itemType))
+      );
       toast.success('Removed from favorites!');
     } catch (err) {
       toast.error(`Failed to remove favorite:${err}`);

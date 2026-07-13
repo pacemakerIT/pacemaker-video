@@ -113,9 +113,6 @@
     "@hono/node-server": "1.19.14",
     "@prisma/dev": "0.24.3",
     "effect": "^3.21.0",
-    "next": {
-      "postcss": "8.5.14"
-    },
     "node-polyfill-webpack-plugin": "^4.1.0"
   },
   "lint-staged": {
