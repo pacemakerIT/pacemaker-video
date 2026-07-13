@@ -2,7 +2,7 @@
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import ReviewCard from './review-card';
-import Image from 'next/image';
+import { Star } from 'lucide-react';
 
 interface Review {
   id: string | number;
@@ -44,22 +44,19 @@ export default function DetailReviewsSection({
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className={`flex items-end gap-4 mb-2 ${headerClassName ?? ''}`}>
-        <h2 className="text-3xl font-bold text-pace-black-500 shrink-0">
+      <div className={`flex items-end gap-4 mb-8 ${headerClassName ?? ''}`}>
+        <h2 className="text-3xl font-heading font-bold text-[#00263b] shrink-0">
           {title}
         </h2>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl font-bold">{rating} / 5</span>
-          <div className="flex items-center gap-0.5">
+          <span className="text-xl font-bold text-[#00263b]">{rating} / 5</span>
+          <div className="flex items-center text-[#ff4f02]">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Image
+              <Star
                 key={i}
-                src={
-                  i < rating ? '/icons/full-star.svg' : '/icons/empty-star.svg'
-                }
-                width={16}
-                height={16}
-                alt={i < rating ? 'Full star' : 'Empty star'}
+                className={`w-3.5 h-3.5 ${
+                  i < rating ? 'fill-current' : 'fill-transparent'
+                }`}
               />
             ))}
           </div>

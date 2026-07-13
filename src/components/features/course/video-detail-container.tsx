@@ -458,7 +458,6 @@ export default function VideoDetailContainer({
 
         <DetailReviewsSection
           title="Student Reviews"
-          headerClassName="mb-12"
           reviewCount={data.course.reviews?.length ?? 0}
           reviews={
             data.course.reviews?.map((review) => ({

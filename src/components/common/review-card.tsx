@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { Star } from 'lucide-react';
 import { resolveImageSrc, cn } from '@/lib/utils';
 
 interface ReviewCardProps {
@@ -42,16 +43,13 @@ export default function ReviewCard({
           <span className="font-bold text-[#ff4f02]">{profileName}</span>
         </div>
         <div className="flex flex-col items-end">
-          <div className="flex items-center gap-0.5 mb-2">
+          <div className="flex items-center mb-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Image
+              <Star
                 key={i}
-                src={
-                  i < rating ? '/icons/full-star.svg' : '/icons/empty-star.svg'
-                }
-                width={16}
-                height={16}
-                alt={i < rating ? 'Full star' : 'Empty star'}
+                className={`w-3.5 h-3.5 fill-current ${
+                  i < rating ? 'text-yellow-400' : 'text-gray-300'
+                }`}
               />
             ))}
           </div>

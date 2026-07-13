@@ -4,8 +4,6 @@ import Image from 'next/image';
 import { Heart, ArrowRight } from 'lucide-react';
 import { resolveImageSrc, cn } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
-import { CustomBadge } from '@/components/common/custom-badge';
-
 const categoryBg: Record<string, string> = {
   INTERVIEW: 'bg-pace-blue-500',
   RESUME: 'bg-pace-purple-500',
@@ -60,12 +58,13 @@ export default function RelatedContentCard({
     <div className="w-full cursor-pointer font-normal">
       <div
         className={cn(
-          'w-full bg-white rounded-lg overflow-hidden shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative',
+          'w-full bg-white rounded-none overflow-hidden border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] relative flex flex-col',
+          'transition-[box-shadow,transform] duration-500 ease-[cubic-bezier(0.33,1,0.53,1)] hover:shadow-[0_28px_56px_rgba(0,38,59,0.13)] hover:-translate-y-1.5',
           className
         )}
         onClick={handleCardClick}
       >
-        <div className="w-full aspect-[3/2] relative overflow-hidden">
+        <div className="w-full h-[256px] relative overflow-hidden">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -102,16 +101,16 @@ export default function RelatedContentCard({
             }}
           >
             <Heart
-              className={`w-5 h-5 transition-colors duration-200 ${
+              className={`w-5 h-5 transition-colors duration-300 ${
                 isLiked
-                  ? 'text-pace-orange-800 fill-pace-orange-800'
-                  : 'text-pace-gray-200 group-hover:text-pace-orange-800'
+                  ? 'text-[#ff4f02] fill-[#ff4f02] group-hover:text-[#e04400] group-hover:fill-[#e04400]'
+                  : 'text-gray-400 fill-transparent group-hover:text-[#ff4f02] group-hover:fill-[#ff4f02]'
               }`}
             />
           </button>
         </div>
 
-        <div className="w-full p-6 flex flex-col justify-start items-start gap-4">
+        <div className="w-full p-6 flex flex-col justify-start items-start gap-4 flex-grow">
           <div className="w-full flex flex-col gap-4">
             <div className="w-full flex justify-between items-start gap-4">
               <h3 className="text-lg font-heading font-bold text-[#00263b] leading-tight line-clamp-3">
