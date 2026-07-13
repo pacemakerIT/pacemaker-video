@@ -212,15 +212,15 @@ describe('Card', () => {
   it('toggles like button state when clicked', async () => {
     render(<Card {...mockCard} />);
 
-    const likeButton = await screen.findByRole('button', { name: 'like' });
+    const likeButton = await screen.findByRole('button', { name: 'Save' });
     expect(likeButton).toBeInTheDocument();
     expect(likeButton).toHaveClass('absolute');
     expect(likeButton).toHaveClass('top-4');
     expect(likeButton).toHaveClass('right-4');
 
     // Check initial state
-    const heartIcon = likeButton.querySelector('svg');
-    expect(heartIcon).toHaveClass('text-gray-300');
+    const heartIcon = likeButton.querySelector('span');
+    expect(heartIcon).toHaveClass('material-symbols-outlined');
 
     // Click the button
     fireEvent.click(likeButton);
