@@ -36,8 +36,11 @@ export default function Card({
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const { isSignedIn } = useUser();
   const router = useRouter();
+  const resolvedItemType = itemType || ItemType.COURSE;
 
-  const isLiked = favorites.some((f) => f.itemId === id);
+  const isLiked = favorites.some(
+    (f) => f.itemId === id && f.itemType === resolvedItemType
+  );
 
   const handleToggleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -49,10 +52,10 @@ export default function Card({
 
     try {
       if (isLiked) {
-        await removeFavorite(id);
+        await removeFavorite(id, resolvedItemType);
       } else {
         // Fallback to COURSE if type is undefined, though it should be passed
-        await addFavorite(id, itemType || ItemType.COURSE);
+        await addFavorite(id, resolvedItemType);
       }
     } catch {
       // Failed to toggle like
