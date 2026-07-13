@@ -12,7 +12,7 @@
 
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-    <title>Pacemaker | Online Courses</title>
+    <title>Pacemaker | E-books</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -291,19 +291,29 @@
         color: #ff4f02;
       }
 
-      .course-filter-button[data-filter='interview']:hover {
+      .course-filter-button[data-filter='marketing']:hover {
+        border-color: rgb(255, 126, 84);
+        color: rgb(255, 126, 84);
+      }
+
+      .course-filter-button[data-filter='design']:hover {
+        border-color: rgb(255, 102, 102);
+        color: rgb(255, 102, 102);
+      }
+
+      .course-filter-button[data-filter='gov']:hover {
+        border-color: rgb(52, 211, 153);
+        color: rgb(52, 211, 153);
+      }
+
+      .course-filter-button[data-filter='it']:hover {
         border-color: rgb(54, 166, 247);
         color: rgb(54, 166, 247);
       }
 
-      .course-filter-button[data-filter='resume']:hover {
-        border-color: rgb(255, 150, 49);
-        color: rgb(255, 150, 49);
-      }
-
-      .course-filter-button[data-filter='networking']:hover {
-        border-color: rgb(159, 91, 231);
-        color: rgb(159, 91, 231);
+      .course-filter-button[data-filter='finance']:hover {
+        border-color: #37446c;
+        color: #37446c;
       }
 
       .course-filter-button.is-active {
@@ -312,22 +322,34 @@
         box-shadow: 0 10px 25px -5px rgba(255, 79, 2, 0.12);
       }
 
-      .course-filter-button[data-filter='interview'].is-active {
+      .course-filter-button[data-filter='marketing'].is-active {
+        border-color: rgb(255, 126, 84);
+        color: rgb(255, 126, 84);
+        box-shadow: 0 10px 25px -5px rgba(255, 126, 84, 0.2);
+      }
+
+      .course-filter-button[data-filter='design'].is-active {
+        border-color: rgb(255, 102, 102);
+        color: rgb(255, 102, 102);
+        box-shadow: 0 10px 25px -5px rgba(255, 102, 102, 0.2);
+      }
+
+      .course-filter-button[data-filter='gov'].is-active {
+        border-color: rgb(52, 211, 153);
+        color: rgb(52, 211, 153);
+        box-shadow: 0 10px 25px -5px rgba(52, 211, 153, 0.2);
+      }
+
+      .course-filter-button[data-filter='it'].is-active {
         border-color: rgb(54, 166, 247);
         color: rgb(54, 166, 247);
         box-shadow: 0 10px 25px -5px rgba(54, 166, 247, 0.2);
       }
 
-      .course-filter-button[data-filter='resume'].is-active {
-        border-color: rgb(255, 150, 49);
-        color: rgb(255, 150, 49);
-        box-shadow: 0 10px 25px -5px rgba(255, 150, 49, 0.2);
-      }
-
-      .course-filter-button[data-filter='networking'].is-active {
-        border-color: rgb(159, 91, 231);
-        color: rgb(159, 91, 231);
-        box-shadow: 0 10px 25px -5px rgba(159, 91, 231, 0.2);
+      .course-filter-button[data-filter='finance'].is-active {
+        border-color: #37446c;
+        color: #37446c;
+        box-shadow: 0 10px 25px -5px rgba(55, 68, 108, 0.2);
       }
 
       .course-sort-select {
@@ -349,6 +371,22 @@
       .course-sort-select:focus-visible {
         outline: 2px solid #00adbd;
         outline-offset: 2px;
+      }
+
+      @keyframes logo-marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .animate-marquee {
+        display: flex;
+        width: max-content;
+        animation: logo-marquee 25s linear infinite;
+        will-change: transform;
       }
 
       .review-marquee-track {
@@ -436,6 +474,7 @@
         transition: all 0.2s;
         border: none;
         background: none;
+        text-decoration: none;
       }
 
       .nav-item:hover {
@@ -600,143 +639,76 @@
       .footer-cta-dynamic-wash::after {
         content: '';
         position: absolute;
-        bottom: -25%;
-        left: -4%;
-        width: 420px;
-        height: 420px;
+        right: 18%;
+        bottom: -30%;
+        width: 580px;
+        height: 580px;
         border-radius: 50%;
         background: radial-gradient(
           circle,
-          rgb(200 55 0 / 0.4) 0%,
+          rgb(255 140 70 / 0.28) 0%,
           transparent 65%
         );
-        filter: blur(3px);
-        animation: services-hero-glow-drift-reverse 13s ease-in-out infinite;
+        filter: blur(4px);
+        animation: services-hero-glow-drift-reverse 14s ease-in-out infinite;
       }
 
       .footer-cta-review-deck {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 10px;
         position: absolute;
-        width: 920px;
-        height: 662px;
-        right: -60px;
-        top: -120px;
-        transform: rotate(-15deg);
+        right: 6%;
+        top: -42%;
+        z-index: 8;
+        display: flex;
+        width: 680px;
+        gap: 10px;
+        transform: rotate(-10deg) scale(0.95);
+        pointer-events: none;
       }
 
       .footer-cta-exclaim {
         display: inline-block;
-        transform-origin: 50% 85%;
-        animation: footer-cta-exclaim-bounce 7s
-          cubic-bezier(0.34, 1.45, 0.64, 1) infinite;
-      }
-
-      @keyframes services-hero-gradient-flow {
-        0% {
-          background-position:
-            0% 0%,
-            100% 0%,
-            0% 50%;
-        }
-        25% {
-          background-position:
-            34% 10%,
-            82% 34%,
-            40% 60%;
-        }
-        50% {
-          background-position:
-            60% 30%,
-            48% 56%,
-            100% 50%;
-        }
-        75% {
-          background-position:
-            22% 56%,
-            10% 70%,
-            60% 40%;
-        }
-        100% {
-          background-position:
-            0% 0%,
-            100% 0%,
-            0% 50%;
-        }
-      }
-
-      @keyframes services-hero-glow-drift {
-        0% {
-          transform: translate3d(0, 0, 0) scale(1);
-          opacity: 0.86;
-        }
-        50% {
-          transform: translate3d(-9%, 10%, 0) scale(1.14);
-          opacity: 1;
-        }
-        100% {
-          transform: translate3d(0, 0, 0) scale(1);
-          opacity: 0.86;
-        }
-      }
-
-      @keyframes services-hero-glow-drift-reverse {
-        0% {
-          transform: translate3d(0, 0, 0) scale(1);
-          opacity: 0.78;
-        }
-        50% {
-          transform: translate3d(12%, -11%, 0) scale(1.12);
-          opacity: 0.96;
-        }
-        100% {
-          transform: translate3d(0, 0, 0) scale(1);
-          opacity: 0.78;
-        }
-      }
-
-      @keyframes footer-cta-exclaim-bounce {
-        0%,
-        100% {
-          transform: translateY(0) scale(1, 1);
-        }
-        2.5% {
-          transform: translateY(-7px) scale(1.12, 1.25);
-        }
-        5% {
-          transform: translateY(0) scale(1, 1);
-        }
-        7.5% {
-          transform: translateY(-4px) scale(1.08, 1.12);
-        }
-        10% {
-          transform: translateY(0) scale(1, 1);
-        }
+        animation: footer-cta-exclaim 0.8s ease-in-out infinite alternate;
       }
 
       @keyframes hero-dust-drift {
         0% {
-          transform: translate3d(0, 0, 0) scale(1);
+          transform: translate3d(0, 0, 0) rotate(0deg);
         }
-        50% {
-          transform: translate3d(16px, -20px, 0) scale(1.02);
-        }
+
         100% {
-          transform: translate3d(32px, -40px, 0) scale(1);
+          transform: translate3d(-3%, -5%, 0) rotate(-4deg);
         }
       }
 
       @keyframes hero-dust-drift-reverse {
         0% {
+          transform: translate3d(0, 0, 0) rotate(0deg);
+        }
+
+        100% {
+          transform: translate3d(3%, 5%, 0) rotate(4deg);
+        }
+      }
+
+      @keyframes services-hero-glow-drift {
+        0%,
+        100% {
           transform: translate3d(0, 0, 0) scale(1);
         }
+
         50% {
-          transform: translate3d(-14px, 18px, 0) scale(0.99);
+          transform: translate3d(-6%, 8%, 0) scale(1.08);
         }
+      }
+
+      @keyframes services-hero-glow-drift-reverse {
+        0%,
         100% {
-          transform: translate3d(-28px, 36px, 0) scale(1);
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+
+        50% {
+          transform: translate3d(6%, -8%, 0) scale(1.06);
         }
       }
 
@@ -745,15 +717,46 @@
         100% {
           transform: translateY(0);
         }
+
         50% {
-          transform: translateY(-5px);
+          transform: translateY(-4px);
         }
       }
 
-      a:focus-visible,
-      button:focus-visible {
-        outline: 2px solid #00adbd;
-        outline-offset: 2px;
+      @keyframes footer-cta-exclaim {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+
+        100% {
+          transform: scale(1.22) rotate(8deg);
+          color: #ffe8d1;
+        }
+      }
+
+      @keyframes services-hero-gradient-flow {
+        0%,
+        100% {
+          background-position:
+            0% 0%,
+            100% 0%,
+            0% 50%;
+        }
+
+        50% {
+          background-position:
+            30% 20%,
+            70% 30%,
+            10% 70%;
+        }
+      }
+
+      @media (max-width: 1023px) {
+        .footer-cta-review-deck {
+          right: -10%;
+          top: -20%;
+          transform: rotate(-10deg) scale(0.72);
+        }
       }
 
       @media (max-width: 768px) {
@@ -779,13 +782,21 @@
 
         .mobile-nav-panel {
           display: block;
+
           width: 100%;
+
           flex-basis: 100%;
+
           overflow: hidden;
+
           max-height: 0;
+
           opacity: 0;
+
           padding-top: 0;
+
           pointer-events: none;
+
           transition:
             max-height 0.3s ease-out,
             opacity 0.25s ease-out,
@@ -794,8 +805,11 @@
 
         .mobile-nav-panel.is-open {
           max-height: 42rem;
+
           opacity: 1;
+
           padding-top: 12px;
+
           pointer-events: auto;
         }
 
@@ -835,13 +849,15 @@
             <a class="nav-item" href="../workshops/workshop_list.html"
               >Workshops</a
             >
+            <a class="nav-item" href="../courses/course_list.html"
+              >Online Courses</a
+            >
             <a
               aria-current="page"
               class="nav-item is-active"
               href="#main-content"
-              >Online Courses</a
+              >E-books</a
             >
-            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
           </div>
           <div class="nav-right ml-4">
             <a class="btn-auth btn-login" href="#">Login</a>
@@ -901,7 +917,7 @@
               <div class="py-1">
                 <a
                   class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
-                  href="#main-content"
+                  href="../main.html"
                   ><span>HOME</span></a
                 >
               </div>
@@ -966,12 +982,11 @@
                         </div>
                       </a>
                       <a
-                        aria-current="page"
-                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
-                        href="#main-content"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../courses/course_list.html"
                       >
                         <div
-                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
                         >
                           <span class="material-symbols-outlined text-[20px]"
                             >play_lesson</span
@@ -980,7 +995,7 @@
                         <div class="flex-1">
                           <div class="flex items-center justify-between">
                             <span
-                              class="text-[0.95rem] font-bold text-orange mb-0.5"
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
                               >Online Courses</span
                             >
                             <span
@@ -997,11 +1012,12 @@
                         </div>
                       </a>
                       <a
-                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../ebooks/ebook_list.html"
+                        aria-current="page"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
+                        href="#main-content"
                       >
                         <div
-                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
                         >
                           <span class="material-symbols-outlined text-[20px]"
                             >menu_book</span
@@ -1010,7 +1026,7 @@
                         <div class="flex-1">
                           <div class="flex items-center justify-between">
                             <span
-                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              class="text-[0.95rem] font-bold text-orange mb-0.5"
                               >E-books</span
                             >
                             <span
@@ -1068,35 +1084,140 @@
         </p>
 
         <h1
-          class="font-headline text-[40px] font-extrabold leading-tight text-primary max-w-[800px] mb-8"
+          class="font-headline text-[32px] md:text-[40px] font-extrabold leading-tight text-primary max-w-[900px] mb-8 px-4"
         >
-          Build a strong foundation<br />for your career abroad
+          The 94% Success Formula:<br class="hidden md:block" />
+          Writing Applications That Set You Apart
         </h1>
 
         <a
-          href="#course-list"
+          href="#ebook-list"
           class="hero-cta-bob inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-headline px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02]"
         >
-          Explore courses
+          View the guide
         </a>
       </div>
     </section>
 
-    <!-- Course Discovery Section -->
+    <!-- Logo Marquee Section -->
+    <div class="w-full bg-white py-20 overflow-hidden">
+      <div class="relative w-full overflow-hidden">
+        <div class="flex items-center whitespace-nowrap animate-marquee">
+          <!-- Set A -->
+          <div class="flex items-center gap-16 mx-8">
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+          </div>
+          <!-- Set B (Duplicate for seamless loop) -->
+          <div class="flex items-center gap-16 mx-8">
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ibm.svg"
+              alt="IBM"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/kotra.svg"
+              alt="KOTRA"
+              class="h-10 w-auto opacity-80"
+            />
+            <img
+              src="../../icons/ontario.svg"
+              alt="Ontario"
+              class="h-10 w-auto opacity-80"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <section id="course-list" class="py-[80px] bg-white">
+    <!-- E-book Discovery Section -->
+
+    <section id="ebook-list" class="pb-[80px] pt-0 bg-white">
       <div class="page-container">
         <div
           class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4"
         >
           <div>
-            <p class="text-orange font-bold text-[18px] tracking-wide mb-2">
-              Explore Our Programs
+            <p class="text-orange font-bold text-sm tracking-wide mb-2">
+              Curated for What Matters Most
             </p>
             <h2
               class="text-[32px] font-extrabold font-headline text-navy tracking-tight"
             >
-              Pacemaker online courses
+              Pacemaker E-books
             </h2>
           </div>
         </div>
@@ -1107,7 +1228,7 @@
           <div
             class="flex flex-wrap gap-3"
             role="tablist"
-            aria-label="Course filters"
+            aria-label="E-book filters"
           >
             <button
               class="course-filter-button is-active"
@@ -1120,33 +1241,49 @@
             <button
               class="course-filter-button"
               type="button"
-              data-filter="interview"
+              data-filter="marketing"
               aria-pressed="false"
             >
-              Interview
+              Marketing
             </button>
             <button
               class="course-filter-button"
               type="button"
-              data-filter="resume"
+              data-filter="it"
               aria-pressed="false"
             >
-              Resume
+              IT
             </button>
             <button
               class="course-filter-button"
               type="button"
-              data-filter="networking"
+              data-filter="design"
               aria-pressed="false"
             >
-              Networking
+              Design
+            </button>
+            <button
+              class="course-filter-button"
+              type="button"
+              data-filter="gov"
+              aria-pressed="false"
+            >
+              Public Sector
+            </button>
+            <button
+              class="course-filter-button"
+              type="button"
+              data-filter="finance"
+              aria-pressed="false"
+            >
+              Finance & Accounting
             </button>
           </div>
           <div class="relative w-full max-w-[180px] lg:w-auto">
             <select
-              id="courseSortSelect"
+              id="ebookSortSelect"
               class="course-sort-select w-full"
-              aria-label="Sort courses"
+              aria-label="Sort e-books"
             >
               <option value="default">Total</option>
               <option value="date">Date</option>
@@ -1160,30 +1297,37 @@
         </div>
 
         <div
-          id="courseGrid"
+          id="ebookGrid"
           class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16"
         >
+          <!-- E-book Card 1 -->
           <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="interview"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="marketing"
             data-price="2800"
-            data-title="Cover letters and interview prep in one course"
+            data-title="Branding & Networking for Marketers"
             data-date="2024-04-01"
             data-rating="4.8"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course interview"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-1.png"
-              />
+            <div class="relative h-[256px] bg-[#FFF5F2]">
               <div class="absolute top-4 left-4 z-10">
                 <span
                   class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(54, 166, 247)"
-                  >Interview</span
+                  style="background: rgb(255, 126, 84)"
+                  >Networking</span
                 >
+              </div>
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#FF6B3D] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Marketing
+                </h4>
+                <p class="text-[#FF6B3D] text-lg font-medium leading-tight">
+                  The 94% Success Formula: A Proven Approach to Job & Career
+                  Transitions
+                </p>
               </div>
               <button
                 type="button"
@@ -1198,22 +1342,21 @@
                 <h3
                   class="text-lg font-bold font-headline text-navy leading-tight"
                 >
-                  Cover letters and interview prep in one course
+                  Branding & Networking for Marketers
                 </h3>
                 <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
               <p
                 class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
               >
-                I've tried a lot of paths in my 20s and 30s. I can help you
-                build skills, write applications, and prep for interviews, one
-                step at a time.
+                Learn what truly matters in hiring criteria and how to build the
+                right experience to strengthen your resume.
               </p>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
                 href="#"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
@@ -1221,27 +1364,34 @@
             </div>
           </div>
 
+          <!-- E-book Card 2 -->
           <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="resume"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="design"
             data-price="2800"
-            data-title="Cover letters and interview prep in one course"
+            data-title="Preparing for Design Interviews"
             data-date="2024-03-15"
             data-rating="4.9"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course resume"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-2.png"
-              />
+            <div class="relative h-[256px] bg-[#FFF1F1]">
               <div class="absolute top-4 left-4 z-10">
                 <span
                   class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(255, 150, 49)"
-                  >Resume</span
+                  style="background: rgb(255, 102, 102)"
+                  >Design</span
                 >
+              </div>
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#FF7272] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Design
+                </h4>
+                <p class="text-[#FF7272] text-lg font-medium leading-tight">
+                  What Every Designer Should Know: Interviews That Shape Your
+                  Career
+                </p>
               </div>
               <button
                 type="button"
@@ -1256,22 +1406,21 @@
                 <h3
                   class="text-lg font-bold font-headline text-navy leading-tight"
                 >
-                  Cover letters and interview prep in one course
+                  Preparing for Design Interviews
                 </h3>
                 <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
               <p
                 class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
               >
-                I've tried a lot of paths in my 20s and 30s. I can help you
-                build skills, write applications, and prep for interviews, one
-                step at a time.
+                Identify your unique strengths and communicate your design
+                thinking with confidence during interviews.
               </p>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
                 href="#"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
@@ -1279,143 +1428,34 @@
             </div>
           </div>
 
+          <!-- E-book Card 3 -->
           <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="networking"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="gov"
             data-price="2800"
-            data-title="Cover letters and interview prep in one course"
+            data-title="Public Sector Resume"
             data-date="2024-03-20"
             data-rating="4.7"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course networking"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-3.png"
-              />
+            <div class="relative h-[256px] bg-[#E6F4EA]">
               <div class="absolute top-4 left-4 z-10">
                 <span
                   class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(159, 91, 231)"
-                  >Networking</span
+                  style="background: rgb(52, 211, 153)"
+                  >Public Sector</span
                 >
               </div>
-              <button
-                type="button"
-                class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
-                aria-label="Save"
-              >
-                <span class="material-symbols-outlined text-xl">favorite</span>
-              </button>
-            </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#34D399] text-4xl font-extrabold mb-4 font-headline"
                 >
-                  Cover letters and interview prep in one course
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
-              </div>
-              <p
-                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
-              >
-                I've tried a lot of paths in my 20s and 30s. I can help you
-                build skills, write applications, and prep for interviews, one
-                step at a time.
-              </p>
-              <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="#"
-              >
-                Learn more
-                <span class="material-symbols-outlined text-lg"
-                  >arrow_forward</span
-                >
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="interview"
-            data-price="2800"
-            data-title="Cover letters and interview prep in one course"
-            data-date="2024-02-28"
-            data-rating="4.5"
-          >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course interview second"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-1.png"
-              />
-              <div class="absolute top-4 left-4 z-10">
-                <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(54, 166, 247)"
-                  >Interview</span
-                >
-              </div>
-              <button
-                type="button"
-                class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
-                aria-label="Save"
-              >
-                <span class="material-symbols-outlined text-xl">favorite</span>
-              </button>
-            </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
-                >
-                  Cover letters and interview prep in one course
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
-              </div>
-              <p
-                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
-              >
-                I've tried a lot of paths in my 20s and 30s. I can help you
-                build skills, write applications, and prep for interviews, one
-                step at a time.
-              </p>
-              <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="#"
-              >
-                Learn more
-                <span class="material-symbols-outlined text-lg"
-                  >arrow_forward</span
-                >
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="resume"
-            data-price="2800"
-            data-title="Resume strategy for North America hiring"
-            data-date="2024-04-10"
-            data-rating="4.9"
-          >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course resume advanced"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-2.png"
-              />
-              <div class="absolute top-4 left-4 z-10">
-                <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(255, 150, 49)"
-                  >Resume</span
-                >
+                  Public Sector
+                </h4>
+                <p class="text-[#34D399] text-lg font-medium leading-tight">
+                  A Resume That Gets You Hired in the North American Public
+                  Sector
+                </p>
               </div>
               <button
                 type="button"
@@ -1430,21 +1470,21 @@
                 <h3
                   class="text-lg font-bold font-headline text-navy leading-tight"
                 >
-                  Resume strategy for North America hiring
+                  Public Sector Resume
                 </h3>
                 <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
               <p
                 class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
               >
-                Learn how to reshape your experience into a resume recruiters in
-                Canada and the U.S. can scan quickly and remember.
+                Learn how to structure your resume to meet public sector hiring
+                criteria and leave a strong, positive impression on recruiters.
               </p>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
                 href="#"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
@@ -1452,84 +1492,33 @@
             </div>
           </div>
 
+          <!-- E-book Card 4 -->
           <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="networking"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="it"
             data-price="2800"
-            data-title="Networking that actually opens doors"
-            data-date="2024-01-15"
-            data-rating="4.6"
+            data-title="IT Resume & Interview Preparation"
+            data-date="2024-02-28"
+            data-rating="4.5"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course networking advanced"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-3.png"
-              />
-              <div class="absolute top-4 left-4 z-10">
-                <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(159, 91, 231)"
-                  >Networking</span
-                >
-              </div>
-              <button
-                type="button"
-                class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
-                aria-label="Save"
-              >
-                <span class="material-symbols-outlined text-xl">favorite</span>
-              </button>
-            </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
-                >
-                  Networking that actually opens doors
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
-              </div>
-              <p
-                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
-              >
-                Build outreach habits, conversation scripts, and follow-up
-                systems that help you grow real opportunities abroad.
-              </p>
-              <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="#"
-              >
-                Learn more
-                <span class="material-symbols-outlined text-lg"
-                  >arrow_forward</span
-                >
-              </a>
-            </div>
-          </div>
-
-          <div
-            class="course-card-fixed pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-            data-course-card
-            data-category="interview"
-            data-price="2800"
-            data-title="Mock interviews with practical feedback"
-            data-date="2024-04-20"
-            data-rating="5.0"
-          >
-            <div class="relative h-[256px]">
-              <img
-                alt="Online course interview practice"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-1.png"
-              />
+            <div class="relative h-[256px] bg-[#EAF2FF]">
               <div class="absolute top-4 left-4 z-10">
                 <span
                   class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
                   style="background: rgb(54, 166, 247)"
-                  >Interview</span
+                  >IT</span
                 >
+              </div>
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#36A6F7] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  IT
+                </h4>
+                <p class="text-[#36A6F7] text-lg font-medium leading-tight">
+                  The 94% Success Formula: Resumes That Win Jobs and Interviews
+                </p>
               </div>
               <button
                 type="button"
@@ -1544,619 +1533,282 @@
                 <h3
                   class="text-lg font-bold font-headline text-navy leading-tight"
                 >
-                  Mock interviews with practical feedback
+                  IT Resume & Interview Preparation
                 </h3>
                 <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
               <p
                 class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
               >
-                Practice with realistic questions, improve your answers, and
-                learn how to sound confident without sounding scripted.
+                Understand what hiring managers look for and learn how to build
+                a resume and interview strategy aligned with North American IT
+                hiring standards.
               </p>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
                 href="#"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
               </a>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Testimonials Section -->
-
-    <section class="relative overflow-hidden bg-gray-soft py-16 md:py-24">
-      <div class="max-w-[1200px] mx-auto px-6">
-        <div class="section-header text-center mb-16 max-w-[800px] mx-auto">
-          <h2 class="text-[24px] font-bold text-navy mb-4">
-            Hear from learners who&apos;ve taken our courses.
-          </h2>
-        </div>
-      </div>
-
-      <div class="w-full overflow-hidden px-4">
-        <div class="review-marquee-track">
+          <!-- E-book Card 5 -->
           <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="finance"
+            data-price="2800"
+            data-title="Preparing for Accounting Interviews"
+            data-date="2024-02-15"
+            data-rating="4.6"
           >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                Sarah Jenkins
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              The Resume workshop was a game changer. I secured 3 interviews
-              within a week of updating my CV following the Pacemaker
-              guidelines.
-            </div>
-          </div>
-
-          <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
-          >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                David Chen
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              Pacemaker provided the exact cultural context I was missing. The
-              networking modules gave me the confidence to approach senior
-              partners.
-            </div>
-          </div>
-
-          <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
-          >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                Elena Rodriguez
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              The all-in-one prep course is worth every penny. It&apos;s not
-              just a course; it&apos;s a career transformation framework that
-              actually works.
-            </div>
-          </div>
-
-          <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
-          >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                William James
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              William worked closely with me to find what we&apos;ve been
-              looking for. It is a very challenging and fatiguing process if you
-              don&apos;t have a job and can&apos;t get over low self-esteem.
-            </div>
-          </div>
-
-          <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
-          >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                Sarah Jenkins
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              The Resume workshop was a game changer. I secured 3 interviews
-              within a week of updating my CV following the Pacemaker
-              guidelines.
-            </div>
-          </div>
-
-          <div
-            class="review-marquee-card inline-block bg-white rounded-none border border-gray-100 shadow-card p-8 mx-4"
-          >
-            <div class="flex justify-between">
-              <div class="font-medium text-[0.85rem] text-navy mb-2">
-                David Chen
-              </div>
-              <div class="flex items-center mb-1">
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block mr-1"
-                />
-                <img
-                  src="../../img/rating.png"
-                  alt="star"
-                  width="14"
-                  height="14"
-                  class="inline-block"
-                />
-              </div>
-            </div>
-            <div
-              class="text-[1rem] text-body break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4"
-            >
-              Pacemaker provided the exact cultural context I was missing. The
-              networking modules gave me the confidence to approach senior
-              partners.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="hidden bg-surface py-24">
-      <div class="max-w-[1400px] mx-auto px-8">
-        <h2 class="text-center text-[24px] font-bold mb-16">
-          Hear from learners who've taken our courses.
-        </h2>
-
-        <div class="flex gap-6 overflow-x-auto testimonial-scrollbar pb-8">
-          <!-- Testimonial Card 1 -->
-
-          <div
-            class="min-w-[450px] bg-white p-10 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between"
-          >
-            <div>
-              <div class="flex gap-1 text-[#FBBF24] mb-6">
+            <div class="relative h-[256px] bg-[#EFF2F8]">
+              <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
+                  style="background: #37446c"
+                  >Finance & Accounting</span
                 >
               </div>
-
-              <p
-                class="text-sm font-medium leading-relaxed mb-10 text-slate-700"
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#37446C] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Finance & Accounting
+                </h4>
+                <p class="text-[#37446C] text-lg font-medium leading-tight">
+                  A practical guide to interviews for finance and accounting
+                  roles, learn once, use for life.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
+                aria-label="Saved"
               >
-                "The Resume workshop was a game changer. I secured 3 interviews
-                within a week of updating my CV following the Pacemaker
-                guidelines."
-              </p>
+                <span class="material-symbols-outlined text-xl">favorite</span>
+              </button>
             </div>
-
-            <div class="flex items-center gap-4">
-              <img
-                alt="User"
-                class="w-12 h-12 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7S0mcqdETaz60cKeeUtvhikZVNHf3r6gGUxBs1ls-fswJtNwDppLgxtoy3vA68aQXvwkusiFjUUXKP03BmOS7XAuetMd6K9Pp9ZmYB6h4LmYtrW5EFxukYIxMIlkih9FGHOb8cVaN9V0uVUmSz1VmOGQW69__eCfg8YGjoNVnB13wTsFlqeSyT4bmiEhs0k3SfkHsfj_STB3ufkQoA98itRkjwbHm-hWLJLUG9Gin58LhI9B3qDiIIYJiHfpU0vP2Uxrv5eULhX8"
-              />
-
-              <div>
-                <p class="font-bold text-sm">Sarah Jenkins</p>
-
-                <p class="text-xs text-slate-500">Marketing Lead, Toronto</p>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Preparing for Accounting Interviews
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
+              <p
+                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
+              >
+                Learn how to identify your strengths and details to present them
+                in resumes and interviews.
+              </p>
+              <a
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="#"
+              >
+                View details
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
             </div>
           </div>
 
-          <!-- Testimonial Card 2 -->
-
+          <!-- E-book Card 6 -->
           <div
-            class="min-w-[450px] bg-white p-10 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="service"
+            data-price="2800"
+            data-title="Resume & Networking for Service Roles"
+            data-date="2024-01-20"
+            data-rating="4.4"
           >
-            <div>
-              <div class="flex gap-1 text-[#FBBF24] mb-6">
+            <div class="relative h-[256px] bg-[#E4F2F1]">
+              <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
+                  style="background: rgb(0, 173, 189)"
+                  >Service</span
                 >
               </div>
-
-              <p
-                class="text-sm font-medium leading-relaxed mb-10 text-slate-700"
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#00ADBD] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Customer Service
+                </h4>
+                <p class="text-[#00ADBD] text-lg font-medium leading-tight">
+                  The 94% success approach: communicate your value clearly in
+                  job searches and career moves.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
+                aria-label="Save"
               >
-                "Pacemaker provided the exact cultural context I was missing.
-                The networking modules gave me the confidence to approach senior
-                partners."
-              </p>
+                <span class="material-symbols-outlined text-xl">favorite</span>
+              </button>
             </div>
-
-            <div class="flex items-center gap-4">
-              <img
-                alt="User"
-                class="w-12 h-12 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbhjczIRgolxHzhsRgKFEmXCAOsSU2w2E_b49ggH71YQBRir_cNALQhNlkcRHMDdN_KSHa0hzFch8giPl9vN6hzKJpsBahwXy3Zs301E9-jIXJ99Js5YLqwHf2AuomHOm1XLqN6r7fzZnsxipbG0gywILeXDoi7hBCfyeVjF8MekkS-5AabRYsgbQ3zTA66ZxIEPy1SdhUTbPF1Y2yaU3ixSO3T9e1xKaFf0H6QFHn-u6jSv8n4rWxI_1lRzWLRRecY_KEl2v5bGA"
-              />
-
-              <div>
-                <p class="font-bold text-sm">David Chen</p>
-
-                <p class="text-xs text-slate-500">Senior Engineer, Berlin</p>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Resume & Networking for Service Roles
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
+              <p
+                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
+              >
+                Learn what truly matters in resumes and how to build relevant
+                experience strategically.
+              </p>
+              <a
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="#"
+              >
+                View details
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
             </div>
           </div>
 
-          <!-- Testimonial Card 3 -->
-
+          <!-- E-book Card 7 -->
           <div
-            class="min-w-[450px] bg-white p-10 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="design"
+            data-price="2800"
+            data-title="Preparing for Design Interviews"
+            data-date="2024-01-15"
+            data-rating="4.9"
           >
-            <div>
-              <div class="flex gap-1 text-[#FBBF24] mb-6">
+            <div class="relative h-[256px] bg-[#FFF1F1]">
+              <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
+                  style="background: rgb(255, 102, 102)"
+                  >Design</span
                 >
               </div>
-
-              <p
-                class="text-sm font-medium leading-relaxed mb-10 text-slate-700"
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#FF7272] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Design
+                </h4>
+                <p class="text-[#FF7272] text-lg font-medium leading-tight">
+                  What Every Designer Should Know: Interviews That Shape Your
+                  Career
+                </p>
+              </div>
+              <button
+                type="button"
+                class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
+                aria-label="Saved"
               >
-                "The all-in-one prep course is worth every penny. It's not just
-                a course; it's a career transformation framework that actually
-                works."
-              </p>
+                <span class="material-symbols-outlined text-xl">favorite</span>
+              </button>
             </div>
-
-            <div class="flex items-center gap-4">
-              <img
-                alt="User"
-                class="w-12 h-12 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuARW5-eT8iz1IOK-l5scmsU51FS67_1vn6EddeHZlA6voqFGqzY0m9Zxlw9t9ejD6l-ZnU4wFk7A4IKg9MU7QLntbVDC3dfvVjJIKzR887wv2hD5kv1MOwQaHPyT4Hva7Vl8_f09j4GNFQTzR_aLbZt-wUosf5cugD2Cl6v2aFl5DHA55sT5aHzV937EC2wA2pG7laLJ6O9zHNn2lnExoN3bTHTELJ0fZUALv6rpdv28MHbdlwOYB45crrms9IZ5mj-NEUL7fLwOc4"
-              />
-
-              <div>
-                <p class="font-bold text-sm">Elena Rodriguez</p>
-
-                <p class="text-xs text-slate-500">Project Manager, London</p>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Preparing for Design Interviews
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
+              <p
+                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
+              >
+                Learn how to identify your unique strengths and translate them
+                clearly into resumes and interviews.
+              </p>
+              <a
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="#"
+              >
+                View details
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
             </div>
           </div>
 
-          <!-- Duplicate Testimonial Card for Scroll effect -->
-
+          <!-- E-book Card 8 -->
           <div
-            class="min-w-[450px] bg-white p-10 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between"
+            class="course-card-fixed pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            data-ebook-card
+            data-category="gov"
+            data-price="2800"
+            data-title="Public Sector Resume"
+            data-date="2024-01-10"
+            data-rating="4.7"
           >
-            <div>
-              <div class="flex gap-1 text-[#FBBF24] mb-6">
+            <div class="relative h-[256px] bg-[#E6F4EA]">
+              <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
-                >
-
-                <span
-                  class="material-symbols-outlined text-sm"
-                  style="font-variation-settings: 'FILL' 1"
-                  >star</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
+                  style="background: rgb(52, 211, 153)"
+                  >Public Sector</span
                 >
               </div>
-
-              <p
-                class="text-sm font-medium leading-relaxed mb-10 text-slate-700"
+              <div class="absolute inset-0 px-8 pt-14 pb-8 flex flex-col">
+                <h4
+                  class="text-[#34D399] text-4xl font-extrabold mb-4 font-headline"
+                >
+                  Public Sector
+                </h4>
+                <p class="text-[#34D399] text-lg font-medium leading-tight">
+                  A Resume That Gets You Hired in the North American Public
+                  Sector
+                </p>
+              </div>
+              <button
+                type="button"
+                class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
+                aria-label="Saved"
               >
-                "William worked closely with me to find what we've been looking
-                for. It is a very challenging &amp; fatiguing process if you
-                don't have a job and can't get over low self-esteem."
-              </p>
+                <span class="material-symbols-outlined text-xl">favorite</span>
+              </button>
             </div>
-
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-full bg-slate-200"></div>
-
-              <div>
-                <p class="font-bold text-sm">William James</p>
-
-                <p class="text-xs text-slate-500">Product Designer, SF</p>
+            <div class="p-6 space-y-4 flex-grow">
+              <div class="flex justify-between items-start gap-4">
+                <h3
+                  class="text-lg font-bold font-headline text-navy leading-tight"
+                >
+                  Public Sector Resume
+                </h3>
+                <span class="text-xl font-extrabold text-navy">$2800</span>
               </div>
+              <p
+                class="text-[#667085] text-sm leading-relaxed line-clamp-2 font-body"
+              >
+                Learn how to structure your resume to meet public sector hiring
+                criteria and leave a strong, positive impression on recruiters.
+              </p>
+              <a
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="#"
+              >
+                View details
+                <span class="material-symbols-outlined text-lg"
+                  >arrow_forward</span
+                >
+              </a>
             </div>
           </div>
         </div>
@@ -2350,16 +2002,16 @@
     </footer>
 
     <script>
-      (function courseFilters() {
-        var grid = document.getElementById('courseGrid');
-        var sortSelect = document.getElementById('courseSortSelect');
+      (function ebookFilters() {
+        var grid = document.getElementById('ebookGrid');
+        var sortSelect = document.getElementById('ebookSortSelect');
         var filterButtons = Array.prototype.slice.call(
           document.querySelectorAll('[data-filter]')
         );
         if (!grid || !sortSelect || !filterButtons.length) return;
 
         var cards = Array.prototype.slice.call(
-          grid.querySelectorAll('[data-course-card]')
+          grid.querySelectorAll('[data-ebook-card]')
         );
         var activeFilter = 'all';
 
@@ -2407,6 +2059,35 @@
 
         sortSelect.addEventListener('change', applyFilterAndSort);
         applyFilterAndSort();
+      })();
+
+      // Mobile menu toggle
+      (function mobileMenu() {
+        var toggle = document.getElementById('mobile-nav-toggle');
+        var menu = document.getElementById('mobile-nav-menu');
+        if (!toggle || !menu) return;
+
+        toggle.addEventListener('click', function () {
+          var isOpen = menu.classList.contains('is-open');
+          menu.classList.toggle('is-open', !isOpen);
+          toggle.classList.toggle('is-open', !isOpen);
+          toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        });
+
+        // Mobile menu accordion toggles
+        var accordions = document.querySelectorAll(
+          '.mobile-nav-accordion-toggle'
+        );
+        accordions.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var targetId = btn.getAttribute('data-target');
+            var panel = document.getElementById(targetId);
+            if (!panel) return;
+            var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+            panel.classList.toggle('is-open', !isExpanded);
+          });
+        });
       })();
     </script>
   </body>
