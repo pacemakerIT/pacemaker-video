@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowRight, Heart } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { ItemType } from '@prisma/client';
@@ -142,18 +142,17 @@ export default function Card({
             )}
 
             <button
+              type="button"
               role="button"
-              aria-label="like"
-              className="group absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg"
+              aria-label={isLiked ? 'Saved' : 'Save'}
+              className={`favorite-heart absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
+                isLiked ? 'favorite-heart--liked' : ''
+              }`}
               onClick={handleToggleLike}
             >
-              <Heart
-                className={`w-5 h-5 transition-colors duration-200 ${
-                  isLiked
-                    ? 'text-orange fill-orange'
-                    : 'text-gray-300 group-hover:text-orange'
-                }`}
-              />
+              <span className="material-symbols-outlined text-xl leading-none">
+                favorite
+              </span>
             </button>
 
             {category && (

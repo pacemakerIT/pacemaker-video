@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -32,6 +33,40 @@ html {
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+}
+
+.favorite-heart .material-symbols-outlined {
+  color: #9ca3af;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  transition:
+    color 0.3s ease,
+    font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
+}
+
+.favorite-heart:hover .material-symbols-outlined {
+  color: #ff4f02;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.favorite-heart--liked .material-symbols-outlined {
+  color: #ff4f02;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.favorite-heart--liked:hover .material-symbols-outlined {
+  color: #e04400;
 }
 
 /* Layout utilities from main.html */
