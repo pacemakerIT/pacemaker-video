@@ -315,7 +315,7 @@ export default function VideoDetailContainer({
       : 'Add to Cart';
 
   return (
-    <div className="flex flex-col w-full h-full relative">
+    <div className="flex flex-col h-full h-full relative flex">
       <DetailHeroSection
         visualTitle={data.course.visualTitle || undefined}
         visualTitle2={data.course.visualTitle2}
@@ -323,8 +323,7 @@ export default function VideoDetailContainer({
         description={data.course.description || ''}
         price={data.course.price || ''}
         instructor={
-          data.instructors?.map((inst) => inst.name).join(', ') ||
-          '페이스메이커'
+          data.instructors?.map((inst) => inst.name).join(', ') || 'Pacemaker'
         }
         backgroundImage={resolveImageSrc({
           thumbnailUrl: data.course.thumbnailUrl,
@@ -337,7 +336,7 @@ export default function VideoDetailContainer({
         itemType={ItemType.COURSE}
       />
 
-      <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
+      <div className="max-w-[1200px] mx-auto px-6 py-20 space-y-20">
         {isSignedIn && hasAccessibleVideos && selectedMediaId && (
           <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
             <WistiaPlayer
@@ -352,59 +351,60 @@ export default function VideoDetailContainer({
           </div>
         )}
 
-        <div className="flex flex-col gap-8">
+        <section>
           <SectionHeader
             subtitle="How the Course Works"
             title={
               data.course.processTitle ||
               'Step by Step: From a Strong Developer Resume to Interviews'
             }
+            className="mb-12"
           />
-          <div className="flex gap-4">
-            <div className="w-[60%] text-pace-stone-500 whitespace-pre-wrap">
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-16">
+            <div className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-wrap">
               {data.course.processContent ||
                 'Detailed course description not available.'}
             </div>
-            <ExpandableCards items={contentItems} />
+            <ExpandableCards
+              items={contentItems}
+              className="w-full lg:w-[480px] max-w-none mx-0"
+            />
           </div>
-        </div>
+        </section>
+
+        <DetailRecommendationSection
+          items={recommendationItems}
+          headerClassName="mb-12"
+        />
 
         {data.instructors && data.instructors.length > 0 && (
-          <div className="flex flex-col w-full gap-8">
-            <SectionHeader title="Instructor Introduction" />
+          <section className="flex flex-col w-full">
+            <SectionHeader title="Instructor Introduction" className="mb-12" />
             <Carousel setApi={setApi} className="w-full">
               <CarouselContent>
                 {data.instructors.map((instructor, idx) => (
                   <CarouselItem key={instructor.id || idx}>
-                    <div className="w-full flex gap-10">
-                      <div className="w-[70%] gap-6">
-                        <h3 className="font-semibold text-[20px]">
+                    <div className="w-full flex flex-col lg:flex-row lg:justify-between gap-16">
+                      <div className="w-full lg:w-[680px]">
+                        <h3 className="text-2xl font-heading font-bold mb-4">
                           {instructor.name}
                         </h3>
-                        <p className="text-pace-stone-500 leading-relaxed">
+                        <p className="text-pace-stone-500 leading-relaxed mb-8">
                           {instructor.description}
                         </p>
-                        <div className="mt-6">
-                          <h4 className="text-pace-base font-regular mb-4">
-                            Career
-                          </h4>
-                          <table className="w-full">
-                            <tbody className="text-pace-stone-500">
-                              {instructor.careers.map((careerItem, index) => (
-                                <tr key={index}>
-                                  <td className="py-1 pr-4">
-                                    {careerItem.period}
-                                  </td>
-                                  <td className="py-1">
-                                    {careerItem.position}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                        <h4 className="font-bold mb-4">Experience</h4>
+                        <ul className="space-y-4 text-sm text-pace-stone-500">
+                          {instructor.careers.map((careerItem, index) => (
+                            <li key={index} className="flex gap-8">
+                              <span className="shrink-0 w-28">
+                                {careerItem.period}
+                              </span>
+                              <span>{careerItem.position}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <div className="w-[30%]">
+                      <div className="w-full lg:w-[480px]">
                         {(() => {
                           const profileImage = resolveImageSrc({
                             thumbnail: instructor.profileImage
@@ -447,18 +447,18 @@ export default function VideoDetailContainer({
                 ))}
               </div>
             )}
-          </div>
+          </section>
         )}
 
-        <DetailRecommendationSection items={recommendationItems} />
-
         <DetailRelatedContentSection
-          title={'You May Also Like'}
+          title="You May Also Like"
           items={relatedContentItems}
+          headerClassName="mb-4"
         />
 
         <DetailReviewsSection
           title="Student Reviews"
+          reviewCount={data.course.reviews?.length ?? 0}
           reviews={
             data.course.reviews?.map((review) => ({
               id: review.id,

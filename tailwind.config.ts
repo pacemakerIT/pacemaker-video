@@ -84,7 +84,9 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: ['Pretendard', 'sans-serif']
+        sans: ['Pretendard', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif'],
+        body: ['Source Sans 3', 'sans-serif']
       },
 
       // fontWeight는 Tailwind 기본 디자인 시스템 (font-normal, font-medium, font-bold 등) 사용

@@ -10,7 +10,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-body">
       <VideoDetailContainer id={id} />
     </div>
   );

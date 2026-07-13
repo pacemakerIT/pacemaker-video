@@ -13,6 +13,11 @@ interface ExpandableCardProps {
   expandLabel?: string;
   collapseLabel?: string;
   className?: string;
+  itemClassName?: string;
+  titleClassName?: string;
+  labelClassName?: string;
+  iconClassName?: string;
+  contentClassName?: string;
   onDelete?: (id: string) => void;
 }
 
@@ -21,6 +26,11 @@ export default function ExpandableCards({
   expandLabel = 'Read',
   collapseLabel = 'Close',
   className,
+  itemClassName,
+  titleClassName,
+  labelClassName,
+  iconClassName,
+  contentClassName,
   onDelete
 }: ExpandableCardProps) {
   const pathname = usePathname();
@@ -49,25 +59,38 @@ export default function ExpandableCards({
         {items.map((item) => (
           <div
             key={item.id}
-            className="bg-pace-ivory-500 rounded-lg overflow-hidden"
+            className={cn(
+              'bg-[#f8f9fa] rounded-none border border-gray-200 overflow-hidden',
+              itemClassName
+            )}
           >
-            <div className="w-full px-6 py-4 flex items-center justify-between transition-all duration-200 hover:scale-[1.02]">
+            <div className="w-full p-6 flex items-center justify-between transition-colors hover:bg-gray-100 cursor-pointer">
               <button
                 type="button"
                 onClick={() => toggleItem(item.id)}
                 className="flex-1 text-left flex items-center justify-between mr-4"
               >
-                <span className="text-lg font-semibold text-gray-900">
+                <span
+                  className={cn(
+                    'text-lg font-bold text-[#00263b]',
+                    titleClassName
+                  )}
+                >
                   {item.title}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">
+                <div
+                  className={cn(
+                    'flex items-center gap-2 text-gray-500',
+                    labelClassName
+                  )}
+                >
+                  <span className="text-sm">
                     {expandedItems.has(item.id) ? collapseLabel : expandLabel}
                   </span>
                   {expandedItems.has(item.id) ? (
-                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                    <ChevronUp className={cn('w-5 h-5', iconClassName)} />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                    <ChevronDown className={cn('w-5 h-5', iconClassName)} />
                   )}
                 </div>
               </button>
@@ -85,8 +108,13 @@ export default function ExpandableCards({
               )}
             </div>
             {expandedItems.has(item.id) && (
-              <div className="px-6 pb-4 border-t border-gray-100">
-                <div className="pt-4 text-gray-700 leading-relaxed">
+              <div
+                className={cn(
+                  'bg-white border-t border-gray-200 px-6 pb-6 pt-4',
+                  contentClassName
+                )}
+              >
+                <div className="text-gray-500 leading-relaxed overflow-hidden">
                   {item.content}
                 </div>
               </div>

@@ -44,6 +44,14 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
           `/api/purchase-video-status?clerkId=${userId}`
         );
         const data = await response.json();
+
+        if (!response.ok || !Array.isArray(data.purchasedVideoIds)) {
+          // Expected right after sign-in if the User row hasn't been
+          // provisioned yet, or if the user simply has no purchases.
+          setIsPurchased(false);
+          return;
+        }
+
         setIsPurchased(data.purchasedVideoIds.includes(videoId));
       } catch (error) {
         setIsPurchased(false);
