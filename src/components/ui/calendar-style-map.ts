@@ -4,6 +4,7 @@ import type { CalendarEvent } from '@/components/features/workshops/workshop-cal
 
 type CalendarStyle = {
   event: string;
+  activeEvent: string;
   popup: string;
   button: string;
   text: string;
@@ -12,32 +13,30 @@ type CalendarStyle = {
 
 export const calendarStyleMap: Record<CalendarEvent['status'], CalendarStyle> =
   {
-    RECRUITING: {
-      event: 'bg-navy/10 text-navy',
-      popup: 'bg-navy/10 text-navy',
-      button: 'bg-navy hover:bg-navy/90',
-      text: 'text-navy',
-      border: 'border-navy'
+    OPEN: {
+      event: 'border-orange/20 bg-orange/5 text-orange',
+      activeEvent:
+        'border-orange/20 border-b-transparent bg-[#fff8f6] text-orange',
+      popup: 'border border-t-0 border-orange/20 bg-[#fff8f6] text-gray-500',
+      button: 'bg-orange hover:bg-orange-hover',
+      text: 'text-orange',
+      border: 'border-orange'
     },
     CLOSED: {
-      event: 'bg-pace-stone-200 text-pace-stone-800',
-      popup: 'bg-pace-stone-200 text-pace-stone-800',
-      button: 'bg-pace-stone-500 hover:bg-pace-stone-800',
-      text: 'text-pace-stone-800',
-      border: 'border-pace-stone-800'
-    },
-    ONGOING: {
-      event: 'bg-pace-orange-50 text-pace-orange-500',
-      popup: 'bg-pace-orange-50 text-pace-orange-500',
-      button: 'bg-pace-orange-600 hover:bg-pace-orange-900',
-      text: 'text-pace-orange-500',
-      border: 'border-pace-orange-500'
+      event: 'border-teal/20 bg-teal/5 text-teal',
+      activeEvent: 'border-teal/20 border-b-transparent bg-[#f5fcfe] text-teal',
+      popup: 'border border-t-0 border-teal/20 bg-[#f5fcfe] text-gray-500',
+      button: 'bg-teal hover:bg-teal/90',
+      text: 'text-teal',
+      border: 'border-teal'
     },
     COMPLETED: {
-      event: 'bg-pace-stone-200 text-pace-stone-800',
-      popup: 'bg-pace-stone-200 text-pace-stone-800',
-      button: 'bg-pace-stone-500 hover:bg-pace-stone-800',
-      text: 'text-pace-stone-800',
-      border: 'border-pace-stone-800'
+      event: 'border-gray-200 bg-gray-100/70 text-gray-400',
+      activeEvent:
+        'border-gray-200 border-b-transparent bg-gray-50 text-gray-400',
+      popup: 'border border-t-0 border-gray-200 bg-gray-50 text-gray-500',
+      button: 'bg-gray-500 hover:bg-gray-600',
+      text: 'text-gray-500',
+      border: 'border-gray-500'
     }
   };

@@ -26,7 +26,7 @@ export type CalendarEvent = {
   end: Date;
   speaker: string;
   fee: string;
-  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED';
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED';
 };
 
 export type WorkshopFromApi = {
@@ -205,17 +205,17 @@ export default function WorkshopCalendar({
 
   const handleEventClick = (e: MouseEvent, event: CalendarEvent) => {
     e.stopPropagation();
-    const target = (e.target as HTMLElement).closest(
-      '.rbc-event-content'
-    ) as HTMLElement;
-    if (!target) return;
+    const target = e.currentTarget as HTMLElement;
 
     const rect = target.getBoundingClientRect();
-    const top = rect.bottom + window.scrollY;
+    const top = rect.bottom + window.scrollY - 1;
     const left = rect.left + window.scrollX;
     const width = rect.width;
 
-    if (openedEvent?.title === event.title) {
+    if (
+      openedEvent?.title === event.title &&
+      openedEvent.start.getTime() === event.start.getTime()
+    ) {
       setOpenedEvent(null);
     } else {
       setOpenedEvent(event);
@@ -239,14 +239,24 @@ export default function WorkshopCalendar({
         onNavigate={handleNavigate}
         components={{
           toolbar: (props) => <CustomToolbar {...props} count={count} />,
-          event: ({ event }) => (
-            <div
-              onClick={(e) => handleEventClick(e, event)}
-              className={`${openedEvent ? 'rounded-t' : 'rounded'} flex max-w-full cursor-pointer items-center justify-center truncate border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
-            >
-              {event.title}
-            </div>
-          )
+          event: ({ event }) => {
+            const isOpened =
+              openedEvent?.title === event.title &&
+              openedEvent.start.getTime() === event.start.getTime();
+            const eventStyle = isOpened
+              ? calendarStyleMap[event.status].activeEvent
+              : calendarStyleMap[event.status].event;
+
+            return (
+              <div
+                onClick={(e) => handleEventClick(e, event)}
+                title={event.title}
+                className={`${isOpened ? 'rounded-t' : 'rounded'} flex max-w-full cursor-pointer items-center justify-start truncate border px-1 py-0.5 text-left text-[11px] font-bold md:px-1.5 md:text-[14px] ${eventStyle}`}
+              >
+                {event.title}
+              </div>
+            );
+          }
         }}
       />
 
@@ -258,23 +268,25 @@ export default function WorkshopCalendar({
           onClose={() => setOpenedEvent(null)}
         >
           <div
-            className={`rounded-b-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
+            className={`flex flex-col gap-1 rounded-b-xl p-2.5 pb-2.5 pt-1.5 text-left shadow-lg ${calendarStyleMap[openedEvent.status].popup}`}
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
-                <p className="text-pace-sm pb-2">
-                  Instructor: {openedEvent.speaker}
+                <p className="pt-1 text-[14px] font-medium text-gray-500">
+                  Instructor &nbsp; {openedEvent.speaker}
                 </p>
               )}
-            <p className="text-pace-sm pb-2">Fee: {openedEvent.fee}</p>
+            <p className="text-[14px] font-medium text-gray-500">
+              Fee &nbsp; {openedEvent.fee}
+            </p>
             <Button
               onClick={() => {
                 onSelectWorkshop?.(openedEvent.title); // 워크숍 title을 상위로 전달
                 setOpenedEvent(null);
               }}
-              className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
+              className={`mt-1.5 flex w-full items-center justify-center rounded-2xl px-3 py-1 text-center font-headline text-[14px] font-bold text-white transition-colors ${calendarStyleMap[openedEvent.status].button}`}
             >
-              View detail
+              View details
             </Button>
           </div>
         </EventPopup>

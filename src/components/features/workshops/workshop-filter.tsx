@@ -12,9 +12,8 @@ interface WorkshopFilterProps {
 
 const FILTERS: { label: string; value: FilterKey }[] = [
   { label: 'All', value: 'All' },
-  { label: 'Open', value: WorkshopStatus.RECRUITING },
+  { label: 'Open', value: WorkshopStatus.OPEN },
   { label: 'Closed', value: WorkshopStatus.CLOSED },
-  { label: 'Ongoing', value: WorkshopStatus.ONGOING },
   { label: 'Completed', value: WorkshopStatus.COMPLETED }
 ];
 
@@ -27,19 +26,19 @@ const getSelectedStyle = (status: FilterKey) => {
     };
   }
 
-  if (status === WorkshopStatus.RECRUITING) {
+  if (status === WorkshopStatus.OPEN) {
     return {
-      text: 'text-[#FF4F02]',
-      border: 'border-[#FF4F02]',
-      bg: 'bg-[#FF4F02]/[0.03]'
+      text: 'text-orange',
+      border: 'border-orange',
+      bg: 'bg-orange/5'
     };
   }
 
-  if (status === WorkshopStatus.CLOSED || status === WorkshopStatus.ONGOING) {
+  if (status === WorkshopStatus.CLOSED) {
     return {
-      text: 'text-teal-600',
-      border: 'border-teal-600',
-      bg: 'bg-teal-50'
+      text: 'text-teal',
+      border: 'border-teal',
+      bg: 'bg-teal/5'
     };
   }
 
@@ -51,12 +50,12 @@ const getSelectedStyle = (status: FilterKey) => {
 };
 
 const getHoverStyle = (status: FilterKey) => {
-  if (status === 'All' || status === WorkshopStatus.RECRUITING) {
-    return 'hover:text-[#FF4F02] hover:border-[#FF4F02]';
+  if (status === 'All' || status === WorkshopStatus.OPEN) {
+    return 'hover:text-orange hover:border-orange';
   }
 
-  if (status === WorkshopStatus.CLOSED || status === WorkshopStatus.ONGOING) {
-    return 'hover:text-teal-600 hover:border-teal-600';
+  if (status === WorkshopStatus.CLOSED) {
+    return 'hover:text-teal hover:border-teal';
   }
 
   return 'hover:text-gray-500 hover:border-gray-500';
@@ -90,8 +89,8 @@ export default function WorkshopFilter({
           </button>
         );
       })}
-      {/* purge 방지용 hidden hover 클래스 (진행중/진행완료 hover 색 유지) */}
-      <div className="hidden border-[#FF4F02] bg-[#FF4F02]/[0.03] text-[#FF4F02] hover:border-[#FF4F02] hover:border-teal-600 hover:text-[#FF4F02] hover:text-teal-600" />
+      {/* purge 방지용 hidden hover 클래스 (상태별 hover 색 유지) */}
+      <div className="hidden border-[#FF4F02] border-orange border-teal bg-[#FF4F02]/[0.03] bg-orange/5 bg-teal/5 text-[#FF4F02] text-orange text-teal hover:border-orange hover:border-teal hover:text-orange hover:text-teal" />
     </div>
   );
 }

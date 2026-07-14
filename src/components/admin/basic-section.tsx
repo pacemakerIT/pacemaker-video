@@ -73,7 +73,6 @@ export default function BasicSection({
                 ? [
                     { value: '모집중', label: '모집중' },
                     { value: '모집완료', label: '모집완료' },
-                    { value: '진행중', label: '진행중' },
                     { value: '진행완료', label: '진행완료' }
                   ]
                 : [

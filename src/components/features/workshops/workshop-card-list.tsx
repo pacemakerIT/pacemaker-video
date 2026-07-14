@@ -85,12 +85,10 @@ export default function WorkshopCardList({
 
   const getStatusLabel = (status: WorkshopStatus) => {
     switch (status) {
-      case WorkshopStatus.RECRUITING:
+      case WorkshopStatus.OPEN:
         return 'Open';
       case WorkshopStatus.CLOSED:
         return 'Closed';
-      case WorkshopStatus.ONGOING:
-        return 'Ongoing';
       case WorkshopStatus.COMPLETED:
         return 'Completed';
       default:
@@ -100,11 +98,10 @@ export default function WorkshopCardList({
 
   const getStatusClass = (status: WorkshopStatus) => {
     switch (status) {
-      case WorkshopStatus.RECRUITING:
-        return 'border-[#FF4F02]/20 bg-[#FF4F02]/[0.05] text-[#FF4F02]';
+      case WorkshopStatus.OPEN:
+        return 'border-orange/20 bg-orange/5 text-orange';
       case WorkshopStatus.CLOSED:
-      case WorkshopStatus.ONGOING:
-        return 'border-teal-500/20 bg-teal-50 text-teal-600';
+        return 'border-teal/20 bg-teal/5 text-teal';
       case WorkshopStatus.COMPLETED:
       default:
         return 'border-gray-200 bg-gray-100/70 text-gray-400';

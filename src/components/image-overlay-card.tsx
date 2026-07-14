@@ -38,19 +38,18 @@ export default function ImageOverlayCard({
   const displayTitle = title || visualTitle2 || '';
   const statusDisplay = (() => {
     switch (status) {
-      case 'RECRUITING':
+      case 'OPEN':
         return {
-          label: 'Coming soon',
+          label: 'Open',
           cardClass: 'border-navy',
           textClass: 'text-navy'
         };
-      case 'ONGOING':
-        return {
-          label: 'Ongoing',
-          cardClass: 'border-orange',
-          textClass: 'text-orange'
-        };
       case 'CLOSED':
+        return {
+          label: 'Closed',
+          cardClass: 'border-teal',
+          textClass: 'text-teal'
+        };
       case 'COMPLETED':
         return {
           label: 'Ended',
