@@ -270,13 +270,14 @@
         align-items: center;
         justify-content: center;
         min-width: auto;
-        padding: 0.5rem 1rem;
+        height: 32px;
+        padding: 0 1rem;
         border: 1px solid #d0d5dd;
-        border-radius: 12px;
+        border-radius: 40px;
         background: #ffffff;
         color: #667085;
         font-family: 'Poppins', sans-serif;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 500;
         line-height: 1;
         white-space: nowrap;
@@ -291,9 +292,10 @@
       @media (min-width: 768px) {
         .course-filter-button {
           min-width: 110px;
-          padding: 0.75rem 1.5rem;
-          border-radius: 16px;
-          font-size: 16px;
+          height: 40px;
+          padding: 0 1.5rem;
+          border-radius: 40px;
+          font-size: 14px;
         }
       }
 
@@ -320,24 +322,28 @@
       .course-filter-button.is-active {
         border-color: #ff4f02;
         color: #ff4f02;
+        background-color: rgba(255, 79, 2, 0.04);
         box-shadow: 0 10px 25px -5px rgba(255, 79, 2, 0.12);
       }
 
       .course-filter-button[data-filter='interview'].is-active {
         border-color: rgb(54, 166, 247);
         color: rgb(54, 166, 247);
+        background-color: rgba(54, 166, 247, 0.04);
         box-shadow: 0 10px 25px -5px rgba(54, 166, 247, 0.2);
       }
 
       .course-filter-button[data-filter='resume'].is-active {
         border-color: rgb(255, 150, 49);
         color: rgb(255, 150, 49);
+        background-color: rgba(255, 150, 49, 0.04);
         box-shadow: 0 10px 25px -5px rgba(255, 150, 49, 0.2);
       }
 
       .course-filter-button[data-filter='networking'].is-active {
         border-color: rgb(159, 91, 231);
         color: rgb(159, 91, 231);
+        background-color: rgba(159, 91, 231, 0.04);
         box-shadow: 0 10px 25px -5px rgba(159, 91, 231, 0.2);
       }
 
