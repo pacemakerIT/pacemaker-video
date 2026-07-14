@@ -4,17 +4,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pacemaker Workshops | UX Design Workshop</title>
-    
+
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
     <!-- Tailwind CSS (with plugins) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography"></script>
-    
+
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -37,9 +46,9 @@
             }
           }
         }
-      }
+      };
     </script>
-    
+
     <style>
       /* You May Also Like - Pacemaker Workshops Card Styling */
       .workshop-card-detail {
@@ -66,11 +75,19 @@
           font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
       }
       .favorite-heart:hover .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
         color: #ff4f02;
       }
       .favorite-heart--liked .material-symbols-outlined {
-        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
         color: #ff4f02 !important;
       }
       .card-shadow {
@@ -86,21 +103,24 @@
         scrollbar-gutter: stable;
       }
       body {
-        font-family: var(--font-body), "Source Sans 3", sans-serif;
+        font-family: var(--font-body), 'Source Sans 3', sans-serif;
         line-height: 1.3;
         word-break: keep-all;
       }
-      
+
       /* Accessibility Focus Ring */
       :focus-visible {
         outline: 2px solid #00adbd;
         outline-offset: 2px;
       }
-      button, a, [role="button"] {
+      button,
+      a,
+      [role='button'] {
         min-height: 44px;
         min-width: 44px;
       }
-      p a, li a {
+      p a,
+      li a {
         min-height: auto;
         min-width: auto;
       }
@@ -278,16 +298,19 @@
         }
       }
       @media (prefers-reduced-motion: reduce) {
-        .nav-hamburger, .mobile-nav-panel {
+        .nav-hamburger,
+        .mobile-nav-panel {
           transition: none;
         }
       }
     </style>
   </head>
   <body class="bg-gray-soft text-navy font-body min-h-screen antialiased">
-
     <!-- Accessibility Skip to content Link -->
-    <a href="#main-content" class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal">
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+    >
       Skip to content
     </a>
 
@@ -305,12 +328,13 @@
         <!-- Navigation Menu & Auth (Right-aligned container) -->
         <div class="flex items-center ml-auto">
           <div class="nav-center">
-            <a class="nav-item is-active" aria-current="page" href="./workshop_list.html"
+            <a
+              class="nav-item is-active"
+              aria-current="page"
+              href="./workshop_list.html"
               >Workshops</a
             >
-            <a
-              class="nav-item"
-              href="../courses/course_list.html"
+            <a class="nav-item" href="../courses/course_list.html"
               >Online Courses</a
             >
             <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
@@ -323,7 +347,11 @@
         </div>
         <!-- Mobile -->
         <div class="nav-mobile-top">
-          <a href="../main.html" style="display: block" aria-label="Pacemaker home">
+          <a
+            href="../main.html"
+            style="display: block"
+            aria-label="Pacemaker home"
+          >
             <img
               alt="Pacemaker Logo"
               src="../../img/logo.webp"
@@ -525,7 +553,9 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden border-b border-gray-100 flex items-center py-12 lg:py-0">
+    <section
+      class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden border-b border-gray-100 flex items-center py-12 lg:py-0"
+    >
       <!-- Background Image -->
       <img
         alt="Background"
@@ -533,219 +563,375 @@
         src="../../img/video-bg.png"
       />
       <!-- Gradient Overlay for Text Readability -->
-      <div class="absolute inset-0 bg-navy/70 lg:bg-gradient-to-r lg:from-navy/95 lg:via-navy/75 lg:to-navy/20 z-[1]"></div>
+      <div
+        class="absolute inset-0 bg-navy/70 lg:bg-gradient-to-r lg:from-navy/95 lg:via-navy/75 lg:to-navy/20 z-[1]"
+      ></div>
 
-      <div class="page-container grid grid-cols-1 lg:grid-cols-3 gap-12 items-center relative z-10 w-full">
-        
+      <div
+        class="page-container grid grid-cols-1 lg:grid-cols-3 gap-12 items-center relative z-10 w-full"
+      >
         <!-- Left: Hero Text & Information -->
         <div class="lg:col-span-2 space-y-8 z-10">
-          <p class="inline-flex items-center gap-2 rounded-full bg-teal/20 text-teal px-6 py-3 text-[0.82rem] md:text-[0.9rem] font-bold uppercase tracking-[0.2em] font-[family-name:var(--font-heading)]">
+          <p
+            class="inline-flex items-center gap-2 rounded-full bg-teal/20 text-teal px-6 py-3 text-[0.82rem] md:text-[0.9rem] font-bold uppercase tracking-[0.2em] font-[family-name:var(--font-heading)]"
+          >
             Open Workshop
           </p>
           <div class="space-y-4">
-            <h1 class="text-[40px] font-extrabold font-[family-name:var(--font-heading)] text-white leading-[1.3] tracking-tight">
+            <h1
+              class="text-[40px] font-extrabold font-[family-name:var(--font-heading)] text-white leading-[1.3] tracking-tight"
+            >
               UX Design Workshop: <br />
               <span class="text-orange">Turning Dreams into Reality</span>
             </h1>
-             <p class="text-[1.125rem] md:text-[1.2rem] text-gray-200 font-medium leading-relaxed max-w-2xl">
-              Portfolio strategy and networking for designers looking to launch their careers in the U.S. and Canada.
-             </p>
+            <p
+              class="text-[1.125rem] md:text-[1.2rem] text-gray-200 font-medium leading-relaxed max-w-2xl"
+            >
+              Portfolio strategy and networking for designers looking to launch
+              their careers in the U.S. and Canada.
+            </p>
           </div>
 
           <!-- Notice bar (Moved from feature image overlay) -->
           <div class="flex items-center gap-3 text-white">
-            <span class="material-symbols-outlined text-orange text-3xl">info</span>
-            <span class="text-sm md:text-base font-semibold">This is a small group session with real-time feedback.</span>
+            <span class="material-symbols-outlined text-orange text-3xl"
+              >info</span
+            >
+            <span class="text-sm md:text-base font-semibold"
+              >This is a small group session with real-time feedback.</span
+            >
           </div>
         </div>
 
         <!-- Right: Floating Info Card -->
         <div class="lg:col-span-1 z-10">
-          <div class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-6 relative overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]">
-            
-            <div class="flex justify-between items-start border-b border-gray-100 pb-5">
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-6 relative overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <div
+              class="flex justify-between items-start border-b border-gray-100 pb-5"
+            >
               <div>
-                <span class="px-2 py-0.5 text-[10px] font-bold text-orange bg-orange/10 rounded">Registration closes in 7 days</span>
-                <h3 class="text-[1.5rem] font-bold text-navy mt-2 font-[family-name:var(--font-heading)]">Registration</h3>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold text-orange bg-orange/10 rounded"
+                  >Registration closes in 7 days</span
+                >
+                <h3
+                  class="text-[1.5rem] font-bold text-navy mt-2 font-[family-name:var(--font-heading)]"
+                >
+                  Registration
+                </h3>
               </div>
               <div class="text-right">
-                <span class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy">$20.00</span>
-                <span class="text-xs text-text-body font-semibold block">CAD / per person</span>
+                <span
+                  class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+                  >$20.00</span
+                >
+                <span class="text-xs text-text-body font-semibold block"
+                  >CAD / per person</span
+                >
               </div>
             </div>
 
             <!-- Quick Metadata -->
             <div class="space-y-4 text-[0.875rem] font-semibold text-text-body">
               <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-orange text-xl">calendar_today</span>
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >calendar_today</span
+                >
                 <span>Tuesday, May 20, 2025 · 7:00 PM</span>
               </div>
               <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-orange text-xl">location_on</span>
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >location_on</span
+                >
                 <span>North York seminar room, Toronto</span>
               </div>
               <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-orange text-xl">group</span>
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >group</span
+                >
                 <span>Limit 15 people · 4 spots left</span>
               </div>
               <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-orange text-xl">cafe</span>
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >cafe</span
+                >
                 <span>Snacks, specialty coffee, and catering included</span>
               </div>
             </div>
 
             <!-- CTA Buttons (Applying Button Radius = rounded-2xl only) -->
             <div class="pt-4 flex gap-3 items-center">
-              <button class="flex-1 inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-[family-name:var(--font-heading)] px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]">
+              <button
+                class="flex-1 inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-[family-name:var(--font-heading)] px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
+              >
                 <span>Register now</span>
                 <span class="material-symbols-outlined">arrow_right_alt</span>
               </button>
-              
-              <button id="like-btn" class="favorite-heart w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl transition-all shadow-sm hover:-translate-y-[3px] hover:bg-orange/5 shrink-0">
-                <span class="material-symbols-outlined text-2xl" id="like-icon">favorite</span>
+
+              <button
+                id="like-btn"
+                class="favorite-heart w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl transition-all shadow-sm hover:-translate-y-[3px] hover:bg-orange/5 shrink-0"
+              >
+                <span class="material-symbols-outlined text-2xl" id="like-icon"
+                  >favorite</span
+                >
               </button>
             </div>
 
             <p class="text-center text-xs text-text-body font-semibold">
-              * You will receive your entry ticket and directions by email right after payment.
+              * You will receive your entry ticket and directions by email right
+              after payment.
             </p>
           </div>
         </div>
-
       </div>
     </section>
 
     <!-- Main Content Area -->
     <main id="main-content" class="page-container py-16 md:py-24 space-y-20">
-      
       <!-- Top Section: About & FAQ (Side by Side) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
-        
         <!-- Left: About the Workshop -->
         <div class="lg:col-span-2 space-y-6">
           <div class="section-header text-left mb-8">
-            <span class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]">
+            <span
+              class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]"
+            >
               ABOUT
             </span>
-            <h2 class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight">
+            <h2
+              class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight"
+            >
               How the Workshop Works
             </h2>
           </div>
-          
-          <div class="prose prose-navy max-w-none text-text-body font-medium leading-relaxed space-y-6">
-            <p class="text-[1.125rem] text-navy font-bold font-[family-name:var(--font-heading)]">
+
+          <div
+            class="prose prose-navy max-w-none text-text-body font-medium leading-relaxed space-y-6"
+          >
+            <p
+              class="text-[1.125rem] text-navy font-bold font-[family-name:var(--font-heading)]"
+            >
               "Everyone has unique strengths and potential."
             </p>
             <p>
-              Build your UX design career in Toronto. Go beyond basic theory. Join career mentor Sujin Ku, a University of Toronto graduate, to discover your unique strengths and show them in your portfolio.
+              Build your UX design career in Toronto. Go beyond basic theory.
+              Join career mentor Sujin Ku, a University of Toronto graduate, to
+              discover your unique strengths and show them in your portfolio.
             </p>
             <p>
-              Learn industry insights, network with local designers, and practice storytelling to stand out in your job interviews.
+              Learn industry insights, network with local designers, and
+              practice storytelling to stand out in your job interviews.
             </p>
           </div>
         </div>
 
         <!-- Right: FAQ Accordions -->
         <div class="lg:col-span-1 space-y-8">
-          <h2 class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy">
+          <h2
+            class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+          >
             FAQ
           </h2>
-          
+
           <!-- Accordion Cards must be rounded-none -->
           <div class="space-y-4">
             <!-- Accordion 1 -->
-            <div class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden">
-              <button class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]">
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
                 <span>What should I bring?</span>
-                <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
               </button>
-              <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50">
-                <p class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed">
-                  Please bring your laptop, portfolio or resume link, and something to take notes with for the real-time feedback and review sessions.
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  Please bring your laptop, portfolio or resume link, and
+                  something to take notes with for the real-time feedback and
+                  review sessions.
                 </p>
               </div>
             </div>
 
             <!-- Accordion 2 -->
-            <div class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden">
-              <button class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]">
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
                 <span>Is the workshop in English?</span>
-                <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
               </button>
-              <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50">
-                <p class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed">
-                  The workshop is mostly in Korean. However, we will use English for mock interview practice, keyword selection, and specific feedback to prepare you for the North American job market.
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  The workshop is mostly in Korean. However, we will use English
+                  for mock interview practice, keyword selection, and specific
+                  feedback to prepare you for the North American job market.
                 </p>
               </div>
             </div>
 
             <!-- Accordion 3 -->
-            <div class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden">
-              <button class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]">
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
                 <span>What is the refund policy?</span>
-                <span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
               </button>
-              <div class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50">
-                <p class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed">
-                  You can get a full refund if you cancel at least 3 days before the workshop. Cancellations after that are not refundable because of the limited seating.
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  You can get a full refund if you cancel at least 3 days before
+                  the workshop. Cancellations after that are not refundable
+                  because of the limited seating.
                 </p>
               </div>
             </div>
           </div>
 
           <!-- Notice Banner -->
-          <div class="p-6 bg-orange/10 rounded-none border border-orange/20 text-orange space-y-2">
-            <h4 class="font-bold flex items-center gap-2 font-[family-name:var(--font-heading)]">
-              <span class="material-symbols-outlined">notification_important</span>
+          <div
+            class="p-6 bg-orange/10 rounded-none border border-orange/20 text-orange space-y-2"
+          >
+            <h4
+              class="font-bold flex items-center gap-2 font-[family-name:var(--font-heading)]"
+            >
+              <span class="material-symbols-outlined"
+                >notification_important</span
+              >
               Important details
             </h4>
             <p class="text-xs font-semibold leading-relaxed text-navy">
-              Please use public transit (connected to North York Center Station) as parking is very limited. We recommend following local health guidelines for a safe networking environment.
+              Please use public transit (connected to North York Center Station)
+              as parking is very limited. We recommend following local health
+              guidelines for a safe networking environment.
             </p>
           </div>
         </div>
-
       </div>
 
       <!-- Middle Section: Curriculum Details (Full Width) -->
       <div class="space-y-8 pt-12 border-t border-gray-100">
         <div class="section-header text-left">
-          <span class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]">
+          <span
+            class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]"
+          >
             TIMELINE
           </span>
-          <h2 class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight">
+          <h2
+            class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight"
+          >
             Curriculum Details
           </h2>
         </div>
-        
+
         <!-- Stack layout to show one card per row -->
         <div class="space-y-6">
           <!-- Session 1 -->
-          <div class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]">
-            <span class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]">Session 01</span>
-            <h3 class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight">UX Design Foundations & Canada Job Market Trend</h3>
-            <p class="text-sm text-text-body font-medium leading-relaxed">Analyze key hiring trends for UX designers in North America. Compare the skills that junior and senior designers need to get hired in Canada.</p>
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 01</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              UX Design Foundations & Canada Job Market Trend
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Analyze key hiring trends for UX designers in North America.
+              Compare the skills that junior and senior designers need to get
+              hired in Canada.
+            </p>
           </div>
 
           <!-- Session 2 -->
-          <div class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]">
-            <span class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]">Session 02</span>
-            <h3 class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight">Portfolio Deep Dive & Case Study</h3>
-            <p class="text-sm text-text-body font-medium leading-relaxed">Review the layout and case studies of successful global portfolios. Get a strategic framework that you can apply to your own portfolio right away.</p>
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 02</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Portfolio Deep Dive & Case Study
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Review the layout and case studies of successful global
+              portfolios. Get a strategic framework that you can apply to your
+              own portfolio right away.
+            </p>
           </div>
 
           <!-- Session 3 -->
-          <div class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]">
-            <span class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]">Session 03</span>
-            <h3 class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight">Interactive Design & Critique Session</h3>
-            <p class="text-sm text-text-body font-medium leading-relaxed">Practice UX scenario analysis and wireframe design. Get 1:1 live feedback from your mentor to improve your work on the spot.</p>
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 03</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Interactive Design & Critique Session
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Practice UX scenario analysis and wireframe design. Get 1:1 live
+              feedback from your mentor to improve your work on the spot.
+            </p>
           </div>
 
           <!-- Session 4 -->
-          <div class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]">
-            <span class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]">Session 04</span>
-            <h3 class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight">Networking & Mock Interview</h3>
-            <p class="text-sm text-text-body font-medium leading-relaxed">Enjoy snacks and drinks while networking with other attendees and mentors. We will share common UX interview questions and tips for the Canadian job market.</p>
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 04</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Networking & Mock Interview
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Enjoy snacks and drinks while networking with other attendees and
+              mentors. We will share common UX interview questions and tips for
+              the Canadian job market.
+            </p>
           </div>
         </div>
       </div>
@@ -768,9 +954,7 @@
             >
               <div class="w-full lg:w-[680px]">
                 <h3 class="text-2xl font-bold mb-4 text-navy">Raphael. Lee</h3>
-                <p
-                  class="text-text-body mb-8 leading-relaxed"
-                >
+                <p class="text-text-body mb-8 leading-relaxed">
                   I've been managing multicultural teams for over 19 years. And
                   blesses to lead and be part of the opening teams in global
                   projects in various countries. Growing personal &amp;
@@ -780,31 +964,21 @@
                 <h4 class="font-bold mb-4 text-navy">Experience</h4>
                 <ul class="space-y-4 text-sm">
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2019 ~</span
-                    >
+                    <span class="text-text-body/60 w-24">2019 ~</span>
                     <span>Managing Director at Pacemaker</span>
                   </li>
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2015 ~ 2019</span
-                    >
+                    <span class="text-text-body/60 w-24">2015 ~ 2019</span>
                     <span>Director of Operations at Metanet</span>
                   </li>
                   <li class="flex gap-8">
+                    <span class="text-text-body/60 w-24">2009 ~ 2014</span>
                     <span
-                      class="text-text-body/60 w-24"
-                      >2009 ~ 2014</span
+                      >Business Development Manager at People In Biz Corp.</span
                     >
-                    <span>Business Development Manager at People In Biz Corp.</span>
                   </li>
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2004 ~ 2008</span
-                    >
+                    <span class="text-text-body/60 w-24">2004 ~ 2008</span>
                     <span>Purchaser at InterContinental Hotels Group</span>
                   </li>
                 </ul>
@@ -828,9 +1002,7 @@
             >
               <div class="w-full lg:w-[680px]">
                 <h3 class="text-2xl font-bold mb-4 text-navy">Linda. Kim</h3>
-                <p
-                  class="text-text-body mb-8 leading-relaxed"
-                >
+                <p class="text-text-body mb-8 leading-relaxed">
                   Passionate about helping candidates craft the perfect resume.
                   With 10+ years of HR experience in top tech firms across North
                   America, my goal is to highlight your unique strengths and
@@ -839,17 +1011,11 @@
                 <h4 class="font-bold mb-4 text-navy">Experience</h4>
                 <ul class="space-y-4 text-sm">
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2021 ~</span
-                    >
+                    <span class="text-text-body/60 w-24">2021 ~</span>
                     <span>Lead Career Coach at TechBridge</span>
                   </li>
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2016 ~ 2021</span
-                    >
+                    <span class="text-text-body/60 w-24">2016 ~ 2021</span>
                     <span>HR Manager at GlobalTech</span>
                   </li>
                 </ul>
@@ -873,9 +1039,7 @@
             >
               <div class="w-full lg:w-[680px]">
                 <h3 class="text-2xl font-bold mb-4 text-navy">Heelee. Park</h3>
-                <p
-                  class="text-text-body mb-8 leading-relaxed"
-                >
+                <p class="text-text-body mb-8 leading-relaxed">
                   Specialized in software development career transitions. By
                   building your confidence through targeted mock interviews and
                   deep dives into coding challenges, I ensure you stand out in
@@ -884,17 +1048,11 @@
                 <h4 class="font-bold mb-4 text-navy">Experience</h4>
                 <ul class="space-y-4 text-sm">
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2020 ~</span
-                    >
+                    <span class="text-text-body/60 w-24">2020 ~</span>
                     <span>Senior Developer at CloudNative</span>
                   </li>
                   <li class="flex gap-8">
-                    <span
-                      class="text-text-body/60 w-24"
-                      >2015 ~ 2020</span
-                    >
+                    <span class="text-text-body/60 w-24">2015 ~ 2020</span>
                     <span>Software Engineer at Innovate Ltd</span>
                   </li>
                 </ul>
@@ -917,17 +1075,17 @@
           <button
             aria-label="Slide 1"
             data-active="true"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
           ></button>
           <button
             aria-label="Slide 2"
             data-active="false"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
           ></button>
           <button
             aria-label="Slide 3"
             data-active="false"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
           ></button>
         </div>
         <script>
@@ -1023,15 +1181,21 @@
       <!-- Suggested Related Content Section -->
       <section class="border-t border-gray-100 pt-20 space-y-8">
         <div class="flex items-center justify-between">
-          <h2 class="text-2xl md:text-3xl font-extrabold font-[family-name:var(--font-heading)] text-navy">
+          <h2
+            class="text-2xl md:text-3xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+          >
             You May Also Like
           </h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Card 1 -->
-          <div class="workshop-card-detail-wrapper flex flex-col gap-5 group/card">
-            <div class="workshop-card-detail card-shadow border-t-[10px] border-orange">
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow border-t-[10px] border-orange"
+            >
               <div
                 class="relative h-full bg-cover bg-center overflow-hidden"
                 style="
@@ -1045,47 +1209,76 @@
                   class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
                   aria-label="Save"
                 >
-                  <span class="material-symbols-outlined text-xl">favorite</span>
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
                 </button>
-                <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white">
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
                   <div>
-                    <span class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block">Networking</span>
-                    <h3 class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1">
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Networking</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
                       Mindset training for success
                     </h3>
-                    <div class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]">
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">calendar_today</span>
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
                         Date · May 20, 2025 · 7 PM
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">location_on</span>
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
                         Where · North York center
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">person</span>
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
                         Host · Sujin Ku
                       </p>
-                      <p class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2">
-                        “Stories that turn ideas into plans” 
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
+                        “Stories that turn ideas into plans”
                       </p>
                     </div>
                   </div>
-                  <div class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer">
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
                     Sign up
-                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
-            <div class="workshop-status text-center font-bold text-[1.05rem] text-orange tracking-wide">
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-orange tracking-wide"
+            >
               Live now
             </div>
           </div>
 
           <!-- Card 2 -->
-          <div class="workshop-card-detail-wrapper flex flex-col gap-5 group/card">
-            <div class="workshop-card-detail card-shadow opacity-[0.85] saturate-50 border-t-[10px] border-slate-400">
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow opacity-[0.85] saturate-50 border-t-[10px] border-slate-400"
+            >
               <div
                 class="relative h-full bg-cover bg-center overflow-hidden"
                 style="
@@ -1099,47 +1292,76 @@
                   class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
                   aria-label="Saved"
                 >
-                  <span class="material-symbols-outlined text-xl">favorite</span>
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
                 </button>
-                <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white">
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
                   <div>
-                    <span class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block">Networking</span>
-                    <h3 class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1">
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Networking</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
                       Meet us tonight
                     </h3>
-                    <div class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]">
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">calendar_today</span>
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
                         Date · May 20, 2025 · 7 PM
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">location_on</span>
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
                         Where · North York center
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">person</span>
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
                         Host · Sujin Ku
                       </p>
-                      <p class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2">
-                        “Stories that turn ideas into plans” 
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
+                        “Stories that turn ideas into plans”
                       </p>
                     </div>
                   </div>
-                  <div class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer">
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
                     Sign up
-                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
-            <div class="workshop-status text-center font-bold text-[1.05rem] text-slate-400 tracking-wide">
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-slate-400 tracking-wide"
+            >
               Ended
             </div>
           </div>
 
           <!-- Card 3 -->
-          <div class="workshop-card-detail-wrapper flex flex-col gap-5 group/card">
-            <div class="workshop-card-detail card-shadow border-t-[10px] border-navy">
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow border-t-[10px] border-navy"
+            >
               <div
                 class="relative h-full bg-cover bg-center overflow-hidden"
                 style="
@@ -1153,40 +1375,65 @@
                   class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
                   aria-label="Save"
                 >
-                  <span class="material-symbols-outlined text-xl">favorite</span>
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
                 </button>
-                <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white">
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
                   <div>
-                    <span class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block">Career switch</span>
-                    <h3 class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1">
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Career switch</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
                       English resumes built to get interviews
                     </h3>
-                    <div class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]">
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">calendar_today</span>
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
                         Date · May 20, 2025 · 7 PM
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">location_on</span>
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
                         Where · North York center
                       </p>
                       <p class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-base">person</span>
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
                         Host · Sujin Ku
                       </p>
-                      <p class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2">
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
                         "Stories that turn ideas into plans"
                       </p>
                     </div>
                   </div>
-                  <div class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer">
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
                     Sign up
-                    <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
-            <div class="workshop-status text-center font-bold text-[1.05rem] text-navy tracking-wide">
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-navy tracking-wide"
+            >
               Coming soon
             </div>
           </div>
@@ -1196,28 +1443,49 @@
       <!-- Registration CTA Section -->
       <section id="apply" class="scroll-mt-32 border-t border-gray-100 pt-20">
         <div class="mx-auto w-full max-w-[1200px]">
-          <div class="relative w-full overflow-hidden rounded-none bg-navy p-10 text-center text-white md:p-14 border border-gray-100 shadow-card">
-            <div class="absolute right-0 top-0 h-64 w-64 translate-x-32 -translate-y-32 rounded-full bg-teal/10"></div>
+          <div
+            class="relative w-full overflow-hidden rounded-none bg-navy p-10 text-center text-white md:p-14 border border-gray-100 shadow-card"
+          >
+            <div
+              class="absolute right-0 top-0 h-64 w-64 translate-x-32 -translate-y-32 rounded-full bg-teal/10"
+            ></div>
             <div class="relative z-10">
-              <h2 class="mb-6 font-[family-name:var(--font-heading)] text-3xl md:text-4xl font-extrabold italic !text-white leading-tight">
+              <h2
+                class="mb-6 font-[family-name:var(--font-heading)] text-3xl md:text-4xl font-extrabold italic !text-white leading-tight"
+              >
                 Join UX Design Workshop:<br class="hidden md:inline" />
                 <span class="text-orange">Turning Dreams into Reality</span>
               </h2>
-              <p class="mx-auto mb-4 max-w-lg text-sm font-bold uppercase tracking-[0.2em] text-white/70 md:text-base">
+              <p
+                class="mx-auto mb-4 max-w-lg text-sm font-bold uppercase tracking-[0.2em] text-white/70 md:text-base"
+              >
                 Tuesday, May 20, 2025 · 7:00 PM
               </p>
-              <div class="mb-6 inline-block rounded-none border border-white/10 p-6 md:p-8 bg-navy/40 backdrop-blur-sm">
-                <p class="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-bold tracking-tight text-teal">
-                  $20<span class="ml-2 text-xl font-normal italic text-white/50">CAD</span>
+              <div
+                class="mb-6 inline-block rounded-none border border-white/10 p-6 md:p-8 bg-navy/40 backdrop-blur-sm"
+              >
+                <p
+                  class="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-bold tracking-tight text-teal"
+                >
+                  $20<span class="ml-2 text-xl font-normal italic text-white/50"
+                    >CAD</span
+                  >
                 </p>
-                <p class="text-xs md:text-sm text-white/70 mt-2 font-medium">Admission fee · Offline seminar & live Q&A</p>
+                <p class="text-xs md:text-sm text-white/70 mt-2 font-medium">
+                  Admission fee · Offline seminar & live Q&A
+                </p>
               </div>
               <div>
-                <button type="button" class="inline-flex items-center justify-center rounded-2xl bg-orange px-12 py-5 font-[family-name:var(--font-heading)] text-xl font-extrabold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-transform hover:scale-[1.02] hover:bg-orange-hover">
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-2xl bg-orange px-12 py-5 font-[family-name:var(--font-heading)] text-xl font-extrabold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-transform hover:scale-[1.02] hover:bg-orange-hover"
+                >
                   Register now
                 </button>
               </div>
-              <p class="mt-4 text-xs text-white/50 font-semibold">North York seminar room, Toronto (Offline Event)</p>
+              <p class="mt-4 text-xs text-white/50 font-semibold">
+                North York seminar room, Toronto (Offline Event)
+              </p>
             </div>
           </div>
         </div>
@@ -1225,12 +1493,20 @@
     </main>
 
     <!-- Sticky Bottom Bar for Mobile Devices -->
-    <div class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 p-4 flex md:hidden items-center justify-between shadow-lg">
+    <div
+      class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 p-4 flex md:hidden items-center justify-between shadow-lg"
+    >
       <div>
         <p class="text-xs text-text-body font-bold">UX Design Workshop</p>
-        <span class="text-lg font-extrabold text-navy font-[family-name:var(--font-heading)]">$20.00 <span class="text-xs text-text-body font-normal">CAD</span></span>
+        <span
+          class="text-lg font-extrabold text-navy font-[family-name:var(--font-heading)]"
+          >$20.00
+          <span class="text-xs text-text-body font-normal">CAD</span></span
+        >
       </div>
-      <button class="px-6 py-3 font-bold text-white bg-orange hover:bg-orange-hover rounded-2xl shadow-md transition-colors flex items-center justify-center font-[family-name:var(--font-heading)]">
+      <button
+        class="px-6 py-3 font-bold text-white bg-orange hover:bg-orange-hover rounded-2xl shadow-md transition-colors flex items-center justify-center font-[family-name:var(--font-heading)]"
+      >
         Register
       </button>
     </div>
@@ -1461,11 +1737,11 @@
 
       // 2. Interactive Accordions (FAQs)
       const toggles = document.querySelectorAll('.accordion-toggle');
-      toggles.forEach(toggle => {
+      toggles.forEach((toggle) => {
         toggle.addEventListener('click', () => {
           const panel = toggle.nextElementSibling;
           const icon = toggle.querySelector('.material-symbols-outlined');
-          
+
           if (panel.style.maxHeight) {
             panel.style.maxHeight = null;
             icon.style.transform = 'rotate(0deg)';
