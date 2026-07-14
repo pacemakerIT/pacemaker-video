@@ -74,8 +74,8 @@ export default function WorkshopFilter({
           </button>
         );
       })}
-      {/* purge 방지용 hidden hover 클래스 (진행중/진행완료 hover 색 유지) */}
-      <div className="hidden hover:text-pace-mint-500 hover:border-pace-mint-500 hover:text-pace-stone-800 hover:border-pace-stone-800" />
+      {/* purge 방지용 hidden hover 클래스 (상태별 hover 색 유지) */}
+      <div className="hidden hover:text-navy hover:border-pace-orange-500" />
     </div>
   );
 }

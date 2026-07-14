@@ -4,6 +4,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { bucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
+import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
 
 function nodeReadableToWebReadable(
   nodeStream: Readable
@@ -48,13 +49,29 @@ export function createGetHandler(s3Client: S3Client) {
           id: ebookId
         },
         select: {
+          id: true,
+          price: true,
           ebookId: true
         }
       });
 
+      if (!ebook) {
+        return NextResponse.json({ error: 'Ebook not found' }, { status: 404 });
+      }
+
+      const userId = await findUserIdByClerkId(prisma, session.userId);
+      const canAccessEbook = await userCanAccessEbook(prisma, userId, ebook);
+
+      if (!canAccessEbook) {
+        return NextResponse.json(
+          { error: 'Purchase required to view this ebook' },
+          { status: 403 }
+        );
+      }
+
       const command = new GetObjectCommand({
         Bucket: bucketName,
-        Key: ebook?.ebookId
+        Key: ebook.ebookId
       });
 
       const response = await s3Client.send(command);

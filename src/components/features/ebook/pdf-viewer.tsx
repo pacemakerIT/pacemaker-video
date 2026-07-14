@@ -48,6 +48,13 @@ export default function PdfViewer({ ebookId, bucketName }: PdfViewerProps) {
           }
         });
 
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          throw new Error(
+            data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
+          );
+        }
+
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);

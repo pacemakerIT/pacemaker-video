@@ -136,7 +136,7 @@ export default function VideoDetailContainer({
       if (nextState) {
         await addFavorite(id, ItemType.COURSE);
       } else {
-        await removeFavorite(id);
+        await removeFavorite(id, ItemType.COURSE);
       }
     } catch {
       showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');
@@ -152,6 +152,11 @@ export default function VideoDetailContainer({
           router.push('/sign-in');
         }
       );
+      return;
+    }
+
+    if (data?.entitlements?.canAccessCourse) {
+      showAlert('이미 구매한 콘텐츠', '구매내역에서 바로 수강할 수 있습니다.');
       return;
     }
 
@@ -196,11 +201,11 @@ export default function VideoDetailContainer({
 
         if (result.success) {
           setData(result.data);
-          // Set the first video as the selected media
-          const firstSection = result.data.course.sections[0];
-          if (firstSection && firstSection.videos.length > 0) {
-            setSelectedMediaId(firstSection.videos[0].videoId);
-          }
+          const firstAccessibleVideo = result.data.course.sections
+            .flatMap((section) => section.videos)
+            .find((video) => video.canAccessVideo && video.videoId);
+
+          setSelectedMediaId(firstAccessibleVideo?.videoId || '');
         } else {
           setError(result.message || '데이터를 불러오는데 실패했습니다.');
         }
@@ -296,6 +301,18 @@ export default function VideoDetailContainer({
           type: course.type,
           thumbnail: course.thumbnail
         })) || [];
+  const canAccessCourse = Boolean(data.entitlements?.canAccessCourse);
+  const requiresPurchase = Boolean(data.entitlements?.requiresPurchase);
+  const accessibleVideos = data.course.sections
+    .flatMap((section) => section.videos)
+    .filter((video) => video.canAccessVideo && video.videoId);
+  const hasAccessibleVideos = accessibleVideos.length > 0;
+
+  const heroButtonText = canAccessCourse
+    ? 'Purchased'
+    : isInCart
+      ? 'Go to Cart'
+      : 'Add to Cart';
 
   return (
     <div className="flex flex-col w-full h-full relative">
@@ -316,17 +333,22 @@ export default function VideoDetailContainer({
         onAddToCart={handleAddToCart}
         onToggleLike={handleToggleLike}
         isLiked={isLiked}
-        buttonText={isInCart ? 'Go to Cart' : 'Add to Cart'}
+        buttonText={heroButtonText}
         itemType={ItemType.COURSE}
       />
 
       <div className="w-full max-w-[1240px] px-5 py-24 mx-auto flex flex-col gap-24">
-        {isSignedIn && selectedMediaId && (
+        {isSignedIn && hasAccessibleVideos && selectedMediaId && (
           <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
             <WistiaPlayer
               mediaId={selectedMediaId}
               id="wistia-player-container-1"
             />
+          </div>
+        )}
+        {isSignedIn && requiresPurchase && !hasAccessibleVideos && (
+          <div className="rounded-lg border border-pace-gray-100 bg-pace-gray-50 px-6 py-5 text-center text-pace-stone-600">
+            구매 완료 후 강의를 수강할 수 있습니다.
           </div>
         )}
 
@@ -453,7 +475,7 @@ export default function VideoDetailContainer({
         />
       </div>
 
-      {isSignedIn && !isPlaylistOpen && (
+      {isSignedIn && hasAccessibleVideos && !isPlaylistOpen && (
         <button
           type="button"
           onClick={() => setIsPlaylistOpen(true)}
@@ -525,24 +547,42 @@ export default function VideoDetailContainer({
                     >
                       <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
                         {section.videos.map((video) => {
-                          const isActive = video.videoId === selectedMediaId;
+                          const canAccessVideo = Boolean(
+                            video.canAccessVideo && video.videoId
+                          );
+                          const isActive =
+                            canAccessVideo && video.videoId === selectedMediaId;
                           return (
                             <button
-                              key={video.videoId}
+                              key={video.id}
                               type="button"
                               onClick={() => {
+                                if (!canAccessVideo) {
+                                  showAlert(
+                                    '구매가 필요한 영상',
+                                    '구매 완료 후 수강할 수 있습니다.'
+                                  );
+                                  return;
+                                }
+
                                 setSelectedMediaId(video.videoId);
                                 setIsPlaylistOpen(false);
                               }}
                               className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
                                 isActive
                                   ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
-                                  : 'hover:bg-white text-pace-stone-700'
+                                  : canAccessVideo
+                                    ? 'hover:bg-white text-pace-stone-700'
+                                    : 'cursor-not-allowed text-pace-stone-300'
                               }`}
                             >
                               <div
                                 className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
-                                  isActive ? 'bg-pace-base' : 'bg-pace-gray-300'
+                                  isActive
+                                    ? 'bg-pace-base'
+                                    : canAccessVideo
+                                      ? 'bg-pace-gray-300'
+                                      : 'bg-pace-gray-100'
                                 }`}
                               />
                               <span className="text-sm font-medium truncate w-full">

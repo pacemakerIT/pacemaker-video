@@ -191,6 +191,16 @@ Notes:
 | PACE-260 | Checkout API, cart handoff, and post-payment UX   | Steps 2 and 4, plus checkout and post-payment UX test coverage.       |
 | PACE-261 | Webhook fulfillment, entitlements, and validation | Steps 3 and 5, plus webhook, entitlement, and operational validation. |
 
+Post-merge production follow-up priority as of 2026-06-29:
+
+| Priority | Jira Key | Summary                                                | Notes                                                                                                            |
+| -------- | -------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| 1        | PACE-290 | [Security] Course detail API exposes locked video IDs  | Highest-priority follow-up. Production API still exposes locked `sectionsRel[].videos[].videoId` values.         |
+| 2        | PACE-291 | [Bug] Ebook detail Add to cart button does nothing     | Purchase conversion bug on ebook detail. Fix after PACE-290 unless the launch plan reprioritizes ebook checkout. |
+| 3        | PACE-244 | [Security] Cart/Favorites/Interest API ownership check | Broader ownership-hardening work; important but less directly tied to the PACE-261 production follow-up.         |
+| 4        | PACE-245 | [Security] Public/private content exposure policy      | Broader content exposure policy audit; tackle after the confirmed course detail leak.                            |
+| 5        | PACE-292 | [Bug] Mobile course and ebook detail layout overflows  | Important visual regression; can be coordinated with the active redesign detail tickets.                         |
+
 Superseded tickets:
 
 | Old Jira Key | Merged Into  | Original Scope                           |

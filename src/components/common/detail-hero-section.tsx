@@ -2,7 +2,6 @@
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
 import { ItemType } from '@prisma/client';
-import { resolveImageSrc } from '@/lib/utils';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;

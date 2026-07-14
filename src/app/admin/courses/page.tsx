@@ -11,7 +11,6 @@ import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { toast } from 'sonner';
 import ConfirmModal from '@/components/common/confirm-modal';
-import { resolveImageSrc } from '@/lib/utils';
 import {
   DndContext,
   closestCenter,
@@ -259,7 +258,7 @@ export default function Page() {
     return row.category === categoryFilter;
   });
 
-  if (loading) return <div className="p-10">강의 목록 불러오는 중...</div>;
+  if (loading) return <div className="p-10">Loading courses...</div>;
 
   return (
     <AdminListLayout

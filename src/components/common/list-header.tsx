@@ -1,20 +1,93 @@
 'use client';
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
+import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import {
   Carousel,
-  CarouselApi,
   CarouselContent,
-  CarouselItem
+  CarouselItem,
+  type CarouselApi
 } from '@/components/ui/carousel';
 
-interface ListHeaderProps {
-  title?: string;
-  subtitle?: string;
+interface SlideData {
+  tag: string;
+  tagColor: string;
+  title: string;
+  highlight: string;
+  highlightColor: string;
+  titleSuffix?: string;
+  description: string;
   buttonText?: string;
-  route?: string;
-  height?: string;
+  link?: string;
+  titleSizeClass?: string;
+}
+
+const DEFAULT_SLIDES: SlideData[] = [
+  {
+    tag: 'Pacemaker Career Services',
+    tagColor: 'rgba(0, 173, 189, 0.85)',
+    title: 'Not sure where to start\nyour job search? Our ',
+    highlight: 'Expertise',
+    highlightColor: 'text-teal',
+    description: 'Help with skills, your resume, and interviews.',
+    buttonText: 'Browse courses',
+    link: '/courses'
+  },
+  {
+    tag: 'Tailored For You',
+    tagColor: 'rgba(255, 79, 2, 0.85)',
+    title: 'Get your ',
+    highlight: 'resume',
+    highlightColor: 'text-orange',
+    titleSuffix: '\nreviewed by pros',
+    description: 'A clear resume that helps you land more interviews.',
+    buttonText: 'Get Started',
+    link: '/courses'
+  },
+  {
+    tag: 'Real Experience',
+    tagColor: 'rgba(0, 173, 189, 0.85)',
+    title: '',
+    highlight: 'Mock interviews',
+    highlightColor: 'text-teal',
+    titleSuffix: '\nwith local mentors',
+    description: 'Honest feedback from people who hire in North America.',
+    buttonText: 'Join Workshop',
+    link: '/workshops'
+  }
+];
+
+const HERO_TILE_IMAGES = [
+  '5g7a6941.webp',
+  '5g7a6962.webp',
+  '5g7a7008.webp',
+  '5g7a7128.webp',
+  '5g7a7260.webp',
+  '5g7a7315.webp',
+  '5g7a7321.webp',
+  '5g7a7379.webp',
+  '5g7a7416.webp',
+  '5g7a7425.webp',
+  '5g7a7467.webp',
+  '5g7a7482.webp',
+  '5g7a7515.webp',
+  '5g7a7523.webp',
+  '5g7a7524.webp',
+  '5g7a7528.webp',
+  '5g7a7536.webp',
+  '5g7a7537.webp',
+  '5g7a7538.webp',
+  '5g7a7552.webp',
+  '5g7a7581.webp',
+  '5g7a7586.webp'
+];
+
+const HERO_TILE_REPEATS = 4;
+
+interface ListHeaderProps {
+  slides?: SlideData[];
+  autoPlayInterval?: number;
   gradientColors?: {
     start: string;
     middle: string;
@@ -48,7 +121,6 @@ export default function ListHeader({
   autoPlayInterval,
   showHeroAnimations = false
 }: ListHeaderProps) {
-  const router = useRouter();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
@@ -161,7 +233,8 @@ export default function ListHeader({
   }
 
   return (
-    <div
+    <section
+      className={`relative isolate h-[520px] overflow-hidden bg-navy px-6 pb-[46px] pt-[70px]`}
       data-testid="list-header"
       className={`w-full flex flex-col justify-center items-center ${height} relative overflow-hidden`}
       style={{ background: heroBackground }}
@@ -223,16 +296,19 @@ export default function ListHeader({
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
-              className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              className={`transition-all duration-300 rounded-full ${
                 current === index
-                  ? 'bg-pace-orange-600 shadow-[0_4px_4px_rgba(0,0,0,0.25)]'
-                  : 'bg-white hover:bg-pace-orange-600'
+                  ? 'w-7 h-2'
+                  : 'w-2 h-2 bg-white/30 hover:bg-white/60'
               }`}
               aria-label={`Go to slide ${index + 1}`}
+              style={
+                current === index ? { background: slide.tagColor } : undefined
+              }
             />
           ))}
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }

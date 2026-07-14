@@ -27,8 +27,15 @@ vi.mock('@/components/common/card-container', () => ({
 }));
 
 vi.mock('@/components/common/list-header', () => ({
-  default: ({ title }: { title: string }) => (
-    <div data-testid="list-header">{title}</div>
+  default: ({
+    slides
+  }: {
+    slides?: { title?: string; highlight?: string }[];
+  }) => (
+    <div data-testid="list-header">
+      {slides?.[0]?.title}
+      {slides?.[0]?.highlight}
+    </div>
   )
 }));
 

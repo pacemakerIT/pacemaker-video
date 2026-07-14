@@ -26,7 +26,7 @@ jobs:
       FORK_REPO: nhistory/pacemaker-video
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false

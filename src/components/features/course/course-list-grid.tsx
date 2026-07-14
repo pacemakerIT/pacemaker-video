@@ -61,7 +61,7 @@ export default function CourseList() {
       className="max-w-[1248px] w-full items-center mx-auto justify-center flex flex-col px-6 scroll-mt-20"
     >
       {loading ? (
-        <p className="p-4">📡 강의 불러오는 중...</p>
+        <p className="p-4">📡 Loading courses...</p>
       ) : (
         <>
           <CourseHeader

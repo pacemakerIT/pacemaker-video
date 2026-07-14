@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { resolveImageSrc } from '@/lib/utils';
 
 interface ReviewCardProps {
   profileImage: string;
@@ -15,13 +16,16 @@ export default function ReviewCard({
   reviewDate,
   reviewContent
 }: ReviewCardProps) {
+  const profileImageSrc =
+    resolveImageSrc({ thumbnail: profileImage }) ?? '/icons/user.svg';
+
   return (
     <div className="w-full max-w-[1200px] bg-white border border-pace-gray-100 rounded-lg p-6 shadow-sm">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
             <Image
-              src={profileImage}
+              src={profileImageSrc}
               width={40}
               height={40}
               alt={profileName}

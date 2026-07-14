@@ -7,6 +7,7 @@ import EbookList from '@/components/features/ebook/ebook-list-horz';
 import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 import CourseList from '@/components/features/course/course-list-horz';
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 
 import { MainVisual } from '@prisma/client';
 
@@ -43,72 +44,144 @@ export default async function Home() {
 
   const slides =
     mainVisuals.length > 0
-      ? mainVisuals.map((visual: MainVisual) => ({
-          title: visual.title || '',
-          subtitle: visual.description || '',
-          buttonText: visual.linkName || 'Explore programs',
-          route: visual.link || '/courses'
-        }))
+      ? mainVisuals.map((visual: MainVisual, index: number) => {
+          const title = visual.title || '';
+          const colorIndex = index % 2;
+          const colors = [
+            { tag: 'rgba(0, 173, 189, 0.85)', highlight: 'text-teal' },
+            { tag: '#FF4F02', highlight: 'text-orange' }
+          ];
+
+          return {
+            tag: 'Announcement',
+            tagColor: colors[colorIndex].tag,
+            title: title,
+            highlight: '',
+            highlightColor: colors[colorIndex].highlight,
+            description: visual.description || '',
+            buttonText: visual.linkName || '',
+            link: visual.link || '',
+            titleSizeClass:
+              title.length >= 35 ? 'text-[clamp(1.2rem,3vw,1.8rem)]' : undefined
+          };
+        })
       : [
           {
-            title:
-              'Build the skills to launch your career abroad.\nExperience, resumes, and interviews, all in one place.',
-            subtitle:
-              'Begin your career journey in the U.S. & Canada with Pacemaker.\nFrom resumes to interview skills and networking, every step is supported.',
+            tag: 'Career Success',
+            tagColor: 'rgba(0, 173, 189, 0.85)',
+            title: 'Build the skills to launch your career abroad.',
+            highlight: 'Expertise',
+            highlightColor: 'text-teal',
+            description:
+              'Experience, resumes, and interviews, all in one place.',
             buttonText: 'Explore programs',
-            route: '/courses'
+            link: '/courses'
           },
           {
-            title: 'Ready to take the next step?'
-          },
-          {
-            title: 'Your future career starts here.',
+            tag: 'Next Steps',
+            tagColor: 'rgba(255, 79, 2, 0.85)',
+            title: 'Ready to take the next step?',
+            highlight: 'Your Future',
+            highlightColor: 'text-orange',
+            description: 'Start your journey today with expert guidance.',
             buttonText: 'Get Started',
-            route: '/courses'
+            link: '/courses'
+          },
+          {
+            tag: 'Join Us',
+            tagColor: 'rgba(0, 173, 189, 0.85)',
+            title: 'Your future career starts here.',
+            highlight: 'Join Now',
+            highlightColor: 'text-teal',
+            description: 'Connect with mentors and grow your network.',
+            buttonText: 'Get Started',
+            link: '/courses'
           }
         ];
 
   return (
-    <div className="w-screen flex gap-20 flex-col bg-[#FBF9f6]">
+    <main className="bg-surface w-full flex flex-col">
       <ListHeader
         slides={slides}
         // autoPlayInterval={5000} // 5초마다 자동 전환
-        height={'h-[502px]'}
-        gradientColors={{
-          start: '#FFCDCE',
-          middle: '#FAE3D7',
-          end: '#FF823660'
-        }}
       />
-      <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex flex-col gap-8">
-        <iframe
-          width="100%"
-          height="673"
-          src="https://www.youtube.com/embed/gk43OcYMes8?si=4rPZKvzBGS9H6Mhx&mute=1&autoplay=1"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        />
-        <h1 className="text-pace-5xl font-bold pt-2 ">
-          {'Real stories from professionals who secured roles'}
-        </h1>
-        <span className="font-light text-pace-sm text-center whitespace-pre-line leading-[140%]">
-          {
-            'Why a mentor-led career journey?\nMentors with real-world experience in North America will act as\nguides to shorten the months of fear and structure you.\n\nFrom one individual to a full community,\nthe mentor community is here for you.'
-          }
-        </span>
-        <div className="flex justify-center items-center gap-4">
-          <Button className="h-12 bg-white text-pace-orange-600 border border-pace-orange-600 p-4 rounded-full flex justify-center items-center mx-auto font-normal ">
-            {'Explore programs'}
-          </Button>
-          <LoginOrListenButton />
-        </div>
-        <CourseList />
-        <EbookList />
-        <WorkshopList />
-        <MainReviewContainer />
+      <div className="bg-gray-soft">
+        <section className="py-[80px]">
+          <div className="page-container">
+            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-[0_30px_70px_rgba(0,38,59,0.12)] bg-black">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/gk43OcYMes8?si=4rPZKvzBGS9H6Mhx&mute=1&autoplay=1"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="pb-24 mt-[40px]">
+          <div className="page-container flex flex-col items-center justify-center gap-8 md:gap-12">
+            <div className="text-center flex flex-col items-center gap-4 md:gap-6">
+              <h1 className="text-[2.2rem] md:text-[2.75rem] font-bold text-navy font-headline leading-tight px-4 whitespace-pre-wrap">
+                {'Real stories from people who got hired in \nNorth America'}
+              </h1>
+              <div className="text-[#667085] leading-relaxed space-y-4 text-[1.2rem] whitespace-pre-wrap">
+                <p>
+                  Finding a job here can feel confusing. Where do you even
+                  start?
+                  <br />
+                  {
+                    'On Pacemaker, mentors who work in IT, design, UX, marketing, accounting, and more share what actually \nworked for them.'
+                  }
+                </p>
+                <p>
+                  Whether you are in Korea, Canada, or anywhere else,
+                  <br />
+                  you can learn on your own time and take the next step with us.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-full flex-wrap items-center justify-center gap-6 pt-10">
+              <Button
+                asChild
+                className="h-auto w-auto rounded-2xl border-2 border-teal bg-transparent px-8 py-4 font-headline text-lg font-bold text-teal transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-teal/5"
+              >
+                <Link href="/courses">{'Browse online courses'}</Link>
+              </Button>
+              <div className="flex justify-center">
+                <LoginOrListenButton />
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+
+      <section className="py-[80px] bg-surface overflow-hidden">
+        <div className="page-container">
+          <WorkshopList />
+        </div>
+      </section>
+
+      <section className="py-[80px] bg-white overflow-hidden">
+        <div className="page-container">
+          <CourseList />
+        </div>
+      </section>
+
+      <section className="py-[80px] bg-surface-container-low overflow-hidden">
+        <div className="page-container">
+          <EbookList />
+        </div>
+      </section>
+
+      <footer className="pt-[80px] bg-surface-container-low">
+        <MainReviewContainer />
+      </footer>
+    </main>
   );
 }

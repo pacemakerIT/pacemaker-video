@@ -93,6 +93,7 @@ export interface ApiReview {
 export interface Video {
   id: string;
   videoId: string;
+  canAccessVideo?: boolean;
   title: string | null;
   description: string | null;
   price: number | null;
@@ -128,6 +129,10 @@ export interface ApiResponse {
   data: {
     course: Course;
     instructors: Instructor[];
+    entitlements?: {
+      requiresPurchase: boolean;
+      canAccessCourse: boolean;
+    };
   };
   error?: string;
   message?: string;
