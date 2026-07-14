@@ -9,6 +9,7 @@ import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
 import { toast } from 'sonner';
+import { resolveImageSrc } from '@/lib/utils';
 
 interface Props {
   workshops: WorkshopCard[];
@@ -42,7 +43,7 @@ export default function WorkshopCardList({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id);
+      removeFavorite(id, ItemType.WORKSHOP);
     } else {
       addFavorite(id, ItemType.WORKSHOP);
     }
@@ -101,6 +102,9 @@ export default function WorkshopCardList({
       {filtered.map((w) => {
         const isOpen = openCardId === w.id;
         const style = calendarStyleMap[w.status];
+        const thumbnailSrc =
+          resolveImageSrc({ thumbnail: w.thumbnail }) ??
+          '/icons/workshop-card.svg';
 
         return (
           <div
@@ -115,7 +119,7 @@ export default function WorkshopCardList({
               <div className="w-[384px] h-[320px] py-8 flex-shrink-0">
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
-                    src={w.thumbnail ?? '/icons/workshop-card.svg'}
+                    src={thumbnailSrc}
                     alt={w.title}
                     fill
                     className="object-cover"

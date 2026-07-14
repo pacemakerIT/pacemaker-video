@@ -348,7 +348,7 @@ export default function Page() {
     return row.category === categoryFilter;
   });
 
-  if (loading) return <div className="p-10">강의 목록 불러오는 중...</div>;
+  if (loading) return <div className="p-10">Loading courses...</div>;
 
   return (
     <AdminListLayout

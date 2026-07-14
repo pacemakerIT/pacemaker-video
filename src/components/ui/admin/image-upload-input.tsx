@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { resolveImageSrc } from '@/lib/utils';
 
 type ImageUploadInputProps = {
   placeholder?: string;
@@ -18,10 +19,11 @@ export default function ImageUploadInput({
 }: ImageUploadInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const resolvedImageUrl = resolveImageSrc({ thumbnail: imageUrl });
 
   // props는 수정할 수 없으므로 내부에서 따로 상태로 관리
   const [localImageUrl, setLocalImageUrl] = useState<string | null>(
-    imageUrl || null
+    resolvedImageUrl || null
   );
 
   // 파일이 바뀔 때마다 미리보기 생성
@@ -38,10 +40,10 @@ export default function ImageUploadInput({
 
   // imageUrl prop이 외부에서 바뀔 때 동기화 (업로드 완료 후 URL 반영)
   useEffect(() => {
-    if (imageUrl) {
-      setLocalImageUrl(imageUrl);
+    if (resolvedImageUrl) {
+      setLocalImageUrl(resolvedImageUrl);
     }
-  }, [imageUrl]);
+  }, [resolvedImageUrl]);
 
   // 파일 선택 시
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

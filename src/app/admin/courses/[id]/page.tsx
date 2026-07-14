@@ -111,10 +111,10 @@ export default function CourseEditPage({
             ]
           });
         } else {
-          toast.error(json.message || '강의를 불러오는데 실패했습니다.');
+          toast.error(json.message || 'Failed to fetch course data.');
         }
       } catch {
-        toast.error('강의 데이터를 가져오는 중 오류가 발생했습니다.');
+        toast.error('An error occurred while fetching course data.');
       } finally {
         setLoading(false);
       }
@@ -124,11 +124,11 @@ export default function CourseEditPage({
   }, [id]);
 
   if (loading) {
-    return <div className="p-10">강의 정보를 불러오는 중...</div>;
+    return <div className="p-10">Loading courses...</div>;
   }
 
   if (!courseData) {
-    return <div className="p-10">강의 정보를 찾을 수 없습니다.</div>;
+    return <div className="p-10">Failed to fetch course data.</div>;
   }
 
   return (

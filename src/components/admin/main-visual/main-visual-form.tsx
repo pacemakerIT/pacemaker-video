@@ -10,6 +10,7 @@ import { MainVisual } from '@/types/admin/main-visual';
 import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
 import ErrorText from '@/components/ui/admin/error-text';
+import { resolveImageSrc } from '@/lib/utils';
 
 type MainVisualFormProps = {
   initialData?: Partial<MainVisual>;
@@ -215,6 +216,10 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
       }
     };
 
+    const previewImageSrc = image
+      ? URL.createObjectURL(image)
+      : resolveImageSrc({ thumbnail: imageUrl });
+
     return (
       <div className="w-full pt-10">
         <div className="flex flex-col gap-6 pb-20">
@@ -315,12 +320,14 @@ const MainVisualForm = forwardRef<MainVisualFormHandle, MainVisualFormProps>(
               {image || imageUrl ? (
                 <div className="flex items-center gap-4 py-2">
                   <div className="w-[84px] h-[58px] relative rounded overflow-hidden">
-                    <Image
-                      src={image ? URL.createObjectURL(image) : imageUrl}
-                      alt="preview"
-                      fill
-                      className="object-cover"
-                    />
+                    {previewImageSrc ? (
+                      <Image
+                        src={previewImageSrc}
+                        alt="preview"
+                        fill
+                        className="object-cover"
+                      />
+                    ) : null}
                   </div>
                   <span className="text-pace-base text-pace-gray-700 flex-1 truncate">
                     {image ? image.name : '파일명 입니다_파일명 입니다.png'}

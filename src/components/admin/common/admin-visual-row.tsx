@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Checkbox } from '@/components/ui/checkbox';
+import { resolveImageSrc } from '@/lib/utils';
 
 export type RowLike = {
   id: string;
@@ -67,9 +68,8 @@ export default function AdminVisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
-  const resolvedThumbnailSrc = resolveThumbnail
-    ? resolveThumbnail(row)
-    : (row.thumbnail ?? '');
+  const thumbnailSrc = resolveThumbnail ? resolveThumbnail(row) : row.thumbnail;
+  const resolvedThumbnailSrc = resolveImageSrc({ thumbnail: thumbnailSrc });
 
   return (
     <div
