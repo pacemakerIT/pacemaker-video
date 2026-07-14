@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
 import { auth } from '@clerk/nextjs/server';
-import { TargetAudienceType } from '@prisma/client';
+import { CourseCategory, Prisma, TargetAudienceType } from '@prisma/client';
 import { requireAdminUser } from '@/lib/admin-auth';
 import {
   findUserIdByClerkId,
@@ -10,6 +10,9 @@ import {
   isFreePrice,
   userCanAccessCourse
 } from '@/lib/entitlements';
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const TARGET_AUDIENCE_REVERSE_MAP: Record<TargetAudienceType, string> = {
   [TargetAudienceType.IT]: 'IT 개발',
@@ -37,12 +40,40 @@ interface InstructorInput {
   name: string;
   intro: string;
   photoUrl: string;
-  careers?: string[];
+  careers?: Prisma.InputJsonValue;
 }
 
 interface VideoInput {
   title: string;
   link: string;
+}
+
+interface CourseMutationBody {
+  category?: CourseCategory;
+  isPublic?: boolean;
+  showOnMain?: boolean;
+  title?: string;
+  description?: string;
+  processTitle?: string;
+  processContent?: string;
+  videoLink?: string;
+  price?: string;
+  time?: string;
+  thumbnailUrl?: string;
+  visualTitle?: string;
+  visualTitle2?: string;
+  recommended?: string[];
+  sections?: {
+    title: string;
+    content?: string;
+    videos?: VideoInput[];
+  }[];
+  instructors?: InstructorInput[];
+  links?: Prisma.InputJsonValue;
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 interface ResolvedCourse {
@@ -321,8 +352,56 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminAccess = await requireAdminUser();
+
+    if (!adminAccess.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: adminAccess.error,
+          message: '관리자 권한이 필요합니다.'
+        },
+        { status: adminAccess.status }
+      );
+    }
+
     const { id } = await params;
-    const body = await request.json();
+
+    if (!UUID_PATTERN.test(id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid course id',
+          message: '유효하지 않은 강의 ID입니다.'
+        },
+        { status: 400 }
+      );
+    }
+
+    let body: CourseMutationBody;
+    try {
+      const parsedBody: unknown = await request.json();
+      if (!isObject(parsedBody)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid course data',
+            message: '유효하지 않은 강의 데이터입니다.'
+          },
+          { status: 400 }
+        );
+      }
+      body = parsedBody as CourseMutationBody;
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid course data',
+          message: '유효하지 않은 강의 데이터입니다.'
+        },
+        { status: 400 }
+      );
+    }
     const {
       category,
       isPublic,
@@ -357,7 +436,7 @@ export async function PUT(
     // Map Korean labels to Enum
     const targetAudienceTypes = (recommended || [])
       .map((label: string) => TARGET_AUDIENCE_MAP[label])
-      .filter(Boolean);
+      .filter((value): value is TargetAudienceType => Boolean(value));
 
     // Perform update in a transaction to ensure atomic execution
     const updatedCourse = await prisma.$transaction(async (tx) => {
@@ -369,7 +448,7 @@ export async function PUT(
       const course = await tx.course.update({
         where: { id },
         data: {
-          category: category || 'NETWORKING',
+          category: category || CourseCategory.NETWORKING,
           isPublic,
           showOnMain,
           title,

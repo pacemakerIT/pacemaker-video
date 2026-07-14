@@ -15,7 +15,8 @@ const prismaMock = {
   orderItem: {
     findFirst: vi.fn(),
     findMany: vi.fn()
-  }
+  },
+  $transaction: vi.fn()
 };
 
 vi.mock('@/lib/prisma', () => ({
@@ -23,7 +24,7 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 const { auth } = await import('@clerk/nextjs/server');
-const { GET } = await import('./route');
+const { GET, PUT } = await import('./route');
 
 function courseFixture() {
   return {
@@ -95,9 +96,9 @@ function courseFixture() {
   };
 }
 
-function context() {
+function context(id = 'course-123') {
   return {
-    params: Promise.resolve({ id: 'course-123' })
+    params: Promise.resolve({ id })
   };
 }
 
@@ -109,6 +110,7 @@ describe('GET /api/courses/detail/[id]', () => {
     prismaMock.user.findUnique.mockResolvedValue({ id: 'user-123' });
     prismaMock.orderItem.findFirst.mockResolvedValue(null);
     prismaMock.orderItem.findMany.mockResolvedValue([]);
+    prismaMock.$transaction.mockResolvedValue(null);
   });
 
   it('strips playable video ids for users without completed purchases', async () => {
@@ -295,5 +297,123 @@ describe('GET /api/courses/detail/[id]', () => {
         })
       })
     );
+  });
+});
+
+describe('PUT /api/courses/detail/[id]', () => {
+  const courseId = '550e8400-e29b-41d4-a716-446655440000';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+    prismaMock.user.findUnique.mockResolvedValue(null);
+    prismaMock.$transaction.mockResolvedValue(null);
+  });
+
+  it('rejects unauthenticated updates before parsing their body', async () => {
+    const response = await PUT(
+      new Request('http://localhost/api/courses/detail/course-123', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{'
+      }),
+      context()
+    );
+
+    expect(response.status).toBe(401);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Unauthorized',
+      message: '관리자 권한이 필요합니다.'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('rejects non-admin updates before changing course data', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_user_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'USER' });
+
+    const response = await PUT(
+      new Request('http://localhost/api/courses/detail/course-123', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Attempted update' })
+      }),
+      context(courseId)
+    );
+
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Forbidden',
+      message: '관리자 권한이 필요합니다.'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('validates an admin update without a title before starting a transaction', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    const response = await PUT(
+      new Request(`http://localhost/api/courses/detail/${courseId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      }),
+      context(courseId)
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Title is required',
+      message: '제목은 필수입니다.'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 instead of 500 for malformed admin update JSON', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    const response = await PUT(
+      new Request(`http://localhost/api/courses/detail/${courseId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{'
+      }),
+      context(courseId)
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Invalid course data',
+      message: '유효하지 않은 강의 데이터입니다.'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('rejects an invalid course UUID before starting a transaction', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    const response = await PUT(
+      new Request('http://localhost/api/courses/detail/not-a-uuid', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Attempted update' })
+      }),
+      context('not-a-uuid')
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Invalid course id',
+      message: '유효하지 않은 강의 ID입니다.'
+    });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
 });

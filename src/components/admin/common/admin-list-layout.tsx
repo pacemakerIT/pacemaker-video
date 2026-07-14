@@ -4,6 +4,7 @@ type Props = {
   title: string;
   listTitle?: React.ReactNode;
   onSave?: () => void;
+  saveDisabled?: boolean;
   leftControls?: React.ReactNode;
   rightControls?: React.ReactNode;
   tableHeader?: React.ReactNode;
@@ -16,6 +17,7 @@ export default function AdminListLayout({
   title,
   listTitle,
   onSave,
+  saveDisabled = false,
   leftControls,
   rightControls,
   tableHeader,
@@ -30,7 +32,8 @@ export default function AdminListLayout({
         {onSave ? (
           <button
             onClick={onSave}
-            className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded hover:bg-pace-orange-900 transition-colors"
+            disabled={saveDisabled}
+            className="bg-pace-orange-800 text-pace-white-500 text-pace-lg w-[140px] h-[60px] rounded hover:bg-pace-orange-900 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           >
             저장
           </button>

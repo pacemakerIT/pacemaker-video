@@ -6,7 +6,10 @@ vi.mock('@clerk/nextjs/server', () => ({
 
 const prismaMock = {
   course: {
-    findMany: vi.fn()
+    findMany: vi.fn(),
+    findFirst: vi.fn(),
+    update: vi.fn(),
+    deleteMany: vi.fn()
   },
   favorite: {
     groupBy: vi.fn()
@@ -16,7 +19,8 @@ const prismaMock = {
   },
   user: {
     findUnique: vi.fn()
-  }
+  },
+  $transaction: vi.fn()
 };
 
 vi.mock('@/lib/prisma', () => ({
@@ -24,7 +28,7 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 const { auth } = await import('@clerk/nextjs/server');
-const { GET } = await import('./route');
+const { DELETE, GET, POST, PUT } = await import('./route');
 
 function courseFixture(overrides = {}) {
   return {
@@ -124,5 +128,157 @@ describe('GET /api/courses', () => {
         status: '비공개'
       })
     ]);
+  });
+});
+
+describe('course mutation authorization and validation', () => {
+  const courseId = '550e8400-e29b-41d4-a716-446655440000';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+    prismaMock.user.findUnique.mockResolvedValue(null);
+    prismaMock.$transaction.mockResolvedValue([]);
+    prismaMock.course.update.mockResolvedValue({ id: courseId });
+  });
+
+  it.each(['POST', 'PUT', 'DELETE'] as const)(
+    'rejects unauthenticated %s requests before parsing their body',
+    async (method) => {
+      const handler = { POST, PUT, DELETE }[method];
+      const response = await handler(
+        new Request('http://localhost/api/courses', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: '{'
+        })
+      );
+
+      expect(response.status).toBe(401);
+      expect(await response.json()).toEqual({ error: 'Unauthorized' });
+      expect(prismaMock.course.findFirst).not.toHaveBeenCalled();
+      expect(prismaMock.course.update).not.toHaveBeenCalled();
+      expect(prismaMock.course.deleteMany).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each(['POST', 'PUT', 'DELETE'] as const)(
+    'rejects non-admin %s requests before parsing their body',
+    async (method) => {
+      vi.mocked(auth).mockResolvedValue({ userId: 'clerk_user_123' } as never);
+      prismaMock.user.findUnique.mockResolvedValue({ roleId: 'USER' });
+      const handler = { POST, PUT, DELETE }[method];
+      const response = await handler(
+        new Request('http://localhost/api/courses', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: '{'
+        })
+      );
+
+      expect(response.status).toBe(403);
+      expect(await response.json()).toEqual({ error: 'Forbidden' });
+      expect(prismaMock.course.findFirst).not.toHaveBeenCalled();
+      expect(prismaMock.course.update).not.toHaveBeenCalled();
+      expect(prismaMock.course.deleteMany).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    }
+  );
+
+  it('rejects empty and invalid visibility update payloads', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    for (const updates of [
+      [],
+      [{ id: courseId, status: 'DRAFT' }],
+      [{ id: 'not-a-uuid', status: '공개중' }]
+    ]) {
+      const response = await PUT(
+        new Request('http://localhost/api/courses', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ updates })
+        })
+      );
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({
+        error: 'Updates must contain valid course statuses'
+      });
+    }
+
+    expect(prismaMock.course.update).not.toHaveBeenCalled();
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['POST', POST, { error: 'Invalid course data' }],
+    ['PUT', PUT, { error: 'Updates must contain valid course statuses' }],
+    ['DELETE', DELETE, { error: 'IDs must contain valid course UUIDs' }]
+  ] as const)(
+    'returns 400 instead of 500 for malformed admin %s JSON',
+    async (method, handler, expectedBody) => {
+      vi.mocked(auth).mockResolvedValue({
+        userId: 'clerk_admin_123'
+      } as never);
+      prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+      const response = await handler(
+        new Request('http://localhost/api/courses', {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: '{'
+        })
+      );
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual(expectedBody);
+      expect(prismaMock.course.findFirst).not.toHaveBeenCalled();
+      expect(prismaMock.course.deleteMany).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    }
+  );
+
+  it('updates valid visibility changes for an admin', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    const response = await PUT(
+      new Request('http://localhost/api/courses', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          updates: [{ id: courseId, status: '공개중' }]
+        })
+      })
+    );
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.course.update).toHaveBeenCalledWith({
+      where: { id: courseId },
+      data: { isPublic: true }
+    });
+    expect(prismaMock.$transaction).toHaveBeenCalledOnce();
+  });
+
+  it('rejects invalid delete IDs without deleting any courses', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk_admin_123' } as never);
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+
+    const response = await DELETE(
+      new Request('http://localhost/api/courses', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: ['not-a-uuid'] })
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: 'IDs must contain valid course UUIDs'
+    });
+    expect(prismaMock.course.deleteMany).not.toHaveBeenCalled();
   });
 });
