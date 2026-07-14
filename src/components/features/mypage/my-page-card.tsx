@@ -57,7 +57,7 @@ export default function MyPageCard({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id);
+      removeFavorite(id, type);
     } else {
       addFavorite(id, type);
     }
@@ -70,7 +70,7 @@ export default function MyPageCard({
             <button
               role="button"
               aria-label="like"
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10"
+              className="group absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md hover:scale-110 transition-all duration-100 z-10"
               onClick={(e) => {
                 e.preventDefault();
                 toggleLike(itemId);
@@ -80,7 +80,7 @@ export default function MyPageCard({
                 className={`w-5 h-5 transition-colors duration-200 ${
                   isLiked(itemId)
                     ? 'text-pace-orange-800 fill-pace-orange-800'
-                    : 'text-pace-gray-200 hover:text-pace-orange-800'
+                    : 'text-pace-gray-200 group-hover:text-pace-orange-800'
                 }`}
               />
             </button>

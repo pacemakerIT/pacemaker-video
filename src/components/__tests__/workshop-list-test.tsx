@@ -35,7 +35,7 @@ describe('WorkshopList', () => {
 
   it('renders loading text and then workshop list', async () => {
     render(<WorkshopList />);
-    expect(screen.getByText('📡 워크샵 불러오는 중...')).toBeInTheDocument();
+    expect(screen.getByText('📡 Loading workshops...')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('페이스메이커 워크샵')).toBeInTheDocument();
       expect(screen.getByText('워크샵 1')).toBeInTheDocument();

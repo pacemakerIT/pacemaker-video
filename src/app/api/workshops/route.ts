@@ -9,6 +9,51 @@ const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
   진행완료: WorkshopStatus.COMPLETED
 };
 
+type WorkshopWithStatusDates = {
+  startDate: Date | string;
+  endDate: Date | string;
+  status: WorkshopStatus | string;
+};
+
+function getEffectiveWorkshopStatus<T extends WorkshopWithStatusDates>(
+  workshop: T,
+  now = new Date()
+) {
+  if (workshop.status === WorkshopStatus.HIDDEN) {
+    return WorkshopStatus.HIDDEN;
+  }
+
+  const startDate = new Date(workshop.startDate);
+  const endDate = new Date(workshop.endDate);
+
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return workshop.status;
+  }
+
+  if (endDate < now) {
+    return WorkshopStatus.COMPLETED;
+  }
+
+  if (startDate <= now && now <= endDate) {
+    return WorkshopStatus.ONGOING;
+  }
+
+  if (workshop.status === WorkshopStatus.CLOSED) {
+    return WorkshopStatus.CLOSED;
+  }
+
+  return WorkshopStatus.RECRUITING;
+}
+
+function withEffectiveWorkshopStatus<T extends WorkshopWithStatusDates>(
+  workshop: T
+) {
+  return {
+    ...workshop,
+    status: getEffectiveWorkshopStatus(workshop)
+  };
+}
+
 interface InstructorInput {
   name: string;
   intro: string;
@@ -38,8 +83,11 @@ export async function GET(req: Request) {
   try {
     // 1. 단건 조회
     if (id) {
-      const workshop = await prisma.workshop.findUnique({
-        where: { id },
+      const workshop = await prisma.workshop.findFirst({
+        where: {
+          id,
+          status: { not: WorkshopStatus.HIDDEN }
+        },
         include: {
           instructors: {
             include: { instructor: { select: { name: true } } }
@@ -52,7 +100,7 @@ export async function GET(req: Request) {
           { status: 404 }
         );
       }
-      return NextResponse.json(workshop);
+      return NextResponse.json(withEffectiveWorkshopStatus(workshop));
     }
 
     // 2. 6개월 조회 (center 기준 앞뒤 3개월)
@@ -81,6 +129,7 @@ export async function GET(req: Request) {
 
       const workshops = await prisma.workshop.findMany({
         where: {
+          status: { not: WorkshopStatus.HIDDEN },
           startDate: {
             gte: startDate,
             lte: endDate
@@ -107,7 +156,7 @@ export async function GET(req: Request) {
       });
 
       return NextResponse.json({
-        workshops,
+        workshops: workshops.map(withEffectiveWorkshopStatus),
         count: workshops.length
       });
     }
@@ -119,6 +168,7 @@ export async function GET(req: Request) {
 
       const workshops = await prisma.workshop.findMany({
         where: {
+          status: { not: WorkshopStatus.HIDDEN },
           startDate: {
             gte: startDate,
             lte: endDate
@@ -145,13 +195,16 @@ export async function GET(req: Request) {
       });
 
       return NextResponse.json({
-        workshops,
+        workshops: workshops.map(withEffectiveWorkshopStatus),
         count: workshops.length
       });
     }
 
     // 4. 전체 조회 (fallback)
     const workshops = await prisma.workshop.findMany({
+      where: {
+        status: { not: WorkshopStatus.HIDDEN }
+      },
       select: {
         id: true,
         title: true,
@@ -173,7 +226,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({
-      workshops,
+      workshops: workshops.map(withEffectiveWorkshopStatus),
       count: workshops.length
     });
   } catch (error) {

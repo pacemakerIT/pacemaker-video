@@ -1,0 +1,1513 @@
+<!doctype html>
+<html
+  class="light"
+  lang="en"
+  style="--font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif"
+>
+  <head>
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | Workshops</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&amp;family=Source+Sans+3:wght@300;400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#00263B',
+              navy: '#00263B',
+              teal: '#00ADBD',
+              orange: '#FF4F02',
+              'orange-hover': '#E04400',
+              'cool-grey': '#D5D7D7',
+              surface: '#F8F9FA',
+              'surface-container-low': '#F2F4F7',
+              body: '#475467'
+            },
+            fontFamily: {
+              sans: ['Manrope', 'sans-serif'],
+              headline: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif'],
+              inter: ['Inter', 'sans-serif'],
+              pretendard: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif']
+            },
+            borderRadius: {
+              none: '0',
+              sm: '0.125rem',
+              DEFAULT: '0.25rem',
+              md: '0.375rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              '2xl': '1rem',
+              '3xl': '1.5rem',
+              full: '9999px'
+            }
+          }
+        }
+      };
+    </script>
+
+    <style>
+      .scrollbar-none::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      html {
+        scrollbar-gutter: stable;
+      }
+      body {
+        max-width: 1920px;
+        margin: 0 auto;
+        background-color: white;
+        font-family: 'Source Sans 3', sans-serif;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #ffffff;
+        border-bottom: 1px solid #f2f4f6;
+        padding: 12px 0;
+      }
+      .nav-inner,
+      .page-container {
+        max-width: 1248px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 24px;
+        padding-right: 24px;
+        box-sizing: border-box;
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+      .nav-center {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.925rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        background: none;
+        text-decoration: none;
+      }
+      .nav-item:hover {
+        background: #f3f4f6;
+        color: #00263b;
+      }
+      .nav-item.is-active {
+        background: none;
+        color: #ff4f02;
+        font-weight: 700;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn-auth {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-login {
+        color: #00263b;
+      }
+      .btn-login:hover {
+        background: #f3f4f6;
+      }
+      .btn-signup {
+        background: #00263b;
+        color: #fff;
+      }
+      .btn-signup:hover {
+        background: #001e2f;
+      }
+      .nav-mobile-top {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-hamburger {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .mobile-nav-panel {
+        display: none;
+      }
+      .mobile-nav-accordion-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out;
+      }
+      .mobile-nav-accordion-panel.is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .mobile-nav-accordion-chevron {
+        transition: transform 0.3s ease;
+      }
+      .mobile-nav-accordion-toggle[aria-expanded='true'] .mobile-nav-accordion-chevron {
+        transform: rotate(180deg);
+      }
+      @media (max-width: 768px) {
+        .nav-inner {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .nav-center, .nav-right {
+          display: none;
+        }
+        .nav-mobile-top {
+          display: flex;
+          width: 100%;
+        }
+        .nav-logo {
+          display: none;
+        }
+        .mobile-nav-panel {
+          display: block;
+          width: 100%;
+          flex-basis: 100%;
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          padding-top: 0;
+          pointer-events: none;
+          transition: max-height 0.3s ease-out, opacity 0.25s ease-out, padding-top 0.25s ease-out;
+        }
+        .mobile-nav-panel.is-open {
+          max-height: 42rem;
+          opacity: 1;
+          padding-top: 12px;
+          pointer-events: auto;
+        }
+        .nav-hamburger [data-menu-close] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-open] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-close] {
+          display: block;
+        }
+      }
+
+      /* Premium Card lift */
+      .pm-card-lift {
+        transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s ease;
+        transform: translate3d(0, 0, 0);
+      }
+      .pm-card-lift:hover {
+        transform: translate3d(0, -6px, 0);
+        box-shadow: 0 20px 40px rgba(0, 38, 59, 0.12);
+        border-color: rgba(0, 38, 59, 0.06);
+      }
+
+      /* Heart Icon Toggle */
+      .favorite-heart .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        color: #9ca3af;
+        transition: color 0.2s ease, font-variation-settings 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .favorite-heart:hover .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        color: #ff4f02;
+      }
+      .favorite-heart--liked .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        color: #ff4f02;
+      }
+      .favorite-heart--liked:hover .material-symbols-outlined {
+        color: #e04400;
+      }
+
+      /* Collapsible Panel Transition */
+      .details-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease, margin-top 0.3s ease;
+        opacity: 0;
+      }
+      .details-panel.is-expanded {
+        max-height: 800px;
+        opacity: 1;
+        margin-top: 1.5rem;
+      }
+
+      /* Filter Pill Styling */
+      .filter-pill {
+        transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+      }
+      /* Active states matching calendar status colors */
+      .filter-pill.active[data-filter="all"],
+      .filter-pill.active[data-filter="open"] {
+        border-color: #ff4f02;
+        color: #ff4f02;
+        background-color: rgba(255, 79, 2, 0.03);
+      }
+      .filter-pill.active[data-filter="closed"] {
+        border-color: #0d9488;
+        color: #0d9488;
+        background-color: rgba(13, 148, 136, 0.03);
+      }
+      .filter-pill.active[data-filter="completed"] {
+        border-color: #6b7280;
+        color: #6b7280;
+        background-color: rgba(107, 114, 128, 0.03);
+      }
+      /* Hover states matching calendar status colors */
+      .filter-pill[data-filter="all"]:hover,
+      .filter-pill[data-filter="open"]:hover {
+        border-color: #ff4f02;
+        color: #ff4f02;
+      }
+      .filter-pill[data-filter="closed"]:hover {
+        border-color: #0d9488;
+        color: #0d9488;
+      }
+      .filter-pill[data-filter="completed"]:hover {
+        border-color: #6b7280;
+        color: #6b7280;
+      }
+      
+      /* Cart Button Styles */
+      .cart-btn {
+        color: #333333;
+        transition: color 0.2s ease, background-color 0.2s ease;
+      }
+      .cart-btn:hover {
+        background-color: #f3f4f6;
+      }
+      .cart-btn.in-cart {
+        color: #d9d9d9;
+      }
+    </style>
+  </head>
+
+  <body class="bg-surface font-body text-body antialiased">
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+      >Skip to content</a
+    >
+
+    <!-- 1. NAVBAR -->
+    <nav>
+      <div class="nav-inner">
+        <a aria-label="Pacemaker home" class="nav-logo" href="../main.html">
+          <img alt="Pacemaker Logo" src="../../img/logo.webp" />
+        </a>
+        <div class="flex items-center ml-auto">
+          <div class="nav-center">
+            <a aria-current="page" class="nav-item is-active" href="#main-content">Workshops</a>
+            <a class="nav-item" href="../courses/course_list.html">Online Courses</a>
+            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+          </div>
+          <div class="nav-right ml-4">
+            <a class="btn-auth btn-login" href="#">Login</a>
+            <a class="btn-auth btn-signup" href="#">Sign Up</a>
+          </div>
+        </div>
+        <div class="nav-mobile-top">
+          <a href="../main.html" style="display: block">
+            <img
+              alt="Pacemaker Logo"
+              src="../../img/logo.webp"
+              style="height: 28px; width: auto"
+            />
+          </a>
+          <div class="flex items-center gap-2">
+            <button
+              aria-controls="mobile-nav-menu"
+              aria-expanded="false"
+              aria-label="Open menu"
+              class="nav-hamburger"
+              id="mobile-nav-toggle"
+              type="button"
+            >
+              <svg
+                data-menu-open
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewbox="0 0 24 24"
+                width="18"
+              >
+                <line x1="3" x2="21" y1="6" y2="6"></line>
+                <line x1="3" x2="21" y1="12" y2="12"></line>
+                <line x1="3" x2="21" y1="18" y2="18"></line>
+              </svg>
+              <svg
+                data-menu-close
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewbox="0 0 24 24"
+                width="18"
+              >
+                <line x1="6" x2="18" y1="6" y2="18"></line>
+                <line x1="18" x2="6" y1="6" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="mobile-nav-panel" id="mobile-nav-menu">
+          <div class="rounded-none border border-gray-200 bg-white p-3">
+            <div class="border-t border-gray-100 pt-2">
+              <div class="py-1">
+                <a
+                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  href="../main.html"
+                  ><span>HOME</span></a
+                >
+              </div>
+              <div class="py-1">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  data-target="mobile-nav-programs"
+                >
+                  <span>PROGRAMS</span>
+                  <svg
+                    class="mobile-nav-accordion-chevron w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </button>
+                <div class="mobile-nav-accordion-panel" id="mobile-nav-programs">
+                  <div class="overflow-hidden">
+                    <div class="flex flex-col gap-1">
+                      <a aria-current="page" class="group/item flex items-start gap-4 p-3 rounded-xl transition-all" href="#main-content">
+                        <div class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent">
+                          <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span class="text-[0.95rem] font-bold text-orange mb-0.5">Workshops</span>
+                            <span class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0">chevron_right</span>
+                          </div>
+                          <p class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
+                            Live sessions, practical events, and real-world feedback.
+                          </p>
+                        </div>
+                      </a>
+                      <a class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5" href="../courses/course_list.html">
+                        <div class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100">
+                          <span class="material-symbols-outlined text-[20px]">play_lesson</span>
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span class="text-[0.95rem] font-bold text-navy mb-0.5">Online Courses</span>
+                            <span class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0">chevron_right</span>
+                          </div>
+                          <p class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
+                            Guided lessons to help with resumes, interviews, and career moves.
+                          </p>
+                        </div>
+                      </a>
+                      <a class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5" href="../main.html#ebookCarousel">
+                        <div class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100">
+                          <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span class="text-[0.95rem] font-bold text-navy mb-0.5">E-books</span>
+                            <span class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0">chevron_right</span>
+                          </div>
+                          <p class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
+                            Quick reads with practical tips for searching and applying with confidence.
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="py-1">
+                <a class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy" href="#"><span>LOGIN</span></a>
+              </div>
+              <div class="pt-3">
+                <a class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold font-[family-name:var(--font-heading)] text-white transition-colors hover:bg-[#001e2f]" href="#">SIGN UP</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="main-content" class="py-[60px] bg-white">
+      <div class="page-container max-w-[1200px] mx-auto px-4">
+        
+        <!-- Header text -->
+        <div class="text-center md:text-left mb-8">
+          <p class="text-orange font-bold text-xs uppercase tracking-[0.2em] mb-2 font-sans">
+            Connections Create Opportunities
+          </p>
+          <h1 class="font-headline text-3xl md:text-4xl font-extrabold text-navy leading-tight">
+            Pacemaker Workshops
+          </h1>
+        </div>
+
+        <!-- 2. CALENDAR COMPONENT -->
+        <div class="mb-8 bg-white border border-gray-100 rounded-2xl p-6 md:h-[778px] flex flex-col shadow-[0_8px_30px_rgb(0,38,59,0.04)]">
+          <div class="flex items-center justify-between mb-4 px-2">
+            <button id="prev-month-btn" class="w-[56px] h-[56px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors">
+              <span class="material-symbols-outlined text-[24px]">chevron_left</span>
+            </button>
+            <div class="text-center">
+              <h3 id="calendar-month-year" class="font-[family-name:var(--font-heading)] font-bold text-navy text-[24px] leading-[36px]">Jan, 2025</h3>
+              <p id="calendar-workshop-count" class="text-[16px] font-bold text-[#666666] mt-1"><span class="text-orange">5</span> Workshops in June</p>
+            </div>
+            <button id="next-month-btn" class="w-[56px] h-[56px] flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors">
+              <span class="material-symbols-outlined text-[24px]">chevron_right</span>
+            </button>
+          </div>
+
+          <!-- Calendar Grid -->
+          <div id="calendar-days-grid" class="grid grid-cols-7 flex-1 border border-gray-100 rounded-xl overflow-hidden text-center text-[12px] md:text-[16px] font-semibold">
+            <!-- Day Names -->
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">MON</div>
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">TUE</div>
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">WED</div>
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">THU</div>
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">FRI</div>
+            <div class="py-2.5 bg-gray-50 border-b border-r border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">SAT</div>
+            <div class="py-2.5 bg-gray-50 border-b border-gray-100 text-gray-400 text-[11px] md:text-[16px] tracking-wider uppercase">SUN</div>
+
+            <!-- Calendar Days (January 2025 starting WED Jan 1) -->
+            <!-- Dec 29 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-gray-300 bg-gray-50/50 text-left font-medium">29</div>
+            <!-- Dec 30 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-gray-300 bg-gray-50/50 text-left font-medium">30</div>
+            <!-- Dec 31 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-gray-300 bg-gray-50/50 text-left font-medium">31</div>
+            
+            <!-- Jan 1 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">1</div>
+            <!-- Jan 2 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">2</div>
+            
+            <!-- Jan 3 (Career Brew event) -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium flex flex-col justify-between">
+              <span>3</span>
+              <div class="event-pill px-1 md:px-1.5 py-0.5 text-[14px] font-bold text-orange bg-orange/5 border border-orange/20 rounded-full md:rounded truncate max-w-full flex items-center justify-center cursor-pointer" title="Career Brew">
+                 <span class="hidden md:inline">Career Brew</span>
+                 <span class="inline md:hidden w-1.5 h-1.5 rounded-full bg-orange"></span>
+               </div>
+            </div>
+            
+            <!-- Jan 4 (UX Design Workshop event) -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-gray-100 text-navy text-left font-medium flex flex-col justify-between">
+              <span>4</span>
+              <div class="event-pill px-1 md:px-1.5 py-0.5 text-[14px] font-bold text-orange bg-orange/5 border border-orange/20 rounded-full md:rounded truncate max-w-full flex items-center justify-center cursor-pointer" title="UX Design workshop...">
+                 <span class="hidden md:inline">UX Design worksh...</span>
+                 <span class="inline md:hidden w-1.5 h-1.5 rounded-full bg-orange"></span>
+               </div>
+            </div>
+
+            <!-- Jan 5 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">5</div>
+            <!-- Jan 6 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">6</div>
+            <!-- Jan 7 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">7</div>
+            <!-- Jan 8 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">8</div>
+            <!-- Jan 9 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">9</div>
+            <!-- Jan 10 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">10</div>
+            <!-- Jan 11 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-gray-100 text-navy text-left font-medium">11</div>
+
+            <!-- Jan 12 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">12</div>
+            <!-- Jan 13 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">13</div>
+            <!-- Jan 14 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">14</div>
+            <!-- Jan 15 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">15</div>
+            <!-- Jan 16 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">16</div>
+            <!-- Jan 17 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">17</div>
+            <!-- Jan 18 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-gray-100 text-navy text-left font-medium">18</div>
+
+            <!-- Jan 19 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">19</div>
+            <!-- Jan 20 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">20</div>
+            <!-- Jan 21 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">21</div>
+            <!-- Jan 22 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">22</div>
+            <!-- Jan 23 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">23</div>
+            <!-- Jan 24 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-r border-gray-100 text-navy text-left font-medium">24</div>
+            <!-- Jan 25 -->
+            <div class="h-16 md:h-20 p-1.5 border-b border-gray-100 text-navy text-left font-medium">25</div>
+
+            <!-- Jan 26 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">26</div>
+            <!-- Jan 27 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">27</div>
+            <!-- Jan 28 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">28</div>
+            <!-- Jan 29 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">29</div>
+            <!-- Jan 30 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">30</div>
+            <!-- Jan 31 -->
+            <div class="h-16 md:h-20 p-1.5 border-r border-gray-100 text-navy text-left font-medium">31</div>
+            <!-- Feb 1 -->
+            <div class="h-16 md:h-20 p-1.5 text-gray-300 bg-gray-50/50 text-left font-medium">1</div>
+          </div>
+        </div>
+
+        <!-- 3. FILTER PILLS -->
+        <div class="flex flex-nowrap md:flex-wrap gap-[10px] mb-8 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 justify-start scrollbar-none">
+          <button class="filter-pill active shrink-0 px-4 md:px-6 h-[32px] md:h-[40px] rounded-[40px] flex items-center justify-center border border-gray-300 font-[family-name:var(--font-heading)] text-[12px] md:text-[14px] font-medium text-gray-600 transition-colors" data-filter="all">All</button>
+          <button class="filter-pill shrink-0 px-4 md:px-6 h-[32px] md:h-[40px] rounded-[40px] flex items-center justify-center border border-gray-300 font-[family-name:var(--font-heading)] text-[12px] md:text-[14px] font-medium text-gray-600 transition-colors" data-filter="open">Open</button>
+          <button class="filter-pill shrink-0 px-4 md:px-6 h-[32px] md:h-[40px] rounded-[40px] flex items-center justify-center border border-gray-300 font-[family-name:var(--font-heading)] text-[12px] md:text-[14px] font-medium text-gray-600 transition-colors" data-filter="closed">Closed</button>
+          <button class="filter-pill shrink-0 px-4 md:px-6 h-[32px] md:h-[40px] rounded-[40px] flex items-center justify-center border border-gray-300 font-[family-name:var(--font-heading)] text-[12px] md:text-[14px] font-medium text-gray-600 transition-colors" data-filter="completed">Completed</button>
+        </div>
+
+        <!-- 4. WORKSHOP CARDS LIST -->
+        <div class="space-y-6" id="workshop-list-container">
+          
+          <!-- Card 1: Open, Networking, 7 days left -->
+          <div class="workshop-card pm-card-lift bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] py-5 px-6 flex flex-col md:flex-row gap-5 rounded-none md:h-[220px] md:items-center" data-status="open">
+            <div class="relative w-full h-[180px] md:w-[260px] md:h-[180px] bg-gray-50 flex-shrink-0">
+              <img src="../../img/online-course-1.png" alt="우리 지금 만나!" class="w-full h-full object-cover rounded-none" />
+              <button class="favorite-heart absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md border border-gray-50">
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
+              </button>
+            </div>
+            
+            <div class="flex-grow flex flex-col">
+              <div>
+                <!-- Top Row: Badges & Cart -->
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex flex-wrap gap-2 md:gap-4 items-center h-[38px]">
+                    <span class="px-2 py-0.5 text-[12px] md:text-[14px] font-bold text-orange bg-orange/5 border border-orange/20 rounded">Open</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-orange tracking-wide">Networking</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-gray-400">7 days left</span>
+                  </div>
+                  <button class="cart-btn w-[28px] h-[28px] inline-flex items-center justify-center rounded-full">
+                    <svg width="18" height="16" viewBox="0 0 26 24" fill="none" class="w-[18px] h-[16px] fill-current" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.5 21.625C10.5 21.9711 10.3974 22.3095 10.2051 22.5972C10.0128 22.885 9.73947 23.1093 9.4197 23.2418C9.09993 23.3742 8.74806 23.4089 8.40859 23.3414C8.06913 23.2738 7.75731 23.1072 7.51256 22.8624C7.26782 22.6177 7.10115 22.3059 7.03363 21.9664C6.9661 21.6269 7.00076 21.2751 7.13321 20.9553C7.26566 20.6355 7.48997 20.3622 7.77775 20.1699C8.06554 19.9776 8.40388 19.875 8.75 19.875C9.21413 19.875 9.65925 20.0594 9.98744 20.3876C10.3156 20.7158 10.5 21.1609 10.5 21.625ZM20.125 19.875C19.7789 19.875 19.4405 19.9776 19.1528 20.1699C18.865 20.3622 18.6407 20.6355 18.5082 20.9553C18.3758 21.2751 18.3411 21.6269 18.4086 21.9664C18.4762 22.3059 18.6428 22.6177 18.8876 22.8624C19.1323 23.1072 19.4441 23.2738 19.7836 23.3414C20.1231 23.4089 20.4749 23.3742 20.7947 23.2418C21.1145 23.1093 21.3878 22.885 21.5801 22.5972C21.7724 22.3095 21.875 21.9711 21.875 21.625C21.875 21.1609 21.6906 20.7158 21.3624 20.3876C21.0342 20.0594 20.5891 19.875 20.125 19.875ZM25.3367 6.13203L22.2162 16.2722C22.0528 16.8097 21.7205 17.2803 21.2685 17.614C20.8165 17.9478 20.269 18.127 19.7072 18.125H9.19516C8.62528 18.1229 8.07144 17.9362 7.61656 17.5929C7.16167 17.2496 6.83024 16.7682 6.67188 16.2208L2.71469 2.375H0.875C0.642936 2.375 0.420376 2.28281 0.256282 2.11872C0.0921872 1.95462 0 1.73206 0 1.5C0 1.26794 0.0921872 1.04538 0.256282 0.881282C0.420376 0.717187 0.642936 0.625 0.875 0.625H2.71469C3.09467 0.62626 3.46402 0.750549 3.76746 0.979263C4.0709 1.20798 4.29211 1.52881 4.39797 1.89375L5.285 5H24.5C24.6369 4.99995 24.772 5.03204 24.8942 5.09368C25.0165 5.15532 25.1226 5.24479 25.204 5.35491C25.2854 5.46502 25.3398 5.5927 25.3628 5.72767C25.3859 5.86265 25.3769 6.00114 25.3367 6.13203ZM23.3155 6.75H5.78484L8.35406 15.7406C8.40633 15.9234 8.51669 16.0841 8.66844 16.1986C8.82019 16.313 9.00508 16.375 9.19516 16.375H19.7072C19.8944 16.3751 20.0767 16.3151 20.2273 16.2038C20.378 16.0926 20.4889 15.936 20.5439 15.757L23.3155 6.75Z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
+                
+                <!-- Middle Row: Title & Price -->
+                <div class="flex items-start justify-between gap-4 mb-1.5">
+                  <h3 class="font-[family-name:var(--font-heading)] text-[18px] md:text-[24px] font-medium text-navy leading-[26px] md:leading-[36px]">우리 지금 만나!</h3>
+                  <span class="font-[family-name:var(--font-heading)] font-bold text-navy text-[22px] md:text-[28px] leading-[24px] md:leading-[30px]">$20</span>
+                </div>
+                
+                <!-- Details -->
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 md:gap-2 text-[13px] md:text-[16px] text-gray-500 font-medium min-h-[24px] mb-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Date</span>
+                    <span class="text-gray-300">|</span>
+                    <span>2025.12.31 00:00</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Instructor</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Raphael. Lee</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Location</span>
+                    <span class="text-gray-300">|</span>
+                    <span>North York centre</span>
+                  </div>
+                </div>
+                
+                <p class="text-[14px] md:text-[16px] text-orange font-medium italic mt-2 md:mt-3 mb-1">토론토에서 살아가는 이야기, 커리어고민 편하게 나누는 자리!</p>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Closed, Networking, 7 days left, Liked Heart -->
+          <div class="workshop-card pm-card-lift bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] py-5 px-6 flex flex-col md:flex-row gap-5 rounded-none md:h-[220px] md:items-center" data-status="closed">
+            <div class="relative w-full h-[180px] md:w-[260px] md:h-[180px] bg-gray-50 flex-shrink-0">
+              <img src="../../img/online-course-2.png" alt="UX Design Workshop" class="w-full h-full object-cover rounded-none" />
+              <button class="favorite-heart favorite-heart--liked absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md border border-gray-50">
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
+              </button>
+            </div>
+            
+            <div class="flex-grow flex flex-col">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex flex-wrap gap-2 md:gap-4 items-center h-[38px]">
+                    <span class="px-2 py-0.5 text-[12px] md:text-[14px] font-bold text-teal bg-teal/5 border border-teal/20 rounded">Closed</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-orange tracking-wide">Networking</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-gray-400">7 days left</span>
+                  </div>
+                  <button class="cart-btn w-[28px] h-[28px] inline-flex items-center justify-center rounded-full">
+                    <svg width="18" height="16" viewBox="0 0 26 24" fill="none" class="w-[18px] h-[16px] fill-current" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.5 21.625C10.5 21.9711 10.3974 22.3095 10.2051 22.5972C10.0128 22.885 9.73947 23.1093 9.4197 23.2418C9.09993 23.3742 8.74806 23.4089 8.40859 23.3414C8.06913 23.2738 7.75731 23.1072 7.51256 22.8624C7.26782 22.6177 7.10115 22.3059 7.03363 21.9664C6.9661 21.6269 7.00076 21.2751 7.13321 20.9553C7.26566 20.6355 7.48997 20.3622 7.77775 20.1699C8.06554 19.9776 8.40388 19.875 8.75 19.875C9.21413 19.875 9.65925 20.0594 9.98744 20.3876C10.3156 20.7158 10.5 21.1609 10.5 21.625ZM20.125 19.875C19.7789 19.875 19.4405 19.9776 19.1528 20.1699C18.865 20.3622 18.6407 20.6355 18.5082 20.9553C18.3758 21.2751 18.3411 21.6269 18.4086 21.9664C18.4762 22.3059 18.6428 22.6177 18.8876 22.8624C19.1323 23.1072 19.4441 23.2738 19.7836 23.3414C20.1231 23.4089 20.4749 23.3742 20.7947 23.2418C21.1145 23.1093 21.3878 22.885 21.5801 22.5972C21.7724 22.3095 21.875 21.9711 21.875 21.625C21.875 21.1609 21.6906 20.7158 21.3624 20.3876C21.0342 20.0594 20.5891 19.875 20.125 19.875ZM25.3367 6.13203L22.2162 16.2722C22.0528 16.8097 21.7205 17.2803 21.2685 17.614C20.8165 17.9478 20.269 18.127 19.7072 18.125H9.19516C8.62528 18.1229 8.07144 17.9362 7.61656 17.5929C7.16167 17.2496 6.83024 16.7682 6.67188 16.2208L2.71469 2.375H0.875C0.642936 2.375 0.420376 2.28281 0.256282 2.11872C0.0921872 1.95462 0 1.73206 0 1.5C0 1.26794 0.0921872 1.04538 0.256282 0.881282C0.420376 0.717187 0.642936 0.625 0.875 0.625H2.71469C3.09467 0.62626 3.46402 0.750549 3.76746 0.979263C4.0709 1.20798 4.29211 1.52881 4.39797 1.89375L5.285 5H24.5C24.6369 4.99995 24.772 5.03204 24.8942 5.09368C25.0165 5.15532 25.1226 5.24479 25.204 5.35491C25.2854 5.46502 25.3398 5.5927 25.3628 5.72767C25.3859 5.86265 25.3769 6.00114 25.3367 6.13203ZM23.3155 6.75H5.78484L8.35406 15.7406C8.40633 15.9234 8.51669 16.0841 8.66844 16.1986C8.82019 16.313 9.00508 16.375 9.19516 16.375H19.7072C19.8944 16.3751 20.0767 16.3151 20.2273 16.2038C20.378 16.0926 20.4889 15.936 20.5439 15.757L23.3155 6.75Z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="flex items-start justify-between gap-4 mb-1.5">
+                  <h3 class="font-[family-name:var(--font-heading)] text-[18px] md:text-[24px] font-medium text-navy leading-[26px] md:leading-[36px]">UX Design Workshop</h3>
+                  <span class="font-[family-name:var(--font-heading)] font-bold text-navy text-[22px] md:text-[28px] leading-[24px] md:leading-[30px]">$20</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 md:gap-2 text-[13px] md:text-[16px] text-gray-500 font-medium min-h-[24px] mb-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Date</span>
+                    <span class="text-gray-300">|</span>
+                    <span>May 20, 2026 - 7:00PM</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Instructor</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Sujin Ku</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Location</span>
+                    <span class="text-gray-300">|</span>
+                    <span>North York centre</span>
+                  </div>
+                </div>
+                
+                <p class="text-[14px] md:text-[16px] text-orange font-medium italic mt-2 md:mt-3 mb-1">Turning Dreams Into Reality</p>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Completed, Networking, Today -->
+          <div class="workshop-card pm-card-lift bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] py-5 px-6 flex flex-col md:flex-row gap-5 rounded-none md:h-[220px] md:items-center" data-status="completed">
+            <div class="relative w-full h-[180px] md:w-[260px] md:h-[180px] bg-gray-50 flex-shrink-0">
+              <img src="../../img/online-course-3.png" alt="UX Design Workshop" class="w-full h-full object-cover rounded-none" />
+              <button class="favorite-heart absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md border border-gray-50">
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
+              </button>
+            </div>
+            
+            <div class="flex-grow flex flex-col">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex flex-wrap gap-2 md:gap-4 items-center h-[38px]">
+                    <span class="px-2 py-0.5 text-[12px] md:text-[14px] font-bold text-gray-400 bg-gray-100/70 border border-gray-200 rounded">Completed</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-orange tracking-wide">Networking</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-gray-400">Today</span>
+                  </div>
+                  <button class="cart-btn w-[28px] h-[28px] inline-flex items-center justify-center rounded-full">
+                    <svg width="18" height="16" viewBox="0 0 26 24" fill="none" class="w-[18px] h-[16px] fill-current" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.5 21.625C10.5 21.9711 10.3974 22.3095 10.2051 22.5972C10.0128 22.885 9.73947 23.1093 9.4197 23.2418C9.09993 23.3742 8.74806 23.4089 8.40859 23.3414C8.06913 23.2738 7.75731 23.1072 7.51256 22.8624C7.26782 22.6177 7.10115 22.3059 7.03363 21.9664C6.9661 21.6269 7.00076 21.2751 7.13321 20.9553C7.26566 20.6355 7.48997 20.3622 7.77775 20.1699C8.06554 19.9776 8.40388 19.875 8.75 19.875C9.21413 19.875 9.65925 20.0594 9.98744 20.3876C10.3156 20.7158 10.5 21.1609 10.5 21.625ZM20.125 19.875C19.7789 19.875 19.4405 19.9776 19.1528 20.1699C18.865 20.3622 18.6407 20.6355 18.5082 20.9553C18.3758 21.2751 18.3411 21.6269 18.4086 21.9664C18.4762 22.3059 18.6428 22.6177 18.8876 22.8624C19.1323 23.1072 19.4441 23.2738 19.7836 23.3414C20.1231 23.4089 20.4749 23.3742 20.7947 23.2418C21.1145 23.1093 21.3878 22.885 21.5801 22.5972C21.7724 22.3095 21.875 21.9711 21.875 21.625C21.875 21.1609 21.6906 20.7158 21.3624 20.3876C21.0342 20.0594 20.5891 19.875 20.125 19.875ZM25.3367 6.13203L22.2162 16.2722C22.0528 16.8097 21.7205 17.2803 21.2685 17.614C20.8165 17.9478 20.269 18.127 19.7072 18.125H9.19516C8.62528 18.1229 8.07144 17.9362 7.61656 17.5929C7.16167 17.2496 6.83024 16.7682 6.67188 16.2208L2.71469 2.375H0.875C0.642936 2.375 0.420376 2.28281 0.256282 2.11872C0.0921872 1.95462 0 1.73206 0 1.5C0 1.26794 0.0921872 1.04538 0.256282 0.881282C0.420376 0.717187 0.642936 0.625 0.875 0.625H2.71469C3.09467 0.62626 3.46402 0.750549 3.76746 0.979263C4.0709 1.20798 4.29211 1.52881 4.39797 1.89375L5.285 5H24.5C24.6369 4.99995 24.772 5.03204 24.8942 5.09368C25.0165 5.15532 25.1226 5.24479 25.204 5.35491C25.2854 5.46502 25.3398 5.5927 25.3628 5.72767C25.3859 5.86265 25.3769 6.00114 25.3367 6.13203ZM23.3155 6.75H5.78484L8.35406 15.7406C8.40633 15.9234 8.51669 16.0841 8.66844 16.1986C8.82019 16.313 9.00508 16.375 9.19516 16.375H19.7072C19.8944 16.3751 20.0767 16.3151 20.2273 16.2038C20.378 16.0926 20.4889 15.936 20.5439 15.757L23.3155 6.75Z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="flex items-start justify-between gap-4 mb-1.5">
+                  <h3 class="font-[family-name:var(--font-heading)] text-[18px] md:text-[24px] font-medium text-navy leading-[26px] md:leading-[36px]">UX Design Workshop</h3>
+                  <span class="font-[family-name:var(--font-heading)] font-bold text-navy text-[22px] md:text-[28px] leading-[24px] md:leading-[30px]">$20</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 md:gap-2 text-[13px] md:text-[16px] text-gray-500 font-medium min-h-[24px] mb-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Date</span>
+                    <span class="text-gray-300">|</span>
+                    <span>May 20, 2026 - 7:00PM</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Instructor</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Sujin Ku</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Location</span>
+                    <span class="text-gray-300">|</span>
+                    <span>North York centre</span>
+                  </div>
+                </div>
+                
+                <p class="text-[14px] md:text-[16px] text-orange font-medium italic mt-2 md:mt-3 mb-1">Turning Dreams Into Reality</p>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Completed, Networking, Today, Expanded initially -->
+          <div class="workshop-card pm-card-lift bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] py-5 px-6 flex flex-col md:flex-row gap-5 rounded-none md:h-[220px] md:items-center" data-status="completed">
+            <div class="relative w-full h-[180px] md:w-[260px] md:h-[180px] bg-gray-50 flex-shrink-0">
+              <img src="../../img/online-course-1.png" alt="UX Design Workshop" class="w-full h-full object-cover rounded-none" />
+              <button class="favorite-heart absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md border border-gray-50">
+                <span class="material-symbols-outlined text-[18px]">favorite</span>
+              </button>
+            </div>
+            
+            <div class="flex-grow flex flex-col">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex flex-wrap gap-2 md:gap-4 items-center h-[38px]">
+                    <span class="px-2 py-0.5 text-[12px] md:text-[14px] font-bold text-gray-400 bg-gray-100/70 border border-gray-200 rounded">Completed</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-orange tracking-wide">Networking</span>
+                    <span class="text-[12px] md:text-[14px] font-semibold text-gray-400">Today</span>
+                  </div>
+                  <button class="cart-btn w-[28px] h-[28px] inline-flex items-center justify-center rounded-full">
+                    <svg width="18" height="16" viewBox="0 0 26 24" fill="none" class="w-[18px] h-[16px] fill-current" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.5 21.625C10.5 21.9711 10.3974 22.3095 10.2051 22.5972C10.0128 22.885 9.73947 23.1093 9.4197 23.2418C9.09993 23.3742 8.74806 23.4089 8.40859 23.3414C8.06913 23.2738 7.75731 23.1072 7.51256 22.8624C7.26782 22.6177 7.10115 22.3059 7.03363 21.9664C6.9661 21.6269 7.00076 21.2751 7.13321 20.9553C7.26566 20.6355 7.48997 20.3622 7.77775 20.1699C8.06554 19.9776 8.40388 19.875 8.75 19.875C9.21413 19.875 9.65925 20.0594 9.98744 20.3876C10.3156 20.7158 10.5 21.1609 10.5 21.625ZM20.125 19.875C19.7789 19.875 19.4405 19.9776 19.1528 20.1699C18.865 20.3622 18.6407 20.6355 18.5082 20.9553C18.3758 21.2751 18.3411 21.6269 18.4086 21.9664C18.4762 22.3059 18.6428 22.6177 18.8876 22.8624C19.1323 23.1072 19.4441 23.2738 19.7836 23.3414C20.1231 23.4089 20.4749 23.3742 20.7947 23.2418C21.1145 23.1093 21.3878 22.885 21.5801 22.5972C21.7724 22.3095 21.875 21.9711 21.875 21.625C21.875 21.1609 21.6906 20.7158 21.3624 20.3876C21.0342 20.0594 20.5891 19.875 20.125 19.875ZM25.3367 6.13203L22.2162 16.2722C22.0528 16.8097 21.7205 17.2803 21.2685 17.614C20.8165 17.9478 20.269 18.127 19.7072 18.125H9.19516C8.62528 18.1229 8.07144 17.9362 7.61656 17.5929C7.16167 17.2496 6.83024 16.7682 6.67188 16.2208L2.71469 2.375H0.875C0.642936 2.375 0.420376 2.28281 0.256282 2.11872C0.0921872 1.95462 0 1.73206 0 1.5C0 1.26794 0.0921872 1.04538 0.256282 0.881282C0.420376 0.717187 0.642936 0.625 0.875 0.625H2.71469C3.09467 0.62626 3.46402 0.750549 3.76746 0.979263C4.0709 1.20798 4.29211 1.52881 4.39797 1.89375L5.285 5H24.5C24.6369 4.99995 24.772 5.03204 24.8942 5.09368C25.0165 5.15532 25.1226 5.24479 25.204 5.35491C25.2854 5.46502 25.3398 5.5927 25.3628 5.72767C25.3859 5.86265 25.3769 6.00114 25.3367 6.13203ZM23.3155 6.75H5.78484L8.35406 15.7406C8.40633 15.9234 8.51669 16.0841 8.66844 16.1986C8.82019 16.313 9.00508 16.375 9.19516 16.375H19.7072C19.8944 16.3751 20.0767 16.3151 20.2273 16.2038C20.378 16.0926 20.4889 15.936 20.5439 15.757L23.3155 6.75Z" fill="currentColor"/>
+                    </svg>
+                  </button>
+                </div>
+                
+                <div class="flex items-start justify-between gap-4 mb-1.5">
+                  <h3 class="font-[family-name:var(--font-heading)] text-[18px] md:text-[24px] font-medium text-navy leading-[26px] md:leading-[36px]">UX Design Workshop</h3>
+                  <span class="font-[family-name:var(--font-heading)] font-bold text-navy text-[22px] md:text-[28px] leading-[24px] md:leading-[30px]">$20</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 md:gap-2 text-[13px] md:text-[16px] text-gray-500 font-medium min-h-[24px] mb-2.5">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Date</span>
+                    <span class="text-gray-300">|</span>
+                    <span>May 20, 2026 - 7:00PM</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Instructor</span>
+                    <span class="text-gray-300">|</span>
+                    <span>Sujin Ku</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-gray-400">Location</span>
+                    <span class="text-gray-300">|</span>
+                    <span>North York centre</span>
+                  </div>
+                </div>
+                
+                <p class="text-[14px] md:text-[16px] text-orange font-medium italic mt-2 md:mt-3 mb-1">Turning Dreams Into Reality</p>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- 5. FOOTER -->
+    <footer>
+      <div class="bg-white border-t border-[#eaecf0] pt-[80px] pb-[60px]">
+        <div class="page-container">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <!-- Left: Logo + Social -->
+            <div>
+              <div class="mb-7">
+                <img
+                  src="../../img/logo.webp"
+                  alt="Pacemaker Logo"
+                  class="h-8 w-auto block"
+                />
+              </div>
+              <p
+                class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4"
+              >
+                Social
+              </p>
+              <div class="flex gap-3 flex-wrap">
+                <a
+                  href="https://www.instagram.com/pacemaker_career"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="Instagram"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path
+                      d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+                    />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.facebook.com/globalpacemaker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="Facebook"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.youtube.com/channel/UCyc055VyNuwAMF27dd74smA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="YouTube"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"
+                    />
+                    <polygon
+                      points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="https://www.threads.com/@pacemaker_career"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center no-underline transition-all hover:border-navy hover:text-navy"
+                  style="
+                    font-family: 'Poppins', sans-serif;
+                    font-weight: 800;
+                    font-size: 0.85rem;
+                    color: #344054;
+                  "
+                  aria-label="Threads"
+                >
+                  @
+                </a>
+              </div>
+            </div>
+            <!-- Right: Contact (aligned to container end on desktop) -->
+            <div class="w-full md:ml-auto md:w-fit md:text-right">
+              <p
+                class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4 md:text-right"
+              >
+                Contact
+              </p>
+              <ul class="list-none flex flex-col gap-3 md:items-end">
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path
+                      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                  <a
+                    href="mailto:Hello@pacemakerca.com"
+                    class="text-[#344054] no-underline hover:text-navy transition-colors"
+                    >Hello@pacemakerca.com</a
+                  >
+                </li>
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                    />
+                  </svg>
+                  <a
+                    href="tel:+16476120523"
+                    class="text-[#344054] no-underline hover:text-navy transition-colors"
+                    >+1 647-612-0523</a
+                  >
+                </li>
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path
+                      d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                    />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span>Toronto, ON, Canada</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-[0.9rem] text-[#98a2b3]">
+            © 2026 Pacemaker. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // 1. MOBILE NAV DRAWER
+      (function mobileNav() {
+        var menuToggle = document.getElementById('mobile-nav-toggle');
+        var menu = document.getElementById('mobile-nav-menu');
+        if (!menuToggle || !menu) return;
+
+        function setMenuOpen(isOpen) {
+          menu.classList.toggle('is-open', isOpen);
+          menuToggle.classList.toggle('is-open', isOpen);
+          menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+
+        menuToggle.addEventListener('click', function () {
+          setMenuOpen(!menu.classList.contains('is-open'));
+        });
+
+        document.addEventListener('click', function (event) {
+          if (!menu.classList.contains('is-open')) return;
+          if (menu.contains(event.target) || menuToggle.contains(event.target)) return;
+          setMenuOpen(false);
+        });
+
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) {
+            setMenuOpen(false);
+          }
+        });
+
+        Array.prototype.forEach.call(
+          document.querySelectorAll('.mobile-nav-accordion-toggle'),
+          function (toggle) {
+            var panelId = toggle.getAttribute('data-target');
+            var panel = panelId ? document.getElementById(panelId) : null;
+            if (!panel) return;
+
+            toggle.addEventListener('click', function () {
+              var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+              panel.classList.toggle('is-open', !isOpen);
+            });
+          }
+        );
+      })();
+
+      // 2. TOGGLE DETAILED CURRICULUM ACCORDION (Removed - using separate detail page)
+
+      // 3. TAB FILTERING LOGIC
+      (function filterLogic() {
+        const buttons = document.querySelectorAll('.filter-pill');
+        const cards = document.querySelectorAll('.workshop-card');
+
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filter = btn.dataset.filter;
+            cards.forEach(card => {
+              if (filter === 'all' || card.dataset.status === filter) {
+                card.style.display = 'flex';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          });
+        });
+      })();
+
+      // 4. HEART LIKING LOGIC
+      (function heartLiking() {
+        const hearts = document.querySelectorAll('.favorite-heart');
+        hearts.forEach(heart => {
+          heart.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            heart.classList.toggle('favorite-heart--liked');
+          });
+        });
+      })();
+
+      // 6. CART TOGGLING LOGIC
+      (function cartToggling() {
+        const cartBtns = document.querySelectorAll('.cart-btn');
+        cartBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            btn.classList.toggle('in-cart');
+          });
+        });
+      })();
+
+      // 7. CARD CLICK NAVIGATION
+      (function cardClickNavigation() {
+        const cards = document.querySelectorAll('.workshop-card');
+        cards.forEach(card => {
+          card.classList.add('cursor-pointer');
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.cart-btn') || e.target.closest('.favorite-heart')) {
+              return;
+            }
+            window.location.href = './workshop_detail.html';
+          });
+        });
+      })();
+
+      // 5. CALENDAR NAVIGATION AND DYNAMIC RENDERING
+      (function calendarLogic() {
+        const prevBtn = document.getElementById('prev-month-btn');
+        const nextBtn = document.getElementById('next-month-btn');
+        const monthYearLabel = document.getElementById('calendar-month-year');
+        const countLabel = document.getElementById('calendar-workshop-count');
+        const grid = document.getElementById('calendar-days-grid');
+        if (!prevBtn || !nextBtn || !monthYearLabel || !countLabel || !grid) return;
+
+        const todayDate = new Date();
+        let currentYear = todayDate.getFullYear();
+        let currentMonth = todayDate.getMonth();
+
+        const mockEvents = {
+          '2025-01-03': 'Career Brew',
+          '2025-01-04': 'UX Design worksh...',
+          '2025-01-15': 'Resume Review',
+          '2025-02-12': 'Mock Interview',
+          '2025-02-20': 'Networking Day',
+          '2025-03-05': 'Tech Talk',
+          '2025-03-25': 'Portfolio Prep',
+          '2025-04-10': 'Career Fair',
+          '2025-05-18': 'Salary Negotiation',
+          '2025-06-08': 'LinkedIn Profile',
+          '2025-06-22': 'UX/UI Trends',
+          '2025-07-06': 'Career Brew',
+          '2025-07-20': 'Portfolio Prep',
+          '2025-12-31': '우리 지금 만나!',
+          '2026-05-20': 'UX Design Workshop',
+          '2026-06-05': 'Career Brew',
+          '2026-06-12': 'Tech Talk',
+          '2026-06-18': 'Resume Review',
+          '2026-06-25': 'Portfolio Prep',
+          '2026-07-02': 'UX Design Workshop',
+          '2026-07-10': 'Mock Interview',
+          '2026-07-15': 'Networking Day',
+          '2026-07-22': 'Salary Negotiation',
+          '2026-07-29': 'LinkedIn Profile'
+        };
+
+        const eventDetails = {
+          '우리 지금 만나!': { instructor: 'Raphael. Lee', fee: '$20', status: 'open' },
+          'Career Brew': { instructor: 'Sujin Ku', fee: '$20', status: 'ongoing' },
+          'UX Design worksh...': { instructor: 'Sujin Ku', fee: '$20', status: 'open' },
+          'UX Design Workshop': { instructor: 'Sujin Ku', fee: '$20', status: 'open' },
+          'Resume Review': { instructor: 'Sujin Ku', fee: 'Free', status: 'completed' },
+          'Mock Interview': { instructor: 'Sujin Ku', fee: '$15', status: 'completed' },
+          'Networking Day': { instructor: 'Sujin Ku', fee: 'Free', status: 'open' },
+          'Tech Talk': { instructor: 'Sujin Ku', fee: 'Free', status: 'ongoing' },
+          'Portfolio Prep': { instructor: 'Sujin Ku', fee: '$10', status: 'completed' },
+          'Career Fair': { instructor: 'Sujin Ku', fee: 'Free', status: 'open' },
+          'Salary Negotiation': { instructor: 'Sujin Ku', fee: '$25', status: 'ongoing' },
+          'LinkedIn Profile': { instructor: 'Sujin Ku', fee: 'Free', status: 'completed' },
+          'UX/UI Trends': { instructor: 'Sujin Ku', fee: '$10', status: 'completed' }
+        };
+
+        const statusStyles = {
+          open: {
+            pill: 'text-orange bg-orange/5 border-orange/20',
+            popup: 'bg-[#fff8f6] border-orange/20',
+            button: 'bg-orange hover:bg-orange-hover'
+          },
+          ongoing: {
+            pill: 'text-teal bg-teal/5 border-teal/20',
+            popup: 'bg-[#f5fcfe] border-teal/20',
+            button: 'bg-teal hover:bg-opacity-90'
+          },
+          completed: {
+            pill: 'text-gray-500 bg-gray-50 border-gray-200',
+            popup: 'bg-gray-50 border-gray-200',
+            button: 'bg-gray-500 hover:bg-gray-600'
+          }
+        };
+
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const shortMonthNames = [
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+
+        let activePopup = null;
+        let activeEventPill = null;
+
+        function closePopup() {
+          if (activePopup) {
+            activePopup.remove();
+            activePopup = null;
+          }
+          const overlay = document.getElementById('calendar-modal-overlay');
+          if (overlay) {
+            overlay.remove();
+          }
+          if (activeEventPill) {
+            activeEventPill.style.borderBottomLeftRadius = '';
+            activeEventPill.style.borderBottomRightRadius = '';
+            activeEventPill.style.borderBottomColor = '';
+            activeEventPill = null;
+          }
+        }
+
+        // Close popup when clicking outside
+        document.addEventListener('click', (e) => {
+          if (activePopup && !activePopup.contains(e.target) && !e.target.classList.contains('event-pill')) {
+            closePopup();
+          }
+        });
+
+        // Close popup on window resize
+        window.addEventListener('resize', closePopup);
+
+        function renderCalendar(year, month) {
+          // Close any open popup when changing months
+          closePopup();
+
+          // Update header text
+          monthYearLabel.textContent = `${shortMonthNames[month]}, ${year}`;
+
+          // Keep only the first 7 children (day names: MON, TUE, WED...)
+          while (grid.children.length > 7) {
+            grid.removeChild(grid.lastChild);
+          }
+
+          // Calculate days
+          const firstDayOfMonth = new Date(year, month, 1);
+          const lastDayOfMonth = new Date(year, month + 1, 0);
+          const numDaysInMonth = lastDayOfMonth.getDate();
+          const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+
+          // Monday (1) is index 0, Tuesday (2) is index 1, ..., Sunday (0) is index 6
+          let startOffset = firstDayOfWeek - 1;
+          if (startOffset < 0) {
+            startOffset = 6;
+          }
+
+          const lastDayOfPrevMonth = new Date(year, month, 0).getDate();
+          const cells = [];
+
+          // Previous month padding days
+          for (let i = startOffset - 1; i >= 0; i--) {
+            cells.push({
+              day: lastDayOfPrevMonth - i,
+              isCurrentMonth: false,
+              date: new Date(year, month - 1, lastDayOfPrevMonth - i)
+            });
+          }
+
+          // Current month days
+          for (let i = 1; i <= numDaysInMonth; i++) {
+            cells.push({
+              day: i,
+              isCurrentMonth: true,
+              date: new Date(year, month, i)
+            });
+          }
+
+          // Next month padding days
+          const totalCells = cells.length;
+          const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+          for (let i = 1; i <= remainingCells; i++) {
+            cells.push({
+              day: i,
+              isCurrentMonth: false,
+              date: new Date(year, month + 1, i)
+            });
+          }
+
+          let workshopCount = 0;
+
+          const numRows = cells.length / 7;
+          grid.style.gridTemplateRows = `auto repeat(${numRows}, 1fr)`;
+
+          // Render cells in calendar grid
+          cells.forEach((cell, index) => {
+            const isLastColumn = (index + 1) % 7 === 0;
+            const isLastRow = index >= cells.length - 7;
+
+            const cellDiv = document.createElement('div');
+            
+            // Build class names dynamically
+            let classes = ['h-16', 'md:h-full', 'p-1.5', 'text-left', 'font-medium'];
+            
+            // Grid cell borders
+            if (!isLastColumn) classes.push('border-r');
+            if (!isLastRow) classes.push('border-b');
+            classes.push('border-gray-100');
+
+            // Text color & background
+            if (cell.isCurrentMonth) {
+              classes.push('text-navy');
+            } else {
+              classes.push('text-gray-300', 'bg-gray-50/50');
+            }
+
+            // Date string format YYYY-MM-DD for checking events
+            const y = cell.date.getFullYear();
+            const m = String(cell.date.getMonth() + 1).padStart(2, '0');
+            const d = String(cell.date.getDate()).padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+
+            const eventTitle = mockEvents[dateStr];
+
+            if (eventTitle) {
+              classes.push('flex', 'flex-col', 'justify-between');
+              if (cell.isCurrentMonth) {
+                workshopCount++;
+              }
+              
+              const details = eventDetails[eventTitle] || { instructor: 'Sujin Ku', fee: '$20', status: 'open' };
+              const style = statusStyles[details.status] || statusStyles.open;
+
+              cellDiv.className = classes.join(' ');
+              cellDiv.innerHTML = `
+                <span>${cell.day}</span>
+                <div class="event-pill px-1 md:px-1.5 py-0.5 text-[14px] font-bold rounded-full md:rounded truncate max-w-full cursor-pointer border ${style.pill} flex items-center justify-center" title="${eventTitle}">
+                  <span class="hidden md:inline">${eventTitle}</span>
+                  <span class="inline md:hidden w-1.5 h-1.5 rounded-full bg-current"></span>
+                </div>
+              `;
+
+              // Event pill click logic to show the popup details card
+              const eventPill = cellDiv.querySelector('.event-pill');
+              eventPill.addEventListener('click', (e) => {
+                e.stopPropagation();
+
+                // If popup for this date is already open, close it
+                if (activePopup && activePopup.dataset.eventDate === dateStr) {
+                  closePopup();
+                  return;
+                }
+
+                closePopup();
+
+                const details = eventDetails[eventTitle] || { instructor: 'Sujin Ku', fee: '$20', status: 'open' };
+                const style = statusStyles[details.status] || statusStyles.open;
+
+                // Apply dynamic borders and corners to merge the event pill with the popup
+                const isMobile = window.innerWidth < 768;
+                if (!isMobile) {
+                  eventPill.style.borderBottomLeftRadius = '0px';
+                  eventPill.style.borderBottomRightRadius = '0px';
+                  eventPill.style.borderBottomColor = 'transparent';
+                  activeEventPill = eventPill;
+                }
+
+                // Create popup card
+                const popup = document.createElement('div');
+                popup.dataset.eventDate = dateStr;
+                
+                if (isMobile) {
+                  popup.className = `fixed z-50 p-6 border rounded-2xl shadow-xl text-left flex flex-col gap-3 bg-white ${style.popup}`;
+                  popup.style.top = '50%';
+                  popup.style.left = '50%';
+                  popup.style.transform = 'translate(-50%, -50%)';
+                  popup.style.width = 'min(320px, 90vw)';
+                  
+                  // Add title to the popup on mobile since it's a modal now
+                  popup.innerHTML = `
+                    <div class="font-[family-name:var(--font-heading)] font-bold text-navy text-[18px] pb-1 border-b border-gray-100">${eventTitle}</div>
+                    <div class="text-[14px] text-gray-500 font-medium pt-1">Instructor &nbsp; ${details.instructor}</div>
+                    <div class="text-[14px] text-gray-500 font-medium">Fee &nbsp; ${details.fee}</div>
+                    <button class="view-details-btn mt-1.5 w-full text-white text-[14px] font-bold py-2.5 px-3 rounded-2xl font-[family-name:var(--font-heading)] transition-colors text-center ${style.button}">
+                      View details
+                    </button>
+                  `;
+                  
+                  const overlay = document.createElement('div');
+                  overlay.className = 'fixed inset-0 bg-black/40 z-40';
+                  overlay.id = 'calendar-modal-overlay';
+                  overlay.addEventListener('click', closePopup);
+                  document.body.appendChild(overlay);
+                } else {
+                  popup.className = `absolute z-50 p-2.5 pt-1.5 pb-2.5 border border-t-0 rounded-b-xl shadow-lg text-left flex flex-col gap-1 ${style.popup}`;
+                  popup.innerHTML = `
+                    <div class="text-[14px] text-gray-500 font-medium pt-1">Instructor &nbsp; ${details.instructor}</div>
+                    <div class="text-[14px] text-gray-500 font-medium">Fee &nbsp; ${details.fee}</div>
+                    <button class="view-details-btn mt-1.5 w-full text-white text-[14px] font-bold py-1 px-3 rounded-2xl font-[family-name:var(--font-heading)] transition-colors text-center ${style.button}">
+                      View details
+                    </button>
+                  `;
+                }
+
+                document.body.appendChild(popup);
+
+                // Position popup relative to event pill if not mobile
+                if (!isMobile) {
+                  const rect = eventPill.getBoundingClientRect();
+                  const top = rect.bottom + window.scrollY;
+                  const left = rect.left + window.scrollX;
+                  
+                  popup.style.top = `${top}px`;
+                  popup.style.left = `${left}px`;
+                  popup.style.width = `${rect.width}px`;
+                }
+
+                activePopup = popup;
+
+                // View details button action
+                const viewDetailsBtn = popup.querySelector('.view-details-btn');
+                viewDetailsBtn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  closePopup();
+                  window.location.href = './workshop_detail.html';
+                });
+              });
+            } else {
+              cellDiv.className = classes.join(' ');
+              cellDiv.innerHTML = `<span>${cell.day}</span>`;
+            }
+
+            grid.appendChild(cellDiv);
+          });
+
+          // Update subtitle with correct workshop count
+          countLabel.innerHTML = `<span class="text-orange">${workshopCount}</span> Workshop${workshopCount !== 1 ? 's' : ''} in ${monthNames[month]}`;
+        }
+
+        // Navigate to previous month
+        prevBtn.addEventListener('click', () => {
+          currentMonth--;
+          if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+          }
+          renderCalendar(currentYear, currentMonth);
+        });
+
+        // Navigate to next month
+        nextBtn.addEventListener('click', () => {
+          currentMonth++;
+          if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+          }
+          renderCalendar(currentYear, currentMonth);
+        });
+
+        // Initial calendar render on page load
+        renderCalendar(currentYear, currentMonth);
+      })();
+    </script>
+  </body>
+</html>
