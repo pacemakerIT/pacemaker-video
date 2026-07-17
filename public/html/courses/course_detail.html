@@ -895,19 +895,22 @@
           </div>
           <div class="w-full lg:w-[480px] space-y-4">
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -916,7 +919,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -924,7 +927,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -937,19 +940,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -958,7 +964,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -966,7 +972,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -979,19 +985,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -1000,7 +1009,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -1008,7 +1017,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -1475,11 +1484,11 @@
         </div>
       </section>
       <section>
-        <div class="flex items-end gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-8">
           <h2 class="text-3xl font-[family-name:var(--font-heading)] font-bold">
             Student Reviews
           </h2>
-          <div class="flex items-center gap-2 mb-1">
+          <div class="flex items-center gap-2 sm:mb-1">
             <span class="text-xl font-bold">5 / 5</span>
             <div class="flex text-orange">
               <span class="material-icons text-sm">star</span>
