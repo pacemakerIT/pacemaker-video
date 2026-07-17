@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacemaker Workshops | UX Design Workshop</title>
+
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS (with plugins) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries,typography"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02',
+              'orange-hover': '#e04400',
+              'gray-soft': '#f2f4f7',
+              'text-body': '#475467'
+            },
+            fontFamily: {
+              heading: ['var(--font-heading)', 'Poppins', 'sans-serif'],
+              body: ['var(--font-body)', 'Source Sans 3', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            }
+          }
+        }
+      };
+    </script>
+
+    <style>
+      /* You May Also Like - Pacemaker Workshops Card Styling */
+      .workshop-card-detail {
+        width: 100%;
+        height: 384px;
+        border-radius: 0;
+        overflow: hidden;
+        position: relative;
+        background-color: #fff;
+        transition: box-shadow 0.55s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      .workshop-card-detail-wrapper:hover .workshop-card-detail {
+        box-shadow: 0 28px 56px rgba(0, 38, 59, 0.13);
+      }
+      .favorite-heart .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #9ca3af;
+        transition:
+          color 0.3s ease,
+          font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      .favorite-heart:hover .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02;
+      }
+      .favorite-heart--liked .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02 !important;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 30px rgba(0, 38, 59, 0.05);
+      }
+
+      :root {
+        --font-heading: 'Poppins', sans-serif;
+        --font-body: 'Source Sans 3', sans-serif;
+      }
+      html {
+        scroll-behavior: smooth;
+        scrollbar-gutter: stable;
+      }
+      body {
+        font-family: var(--font-body), 'Source Sans 3', sans-serif;
+        line-height: 1.3;
+        word-break: keep-all;
+      }
+
+      /* Accessibility Focus Ring */
+      :focus-visible {
+        outline: 2px solid #00adbd;
+        outline-offset: 2px;
+      }
+      button,
+      a,
+      [role='button'] {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      p a,
+      li a {
+        min-height: auto;
+        min-width: auto;
+      }
+
+      /* Synchronized Header/Footer CSS from course_detail.html */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #ffffff;
+        border-bottom: 1px solid #f2f4f6;
+        padding: 12px 0;
+      }
+      .nav-inner,
+      .page-container {
+        max-width: 1248px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 24px;
+        padding-right: 24px;
+        box-sizing: border-box;
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+      .nav-center {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.925rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        background: none;
+      }
+      .nav-item:hover {
+        background: #f3f4f6;
+        color: #00263b;
+      }
+      .nav-item.is-active {
+        background: none;
+        color: #ff4f02;
+        font-weight: 700;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn-auth {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .btn-login {
+        color: #00263b;
+      }
+      .btn-login:hover {
+        background: #f3f4f6;
+      }
+      .btn-signup {
+        background: #00263b;
+        color: #fff;
+      }
+      .btn-signup:hover {
+        background: #001e2f;
+      }
+      .nav-mobile-top {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-hamburger {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .mobile-nav-panel {
+        display: none;
+      }
+      .mobile-nav-accordion-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition:
+          grid-template-rows 0.3s ease-out,
+          opacity 0.3s ease-out;
+      }
+      .mobile-nav-accordion-panel.is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .mobile-nav-accordion-chevron {
+        transition: transform 0.3s ease;
+      }
+      .mobile-nav-accordion-toggle[aria-expanded='true']
+        .mobile-nav-accordion-chevron {
+        transform: rotate(180deg);
+      }
+      @media (max-width: 768px) {
+        .nav-inner {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .nav-center,
+        .nav-right {
+          display: none;
+        }
+        .nav-mobile-top {
+          display: flex;
+          width: 100%;
+        }
+        .nav-logo {
+          display: none;
+        }
+        .mobile-nav-panel {
+          display: block;
+          width: 100%;
+          flex-basis: 100%;
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          padding-top: 0;
+          pointer-events: none;
+          transition:
+            max-height 0.3s ease-out,
+            opacity 0.25s ease-out,
+            padding-top 0.25s ease-out;
+        }
+        .mobile-nav-panel.is-open {
+          max-height: 42rem;
+          opacity: 1;
+          padding-top: 12px;
+          pointer-events: auto;
+        }
+        .nav-hamburger [data-menu-close] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-open] {
+          display: none;
+        }
+        .nav-hamburger.is-open [data-menu-close] {
+          display: block;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-hamburger,
+        .mobile-nav-panel {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-soft text-navy font-body min-h-screen antialiased">
+    <!-- Accessibility Skip to content Link -->
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+    >
+      Skip to content
+    </a>
+
+    <!-- Synchronized Header from course_detail.html -->
+    <nav>
+      <div class="nav-inner">
+        <!-- Desktop Logo -->
+        <a aria-label="Pacemaker home" class="nav-logo" href="../main.html">
+          <img
+            alt="Pacemaker Logo"
+            src="../../img/logo.webp"
+            style="height: 32px; width: auto; display: block"
+          />
+        </a>
+        <!-- Navigation Menu & Auth (Right-aligned container) -->
+        <div class="flex items-center ml-auto">
+          <div class="nav-center">
+            <a
+              class="nav-item is-active"
+              aria-current="page"
+              href="./workshop_list.html"
+              >Workshops</a
+            >
+            <a class="nav-item" href="../courses/course_list.html"
+              >Online Courses</a
+            >
+            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+          </div>
+          <!-- Auth Links -->
+          <div class="nav-right ml-4">
+            <a class="btn-auth btn-login" href="../main.html">Login</a>
+            <a class="btn-auth btn-signup" href="../main.html">Sign Up</a>
+          </div>
+        </div>
+        <!-- Mobile -->
+        <div class="nav-mobile-top">
+          <a
+            href="../main.html"
+            style="display: block"
+            aria-label="Pacemaker home"
+          >
+            <img
+              alt="Pacemaker Logo"
+              src="../../img/logo.webp"
+              style="height: 28px; width: auto"
+            />
+          </a>
+          <div class="flex items-center gap-2">
+            <button
+              aria-controls="mobile-nav-menu"
+              aria-expanded="false"
+              aria-label="Open menu"
+              class="nav-hamburger"
+              id="mobile-nav-toggle"
+              type="button"
+            >
+              <svg
+                data-menu-open
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="18"
+              >
+                <line x1="3" x2="21" y1="6" y2="6"></line>
+                <line x1="3" x2="21" y1="12" y2="12"></line>
+                <line x1="3" x2="21" y1="18" y2="18"></line>
+              </svg>
+              <svg
+                data-menu-close
+                fill="none"
+                height="18"
+                stroke="#00263b"
+                stroke-linecap="round"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                width="18"
+              >
+                <line x1="6" x2="18" y1="6" y2="18"></line>
+                <line x1="18" x2="6" y1="6" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="mobile-nav-panel" id="mobile-nav-menu">
+          <div class="rounded-none border border-gray-200 bg-white p-3">
+            <div class="border-t border-gray-100 pt-2">
+              <div class="py-1">
+                <a
+                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  href="../main.html"
+                  ><span>Home</span></a
+                >
+              </div>
+              <div class="py-1">
+                <button
+                  type="button"
+                  aria-expanded="false"
+                  class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  data-target="mobile-nav-programs"
+                >
+                  <span>Programs</span>
+                  <svg
+                    class="mobile-nav-accordion-chevron w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m6 9 6 6 6-6"></path>
+                  </svg>
+                </button>
+                <div
+                  class="mobile-nav-accordion-panel"
+                  id="mobile-nav-programs"
+                >
+                  <div class="overflow-hidden">
+                    <div class="flex flex-col gap-1">
+                      <a
+                        aria-current="page"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
+                        href="./workshop_list.html"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >calendar_month</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-orange mb-0.5"
+                              >Workshops</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Live sessions, practical events, and real-world
+                            feedback.
+                          </p>
+                        </div>
+                      </a>
+                      <a
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../courses/course_list.html"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >play_lesson</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              >Online Courses</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Guided lessons to help with resumes, interviews, and
+                            career moves.
+                          </p>
+                        </div>
+                      </a>
+                      <a
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../main.html#ebookCarousel"
+                      >
+                        <div
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                        >
+                          <span class="material-symbols-outlined text-[20px]"
+                            >menu_book</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <div class="flex items-center justify-between">
+                            <span
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              >E-books</span
+                            >
+                            <span
+                              class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                              >chevron_right</span
+                            >
+                          </div>
+                          <p
+                            class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          >
+                            Quick reads with practical tips for searching and
+                            applying with confidence.
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="py-1">
+                <a
+                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                  href="../main.html"
+                  ><span>Login</span></a
+                >
+              </div>
+              <div class="pt-3">
+                <a
+                  class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#001e2f]"
+                  href="../main.html"
+                  >Sign Up</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden border-b border-gray-100 flex items-center py-12 lg:py-0"
+    >
+      <!-- Background Image -->
+      <img
+        alt="Background"
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        src="../../img/video-bg.png"
+      />
+      <!-- Gradient Overlay for Text Readability -->
+      <div
+        class="absolute inset-0 bg-navy/70 lg:bg-gradient-to-r lg:from-navy/95 lg:via-navy/75 lg:to-navy/20 z-[1]"
+      ></div>
+
+      <div
+        class="page-container grid grid-cols-1 lg:grid-cols-3 gap-12 items-center relative z-10 w-full"
+      >
+        <!-- Left: Hero Text & Information -->
+        <div class="lg:col-span-2 space-y-8 z-10">
+          <p
+            class="inline-flex items-center gap-2 rounded-full bg-teal/20 text-teal px-6 py-3 text-[0.82rem] md:text-[0.9rem] font-bold uppercase tracking-[0.2em] font-[family-name:var(--font-heading)]"
+          >
+            Open Workshop
+          </p>
+          <div class="space-y-4">
+            <h1
+              class="text-[28px] md:text-[40px] font-extrabold font-[family-name:var(--font-heading)] text-white leading-[1.3] tracking-tight"
+            >
+              UX Design Workshop: <br class="hidden md:block" />
+              <span class="text-orange">Turning Dreams into Reality</span>
+            </h1>
+            <p
+              class="text-[1.125rem] md:text-[1.2rem] text-gray-200 font-medium leading-relaxed max-w-2xl"
+            >
+              Portfolio strategy and networking for designers looking to launch
+              their careers in the U.S. and Canada.
+            </p>
+          </div>
+
+          <!-- Notice bar (Moved from feature image overlay) -->
+          <div class="flex items-center gap-3 text-white">
+            <span class="material-symbols-outlined text-orange text-3xl"
+              >info</span
+            >
+            <span class="text-sm md:text-base font-semibold"
+              >This is a small group session with real-time feedback.</span
+            >
+          </div>
+        </div>
+
+        <!-- Right: Floating Info Card -->
+        <div class="lg:col-span-1 z-10">
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-6 relative overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <div
+              class="flex justify-between items-start border-b border-gray-100 pb-5"
+            >
+              <div>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold text-orange bg-orange/10 rounded"
+                  >Registration closes in 7 days</span
+                >
+                <h3
+                  class="text-[1.5rem] font-bold text-navy mt-2 font-[family-name:var(--font-heading)]"
+                >
+                  Registration
+                </h3>
+              </div>
+              <div class="text-right">
+                <span
+                  class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+                  >$20.00</span
+                >
+                <span class="text-xs text-text-body font-semibold block"
+                  >CAD / per person</span
+                >
+              </div>
+            </div>
+
+            <!-- Quick Metadata -->
+            <div class="space-y-4 text-[0.875rem] font-semibold text-text-body">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >calendar_today</span
+                >
+                <span>Tuesday, May 20, 2025 · 7:00 PM</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >location_on</span
+                >
+                <span>North York seminar room, Toronto</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >group</span
+                >
+                <span>Limit 15 people · 4 spots left</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-orange text-xl"
+                  >cafe</span
+                >
+                <span>Snacks, specialty coffee, and catering included</span>
+              </div>
+            </div>
+
+            <!-- CTA Buttons (Applying Button Radius = rounded-2xl only) -->
+            <div class="pt-4 flex gap-3 items-center">
+              <button
+                class="flex-1 inline-flex items-center justify-center gap-1 md:gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-sm md:text-lg font-[family-name:var(--font-heading)] px-4 py-3 md:px-8 md:py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
+              >
+                <span>Register now</span>
+                <span class="material-symbols-outlined">arrow_right_alt</span>
+              </button>
+
+              <button
+                id="like-btn"
+                class="favorite-heart w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl transition-all shadow-sm hover:-translate-y-[3px] hover:bg-orange/5 shrink-0"
+              >
+                <span class="material-symbols-outlined text-2xl" id="like-icon"
+                  >favorite</span
+                >
+              </button>
+            </div>
+
+            <p class="text-center text-xs text-text-body font-semibold">
+              * You will receive your entry ticket and directions by email right
+              after payment.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="page-container py-16 md:py-24 space-y-20">
+      <!-- Top Section: About & FAQ (Side by Side) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+        <!-- Left: About the Workshop -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="section-header text-left mb-8">
+            <span
+              class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]"
+            >
+              ABOUT
+            </span>
+            <h2
+              class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight"
+            >
+              How the Workshop Works
+            </h2>
+          </div>
+
+          <div
+            class="prose prose-navy max-w-none text-text-body font-medium leading-relaxed space-y-6"
+          >
+            <p
+              class="text-[1.125rem] text-navy font-bold font-[family-name:var(--font-heading)]"
+            >
+              "Everyone has unique strengths and potential."
+            </p>
+            <p>
+              Build your UX design career in Toronto. Go beyond basic theory.
+              Join career mentor Sujin Ku, a University of Toronto graduate, to
+              discover your unique strengths and show them in your portfolio.
+            </p>
+            <p>
+              Learn industry insights, network with local designers, and
+              practice storytelling to stand out in your job interviews.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: FAQ Accordions -->
+        <div class="lg:col-span-1 space-y-8">
+          <h2
+            class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+          >
+            FAQ
+          </h2>
+
+          <!-- Accordion Cards must be rounded-none -->
+          <div class="space-y-4">
+            <!-- Accordion 1 -->
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
+                <span>What should I bring?</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
+              </button>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  Please bring your laptop, portfolio or resume link, and
+                  something to take notes with for the real-time feedback and
+                  review sessions.
+                </p>
+              </div>
+            </div>
+
+            <!-- Accordion 2 -->
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
+                <span>Is the workshop in English?</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
+              </button>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  The workshop is mostly in Korean. However, we will use English
+                  for mock interview practice, keyword selection, and specific
+                  feedback to prepare you for the North American job market.
+                </p>
+              </div>
+            </div>
+
+            <!-- Accordion 3 -->
+            <div
+              class="bg-white rounded-none border border-gray-100 shadow-card overflow-hidden"
+            >
+              <button
+                class="w-full p-5 text-left font-bold text-navy flex items-center justify-between hover:bg-gray-soft transition-colors accordion-toggle font-[family-name:var(--font-heading)]"
+              >
+                <span>What is the refund policy?</span>
+                <span
+                  class="material-symbols-outlined transition-transform duration-300"
+                  >expand_more</span
+                >
+              </button>
+              <div
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-soft/50"
+              >
+                <p
+                  class="p-5 text-sm text-text-body font-medium border-t border-gray-100 leading-relaxed"
+                >
+                  You can get a full refund if you cancel at least 3 days before
+                  the workshop. Cancellations after that are not refundable
+                  because of the limited seating.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notice Banner -->
+          <div
+            class="p-6 bg-orange/10 rounded-none border border-orange/20 text-orange space-y-2"
+          >
+            <h4
+              class="font-bold flex items-center gap-2 font-[family-name:var(--font-heading)]"
+            >
+              <span class="material-symbols-outlined"
+                >notification_important</span
+              >
+              Important details
+            </h4>
+            <p class="text-xs font-semibold leading-relaxed text-navy">
+              Please use public transit (connected to North York Center Station)
+              as parking is very limited. We recommend following local health
+              guidelines for a safe networking environment.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Section: Curriculum Details (Full Width) -->
+      <div class="space-y-8 pt-12 border-t border-gray-100">
+        <div class="section-header text-left">
+          <span
+            class="inline-block bg-teal/10 text-teal text-xs font-bold uppercase tracking-[0.18em] py-2 px-5 rounded-full mb-5 font-[family-name:var(--font-heading)]"
+          >
+            TIMELINE
+          </span>
+          <h2
+            class="text-3xl font-bold text-navy mb-4 font-[family-name:var(--font-heading)] leading-tight tracking-tight"
+          >
+            Curriculum Details
+          </h2>
+        </div>
+
+        <!-- Stack layout to show one card per row -->
+        <div class="space-y-6">
+          <!-- Session 1 -->
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 01</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              UX Design Foundations & Canada Job Market Trend
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Analyze key hiring trends for UX designers in North America.
+              Compare the skills that junior and senior designers need to get
+              hired in Canada.
+            </p>
+          </div>
+
+          <!-- Session 2 -->
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 02</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Portfolio Deep Dive & Case Study
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Review the layout and case studies of successful global
+              portfolios. Get a strategic framework that you can apply to your
+              own portfolio right away.
+            </p>
+          </div>
+
+          <!-- Session 3 -->
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 03</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Interactive Design & Critique Session
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Practice UX scenario analysis and wireframe design. Get 1:1 live
+              feedback from your mentor to improve your work on the spot.
+            </p>
+          </div>
+
+          <!-- Session 4 -->
+          <div
+            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+          >
+            <span
+              class="text-xs font-bold text-orange uppercase tracking-[0.18em] font-[family-name:var(--font-heading)]"
+              >Session 04</span
+            >
+            <h3
+              class="text-lg font-bold text-navy font-[family-name:var(--font-heading)] leading-tight"
+            >
+              Networking & Mock Interview
+            </h3>
+            <p class="text-sm text-text-body font-medium leading-relaxed">
+              Enjoy snacks and drinks while networking with other attendees and
+              mentors. We will share common UX interview questions and tips for
+              the Canadian job market.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Section: Host Profile (Full Width) / Synchronized from course_detail.html -->
+      <section class="pt-20 border-t border-gray-100">
+        <h2
+          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12 text-navy"
+        >
+          Instructor Profile
+        </h2>
+        <div class="overflow-hidden w-full relative">
+          <div
+            id="instructor-slider"
+            class="flex transition-transform duration-500 ease-in-out w-[300%]"
+          >
+            <!-- Slide 1 -->
+            <div
+              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
+            >
+              <div class="w-full lg:w-[680px]">
+                <h3 class="text-2xl font-bold mb-4 text-navy">Raphael. Lee</h3>
+                <p class="text-text-body mb-8 leading-relaxed">
+                  I've been managing multicultural teams for over 19 years. And
+                  blesses to lead and be part of the opening teams in global
+                  projects in various countries. Growing personal &amp;
+                  professional goals by sharing visions with teammates became a
+                  part of my passion and a long-term goal in my life.
+                </p>
+                <h4 class="font-bold mb-4 text-navy">Experience</h4>
+                <ul class="space-y-4 text-sm">
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0">2019 ~</span>
+                    <span>Managing Director at Pacemaker</span>
+                  </li>
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0"
+                      >2015 ~ 2019</span
+                    >
+                    <span>Director of Operations at Metanet</span>
+                  </li>
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0"
+                      >2009 ~ 2014</span
+                    >
+                    <span
+                      >Business Development Manager at People In Biz Corp.</span
+                    >
+                  </li>
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0"
+                      >2004 ~ 2008</span
+                    >
+                    <span>Purchaser at InterContinental Hotels Group</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="w-full lg:w-[480px] flex flex-col">
+                <div
+                  class="bg-white border border-gray-100 flex-1 min-h-[400px] flex items-center justify-center rounded-none shadow-card overflow-hidden"
+                >
+                  <img
+                    src="../../img/raphael.png"
+                    alt="Raphael Lee Profile"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div
+              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
+            >
+              <div class="w-full lg:w-[680px]">
+                <h3 class="text-2xl font-bold mb-4 text-navy">Linda. Kim</h3>
+                <p class="text-text-body mb-8 leading-relaxed">
+                  Passionate about helping candidates craft the perfect resume.
+                  With 10+ years of HR experience in top tech firms across North
+                  America, my goal is to highlight your unique strengths and
+                  guide you seamlessly through the recruitment process.
+                </p>
+                <h4 class="font-bold mb-4 text-navy">Experience</h4>
+                <ul class="space-y-4 text-sm">
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0">2021 ~</span>
+                    <span>Lead Career Coach at TechBridge</span>
+                  </li>
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0"
+                      >2016 ~ 2021</span
+                    >
+                    <span>HR Manager at GlobalTech</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="w-full lg:w-[480px] flex flex-col">
+                <div
+                  class="bg-white border border-gray-100 flex-1 min-h-[400px] flex items-center justify-center rounded-none shadow-card overflow-hidden"
+                >
+                  <img
+                    src="../../img/linda.png"
+                    alt="Linda Kim Profile"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div
+              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
+            >
+              <div class="w-full lg:w-[680px]">
+                <h3 class="text-2xl font-bold mb-4 text-navy">Heelee. Park</h3>
+                <p class="text-text-body mb-8 leading-relaxed">
+                  Specialized in software development career transitions. By
+                  building your confidence through targeted mock interviews and
+                  deep dives into coding challenges, I ensure you stand out in
+                  the competitive tech market.
+                </p>
+                <h4 class="font-bold mb-4 text-navy">Experience</h4>
+                <ul class="space-y-4 text-sm">
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0">2020 ~</span>
+                    <span>Senior Developer at CloudNative</span>
+                  </li>
+                  <li class="flex gap-4 sm:gap-8">
+                    <span class="text-text-body/60 w-24 shrink-0"
+                      >2015 ~ 2020</span
+                    >
+                    <span>Software Engineer at Innovate Ltd</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="w-full lg:w-[480px] flex flex-col">
+                <div
+                  class="bg-white border border-gray-100 flex-1 min-h-[400px] flex items-center justify-center rounded-none shadow-card overflow-hidden"
+                >
+                  <img
+                    src="../../img/heelee.png"
+                    alt="Heelee Park Profile"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center gap-3 mt-16" id="instructor-dots">
+          <button
+            aria-label="Slide 1"
+            data-active="true"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
+          ></button>
+          <button
+            aria-label="Slide 2"
+            data-active="false"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
+          ></button>
+          <button
+            aria-label="Slide 3"
+            data-active="false"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#98a2b3] data-[active=false]:dark:bg-gray-600 data-[active=false]:hover:bg-[#475467] data-[active=false]:dark:hover:bg-gray-400"
+          ></button>
+        </div>
+        <script>
+          (function () {
+            const slider = document.getElementById('instructor-slider');
+            const dots = Array.from(
+              document.getElementById('instructor-dots').children
+            );
+            let isDragging = false;
+            let startPos = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+            let animationID = 0;
+            let currentIndex = 0;
+
+            function setSliderPosition() {
+              slider.style.transform = `translateX(${currentTranslate}%)`;
+            }
+
+            function updateDots(index) {
+              dots.forEach((dot, i) => {
+                dot.setAttribute('data-active', i === index ? 'true' : 'false');
+              });
+            }
+
+            function animation() {
+              setSliderPosition();
+              if (isDragging) requestAnimationFrame(animation);
+            }
+
+            function dragStart(e) {
+              if (e.type === 'touchstart') {
+                startPos = e.touches[0].clientX;
+              } else {
+                startPos = e.clientX;
+                e.preventDefault();
+              }
+              isDragging = true;
+              animationID = requestAnimationFrame(animation);
+              slider.classList.remove('duration-500');
+              slider.classList.add('cursor-grabbing');
+            }
+
+            function dragMove(e) {
+              if (isDragging) {
+                const currentPosition =
+                  e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+                const slideWidth = slider.offsetWidth / 3;
+                const diff =
+                  ((currentPosition - startPos) / slideWidth) * 33.3333;
+                currentTranslate = prevTranslate + diff;
+              }
+            }
+
+            function dragEnd() {
+              if (!isDragging) return;
+              isDragging = false;
+              cancelAnimationFrame(animationID);
+              slider.classList.add('duration-500');
+              slider.classList.remove('cursor-grabbing');
+
+              const movedBy = currentTranslate - prevTranslate;
+              if (movedBy < -5 && currentIndex < 2) currentIndex += 1;
+              if (movedBy > 5 && currentIndex > 0) currentIndex -= 1;
+
+              prevTranslate = currentIndex * -33.3333;
+              currentTranslate = prevTranslate;
+              setSliderPosition();
+              updateDots(currentIndex);
+            }
+
+            slider.addEventListener('touchstart', dragStart, { passive: true });
+            slider.addEventListener('touchend', dragEnd);
+            slider.addEventListener('touchmove', dragMove, { passive: true });
+
+            slider.addEventListener('mousedown', dragStart);
+            window.addEventListener('mouseup', dragEnd);
+            window.addEventListener('mousemove', dragMove);
+
+            dots.forEach((dot, index) => {
+              dot.onclick = () => {
+                currentIndex = index;
+                prevTranslate = currentIndex * -33.3333;
+                currentTranslate = prevTranslate;
+                slider.classList.add('duration-500');
+                setSliderPosition();
+                updateDots(currentIndex);
+              };
+            });
+          })();
+        </script>
+      </section>
+      <!-- Suggested Related Content Section -->
+      <section class="border-t border-gray-100 pt-20 space-y-8">
+        <div class="flex items-center justify-between">
+          <h2
+            class="text-2xl md:text-3xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+          >
+            You May Also Like
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Card 1 -->
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow border-t-[10px] border-orange"
+            >
+              <div
+                class="relative h-full bg-cover bg-center overflow-hidden"
+                style="
+                  background-image:
+                    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.45)),
+                    url('../../img/workshop-1.png');
+                "
+              >
+                <button
+                  type="button"
+                  class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                  aria-label="Save"
+                >
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
+                </button>
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
+                  <div>
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Networking</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
+                      Mindset training for success
+                    </h3>
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
+                        Date · May 20, 2025 · 7 PM
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
+                        Where · North York center
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
+                        Host · Sujin Ku
+                      </p>
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
+                        “Stories that turn ideas into plans”
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
+                    Sign up
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-orange tracking-wide"
+            >
+              Live now
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow opacity-[0.85] saturate-50 border-t-[10px] border-slate-400"
+            >
+              <div
+                class="relative h-full bg-cover bg-center overflow-hidden"
+                style="
+                  background-image:
+                    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.45)),
+                    url('../../img/workshop-image.png');
+                "
+              >
+                <button
+                  type="button"
+                  class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                  aria-label="Saved"
+                >
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
+                </button>
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
+                  <div>
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Networking</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
+                      Meet us tonight
+                    </h3>
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
+                        Date · May 20, 2025 · 7 PM
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
+                        Where · North York center
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
+                        Host · Sujin Ku
+                      </p>
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
+                        “Stories that turn ideas into plans”
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
+                    Sign up
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-slate-400 tracking-wide"
+            >
+              Ended
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div
+            class="workshop-card-detail-wrapper flex flex-col gap-5 group/card"
+          >
+            <div
+              class="workshop-card-detail card-shadow border-t-[10px] border-navy"
+            >
+              <div
+                class="relative h-full bg-cover bg-center overflow-hidden"
+                style="
+                  background-image:
+                    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.45)),
+                    url('../../img/workshop-3.png');
+                "
+              >
+                <button
+                  type="button"
+                  class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                  aria-label="Save"
+                >
+                  <span class="material-symbols-outlined text-xl"
+                    >favorite</span
+                  >
+                </button>
+                <div
+                  class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between text-white"
+                >
+                  <div>
+                    <span
+                      class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase mb-2 md:mb-3 inline-block"
+                      >Career switch</span
+                    >
+                    <h3
+                      class="text-xl md:text-2xl font-bold font-[family-name:var(--font-heading)] leading-snug mt-1"
+                    >
+                      English resumes built to get interviews
+                    </h3>
+                    <div
+                      class="mt-3 md:mt-4 space-y-1.5 opacity-90 text-[0.8rem] md:text-[0.85rem]"
+                    >
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >calendar_today</span
+                        >
+                        Date · May 20, 2025 · 7 PM
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >location_on</span
+                        >
+                        Where · North York center
+                      </p>
+                      <p class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-base"
+                          >person</span
+                        >
+                        Host · Sujin Ku
+                      </p>
+                      <p
+                        class="text-[0.78rem] md:text-[0.82rem] opacity-85 font-medium break-words italic mt-1 md:mt-2"
+                      >
+                        "Stories that turn ideas into plans"
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-sm md:text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
+                  >
+                    Sign up
+                    <span class="material-symbols-outlined text-xl"
+                      >arrow_forward</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="workshop-status text-center font-bold text-[1.05rem] text-navy tracking-wide"
+            >
+              Coming soon
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Registration CTA Section -->
+      <section id="apply" class="scroll-mt-32 border-t border-gray-100 pt-20">
+        <div class="mx-auto w-full max-w-[1200px]">
+          <div
+            class="relative w-full overflow-hidden rounded-none bg-navy p-10 text-center text-white md:p-14 border border-gray-100 shadow-card"
+          >
+            <div
+              class="absolute right-0 top-0 h-64 w-64 translate-x-32 -translate-y-32 rounded-full bg-teal/10"
+            ></div>
+            <div class="relative z-10">
+              <h2
+                class="mb-6 font-[family-name:var(--font-heading)] text-3xl md:text-4xl font-extrabold italic !text-white leading-tight"
+              >
+                Join UX Design Workshop:<br class="hidden md:inline" />
+                <span class="text-orange">Turning Dreams into Reality</span>
+              </h2>
+              <p
+                class="mx-auto mb-4 max-w-lg text-sm font-bold uppercase tracking-[0.2em] text-white/70 md:text-base"
+              >
+                Tuesday, May 20, 2025 · 7:00 PM
+              </p>
+              <div
+                class="mb-6 inline-block rounded-none border border-white/10 p-6 md:p-8 bg-navy/40 backdrop-blur-sm"
+              >
+                <p
+                  class="font-[family-name:var(--font-heading)] text-5xl md:text-6xl font-bold tracking-tight text-teal"
+                >
+                  $20<span class="ml-2 text-xl font-normal italic text-white/50"
+                    >CAD</span
+                  >
+                </p>
+                <p class="text-xs md:text-sm text-white/70 mt-2 font-medium">
+                  Admission fee · Offline seminar & live Q&A
+                </p>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="inline-flex items-center justify-center rounded-2xl bg-orange px-12 py-5 font-[family-name:var(--font-heading)] text-xl font-extrabold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-transform hover:scale-[1.02] hover:bg-orange-hover"
+                >
+                  Register now
+                </button>
+              </div>
+              <p class="mt-4 text-xs text-white/50 font-semibold">
+                North York seminar room, Toronto (Offline Event)
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Sticky Bottom Bar for Mobile Devices -->
+    <div
+      class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 p-4 flex md:hidden items-center justify-between shadow-lg"
+    >
+      <div>
+        <p class="text-xs text-text-body font-bold">UX Design Workshop</p>
+        <span
+          class="text-lg font-extrabold text-navy font-[family-name:var(--font-heading)]"
+          >$20.00
+          <span class="text-xs text-text-body font-normal">CAD</span></span
+        >
+      </div>
+      <button
+        class="px-6 py-3 font-bold text-white bg-orange hover:bg-orange-hover rounded-2xl shadow-md transition-colors flex items-center justify-center font-[family-name:var(--font-heading)]"
+      >
+        Register
+      </button>
+    </div>
+
+    <!-- Synchronized Footer from course_detail.html -->
+    <footer>
+      <!-- Main footer -->
+      <div
+        class="bg-white border-t border-[#eaecf0] pt-[80px] pb-[120px] md:pb-[60px]"
+      >
+        <div class="page-container">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+            <!-- Left: Logo + Social -->
+            <div>
+              <div class="mb-7">
+                <img
+                  src="../../img/logo.webp"
+                  alt="Pacemaker Logo"
+                  class="h-8 w-auto block"
+                />
+              </div>
+              <p
+                class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4"
+              >
+                Social
+              </p>
+              <div class="flex gap-3 flex-wrap">
+                <a
+                  href="../main.html"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="Instagram"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                </a>
+                <a
+                  href="../main.html"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="Facebook"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="../main.html"
+                  class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                  aria-label="YouTube"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"
+                    />
+                    <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <!-- Right: Contact -->
+            <div class="w-full md:ml-auto md:w-fit md:text-right">
+              <p
+                class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4 md:text-right"
+              >
+                Contact
+              </p>
+              <ul class="list-none flex flex-col gap-3 md:items-end">
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path
+                      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    />
+                    <polyline points="22,6 12,13 2,6" />
+                  </svg>
+                  <a
+                    href="mailto:Hello@pacemakerca.com"
+                    class="text-[#344054] no-underline hover:text-navy transition-colors"
+                    >Hello@pacemakerca.com</a
+                  >
+                </li>
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                    />
+                  </svg>
+                  <a
+                    href="tel:+16476120523"
+                    class="text-[#344054] no-underline hover:text-navy transition-colors"
+                    >+1 647-612-0523</a
+                  >
+                </li>
+                <li
+                  class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#667085"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    class="flex-shrink-0"
+                  >
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span>Toronto, ON, Canada</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-[0.9rem] text-[#98a2b3]">
+            © 2026 Pacemaker. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Interactive JavaScript code -->
+    <script>
+      // 1. Mobile navigation Drawer toggle & click outside (Synchronized from course_detail.html)
+      (function mobileNav() {
+        var menuToggle = document.getElementById('mobile-nav-toggle');
+        var menu = document.getElementById('mobile-nav-menu');
+        if (!menuToggle || !menu) return;
+
+        function setMenuOpen(isOpen) {
+          menu.classList.toggle('is-open', isOpen);
+          menuToggle.classList.toggle('is-open', isOpen);
+          menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          menuToggle.setAttribute(
+            'aria-label',
+            isOpen ? 'Close menu' : 'Open menu'
+          );
+        }
+
+        menuToggle.addEventListener('click', function () {
+          setMenuOpen(!menu.classList.contains('is-open'));
+        });
+
+        document.addEventListener('click', function (event) {
+          if (!menu.classList.contains('is-open')) return;
+          if (menu.contains(event.target) || menuToggle.contains(event.target))
+            return;
+          setMenuOpen(false);
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') {
+            setMenuOpen(false);
+          }
+        });
+
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) {
+            setMenuOpen(false);
+          }
+        });
+
+        Array.prototype.forEach.call(
+          document.querySelectorAll('.mobile-nav-accordion-toggle'),
+          function (toggle) {
+            var panelId = toggle.getAttribute('data-target');
+            var panel = panelId ? document.getElementById(panelId) : null;
+            if (!panel) return;
+
+            toggle.addEventListener('click', function () {
+              var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+              panel.classList.toggle('is-open', !isOpen);
+            });
+          }
+        );
+      })();
+
+      // 2. Interactive Accordions (FAQs)
+      const toggles = document.querySelectorAll('.accordion-toggle');
+      toggles.forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+          const panel = toggle.nextElementSibling;
+          const icon = toggle.querySelector('.material-symbols-outlined');
+
+          if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+            icon.style.transform = 'rotate(0deg)';
+          } else {
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+            icon.style.transform = 'rotate(180deg)';
+          }
+        });
+      });
+
+      // 3. Heart (Like) button toggle interaction
+      const likeBtn = document.getElementById('like-btn');
+      let isLiked = false;
+
+      likeBtn.addEventListener('click', () => {
+        isLiked = !isLiked;
+        likeBtn.classList.toggle('favorite-heart--liked', isLiked);
+      });
+    </script>
+  </body>
+</html>
