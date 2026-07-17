@@ -4,16 +4,23 @@ import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 
-export default function SignUpModalButton() {
+export default function SignUpModalButton({
+  className
+}: {
+  className?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800"
+        className={
+          className ||
+          'flex items-center gap-2 text-pace-base font-normal text-pace-gray-700 hover:text-pace-orange-800'
+        }
       >
-        회원가입
+        Sign Up
       </button>
 
       <Dialog

@@ -3,7 +3,6 @@ import * as React from 'react';
 import Card from './card';
 import { OnlineCards } from '@/types/online';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '../ui/button';
 import { ItemType } from '@prisma/client';
 
 interface CardContainerProps {
@@ -19,61 +18,86 @@ export default function CardContainer({
 }: CardContainerProps) {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [offsetX, setOffsetX] = React.useState(0);
-
-  const cardWidth = 588;
+  const [cardWidth, setCardWidth] = React.useState(384);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [isTablet, setIsTablet] = React.useState(false);
   const gap = 24;
+  const visibleCardCount = isMobile ? 1 : 3;
+  const maxIndex = Math.max(cards.length - visibleCardCount, 0);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const mobile = width < 768;
+      const tablet = width >= 768 && width < 1248;
+
+      setIsMobile(mobile);
+      setIsTablet(tablet);
+
+      if (mobile) {
+        // Mobile: Show only one card (full width minus horizontal padding)
+        const newWidth = width - 48; // 24px padding on each side
+        setCardWidth(newWidth);
+      } else {
+        setCardWidth(384);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const totalMovement = cardWidth + gap;
 
+  // Sync offsetX when cardWidth or currentIndex changes (especially on resize)
+  React.useEffect(() => {
+    setOffsetX(currentIndex * totalMovement);
+  }, [currentIndex, totalMovement]);
+
   const handlePrev = () => {
-    // currentIndex를 기준으로 새로운 offsetX 계산
-    const newIndex = currentIndex - 1;
-    if (newIndex >= 0) {
-      setCurrentIndex(newIndex);
-      setOffsetX(newIndex * totalMovement);
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
   const handleNext = () => {
-    // currentIndex를 기준으로 새로운 offsetX 계산
-    const newIndex = currentIndex + 1;
-    if (newIndex < cards.length) {
-      setCurrentIndex(newIndex);
-      setOffsetX(newIndex * totalMovement);
+    if (currentIndex < maxIndex) {
+      setCurrentIndex((prev) => prev + 1);
     }
   };
 
   if (layout === 'grid') {
     return (
-      <div className="justify-center grid grid-cols-4 md:grid-cols-2 gap-6 w-full py-4">
+      <div className="grid w-full grid-cols-1 gap-x-12 gap-y-16 py-4 md:grid-cols-2">
         {cards.map((card) => (
           <Card key={card.id} {...card} itemType={itemType} />
         ))}
       </div>
     );
   }
-  // 왼쪽 화살표: 첫 번째 카드가 완전히 보일 때부터 표시
-  const showLeftButton = currentIndex > 0;
-  // 오른쪽 화살표: 마지막 카드가 중앙 2개 카드 영역의 2번째 위치에 완전히 보일 때까지 표시
-  const showRightButton = currentIndex < cards.length - 2;
 
   return (
-    <div className="relative w-full">
-      {/* {currentIndex > 0 && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute left-0 top-[290px] -translate-y-1/2 -translate-x-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-14 h-14"
-          onClick={handlePrev}
+    <div className="relative w-full" data-testid="horizontal-container">
+      {/* Prev Button */}
+      {currentIndex > 0 && (
+        <button
           aria-label="previous"
+          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-[background-color,color,transform] duration-[400ms] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input absolute left-0 top-[230px] -translate-y-1/2 -translate-x-1/2 z-50 h-14 w-14 rounded-full bg-white text-navy shadow-2xl hover:bg-orange hover:text-white ${
+            isMobile ? 'left-2' : ''
+          }`}
+          onClick={handlePrev}
         >
           <ChevronLeft className="h-6 w-6" />
-        </Button>
-      )} */}
+        </button>
+      )}
 
-      {/* 구조 변경: 뷰포트 역할을 하는 외부 div와 실제 움직이는 내부 div로 분리 */}
-      <div className="w-[1200px]">
+      {/* Viewport Container */}
+      <div
+        className={`${isMobile ? 'w-full overflow-hidden' : 'min-w-[1200px]'}`}
+      >
+        {/* Actual Moving Track */}
         <div
-          className="flex gap-6 pb-4 transition-transform duration-500 ease-in-out"
+          className={`flex gap-6 pb-4 transition-transform duration-500 ease-in-out ${isMobile ? 'px-6' : ''}`}
           style={{ transform: `translateX(-${offsetX}px)` }}
         >
           {cards.map((card) => (
@@ -88,32 +112,21 @@ export default function CardContainer({
         </div>
       </div>
 
-      {/* 왼쪽 화살표 - 중앙 첫 카드 시작 */}
-      {showLeftButton && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute -left-5 top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-lg hover:bg-gray-50 w-12 h-12 border-gray-200"
-          onClick={handlePrev}
-          aria-label="Go to Previous Page"
-          title="Go to Previous Page"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-
-      {/* 오른쪽 화살표 - 중앙 마지막 카드 끝 */}
-      {showRightButton && (
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute md:right-[calc(100%-1225px)] top-[290px] -translate-y-1/2 z-10 bg-white rounded-full shadow-md hover:bg-gray-100 w-12 h-12"
+      {/* Next Button */}
+      {currentIndex < maxIndex && (
+        <button
+          aria-label="next"
+          className={`inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-[background-color,color,transform] duration-[400ms] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input absolute top-[230px] -translate-y-1/2 z-50 h-14 w-14 rounded-full bg-white text-navy shadow-2xl hover:bg-orange hover:text-white ${
+            isMobile
+              ? '-right-4'
+              : isTablet
+                ? 'right-0 translate-x-1/2'
+                : 'right-[calc(100%-1225px)]'
+          }`}
           onClick={handleNext}
-          aria-label="Go to Next Page"
-          title="Go to Next Page"
         >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
+          <ChevronRight className="h-6 w-6" />
+        </button>
       )}
     </div>
   );

@@ -1,10 +1,12 @@
 'use client';
-import { useState } from 'react';
 import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import { resolveImageSrc } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
 import { CustomBadge } from '@/components/common/custom-badge';
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { useUserContext } from '@/app/context/user-context';
+import { toast } from 'sonner';
 
 interface RelatedContentCardProps {
   itemId: string;
@@ -25,7 +27,12 @@ export default function RelatedContentCard({
   thumbnailUrl,
   thumbnail
 }: RelatedContentCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
+  const itemType = ItemType.COURSE;
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+  const { user } = useUserContext();
+  const isLiked = favorites.some(
+    (f) => f.itemId === itemId && f.itemType === itemType
+  );
 
   const handleCardClick = () => {
     if (linkUrl) {
@@ -38,8 +45,21 @@ export default function RelatedContentCard({
   const imageSrc = resolveImageSrc({
     thumbnail,
     thumbnailUrl,
-    itemType: ItemType.COURSE // Default to COURSE for related items
+    itemType
   });
+
+  const toggleLike = () => {
+    if (!user?.id) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (isLiked) {
+      removeFavorite(itemId, itemType);
+    } else {
+      addFavorite(itemId, itemType);
+    }
+  };
 
   return (
     <div className="w-full cursor-pointer font-normal">
@@ -54,7 +74,7 @@ export default function RelatedContentCard({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            setIsLiked(!isLiked);
+            toggleLike();
           }}
         >
           <Heart
