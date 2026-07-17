@@ -101,6 +101,7 @@
       html {
         scroll-behavior: smooth;
         scrollbar-gutter: stable;
+        scroll-padding-top: 80px;
       }
       body {
         font-family: var(--font-body), 'Source Sans 3', sans-serif;
@@ -579,7 +580,7 @@
           </p>
           <div class="space-y-4">
             <h1
-              class="text-[40px] font-extrabold font-[family-name:var(--font-heading)] text-white leading-[1.3] tracking-tight"
+              class="text-2xl sm:text-3xl md:text-[40px] font-extrabold font-[family-name:var(--font-heading)] text-white leading-[1.3] tracking-tight"
             >
               UX Design Workshop: <br />
               <span class="text-orange">Turning Dreams into Reality</span>
@@ -606,30 +607,30 @@
         <!-- Right: Floating Info Card -->
         <div class="lg:col-span-1 z-10">
           <div
-            class="bg-white rounded-none p-8 border border-gray-100 shadow-card space-y-6 relative overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
+            class="bg-white rounded-none p-6 sm:p-8 border border-gray-100 shadow-card space-y-6 relative overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)]"
           >
-            <div
-              class="flex justify-between items-start border-b border-gray-100 pb-5"
-            >
+            <div class="border-b border-gray-100 pb-5 space-y-3">
               <div>
                 <span
-                  class="px-2 py-0.5 text-[10px] font-bold text-orange bg-orange/10 rounded"
+                  class="inline-block px-2 py-0.5 text-[10px] font-bold text-orange bg-orange/10 rounded whitespace-nowrap"
                   >Registration closes in 7 days</span
                 >
+              </div>
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-4">
                 <h3
-                  class="text-[1.5rem] font-bold text-navy mt-2 font-[family-name:var(--font-heading)]"
+                  class="text-[1.5rem] font-bold text-navy font-[family-name:var(--font-heading)]"
                 >
                   Registration
                 </h3>
-              </div>
-              <div class="text-right">
-                <span
-                  class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
-                  >$20.00</span
-                >
-                <span class="text-xs text-text-body font-semibold block"
-                  >CAD / per person</span
-                >
+                <div class="text-left sm:text-right shrink-0">
+                  <span
+                    class="text-2xl font-extrabold font-[family-name:var(--font-heading)] text-navy"
+                    >$20.00</span
+                  >
+                  <span class="text-xs text-text-body font-semibold inline-block sm:block sm:ml-0"
+                    >CAD / per person</span
+                  >
+                </div>
               </div>
             </div>
 
@@ -664,10 +665,10 @@
             <!-- CTA Buttons (Applying Button Radius = rounded-2xl only) -->
             <div class="pt-4 flex gap-3 items-center">
               <button
-                class="flex-1 inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-[family-name:var(--font-heading)] px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
+                class="flex-1 inline-flex items-center justify-center gap-1.5 bg-orange hover:bg-orange-hover text-white font-bold text-sm sm:text-lg whitespace-nowrap font-[family-name:var(--font-heading)] px-4 sm:px-8 py-3.5 sm:py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
               >
                 <span>Register now</span>
-                <span class="material-symbols-outlined">arrow_right_alt</span>
+                <span class="material-symbols-outlined text-lg sm:text-xl">arrow_right_alt</span>
               </button>
 
               <button
@@ -1075,17 +1076,17 @@
           <button
             aria-label="Slide 1"
             data-active="true"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 2"
             data-active="false"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 3"
             data-active="false"
-            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] !min-w-0 !min-h-0 rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
         </div>
         <script>
