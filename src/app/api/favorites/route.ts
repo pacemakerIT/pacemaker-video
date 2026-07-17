@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
             break;
           case ItemType.EBOOK:
             item = await prisma.ebook.findUnique({
-              where: { ebookId: favorite.itemId },
+              where: { id: favorite.itemId },
               select: {
                 id: true,
                 title: true,
@@ -89,27 +89,24 @@ export async function POST(req: NextRequest) {
   if (!userId || !itemId || !itemType)
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
-  const existing = await prisma.favorite.findFirst({
-    where: { userId, itemId, itemType }
-  });
-
-  if (existing) {
-    return NextResponse.json(
-      { error: 'Item already exists in favorite' },
-      { status: 409 }
-    );
-  }
-
   const favorite = await prisma.$transaction(async (tx) => {
-    const newFavorite = await tx.favorite.create({
-      data: { userId, itemId, itemType }
+    const newFavorite = await tx.favorite.upsert({
+      where: {
+        userId_itemType_itemId: {
+          userId,
+          itemType,
+          itemId
+        }
+      },
+      update: {},
+      create: { userId, itemId, itemType }
     });
     let item = null;
 
     try {
       switch (newFavorite.itemType) {
         case ItemType.VIDEO:
-          item = await prisma.video.findUnique({
+          item = await tx.video.findUnique({
             where: { videoId: newFavorite.itemId },
             select: {
               id: true,
@@ -121,8 +118,8 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.EBOOK:
-          item = await prisma.ebook.findUnique({
-            where: { ebookId: newFavorite.itemId },
+          item = await tx.ebook.findUnique({
+            where: { id: newFavorite.itemId },
             select: {
               id: true,
               title: true,
@@ -133,7 +130,7 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.WORKSHOP:
-          item = await prisma.workshop.findUnique({
+          item = await tx.workshop.findUnique({
             where: { id: newFavorite.itemId },
             select: {
               id: true,
@@ -145,7 +142,7 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.COURSE:
-          item = await prisma.course.findUnique({
+          item = await tx.course.findUnique({
             where: { id: newFavorite.itemId },
             select: {
               id: true,
@@ -173,14 +170,16 @@ export async function DELETE(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const userId = searchParams.get('userId');
   const itemId = searchParams.get('itemId');
+  const itemType = searchParams.get('itemType') as ItemType | null;
 
-  if (!userId || !itemId)
+  if (!userId || !itemId || !itemType)
     return NextResponse.json({ error: 'Missing params' }, { status: 400 });
 
   await prisma.favorite.deleteMany({
     where: {
       userId,
-      itemId
+      itemId,
+      itemType
     }
   });
 

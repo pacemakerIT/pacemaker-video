@@ -6,28 +6,31 @@ export async function GET(request: NextRequest) {
   const isMainParam = searchParams.get('isMain');
 
   try {
-    const ebookRecords = await prisma.ebook.findMany({
+    const ebookList = await prisma.ebook.findMany({
       where: {
-        isPublic: true,
         ...(isMainParam === 'true' ? { isMain: true } : {})
       },
       orderBy: {
         orderKey: 'asc'
       }
     });
-    const ebooks = ebookRecords.map((ebook) => ({
+
+    const ebooks = ebookList.map((ebook) => ({
       id: ebook.id,
-      title: ebook.title,
-      summary: ebook.description,
-      category: ebook.category,
-      price: ebook.price,
-      thumbnail: ebook.thumbnail
+      title: ebook.title || 'Untitled',
+      description: ebook.description || '',
+      category: ebook.category || 'DEFAULT',
+      price: ebook.price || 0,
+      thumbnail: ebook.thumbnail || ''
     }));
 
     return NextResponse.json(ebooks);
-  } catch {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+
     return NextResponse.json(
-      { error: 'Failed to fetch ebooks' },
+      { error: 'Failed to fetch ebooks', details: errorMessage },
       { status: 500 }
     );
   }

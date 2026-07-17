@@ -43,7 +43,7 @@ export default function WorkshopCardList({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id);
+      removeFavorite(id, ItemType.WORKSHOP);
     } else {
       addFavorite(id, ItemType.WORKSHOP);
     }
