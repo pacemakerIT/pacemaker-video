@@ -575,7 +575,7 @@
         <!-- Navigation Menu & Auth (Right-aligned container) -->
         <div class="flex items-center ml-auto">
           <div class="nav-center">
-            <a class="nav-item" href="../main.html#workshopCarousel"
+            <a class="nav-item" href="../workshops/workshop_list.html"
               >Workshops</a
             >
             <a
@@ -584,7 +584,7 @@
               href="#main-content"
               >Online Courses</a
             >
-            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
           </div>
           <!-- Auth Links -->
           <div class="nav-right ml-4">
@@ -682,7 +682,7 @@
                     <div class="flex flex-col gap-1">
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#workshopCarousel"
+                        href="../workshops/workshop_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -743,7 +743,7 @@
                       </a>
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#ebookCarousel"
+                        href="../ebooks/ebook_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -798,53 +798,100 @@
     <!-- Video Player & Table of Contents Section -->
     <section class="w-full bg-gray-soft py-10 border-b border-gray-200">
       <div class="page-container">
-        <div id="videoPlayerCard" class="flex flex-col lg:flex-row shadow-2xl relative overflow-hidden bg-white" style="border-radius: 16px;">
-          
+        <div
+          id="videoPlayerCard"
+          class="flex flex-col lg:flex-row shadow-2xl relative overflow-hidden bg-white"
+          style="border-radius: 16px"
+        >
           <!-- Left Column: Video Player & Info -->
-          <div id="videoPlayerContainer" class="flex-1 flex flex-col bg-white transition-all duration-350 ease-in-out relative">
-            
+          <div
+            id="videoPlayerContainer"
+            class="flex-1 flex flex-col bg-white transition-all duration-350 ease-in-out relative"
+          >
             <!-- Video Screen -->
-            <div id="videoScreenSection" class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
+            <div
+              id="videoScreenSection"
+              class="relative flex-1 bg-black flex items-center justify-center overflow-hidden"
+            >
               <!-- Actual Video Element -->
-              <video id="courseVideo" class="w-full h-full object-cover absolute inset-0 hidden" preload="metadata">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+              <video
+                id="courseVideo"
+                class="w-full h-full object-cover absolute inset-0 hidden"
+                preload="metadata"
+              >
+                <source
+                  src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                  type="video/mp4"
+                />
                 Your browser does not support the video tag.
               </video>
-              
+
               <!-- Video Poster Placeholder (when video is not playing) -->
-              <div id="videoPlaceholder" class="absolute inset-0 bg-black flex items-center justify-center">
+              <div
+                id="videoPlaceholder"
+                class="absolute inset-0 bg-black flex items-center justify-center"
+              >
                 <!-- Large Translucent Play Button -->
-                <button id="centerPlayBtn" aria-label="Play video" class="w-20 h-20 rounded-full bg-white/30 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center text-white hover:bg-white/40 hover:scale-105 transition-all duration-300 shadow-lg cursor-pointer">
-                  <span class="material-icons text-5xl translate-x-0.5">play_arrow</span>
+                <button
+                  id="centerPlayBtn"
+                  aria-label="Play video"
+                  class="w-20 h-20 rounded-full bg-white/30 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center text-white hover:bg-white/40 hover:scale-105 transition-all duration-300 shadow-lg cursor-pointer"
+                >
+                  <span class="material-icons text-5xl translate-x-0.5"
+                    >play_arrow</span
+                  >
                 </button>
               </div>
             </div>
 
             <!-- Video Info & Controls Bar -->
             <div class="p-6 bg-white border-t border-gray-100">
-              <h2 id="videoTitle" class="text-2xl font-headline font-bold text-navy mb-1 leading-tight">
+              <h2
+                id="videoTitle"
+                class="text-2xl font-headline font-bold text-navy mb-1 leading-tight"
+              >
                 The Definitive Guide: From Resumes to Job-Winning Interviews
               </h2>
-              <p id="videoSubtitle" class="text-sm font-body text-gray-700 mb-4 font-medium leading-normal">
+              <p
+                id="videoSubtitle"
+                class="text-sm font-body text-gray-700 mb-4 font-medium leading-normal"
+              >
                 The 94% Success Formula: Writing Applications That Set You Apart
               </p>
-              
+
               <!-- Custom Controls / Progress Bar -->
               <div class="space-y-2">
                 <!-- Progress Bar Slider -->
-                <div class="relative group cursor-pointer" id="progressBarContainer">
-                  <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden transition-all group-hover:h-2">
-                    <div id="progressBarFill" class="h-full bg-orange w-0 transition-all duration-100"></div>
+                <div
+                  class="relative group cursor-pointer"
+                  id="progressBarContainer"
+                >
+                  <div
+                    class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden transition-all group-hover:h-2"
+                  >
+                    <div
+                      id="progressBarFill"
+                      class="h-full bg-orange w-0 transition-all duration-100"
+                    ></div>
                   </div>
                   <!-- Handle -->
-                  <div id="progressHandle" class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-orange border border-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150" style="left: 0%;"></div>
+                  <div
+                    id="progressHandle"
+                    class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-orange border border-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                    style="left: 0%"
+                  ></div>
                 </div>
-                
+
                 <!-- Time and Status Labels -->
-                <div class="flex justify-between items-center text-xs font-semibold text-gray-700">
+                <div
+                  class="flex justify-between items-center text-xs font-semibold text-gray-700"
+                >
                   <div class="flex items-center gap-4">
                     <!-- Play/Pause Control Button -->
-                    <button id="inlinePlayBtn" class="flex items-center gap-1 hover:text-orange transition-colors">
+                    <button
+                      id="inlinePlayBtn"
+                      class="flex items-center gap-1 hover:text-orange transition-colors"
+                    >
                       <span class="material-icons text-lg">play_arrow</span>
                       <span>Play</span>
                     </button>
@@ -854,234 +901,434 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
     </section>
 
     <!-- Floating TOC Open Button (Clinging to the right edge of the screen) -->
-    <button id="openTocBtn" aria-label="Open Table of Contents" class="fixed right-0 top-1/2 -translate-y-1/2 z-30 w-8 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md flex items-center justify-center text-gray-500 hover:text-orange hover:shadow-lg transition-all duration-300 cursor-pointer">
+    <button
+      id="openTocBtn"
+      aria-label="Open Table of Contents"
+      class="fixed right-0 top-1/2 -translate-y-1/2 z-30 w-8 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md flex items-center justify-center text-gray-500 hover:text-orange hover:shadow-lg transition-all duration-300 cursor-pointer"
+    >
       <span class="material-icons text-xl">chevron_left</span>
     </button>
 
     <!-- Modal Backdrop overlay -->
-    <div id="tocBackdrop" class="fixed inset-0 bg-black/55 backdrop-blur-sm z-[90] hidden opacity-0 transition-opacity duration-300"></div>
+    <div
+      id="tocBackdrop"
+      class="fixed inset-0 bg-black/55 backdrop-blur-sm z-[90] hidden opacity-0 transition-opacity duration-300"
+    ></div>
 
-    <div id="tocSidebar" class="fixed right-0 top-0 bottom-0 h-[100dvh] w-full sm:w-[500px] bg-gray-soft border-l border-gray-200 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out z-[100] shadow-2xl overflow-visible invisible">
+    <div
+      id="tocSidebar"
+      class="fixed right-0 top-0 bottom-0 h-[100dvh] w-full sm:w-[500px] bg-gray-soft border-l border-gray-200 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out z-[100] shadow-2xl overflow-visible invisible"
+    >
       <!-- Close TOC Button (Floating on the left edge of the sidebar - Desktop only) -->
-      <button id="closeTocBtn" aria-label="Close Table of Contents" class="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 w-10 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-orange hover:shadow-lg transition-all duration-300 cursor-pointer">
+      <button
+        id="closeTocBtn"
+        aria-label="Close Table of Contents"
+        class="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 w-10 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-orange hover:shadow-lg transition-all duration-300 cursor-pointer"
+      >
         <span class="material-icons text-xl">chevron_right</span>
       </button>
-            <!-- TOC Header -->
-            <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-white shadow-sm z-10">
-              <h3 class="font-headline font-bold text-navy text-[1rem]">Course Outline</h3>
-              <div class="flex items-center gap-4">
-                <span class="text-xs font-semibold text-gray-400" id="totalLessonsCount">8 Lessons</span>
-                <!-- Mobile Close Button -->
-                <button id="closeTocBtnMobile" class="sm:hidden flex items-center justify-center text-gray-400 hover:text-navy transition-colors focus:outline-none" aria-label="Close Table of Contents">
-                  <span class="material-icons text-xl">close</span>
-                </button>
-              </div>
+      <!-- TOC Header -->
+      <div
+        class="p-4 border-b border-gray-100 flex items-center justify-between bg-white shadow-sm z-10"
+      >
+        <h3 class="font-headline font-bold text-navy text-[1rem]">
+          Course Outline
+        </h3>
+        <div class="flex items-center gap-4">
+          <span
+            class="text-xs font-semibold text-gray-400"
+            id="totalLessonsCount"
+            >8 Lessons</span
+          >
+          <!-- Mobile Close Button -->
+          <button
+            id="closeTocBtnMobile"
+            class="sm:hidden flex items-center justify-center text-gray-400 hover:text-navy transition-colors focus:outline-none"
+            aria-label="Close Table of Contents"
+          >
+            <span class="material-icons text-xl">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TOC Sections (Scrollable) -->
+      <div
+        class="flex-1 overflow-y-auto p-4 flex flex-col gap-[10px] bg-gray-soft"
+      >
+        <!-- Section 1 -->
+        <div
+          class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white"
+          data-section-id="1"
+        >
+          <button
+            class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none"
+          >
+            <span
+              class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]"
+              >Developer Job Posting Examples</span
+            >
+            <div class="flex items-center gap-1 text-[14px] text-body">
+              <span class="toggle-text">Close</span>
+              <span
+                class="material-icons text-lg transition-transform duration-300"
+                >expand_less</span
+              >
             </div>
-            
-            <!-- TOC Sections (Scrollable) -->
-            <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-[10px] bg-gray-soft">
-              
-              <!-- Section 1 -->
-              <div class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white" data-section-id="1">
-                <button class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none">
-                  <span class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]">Developer Job Posting Examples</span>
-                  <div class="flex items-center gap-1 text-[14px] text-body">
-                    <span class="toggle-text">Close</span>
-                    <span class="material-icons text-lg transition-transform duration-300">expand_less</span>
-                  </div>
-                </button>
-                
-                <div class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5">
-                  <div class="text-[14px] font-medium text-navy mb-3">Course Outline</div>
-                  <div class="flex flex-col gap-0.5">
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200" 
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                      data-title="Session 01 Overview"
-                      data-subtitle="The 94% Success Formula: Writing Applications That Set You Apart"
-                      data-duration="12:45">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 01</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 01 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-                    
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-                      data-title="Session 02 Overview"
-                      data-subtitle="Key insights into corporate hiring practices and candidate vetting."
-                      data-duration="8:32">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 02</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 02 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
+          </button>
 
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                      data-title="Session 03 Overview"
-                      data-subtitle="Structuring your work experience to bypass automated ATS filters."
-                      data-duration="15:10">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 03</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 03 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-                      data-title="Session 04 Overview"
-                      data-subtitle="Polishing and validating details with peer reviews and metric tracking."
-                      data-duration="10:05">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 04</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 04 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-                  </div>
+          <div
+            class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5"
+          >
+            <div class="text-[14px] font-medium text-navy mb-3">
+              Course Outline
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                data-title="Session 01 Overview"
+                data-subtitle="The 94% Success Formula: Writing Applications That Set You Apart"
+                data-duration="12:45"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 01</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 01 Overview</span
+                  >
                 </div>
-              </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
 
-              <!-- Section 2 -->
-              <div class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white" data-section-id="2">
-                <button class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none">
-                  <span class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]">Developer Job Posting Analysis</span>
-                  <div class="flex items-center gap-1 text-[14px] text-body">
-                    <span class="toggle-text">Close</span>
-                    <span class="material-icons text-lg transition-transform duration-300">expand_less</span>
-                  </div>
-                </button>
-                
-                <div class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5">
-                  <div class="text-[14px] font-medium text-navy mb-3">Course Outline</div>
-                  <div class="flex flex-col gap-0.5">
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
-                      data-title="Session 01 Overview"
-                      data-subtitle="How international certifications map to North American company standards."
-                      data-duration="14:20">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 01</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 01 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-                    
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
-                      data-title="Session 02 Overview"
-                      data-subtitle="Highlighting your training and credentials in cover letters and recruiter chats."
-                      data-duration="9:15">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 02</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 02 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                      data-title="Session 03 Overview"
-                      data-subtitle="Structuring your work experience to bypass automated ATS filters."
-                      data-duration="15:10">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 03</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 03 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-                      data-title="Session 04 Overview"
-                      data-subtitle="Polishing and validating details with peer reviews and metric tracking."
-                      data-duration="10:05">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 04</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 04 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-                  </div>
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+                data-title="Session 02 Overview"
+                data-subtitle="Key insights into corporate hiring practices and candidate vetting."
+                data-duration="8:32"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 02</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 02 Overview</span
+                  >
                 </div>
-              </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
 
-              <!-- Section 3 -->
-              <div class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white" data-section-id="3">
-                <button class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none">
-                  <span class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]">Real-World Developer Resume Examples</span>
-                  <div class="flex items-center gap-1 text-[14px] text-body">
-                    <span class="toggle-text">Close</span>
-                    <span class="material-icons text-lg transition-transform duration-300">expand_less</span>
-                  </div>
-                </button>
-                
-                <div class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5">
-                  <div class="text-[14px] font-medium text-navy mb-3">Course Outline</div>
-                  <div class="flex flex-col gap-0.5">
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
-                      data-title="Session 01 Overview"
-                      data-subtitle="Deconstructing real resumes of developers hired by Amazon, Meta, and Shopify."
-                      data-duration="18:45">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 01</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 01 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-                    
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
-                      data-title="Session 02 Overview"
-                      data-subtitle="Communicating project impact and metric accomplishments in first-round calls."
-                      data-duration="11:30">
-                      <div class="flex items-start flex-1 min-w-0 pr-3">
-                        <span class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]">Session 02</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2">Session 02 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]">play_circle_outline</span>
-                    </button>
-
-                    <button class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                      data-title="Session 03 Overview"
-                      data-subtitle="Structuring your work experience to bypass automated ATS filters."
-                      data-duration="15:10">
-                      <div class="flex items-center flex-1">
-                        <span class="lesson-session-label text-[14px] font-medium text-gray-600 w-[85px] flex-shrink-0">Session 03</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-gray-400">Session 03 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-gray-400">play_circle_outline</span>
-                    </button>
-
-                    <button class="lesson-item w-full py-1.5 text-left flex justify-between items-center hover:bg-gray-50 rounded transition-colors duration-200"
-                      data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-                      data-title="Session 04 Overview"
-                      data-subtitle="Polishing and validating details with peer reviews and metric tracking."
-                      data-duration="10:05">
-                      <div class="flex items-center flex-1">
-                        <span class="lesson-session-label text-[14px] font-medium text-gray-600 w-[85px] flex-shrink-0">Session 04</span>
-                        <span class="lesson-title-text text-[14px] font-medium text-gray-400">Session 04 Overview</span>
-                      </div>
-                      <span class="material-icons text-[18px] text-gray-400">play_circle_outline</span>
-                    </button>
-                  </div>
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                data-title="Session 03 Overview"
+                data-subtitle="Structuring your work experience to bypass automated ATS filters."
+                data-duration="15:10"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 03</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 03 Overview</span
+                  >
                 </div>
-              </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
 
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+                data-title="Session 04 Overview"
+                data-subtitle="Polishing and validating details with peer reviews and metric tracking."
+                data-duration="10:05"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 04</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 04 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
             </div>
           </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div
+          class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white"
+          data-section-id="2"
+        >
+          <button
+            class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none"
+          >
+            <span
+              class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]"
+              >Developer Job Posting Analysis</span
+            >
+            <div class="flex items-center gap-1 text-[14px] text-body">
+              <span class="toggle-text">Close</span>
+              <span
+                class="material-icons text-lg transition-transform duration-300"
+                >expand_less</span
+              >
+            </div>
+          </button>
+
+          <div
+            class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5"
+          >
+            <div class="text-[14px] font-medium text-navy mb-3">
+              Course Outline
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+                data-title="Session 01 Overview"
+                data-subtitle="How international certifications map to North American company standards."
+                data-duration="14:20"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 01</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 01 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+                data-title="Session 02 Overview"
+                data-subtitle="Highlighting your training and credentials in cover letters and recruiter chats."
+                data-duration="9:15"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 02</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 02 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                data-title="Session 03 Overview"
+                data-subtitle="Structuring your work experience to bypass automated ATS filters."
+                data-duration="15:10"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 03</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 03 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+                data-title="Session 04 Overview"
+                data-subtitle="Polishing and validating details with peer reviews and metric tracking."
+                data-duration="10:05"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 04</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 04 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div
+          class="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white"
+          data-section-id="3"
+        >
+          <button
+            class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none"
+          >
+            <span
+              class="text-[18px] font-bold text-navy font-[family-name:var(--font-heading)]"
+              >Real-World Developer Resume Examples</span
+            >
+            <div class="flex items-center gap-1 text-[14px] text-body">
+              <span class="toggle-text">Close</span>
+              <span
+                class="material-icons text-lg transition-transform duration-300"
+                >expand_less</span
+              >
+            </div>
+          </button>
+
+          <div
+            class="toc-lessons overflow-hidden transition-all duration-300 ease-in-out px-5 pb-5"
+          >
+            <div class="text-[14px] font-medium text-navy mb-3">
+              Course Outline
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+                data-title="Session 01 Overview"
+                data-subtitle="Deconstructing real resumes of developers hired by Amazon, Meta, and Shopify."
+                data-duration="18:45"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 01</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 01 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+                data-title="Session 02 Overview"
+                data-subtitle="Communicating project impact and metric accomplishments in first-round calls."
+                data-duration="11:30"
+              >
+                <div class="flex items-start flex-1 min-w-0 pr-3">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-body w-[85px] flex-shrink-0 mt-[1px]"
+                    >Session 02</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-[#98a2b3] leading-snug break-words pr-2"
+                    >Session 02 Overview</span
+                  >
+                </div>
+                <span
+                  class="material-icons text-[18px] text-[#98a2b3] flex-shrink-0 mt-[2px]"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                data-title="Session 03 Overview"
+                data-subtitle="Structuring your work experience to bypass automated ATS filters."
+                data-duration="15:10"
+              >
+                <div class="flex items-center flex-1">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-gray-600 w-[85px] flex-shrink-0"
+                    >Session 03</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-gray-400"
+                    >Session 03 Overview</span
+                  >
+                </div>
+                <span class="material-icons text-[18px] text-gray-400"
+                  >play_circle_outline</span
+                >
+              </button>
+
+              <button
+                class="lesson-item w-full py-1.5 text-left flex justify-between items-center hover:bg-gray-50 rounded transition-colors duration-200"
+                data-video="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+                data-title="Session 04 Overview"
+                data-subtitle="Polishing and validating details with peer reviews and metric tracking."
+                data-duration="10:05"
+              >
+                <div class="flex items-center flex-1">
+                  <span
+                    class="lesson-session-label text-[14px] font-medium text-gray-600 w-[85px] flex-shrink-0"
+                    >Session 04</span
+                  >
+                  <span
+                    class="lesson-title-text text-[14px] font-medium text-gray-400"
+                    >Session 04 Overview</span
+                  >
+                </div>
+                <span class="material-icons text-[18px] text-gray-400"
+                  >play_circle_outline</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <main
       id="main-content"
@@ -1116,19 +1363,22 @@
           </div>
           <div class="w-full lg:w-[480px] space-y-4">
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -1137,7 +1387,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -1145,7 +1395,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -1158,19 +1408,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -1179,7 +1432,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -1187,7 +1440,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -1200,19 +1453,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -1221,7 +1477,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -1229,7 +1485,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -1311,32 +1567,32 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2019 ~</span
                     >
                     <span>Managing Director at Pacemaker</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2015 ~ 2019</span
                     >
                     <span>Director of Operations at Metanet</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2009 ~ 2014</span
                     >
                     <span
                       >Business Development Manager at People In Biz Corp.</span
                     >
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2004 ~ 2008</span
                     >
                     <span>Purchaser at InterContinental Hotels Group</span>
@@ -1373,16 +1629,16 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2021 ~</span
                     >
                     <span>Lead Career Coach at TechBridge</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2016 ~ 2021</span
                     >
                     <span>HR Manager at GlobalTech</span>
@@ -1419,16 +1675,16 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2020 ~</span
                     >
                     <span>Senior Developer at CloudNative</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2015 ~ 2020</span
                     >
                     <span>Software Engineer at Innovate Ltd</span>
@@ -1454,17 +1710,17 @@
           <button
             aria-label="Slide 1"
             data-active="true"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 2"
             data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 3"
             data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
         </div>
         <script>
@@ -1699,11 +1955,11 @@
         </div>
       </section>
       <section>
-        <div class="flex items-end gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-8">
           <h2 class="text-3xl font-[family-name:var(--font-heading)] font-bold">
             Student Reviews
           </h2>
-          <div class="flex items-center gap-2 mb-1">
+          <div class="flex items-center gap-2 sm:mb-1">
             <span class="text-xl font-bold">5 / 5</span>
             <div class="flex text-orange">
               <span class="material-icons text-sm">star</span>
@@ -2286,21 +2542,25 @@
         const videoPlaceholder = document.getElementById('videoPlaceholder');
         const centerPlayBtn = document.getElementById('centerPlayBtn');
         const inlinePlayBtn = document.getElementById('inlinePlayBtn');
-        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBarContainer = document.getElementById(
+          'progressBarContainer'
+        );
         const progressBarFill = document.getElementById('progressBarFill');
         const progressHandle = document.getElementById('progressHandle');
         const completionPercent = document.getElementById('completionPercent');
         const videoTime = document.getElementById('videoTime');
         const videoTitle = document.getElementById('videoTitle');
         const videoSubtitle = document.getElementById('videoSubtitle');
-        
+
         // TOC elements
         const openTocBtn = document.getElementById('openTocBtn');
         const closeTocBtn = document.getElementById('closeTocBtn');
         const tocBackdrop = document.getElementById('tocBackdrop');
         const tocSidebar = document.getElementById('tocSidebar');
         const lessonItems = document.querySelectorAll('.lesson-item');
-        const sectionHeaders = document.querySelectorAll('.toc-section > button');
+        const sectionHeaders = document.querySelectorAll(
+          '.toc-section > button'
+        );
 
         function formatTime(seconds) {
           const mins = Math.floor(seconds / 60);
@@ -2313,14 +2573,16 @@
           if (video.paused) {
             video.classList.remove('hidden');
             videoPlaceholder.classList.add('hidden');
-            video.play().catch(err => console.log("Video play error:", err));
+            video.play().catch((err) => console.log('Video play error:', err));
             inlinePlayBtn.querySelector('span').textContent = 'pause';
-            inlinePlayBtn.querySelector('span').nextElementSibling.textContent = 'Pause';
+            inlinePlayBtn.querySelector('span').nextElementSibling.textContent =
+              'Pause';
           } else {
             video.pause();
             videoPlaceholder.classList.remove('hidden');
             inlinePlayBtn.querySelector('span').textContent = 'play_arrow';
-            inlinePlayBtn.querySelector('span').nextElementSibling.textContent = 'Play';
+            inlinePlayBtn.querySelector('span').nextElementSibling.textContent =
+              'Play';
           }
         }
 
@@ -2336,7 +2598,7 @@
           const progress = (video.currentTime / video.duration) * 100;
           progressBarFill.style.width = `${progress}%`;
           progressHandle.style.left = `${progress}%`;
-          
+
           completionPercent.textContent = `${progress.toFixed(1)}% Complete`;
           videoTime.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
         });
@@ -2362,7 +2624,7 @@
         progressBarContainer.addEventListener('click', seek);
 
         // TOC Section Accordions
-        sectionHeaders.forEach(header => {
+        sectionHeaders.forEach((header) => {
           const section = header.parentElement;
           const lessonsContainer = section.querySelector('.toc-lessons');
           const chevron = header.querySelector('.material-icons');
@@ -2383,19 +2645,27 @@
             const isHidden = lessonsContainer.classList.contains('hidden');
             if (isHidden) {
               // Close all other sections first (Exclusive Accordion logic)
-              document.querySelectorAll('.toc-section').forEach(otherSection => {
-                if (otherSection !== section) {
-                  const otherContainer = otherSection.querySelector('.toc-lessons');
-                  const otherChevron = otherSection.querySelector('button .material-icons');
-                  const otherLabel = otherSection.querySelector('button .toggle-text');
-                  
-                  if (!otherContainer.classList.contains('hidden')) {
-                    otherContainer.classList.add('hidden');
-                    if (otherChevron) otherChevron.textContent = 'expand_more';
-                    if (otherLabel) otherLabel.textContent = 'Open';
+              document
+                .querySelectorAll('.toc-section')
+                .forEach((otherSection) => {
+                  if (otherSection !== section) {
+                    const otherContainer =
+                      otherSection.querySelector('.toc-lessons');
+                    const otherChevron = otherSection.querySelector(
+                      'button .material-icons'
+                    );
+                    const otherLabel = otherSection.querySelector(
+                      'button .toggle-text'
+                    );
+
+                    if (!otherContainer.classList.contains('hidden')) {
+                      otherContainer.classList.add('hidden');
+                      if (otherChevron)
+                        otherChevron.textContent = 'expand_more';
+                      if (otherLabel) otherLabel.textContent = 'Open';
+                    }
                   }
-                }
-              });
+                });
 
               // Open the clicked section
               lessonsContainer.classList.remove('hidden');
@@ -2410,10 +2680,10 @@
         });
 
         // Lesson Item Click
-        lessonItems.forEach(item => {
+        lessonItems.forEach((item) => {
           item.addEventListener('click', () => {
             // Remove active class from all lessons
-            lessonItems.forEach(el => {
+            lessonItems.forEach((el) => {
               el.classList.remove('active', 'bg-gray-soft');
             });
 
@@ -2429,7 +2699,7 @@
             video.src = videoSrc;
             videoTitle.textContent = courseTitle;
             videoSubtitle.textContent = subtitleText;
-            
+
             // Reset controls progress
             progressBarFill.style.width = '0%';
             progressHandle.style.left = '0%';
@@ -2439,9 +2709,12 @@
             // Show and play video
             video.classList.remove('hidden');
             videoPlaceholder.classList.add('hidden');
-            video.play().catch(err => console.log("Play interrupted or blocked:", err));
+            video
+              .play()
+              .catch((err) => console.log('Play interrupted or blocked:', err));
             inlinePlayBtn.querySelector('span').textContent = 'pause';
-            inlinePlayBtn.querySelector('span').nextElementSibling.textContent = 'Pause';
+            inlinePlayBtn.querySelector('span').nextElementSibling.textContent =
+              'Pause';
 
             // Close TOC Modal Drawer
             closeTOC();
@@ -2475,7 +2748,9 @@
         openTocBtn.addEventListener('click', openTOC);
         closeTocBtn.addEventListener('click', closeTOC);
         if (document.getElementById('closeTocBtnMobile')) {
-          document.getElementById('closeTocBtnMobile').addEventListener('click', closeTOC);
+          document
+            .getElementById('closeTocBtnMobile')
+            .addEventListener('click', closeTOC);
         }
         tocBackdrop.addEventListener('click', closeTOC);
       });
