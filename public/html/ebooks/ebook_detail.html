@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&amp;family=Source+Sans+3:wght@300;400;500;600;700&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&amp;family=Source+Sans+3:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap"
       rel="stylesheet"
     />
     <link
@@ -144,150 +144,6 @@
           'wght' 400,
           'GRAD' 0,
           'opsz' 24;
-      }
-      .footer-cta-dynamic-wash {
-        pointer-events: none;
-        position: absolute;
-        inset: 0;
-        z-index: 6;
-        background-image:
-          radial-gradient(
-            circle at 14% 18%,
-            rgb(255 245 235 / 0.38) 0%,
-            rgb(255 245 235 / 0) 44%
-          ),
-          radial-gradient(
-            circle at 84% 14%,
-            rgb(255 140 70 / 0.42) 0%,
-            rgb(255 79 2 / 0) 48%
-          ),
-          linear-gradient(
-            135deg,
-            rgb(90 28 0 / 0.55) 0%,
-            rgb(160 45 0 / 0.42) 42%,
-            rgb(255 210 170 / 0.22) 50%,
-            rgb(255 120 40 / 0.28) 58%,
-            rgb(70 18 0 / 0.52) 100%
-          );
-        background-position:
-          0% 0%,
-          100% 0%,
-          0% 50%;
-        background-size:
-          180% 180%,
-          220% 220%,
-          280% 280%;
-        will-change: background-position;
-        animation: services-hero-gradient-flow 20s ease-in-out infinite;
-        -webkit-mask-image: linear-gradient(
-          to right,
-          transparent 0%,
-          transparent 38%,
-          rgba(0, 0, 0, 0.35) 48%,
-          rgba(0, 0, 0, 0.85) 58%,
-          #000 72%
-        );
-        mask-image: linear-gradient(
-          to right,
-          transparent 0%,
-          transparent 38%,
-          rgba(0, 0, 0, 0.35) 48%,
-          rgba(0, 0, 0, 0.85) 58%,
-          #000 72%
-        );
-        -webkit-mask-size: 100% 100%;
-        mask-size: 100% 100%;
-      }
-      @media (max-width: 639px) {
-        .footer-cta-dynamic-wash {
-          -webkit-mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            transparent 52%,
-            rgba(0, 0, 0, 0.4) 62%,
-            #000 85%
-          );
-          mask-image: linear-gradient(
-            to right,
-            transparent 0%,
-            transparent 52%,
-            rgba(0, 0, 0, 0.4) 62%,
-            #000 85%
-          );
-        }
-      }
-      .footer-cta-dynamic-wash::before {
-        content: '';
-        position: absolute;
-        right: -8%;
-        top: -40%;
-        width: 640px;
-        height: 640px;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgb(255 230 210 / 0.45) 0%,
-          transparent 68%
-        );
-        filter: blur(4px);
-        animation: services-hero-glow-drift 11s ease-in-out infinite;
-      }
-      .footer-cta-dynamic-wash::after {
-        content: '';
-        position: absolute;
-        bottom: -25%;
-        left: -4%;
-        width: 420px;
-        height: 420px;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgb(200 55 0 / 0.4) 0%,
-          transparent 65%
-        );
-        filter: blur(3px);
-        animation: services-hero-glow-drift-reverse 13s ease-in-out infinite;
-      }
-      .footer-cta-review-deck {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 10px;
-        position: absolute;
-        width: 920px;
-        height: 662px;
-        right: -60px;
-        top: -120px;
-        transform: rotate(-15deg);
-      }
-      @media (max-width: 767px) {
-        .footer-cta-review-deck {
-          display: none;
-        }
-      }
-      @keyframes footer-cta-exclaim-bounce {
-        0%,
-        100% {
-          transform: translateY(0) scale(1, 1);
-        }
-        2.5% {
-          transform: translateY(-7px) scale(1.12, 1.25);
-        }
-        5% {
-          transform: translateY(0) scale(1, 1);
-        }
-        7.5% {
-          transform: translateY(-4px) scale(1.08, 1.12);
-        }
-        10% {
-          transform: translateY(0) scale(1, 1);
-        }
-      }
-      .footer-cta-exclaim {
-        display: inline-block;
-        transform-origin: 50% 85%;
-        animation: footer-cta-exclaim-bounce 7s
-          cubic-bezier(0.34, 1.45, 0.64, 1) infinite;
       }
       nav {
         position: sticky;
@@ -547,13 +403,15 @@
             <a class="nav-item" href="../workshops/workshop_list.html"
               >Workshops</a
             >
+            <a class="nav-item" href="../courses/course_list.html"
+              >Online Courses</a
+            >
             <a
               aria-current="page"
               class="nav-item is-active"
               href="#main-content"
-              >Online Courses</a
+              >E-books</a
             >
-            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
           </div>
           <!-- Auth Links -->
           <div class="nav-right ml-4">
@@ -612,13 +470,6 @@
         <div class="mobile-nav-panel" id="mobile-nav-menu">
           <div class="rounded-none border border-gray-200 bg-white p-3">
             <div class="border-t border-gray-100 pt-2">
-              <div class="py-1">
-                <a
-                  class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
-                  href="../main.html"
-                  ><span>Home</span></a
-                >
-              </div>
               <div class="py-1">
                 <button
                   type="button"
@@ -680,12 +531,11 @@
                         </div>
                       </a>
                       <a
-                        aria-current="page"
-                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
-                        href="#main-content"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                        href="../courses/course_list.html"
                       >
                         <div
-                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
                         >
                           <span class="material-symbols-outlined text-[20px]"
                             >play_lesson</span
@@ -694,7 +544,7 @@
                         <div class="flex-1">
                           <div class="flex items-center justify-between">
                             <span
-                              class="text-[0.95rem] font-bold text-orange mb-0.5"
+                              class="text-[0.95rem] font-bold text-navy mb-0.5"
                               >Online Courses</span
                             >
                             <span
@@ -711,11 +561,12 @@
                         </div>
                       </a>
                       <a
-                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../ebooks/ebook_list.html"
+                        aria-current="page"
+                        class="group/item flex items-start gap-4 p-3 rounded-xl transition-all"
+                        href="#main-content"
                       >
                         <div
-                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                          class="mt-0.5 p-2 rounded-lg bg-gray-50 text-orange transition-colors shadow-sm border border-transparent"
                         >
                           <span class="material-symbols-outlined text-[20px]"
                             >menu_book</span
@@ -724,7 +575,7 @@
                         <div class="flex-1">
                           <div class="flex items-center justify-between">
                             <span
-                              class="text-[0.95rem] font-bold text-navy mb-0.5"
+                              class="text-[0.95rem] font-bold text-orange mb-0.5"
                               >E-books</span
                             >
                             <span
@@ -763,33 +614,27 @@
         </div>
       </div>
     </nav>
-    <section class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center py-12 lg:py-0">
-      <!-- Adjusted Background image to show more content -->
-      <img
-        alt="Background"
-        class="absolute inset-0 w-full h-full object-cover object-top"
-        src="../../img/video-bg.png"
-      />
-
+    <section
+      class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center py-12 lg:py-0 bg-[#EBF5FF]"
+    >
       <div
         class="page-container h-full relative flex flex-col lg:flex-row items-center justify-center lg:justify-between py-12 lg:py-0 gap-8 w-full"
       >
-        <!-- Left Text Content: Aligned with the logo -->
-        <div class="max-w-2xl text-white z-10 text-center lg:text-left">
+        <!-- Left Text Content -->
+        <div class="max-w-2xl text-navy z-10 text-center lg:text-left">
           <p
-            class="text-lg sm:text-[28px] mb-4 font-medium opacity-100 tracking-wide font-[family-name:var(--font-heading)]"
+            class="text-lg sm:text-[28px] mb-6 md:mb-8 font-bold text-orange opacity-100 tracking-wide font-[family-name:var(--font-heading)]"
           >
-            Chosen by Professionals
+            Chosen by Canadian tech companies
           </p>
           <h1
-            class="text-2xl sm:text-3xl md:text-[40px] font-[family-name:var(--font-heading)] font-bold leading-[1.3] tracking-tight"
+            class="text-2xl sm:text-3xl md:text-[40px] font-[family-name:var(--font-heading)] font-bold leading-normal tracking-tight"
           >
-            From Differentiated Resumes to<br class="hidden md:block" />
-            Confident Interviews
+            Resume strategies<br />that help developers stand out.
           </h1>
         </div>
 
-        <!-- Right Purchase Card: Fixed overflow/shattering by optimizing internal spacing -->
+        <!-- Right Purchase Card -->
         <div
           class="bg-white rounded-none p-7 w-full max-w-[360px] min-h-[382px] shadow-card relative z-10 flex flex-col justify-between hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300 border border-gray-100"
         >
@@ -797,24 +642,20 @@
             <h2
               class="text-[1.5rem] font-[family-name:var(--font-heading)] font-bold text-navy leading-tight mb-4"
             >
-              Resume & Interview Prep<br />(All in One)
+              Developer Job Applications<br />& Networking
             </h2>
 
             <div class="space-y-3 mb-4">
               <div class="flex items-start gap-3 text-[0.875rem]">
-                <span class="font-bold text-navy min-w-[80px]"
-                  >Instructors</span
-                >
-                <span class="text-gray-600 font-medium"
-                  >Heelee, Linda, Raphael, Lee</span
-                >
+                <span class="font-bold text-navy min-w-[80px]">Instructor</span>
+                <span class="text-gray-600 font-medium">James</span>
               </div>
 
               <p
                 class="text-[0.875rem] text-gray-500 leading-snug font-body line-clamp-3"
               >
-                Learn how recruiters evaluate resumes and interviews, based on
-                real hiring examples from Canadian companies.
+                Learn how recruiters evaluate developer resumes, based on real
+                hiring examples from Canadian tech companies.
               </p>
             </div>
           </div>
@@ -867,23 +708,25 @@
       class="max-w-[1200px] mx-auto px-6 py-20 space-y-20"
     >
       <section>
-        <p class="text-orange font-bold mb-2">How the Course Works</p>
+        <p class="text-orange font-bold mb-2">
+          Chosen by Leading Canadian Tech Companies
+        </p>
         <h2
           class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
         >
-          Step by Step: From a Strong Developer Resume to Interviews
+          Effective Resume Structure & Keywords for Developers
         </h2>
         <div class="flex flex-col lg:flex-row lg:justify-between gap-16">
           <div
             class="w-full lg:w-[680px] text-text-muted-light dark:text-text-muted-dark leading-relaxed space-y-6"
           >
             <p>
-              To land a developer role in North America, coding skills alone
+              To land a developer role in North America, strong coding skills
               aren't enough. Understanding job postings and what companies are
-              truly looking for is just as important. With AI-driven automation
-              on the rise, developer job openings in North America have
-              decreased by nearly 35% over the past five years, making hiring
-              more competitive than ever.
+              truly looking for is just as important. With AI-driven
+              productivity on the rise, developer job openings in North America
+              have decreased by nearly 35% over the past five years, making
+              hiring more competitive than ever.
             </p>
             <p>
               If North American job postings feel unfamiliar, this course guides
@@ -1075,296 +918,33 @@
         <h2
           class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
         >
-          Instructor Profile
-        </h2>
-        <div class="overflow-hidden w-full relative">
-          <div
-            id="instructor-slider"
-            class="flex transition-transform duration-500 ease-in-out w-[300%]"
-          >
-            <!-- Slide 1 -->
-            <div
-              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
-            >
-              <div class="w-full lg:w-[680px]">
-                <h3 class="text-2xl font-bold mb-4">Raphael. Lee</h3>
-                <p
-                  class="text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed"
-                >
-                  I've been managing multicultural teams for over 19 years. And
-                  blesses to lead and be part of the opening teams in global
-                  projects in various countries. Growing personal &amp;
-                  professional goals by sharing visions with teammates became a
-                  part of my passion and a long-term goal in my life.
-                </p>
-                <h4 class="font-bold mb-4">Experience</h4>
-                <ul class="space-y-4 text-sm">
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2019 ~</span
-                    >
-                    <span>Managing Director at Pacemaker</span>
-                  </li>
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2015 ~ 2019</span
-                    >
-                    <span>Director of Operations at Metanet</span>
-                  </li>
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2009 ~ 2014</span
-                    >
-                    <span
-                      >Business Development Manager at People In Biz Corp.</span
-                    >
-                  </li>
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2004 ~ 2008</span
-                    >
-                    <span>Purchaser at InterContinental Hotels Group</span>
-                  </li>
-                </ul>
-              </div>
-              <div class="w-full lg:w-[480px] flex flex-col">
-                <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
-                >
-                  <img
-                    src="../../img/raphael.png"
-                    alt="Raphael Lee Profile"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide 2 -->
-            <div
-              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
-            >
-              <div class="w-full lg:w-[680px]">
-                <h3 class="text-2xl font-bold mb-4">Linda. Kim</h3>
-                <p
-                  class="text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed"
-                >
-                  Passionate about helping candidates craft the perfect resume.
-                  With 10+ years of HR experience in top tech firms across North
-                  America, my goal is to highlight your unique strengths and
-                  guide you seamlessly through the recruitment process.
-                </p>
-                <h4 class="font-bold mb-4">Experience</h4>
-                <ul class="space-y-4 text-sm">
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2021 ~</span
-                    >
-                    <span>Lead Career Coach at TechBridge</span>
-                  </li>
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2016 ~ 2021</span
-                    >
-                    <span>HR Manager at GlobalTech</span>
-                  </li>
-                </ul>
-              </div>
-              <div class="w-full lg:w-[480px] flex flex-col">
-                <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
-                >
-                  <img
-                    src="../../img/linda.png"
-                    alt="Linda Kim Profile"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide 3 -->
-            <div
-              class="w-1/3 flex flex-col lg:flex-row lg:justify-between gap-16 px-1 shrink-0"
-            >
-              <div class="w-full lg:w-[680px]">
-                <h3 class="text-2xl font-bold mb-4">Heelee. Park</h3>
-                <p
-                  class="text-text-muted-light dark:text-text-muted-dark mb-8 leading-relaxed"
-                >
-                  Specialized in software development career transitions. By
-                  building your confidence through targeted mock interviews and
-                  deep dives into coding challenges, I ensure you stand out in
-                  the competitive tech market.
-                </p>
-                <h4 class="font-bold mb-4">Experience</h4>
-                <ul class="space-y-4 text-sm">
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2020 ~</span
-                    >
-                    <span>Senior Developer at CloudNative</span>
-                  </li>
-                  <li class="flex gap-4 sm:gap-8">
-                    <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
-                      >2015 ~ 2020</span
-                    >
-                    <span>Software Engineer at Innovate Ltd</span>
-                  </li>
-                </ul>
-              </div>
-              <div class="w-full lg:w-[480px] flex flex-col">
-                <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
-                >
-                  <img
-                    src="../../img/heelee.png"
-                    alt="Heelee Park Profile"
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex justify-center gap-3 mt-16" id="instructor-dots">
-          <button
-            aria-label="Slide 1"
-            data-active="true"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
-          ></button>
-          <button
-            aria-label="Slide 2"
-            data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
-          ></button>
-          <button
-            aria-label="Slide 3"
-            data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
-          ></button>
-        </div>
-        <script>
-          (function () {
-            const slider = document.getElementById('instructor-slider');
-            const dots = Array.from(
-              document.getElementById('instructor-dots').children
-            );
-            let isDragging = false;
-            let startPos = 0;
-            let currentTranslate = 0;
-            let prevTranslate = 0;
-            let animationID = 0;
-            let currentIndex = 0;
-
-            function setSliderPosition() {
-              slider.style.transform = `translateX(${currentTranslate}%)`;
-            }
-
-            function updateDots(index) {
-              dots.forEach((dot, i) => {
-                dot.setAttribute('data-active', i === index ? 'true' : 'false');
-              });
-            }
-
-            function animation() {
-              setSliderPosition();
-              if (isDragging) requestAnimationFrame(animation);
-            }
-
-            function dragStart(e) {
-              if (e.type === 'touchstart') {
-                startPos = e.touches[0].clientX;
-              } else {
-                startPos = e.clientX;
-                e.preventDefault();
-              }
-              isDragging = true;
-              animationID = requestAnimationFrame(animation);
-              slider.classList.remove('duration-500');
-              slider.classList.add('cursor-grabbing');
-            }
-
-            function dragMove(e) {
-              if (isDragging) {
-                const currentPosition =
-                  e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-                const slideWidth = slider.offsetWidth / 3;
-                const diff =
-                  ((currentPosition - startPos) / slideWidth) * 33.3333;
-                currentTranslate = prevTranslate + diff;
-              }
-            }
-
-            function dragEnd() {
-              if (!isDragging) return;
-              isDragging = false;
-              cancelAnimationFrame(animationID);
-              slider.classList.add('duration-500');
-              slider.classList.remove('cursor-grabbing');
-
-              const movedBy = currentTranslate - prevTranslate;
-              if (movedBy < -5 && currentIndex < 2) currentIndex += 1;
-              if (movedBy > 5 && currentIndex > 0) currentIndex -= 1;
-
-              prevTranslate = currentIndex * -33.3333;
-              currentTranslate = prevTranslate;
-              setSliderPosition();
-              updateDots(currentIndex);
-            }
-
-            slider.addEventListener('touchstart', dragStart, { passive: true });
-            slider.addEventListener('touchend', dragEnd);
-            slider.addEventListener('touchmove', dragMove, { passive: true });
-
-            slider.addEventListener('mousedown', dragStart);
-            window.addEventListener('mouseup', dragEnd);
-            window.addEventListener('mousemove', dragMove);
-
-            dots.forEach((dot, index) => {
-              dot.onclick = () => {
-                currentIndex = index;
-                prevTranslate = currentIndex * -33.3333;
-                currentTranslate = prevTranslate;
-                slider.classList.add('duration-500');
-                setSliderPosition();
-                updateDots(currentIndex);
-              };
-            });
-          })();
-        </script>
-      </section>
-      <section>
-        <h2
-          class="text-3xl font-[family-name:var(--font-heading)] font-bold mb-12"
-        >
-          You May Also Like
+          Recommended E-books
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Recommended E-book 1 (Marketing) -->
           <div
-            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="GitLab Course"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-1.png"
-              />
+            <div
+              class="relative min-h-[256px] bg-[#FFF5F2] flex flex-col justify-center px-8 pt-16 md:pt-8 pb-8"
+            >
               <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(54, 166, 247)"
-                  >Interview</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-[#FF6B3D]"
+                  >Marketing</span
                 >
               </div>
+              <h4
+                class="text-[#FF6B3D] text-3xl font-extrabold mb-3 font-headline"
+              >
+                Marketing
+              </h4>
+              <p
+                class="text-[#FF6B3D] text-base font-medium leading-tight mb-4"
+              >
+                The 94% Success Formula: A Proven Approach to Job & Career
+                Transitions
+              </p>
               <button
                 type="button"
                 class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
@@ -1373,42 +953,53 @@
                 <span class="material-symbols-outlined text-xl">favorite</span>
               </button>
             </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
-                >
-                  Cover letters and interview prep in one course
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
+            <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start gap-4 mb-2">
+                  <h3
+                    class="text-lg font-bold font-headline text-navy leading-tight"
+                  >
+                    Networking for Marketers
+                  </h3>
+                  <span class="text-xl font-extrabold text-navy">$2800</span>
+                </div>
               </div>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="../main.html"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./ebook_detail.html"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
               </a>
             </div>
           </div>
+
+          <!-- Recommended E-book 2 (Design) -->
           <div
-            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Join Us Online"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-2.png"
-              />
+            <div
+              class="relative min-h-[256px] bg-[#FFF1F1] flex flex-col justify-center px-8 pt-16 md:pt-8 pb-8"
+            >
               <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(255, 150, 49)"
-                  >Resume</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-[#FF7272]"
+                  >Design</span
                 >
               </div>
+              <h4
+                class="text-[#FF7272] text-3xl font-extrabold mb-3 font-headline"
+              >
+                Design
+              </h4>
+              <p
+                class="text-[#FF7272] text-base font-medium leading-tight mb-4"
+              >
+                What Every Designer Should Know: Interviews That Shape Your
+                Career
+              </p>
               <button
                 type="button"
                 class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
@@ -1417,42 +1008,52 @@
                 <span class="material-symbols-outlined text-xl">favorite</span>
               </button>
             </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
-                >
-                  Cover letters and interview prep in one course
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
+            <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start gap-4 mb-2">
+                  <h3
+                    class="text-lg font-bold font-headline text-navy leading-tight"
+                  >
+                    Preparing for Design Interviews
+                  </h3>
+                  <span class="text-xl font-extrabold text-navy">$2800</span>
+                </div>
               </div>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="../main.html"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./ebook_detail.html"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
               </a>
             </div>
           </div>
+
+          <!-- Recommended E-book 3 (IT) -->
           <div
-            class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+            class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
           >
-            <div class="relative h-[256px]">
-              <img
-                alt="Config Workflow"
-                class="w-full h-full object-cover"
-                src="../../img/online-course-3.png"
-              />
+            <div
+              class="relative min-h-[256px] bg-[#EAF2FF] flex flex-col justify-center px-8 pt-16 md:pt-8 pb-8"
+            >
               <div class="absolute top-4 left-4 z-10">
                 <span
-                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                  style="background: rgb(159, 91, 231)"
-                  >Networking</span
+                  class="text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider bg-[#36A6F7]"
+                  >IT</span
                 >
               </div>
+              <h4
+                class="text-[#36A6F7] text-3xl font-extrabold mb-3 font-headline"
+              >
+                IT
+              </h4>
+              <p
+                class="text-[#36A6F7] text-base font-medium leading-tight mb-4"
+              >
+                The 94% Success Formula: Resumes That Win Jobs and Interviews
+              </p>
               <button
                 type="button"
                 class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md"
@@ -1461,20 +1062,22 @@
                 <span class="material-symbols-outlined text-xl">favorite</span>
               </button>
             </div>
-            <div class="p-6 space-y-4 flex-grow">
-              <div class="flex justify-between items-start gap-4">
-                <h3
-                  class="text-lg font-bold font-headline text-navy leading-tight"
-                >
-                  Cover letters and interview prep in one course
-                </h3>
-                <span class="text-xl font-extrabold text-navy">$2800</span>
+            <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+              <div>
+                <div class="flex justify-between items-start gap-4 mb-2">
+                  <h3
+                    class="text-lg font-bold font-headline text-navy leading-tight"
+                  >
+                    IT Resume & Interview Prep
+                  </h3>
+                  <span class="text-xl font-extrabold text-navy">$2800</span>
+                </div>
               </div>
               <a
-                class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                href="../main.html"
+                class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
+                href="./ebook_detail.html"
               >
-                Learn more
+                View details
                 <span class="material-symbols-outlined text-lg"
                   >arrow_forward</span
                 >
@@ -1486,7 +1089,7 @@
       <section>
         <div class="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-8">
           <h2 class="text-3xl font-[family-name:var(--font-heading)] font-bold">
-            Student Reviews
+            Reader Reviews
           </h2>
           <div class="flex items-center gap-2 sm:mb-1">
             <span class="text-xl font-bold">5 / 5</span>
@@ -1617,7 +1220,7 @@
                     class="w-12 h-12 rounded-full object-cover"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsHdrtgoFNLEAPQm3-rksEiFU6G_jp2gpKdjTl2c52O9aQEAQtSgyYKuiPHMb1lGFS7TQJUxH1R2thMZzjFsFbfBdWyeOpz8X2RpEaDqWcUF8GANLV36Z7Lsh1ntf3VFs71HSxO-GoyWgVj2iNKP6ws61nmUg_ClmwoHltszqBTrW8C1VldmONBvbcojmzJ0U2usdBDfdG-IS29Snfn1xNqWu6ho7a5GTrgSod97kMd_KT6q3V2Dxw2Z8nsPjHLWc2T2TThDKnaGs"
                   />
-                  <span class="font-bold text-orange">Min</span>
+                  <span class="font-bold text-orange">Jay</span>
                 </div>
                 <div class="text-right">
                   <div class="flex text-yellow-400 mb-1">
@@ -1629,16 +1232,18 @@
                   </div>
                   <span
                     class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >04.12.2025</span
+                    >05.19.2025</span
                   >
                 </div>
               </div>
               <p
                 class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
               >
-                The resume feedback was specific and practical. I rewrote my
-                bullet points using their examples and started getting interview
-                requests within a few weeks.
+                They helped me to establish my motivating factors, transferable
+                skills, and areas of expertise that would allow me to best
+                navigate the highly competitive job market. Thanks to their
+                diligent work and one-on-one sessions, I have found a position
+                that fits my goals and professional abilities!
               </p>
             </div>
             <div class="border border-border-light dark:border-border-dark p-8">
@@ -1649,7 +1254,7 @@
                     class="w-12 h-12 rounded-full object-cover"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuD70zVCKYN0yZhavjpOUxUNwvr23GVD1m3GUBeLOrzq1weJfLvaBf9lzPXCeXYe2G8XF9Xro18Ep8OTQRRZwdB1GdBwIPi97J5kk5DH_Stjak6Ek-s36v-FTk00nKYWzh3rKBSmfwFxVkh6-5idYAxUOFwtmXn_NaiG245tr802CJSeY-_1FBNHvTBEE7yVQ-OGWQJXos7DxSyMw2XoZIYSDew5OQkLW7fuihScTJfJoawuysRXxKiUupYc_qqCe9C84e-ZDrkFt0I"
                   />
-                  <span class="font-bold text-orange">Sora</span>
+                  <span class="font-bold text-orange">Jay</span>
                 </div>
                 <div class="text-right">
                   <div class="flex text-yellow-400 mb-1">
@@ -1663,16 +1268,18 @@
                   </div>
                   <span
                     class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >03.28.2025</span
+                    >05.19.2025</span
                   >
                 </div>
               </div>
               <p
                 class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
               >
-                Mock interviews helped me explain my projects clearly in
-                English. The coaches gave honest feedback without making it feel
-                overwhelming.
+                They helped me to establish my motivating factors, transferable
+                skills, and areas of expertise that would allow me to best
+                navigate the highly competitive job market. Thanks to their
+                diligent work and one-on-one sessions, I have found a position
+                that fits my goals and professional abilities!
               </p>
             </div>
             <div class="border border-border-light dark:border-border-dark p-8">
@@ -1683,7 +1290,7 @@
                     class="w-12 h-12 rounded-full object-cover"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtBbswJEVn_BdU4gMuF10NRfYbQtk3PsRMYv8ogWt_3tFFo_hLkZBWqdrfrpQP8WYB83hXXi_pdmNbETrYbxji9-hluWrO8ZYZOcXDpoJmHvJPC2-nkCbXPkyGiN5WcqHgDPrcrXQu4bd1GcSZ0M55GA3AISsdahMUyNFwFHtB3bLYBxsK--LKY9pd3OM4UtPF1_V1v2jIU9QYq9Os7h55a_jlQZw7VDOrlGU52cOTZShz3vzo5lTtZ1vqsOg2RmtSob9gPGz7vXI"
                   />
-                  <span class="font-bold text-orange">Alex</span>
+                  <span class="font-bold text-orange">Jay</span>
                 </div>
                 <div class="text-right">
                   <div class="flex text-yellow-400 mb-1">
@@ -1695,113 +1302,18 @@
                   </div>
                   <span
                     class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >02.14.2025</span
+                    >05.19.2025</span
                   >
                 </div>
               </div>
               <p
                 class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
               >
-                The course structure made it easy to follow along week by week.
-                I finally understood how to tailor my resume for North American
-                tech roles.
-              </p>
-            </div>
-          </div>
-          <div data-review-batch>
-            <div class="border border-border-light dark:border-border-dark p-8">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-4">
-                  <img
-                    alt="User avatar"
-                    class="w-12 h-12 rounded-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD70zVCKYN0yZhavjpOUxUNwvr23GVD1m3GUBeLOrzq1weJfLvaBf9lzPXCeXYe2G8XF9Xro18Ep8OTQRRZwdB1GdBwIPi97J5kk5DH_Stjak6Ek-s36v-FTk00nKYWzh3rKBSmfwFxVkh6-5idYAxUOFwtmXn_NaiG245tr802CJSeY-_1FBNHvTBEE7yVQ-OGWQJXos7DxSyMw2XoZIYSDew5OQkLW7fuihScTJfJoawuysRXxKiUupYc_qqCe9C84e-ZDrkFt0I"
-                  />
-                  <span class="font-bold text-orange">Hana</span>
-                </div>
-                <div class="text-right">
-                  <div class="flex text-yellow-400 mb-1">
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                  </div>
-                  <span
-                    class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >01.30.2025</span
-                  >
-                </div>
-              </div>
-              <p
-                class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
-              >
-                Clear examples and templates saved me hours. I used the cover
-                letter framework and got a callback from my top-choice company.
-              </p>
-            </div>
-            <div class="border border-border-light dark:border-border-dark p-8">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-4">
-                  <img
-                    alt="User avatar"
-                    class="w-12 h-12 rounded-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsHdrtgoFNLEAPQm3-rksEiFU6G_jp2gpKdjTl2c52O9aQEAQtSgyYKuiPHMb1lGFS7TQJUxH1R2thMZzjFsFbfBdWyeOpz8X2RpEaDqWcUF8GANLV36Z7Lsh1ntf3VFs71HSxO-GoyWgVj2iNKP6ws61nmUg_ClmwoHltszqBTrW8C1VldmONBvbcojmzJ0U2usdBDfdG-IS29Snfn1xNqWu6ho7a5GTrgSod97kMd_KT6q3V2Dxw2Z8nsPjHLWc2T2TThDKnaGs"
-                  />
-                  <span class="font-bold text-orange">Chris</span>
-                </div>
-                <div class="text-right">
-                  <div class="flex text-yellow-400 mb-1">
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm text-gray-300"
-                      >star</span
-                    >
-                  </div>
-                  <span
-                    class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >12.08.2024</span
-                  >
-                </div>
-              </div>
-              <p
-                class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
-              >
-                Worth every minute. The interview prep section helped me answer
-                behavioral questions with confidence in English.
-              </p>
-            </div>
-            <div class="border border-border-light dark:border-border-dark p-8">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-4">
-                  <img
-                    alt="User avatar"
-                    class="w-12 h-12 rounded-full object-cover"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtBbswJEVn_BdU4gMuF10NRfYbQtk3PsRMYv8ogWt_3tFFo_hLkZBWqdrfrpQP8WYB83hXXi_pdmNbETrYbxji9-hluWrO8ZYZOcXDpoJmHvJPC2-nkCbXPkyGiN5WcqHgDPrcrXQu4bd1GcSZ0M55GA3AISsdahMUyNFwFHtB3bLYBxsK--LKY9pd3OM4UtPF1_V1v2jIU9QYq9Os7h55a_jlQZw7VDOrlGU52cOTZShz3vzo5lTtZ1vqsOg2RmtSob9gPGz7vXI"
-                  />
-                  <span class="font-bold text-orange">Lee</span>
-                </div>
-                <div class="text-right">
-                  <div class="flex text-yellow-400 mb-1">
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                    <span class="material-icons text-sm">star</span>
-                  </div>
-                  <span
-                    class="text-text-muted-light dark:text-text-muted-dark text-xs"
-                    >11.22.2024</span
-                  >
-                </div>
-              </div>
-              <p
-                class="text-text-muted-light dark:text-text-muted-dark text-sm leading-relaxed"
-              >
-                Practical, no fluff. I appreciated how they broke down real job
-                postings and showed what recruiters actually look for.
+                They helped me to establish my motivating factors, transferable
+                skills, and areas of expertise that would allow me to best
+                navigate the highly competitive job market. Thanks to their
+                diligent work and one-on-one sessions, I have found a position
+                that fits my goals and professional abilities!
               </p>
             </div>
           </div>

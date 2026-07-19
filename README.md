@@ -62,6 +62,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `npm run prisma:generate` - Generate Prisma Client
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Run ESLint and auto-fix formatting issues
 - `npm run typecheck` - Run TypeScript type checking
 - `npm run jira -- <command>` - Run the local Jira CLI
 - `npm run validate-branch-name` - Validate git branch name
@@ -170,6 +171,23 @@ build validation with all required environment variables configured.
   "printWidth": 80
 }
 ```
+
+### VS Code Auto-fix Setup
+
+To automatically format your code and resolve ESLint errors on save, you can configure your local VS Code workspace. The repository includes `.vscode/settings.json` configured with:
+
+```json
+{
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+```
+
+If you prefer not to commit these workspace settings to Git, you can add `.vscode/` to your `.gitignore` or copy these values to your global VS Code User Settings.
 
 ### Tailwind Color Usage
 
