@@ -2,13 +2,17 @@ import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { TARGET_AUDIENCE_MAPPING } from '@/constants/target-audience';
 import { auth } from '@clerk/nextjs/server';
-import { TargetAudienceType } from '@prisma/client';
+import { CourseCategory, Prisma, TargetAudienceType } from '@prisma/client';
+import { requireAdminUser } from '@/lib/admin-auth';
 import {
   findUserIdByClerkId,
   getAccessibleCourseVideoIds,
   isFreePrice,
   userCanAccessCourse
 } from '@/lib/entitlements';
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const TARGET_AUDIENCE_REVERSE_MAP: Record<TargetAudienceType, string> = {
   [TargetAudienceType.IT]: 'IT 개발',
@@ -36,12 +40,40 @@ interface InstructorInput {
   name: string;
   intro: string;
   photoUrl: string;
-  careers?: string[];
+  careers?: Prisma.InputJsonValue;
 }
 
 interface VideoInput {
   title: string;
   link: string;
+}
+
+interface CourseMutationBody {
+  category?: CourseCategory;
+  isPublic?: boolean;
+  showOnMain?: boolean;
+  title?: string;
+  description?: string;
+  processTitle?: string;
+  processContent?: string;
+  videoLink?: string;
+  price?: string;
+  time?: string;
+  thumbnailUrl?: string;
+  visualTitle?: string;
+  visualTitle2?: string;
+  recommended?: string[];
+  sections?: {
+    title: string;
+    content?: string;
+    videos?: VideoInput[];
+  }[];
+  instructors?: InstructorInput[];
+  links?: Prisma.InputJsonValue;
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 interface ResolvedCourse {
@@ -74,6 +106,24 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const isAdminScope = searchParams.get('scope') === 'admin';
+
+    if (isAdminScope) {
+      const adminAccess = await requireAdminUser();
+
+      if (!adminAccess.ok) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: adminAccess.error,
+            message: '관리자 권한이 필요합니다.'
+          },
+          { status: adminAccess.status }
+        );
+      }
+    }
+
     const { userId: clerkUserId } = await auth();
 
     const courseData = await prisma.course.findUnique({
@@ -105,7 +155,7 @@ export async function GET(
       }
     });
 
-    if (!courseData) {
+    if (!courseData || (!isAdminScope && !courseData.isPublic)) {
       return NextResponse.json(
         {
           success: false,
@@ -124,23 +174,33 @@ export async function GET(
         )
       ])
     ];
-    const userId = clerkUserId
-      ? await findUserIdByClerkId(prisma, clerkUserId)
-      : null;
     const courseEntitlement = {
       id: courseData.id,
       price: courseData.price
     };
-    const [canAccessCourse, accessibleVideoIds] = await Promise.all([
-      userCanAccessCourse(prisma, userId, courseEntitlement),
-      getAccessibleCourseVideoIds(prisma, userId, courseEntitlement, videoIds)
-    ]);
+    const userId =
+      !isAdminScope && clerkUserId
+        ? await findUserIdByClerkId(prisma, clerkUserId)
+        : null;
+    let canAccessCourse: boolean;
+    let accessibleVideoIds: Set<string>;
+
+    if (isAdminScope) {
+      canAccessCourse = true;
+      accessibleVideoIds = new Set(videoIds);
+    } else {
+      [canAccessCourse, accessibleVideoIds] = await Promise.all([
+        userCanAccessCourse(prisma, userId, courseEntitlement),
+        getAccessibleCourseVideoIds(prisma, userId, courseEntitlement, videoIds)
+      ]);
+    }
 
     // 관련 강의 가져오기 (같은 카테고리 우선, 현재 강의 제외)
     let relatedCoursesData = await prisma.course.findMany({
       where: {
         id: { not: id },
-        category: courseData.category
+        category: courseData.category,
+        ...(isAdminScope ? {} : { isPublic: true })
       },
       take: 3,
       orderBy: { createdAt: 'desc' }
@@ -151,7 +211,8 @@ export async function GET(
       const moreCourses = await prisma.course.findMany({
         where: {
           // 이미 가져온 강의들과 현재 강의를 제외해야 함
-          id: { notIn: [id, ...relatedCoursesData.map((c) => c.id)] }
+          id: { notIn: [id, ...relatedCoursesData.map((c) => c.id)] },
+          ...(isAdminScope ? {} : { isPublic: true })
         },
         take: 3 - relatedCoursesData.length,
         orderBy: { createdAt: 'desc' }
@@ -178,7 +239,10 @@ export async function GET(
 
       if (internalCourseIds.length > 0) {
         const courses = await prisma.course.findMany({
-          where: { id: { in: internalCourseIds } }
+          where: {
+            id: { in: internalCourseIds },
+            ...(isAdminScope ? {} : { isPublic: true })
+          }
         });
 
         resolvedRecommendedCourses = recommendedLinksJson.map((link) => {
@@ -288,8 +352,56 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const adminAccess = await requireAdminUser();
+
+    if (!adminAccess.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: adminAccess.error,
+          message: '관리자 권한이 필요합니다.'
+        },
+        { status: adminAccess.status }
+      );
+    }
+
     const { id } = await params;
-    const body = await request.json();
+
+    if (!UUID_PATTERN.test(id)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid course id',
+          message: '유효하지 않은 강의 ID입니다.'
+        },
+        { status: 400 }
+      );
+    }
+
+    let body: CourseMutationBody;
+    try {
+      const parsedBody: unknown = await request.json();
+      if (!isObject(parsedBody)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid course data',
+            message: '유효하지 않은 강의 데이터입니다.'
+          },
+          { status: 400 }
+        );
+      }
+      body = parsedBody as CourseMutationBody;
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid course data',
+          message: '유효하지 않은 강의 데이터입니다.'
+        },
+        { status: 400 }
+      );
+    }
     const {
       category,
       isPublic,
@@ -324,7 +436,7 @@ export async function PUT(
     // Map Korean labels to Enum
     const targetAudienceTypes = (recommended || [])
       .map((label: string) => TARGET_AUDIENCE_MAP[label])
-      .filter(Boolean);
+      .filter((value): value is TargetAudienceType => Boolean(value));
 
     // Perform update in a transaction to ensure atomic execution
     const updatedCourse = await prisma.$transaction(async (tx) => {
@@ -336,7 +448,7 @@ export async function PUT(
       const course = await tx.course.update({
         where: { id },
         data: {
-          category: category || 'NETWORKING',
+          category: category || CourseCategory.NETWORKING,
           isPublic,
           showOnMain,
           title,

@@ -110,8 +110,8 @@ async function resolveCartItem(
     case ItemType.COURSE: {
       if (!isUuid(cart.itemId)) return null;
 
-      const course = await tx.course.findUnique({
-        where: { id: cart.itemId },
+      const course = await tx.course.findFirst({
+        where: { id: cart.itemId, isPublic: true },
         select: {
           id: true,
           title: true,
@@ -143,6 +143,7 @@ async function resolveCartItem(
     case ItemType.EBOOK: {
       const ebook = await tx.ebook.findFirst({
         where: {
+          isPublic: true,
           OR: [
             { ebookId: cart.itemId },
             ...(isUuid(cart.itemId) ? [{ id: cart.itemId }] : [])

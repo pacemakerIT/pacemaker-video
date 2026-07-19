@@ -11,7 +11,7 @@ const tx = {
     findMany: vi.fn()
   },
   course: {
-    findUnique: vi.fn()
+    findFirst: vi.fn()
   },
   ebook: {
     findFirst: vi.fn()
@@ -89,7 +89,7 @@ describe('POST /api/stripe/validate-promotion-code', () => {
         itemType: ItemType.COURSE
       }
     ]);
-    tx.course.findUnique.mockResolvedValue({
+    tx.course.findFirst.mockResolvedValue({
       id: courseId,
       title: 'Checkout Course',
       description: 'Course description',

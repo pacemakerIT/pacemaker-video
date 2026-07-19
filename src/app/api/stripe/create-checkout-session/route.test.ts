@@ -11,7 +11,7 @@ const tx = {
     findMany: vi.fn()
   },
   course: {
-    findUnique: vi.fn()
+    findFirst: vi.fn()
   },
   ebook: {
     findFirst: vi.fn()
@@ -104,7 +104,7 @@ describe('POST /api/stripe/create-checkout-session', () => {
         itemType: ItemType.COURSE
       }
     ]);
-    tx.course.findUnique.mockResolvedValue({
+    tx.course.findFirst.mockResolvedValue({
       id: courseId,
       title: 'Checkout Course',
       description: 'Course description',
@@ -307,7 +307,7 @@ describe('POST /api/stripe/create-checkout-session', () => {
   });
 
   it('rejects cart items that no longer resolve to catalog content', async () => {
-    tx.course.findUnique.mockResolvedValue(null);
+    tx.course.findFirst.mockResolvedValue(null);
 
     const response = await POST(
       createRequest({
@@ -324,7 +324,7 @@ describe('POST /api/stripe/create-checkout-session', () => {
   });
 
   it('rejects checkout items with invalid prices', async () => {
-    tx.course.findUnique.mockResolvedValue({
+    tx.course.findFirst.mockResolvedValue({
       id: courseId,
       title: 'Checkout Course',
       description: 'Course description',

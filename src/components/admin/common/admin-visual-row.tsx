@@ -27,10 +27,12 @@ type AdminVisualRowProps = {
   toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
   onDelete?: (id: string) => void;
   onStatusChange?: (id: string, newStatus: string) => void;
+  statusDisabled?: boolean;
   StatusComponent?: React.ComponentType<{
     row: RowLike;
     toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
     onStatusChange?: (id: string, newStatus: string) => void;
+    disabled?: boolean;
   }>;
   editHref?: string;
   attemptNavigation?: (url: string) => void;
@@ -44,6 +46,7 @@ export default function AdminVisualRow({
   toggleRow,
   onDelete,
   onStatusChange,
+  statusDisabled = false,
   StatusComponent,
   editHref,
   attemptNavigation,
@@ -138,6 +141,7 @@ export default function AdminVisualRow({
             row={row}
             toggleRow={toggleRow}
             onStatusChange={onStatusChange}
+            disabled={statusDisabled}
           />
         ) : null}
       </div>

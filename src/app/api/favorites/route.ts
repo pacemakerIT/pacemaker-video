@@ -34,8 +34,11 @@ export async function GET(req: NextRequest) {
             });
             break;
           case ItemType.EBOOK:
-            item = await prisma.ebook.findUnique({
-              where: { id: favorite.itemId },
+            item = await prisma.ebook.findFirst({
+              where: {
+                isPublic: true,
+                OR: [{ ebookId: favorite.itemId }, { id: favorite.itemId }]
+              },
               select: {
                 id: true,
                 title: true,
@@ -58,8 +61,8 @@ export async function GET(req: NextRequest) {
             });
             break;
           case ItemType.COURSE:
-            item = await prisma.course.findUnique({
-              where: { id: favorite.itemId },
+            item = await prisma.course.findFirst({
+              where: { id: favorite.itemId, isPublic: true },
               select: {
                 id: true,
                 title: true,
@@ -118,8 +121,11 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.EBOOK:
-          item = await tx.ebook.findUnique({
-            where: { id: newFavorite.itemId },
+          item = await tx.ebook.findFirst({
+            where: {
+              isPublic: true,
+              OR: [{ ebookId: newFavorite.itemId }, { id: newFavorite.itemId }]
+            },
             select: {
               id: true,
               title: true,
@@ -142,8 +148,8 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.COURSE:
-          item = await tx.course.findUnique({
-            where: { id: newFavorite.itemId },
+          item = await tx.course.findFirst({
+            where: { id: newFavorite.itemId, isPublic: true },
             select: {
               id: true,
               title: true,
