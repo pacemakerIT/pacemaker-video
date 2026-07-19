@@ -5,7 +5,6 @@ import Textarea from '@/components/ui/admin/textarea';
 import Input from '@/components/ui/admin/input';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import ExpandableCards from '@/components/common/expandable-cards';
-import { FormType } from '@/components/admin/add-form';
 
 type Video = {
   title: string;
@@ -15,29 +14,34 @@ type Video = {
 type Section = {
   title: string;
   content: string;
-  videos: Video[];
+  videos?: Video[];
 };
 
 type SectionListProps = {
-  formType: FormType;
+  label?: string;
+  itemLabel?: string;
+  addLabel?: string;
+  showVideos?: boolean;
   value: Section[];
   onChange: (sections: Section[]) => void;
   errors?: { title?: string; content?: string }[];
 };
 
 export default function SectionList({
-  formType,
+  label = '섹션 별 내용',
+  itemLabel = '섹션',
+  addLabel = '섹션 추가',
+  showVideos = false,
   value = [],
   onChange,
   errors = []
 }: SectionListProps) {
-  const isWorkshop = formType === 'workshop';
   // 섹션 추가
   const handleAddSection = () => {
-    onChange([
-      ...value,
-      { title: '', content: '', videos: [{ title: '', link: '' }] }
-    ]);
+    const newSection: Section = showVideos
+      ? { title: '', content: '', videos: [{ title: '', link: '' }] }
+      : { title: '', content: '' };
+    onChange([...value, newSection]);
   };
 
   // 입력 변경
@@ -54,7 +58,10 @@ export default function SectionList({
   // 비디오 추가
   const handleAddVideo = (sectionIndex: number) => {
     const updated = [...value];
-    updated[sectionIndex].videos.push({ title: '', link: '' });
+    updated[sectionIndex] = {
+      ...updated[sectionIndex],
+      videos: [...(updated[sectionIndex].videos ?? []), { title: '', link: '' }]
+    };
     onChange(updated);
   };
 
@@ -66,16 +73,21 @@ export default function SectionList({
     val: string
   ) => {
     const updated = [...value];
-    updated[sectionIndex].videos[videoIndex][field] = val;
+    const videos = [...(updated[sectionIndex].videos ?? [])];
+    videos[videoIndex] = { ...videos[videoIndex], [field]: val };
+    updated[sectionIndex] = { ...updated[sectionIndex], videos };
     onChange(updated);
   };
 
   // 비디오 삭제
   const handleDeleteVideo = (sectionIndex: number, videoIndex: number) => {
     const updated = [...value];
-    updated[sectionIndex].videos = updated[sectionIndex].videos.filter(
-      (_, i) => i !== videoIndex
-    );
+    updated[sectionIndex] = {
+      ...updated[sectionIndex],
+      videos: (updated[sectionIndex].videos ?? []).filter(
+        (_, i) => i !== videoIndex
+      )
+    };
     onChange(updated);
   };
 
@@ -90,7 +102,7 @@ export default function SectionList({
       <div className="flex items-start gap-6">
         {/* 왼쪽 라벨 */}
         <label className="w-[216px] text-left text-pace-lg font-bold mt-3">
-          {isWorkshop ? '커리큘럼' : '섹션 별 내용'}
+          {label}
           <RequiredMark />
         </label>
 
@@ -99,14 +111,14 @@ export default function SectionList({
           <ExpandableCards
             items={value.map((section, index) => ({
               id: index.toString(),
-              title: section.title || `섹션 ${index + 1}`,
+              title: section.title || `${itemLabel} ${index + 1}`,
               content: (
                 <div className="flex flex-col gap-4">
                   {/* 섹션 제목 */}
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-4">
                       <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500">
-                        섹션 {index + 1} 제목
+                        {itemLabel} {index + 1} 제목
                         <RequiredMark />
                       </label>
 
@@ -116,7 +128,7 @@ export default function SectionList({
                         onChange={(e) =>
                           handleChange(index, 'title', e.target.value)
                         }
-                        placeholder={`섹션 ${index + 1} 제목 입력`}
+                        placeholder={`${itemLabel} ${index + 1} 제목 입력`}
                         className="flex-1"
                       />
                     </div>
@@ -131,7 +143,7 @@ export default function SectionList({
                   <div className="flex flex-col gap-2">
                     <div className="flex items-start gap-4">
                       <label className="w-[120px] text-pace-lg font-semibold text-pace-black-500 mt-3">
-                        섹션 {index + 1} 내용
+                        {itemLabel} {index + 1} 내용
                         <RequiredMark />
                       </label>
 
@@ -140,7 +152,7 @@ export default function SectionList({
                         onChange={(e) =>
                           handleChange(index, 'content', e.target.value)
                         }
-                        placeholder={`섹션 ${index + 1} 내용 입력`}
+                        placeholder={`${itemLabel} ${index + 1} 내용 입력`}
                         className="flex-1 h-[200px]"
                       />
                     </div>
@@ -151,8 +163,8 @@ export default function SectionList({
                     )}
                   </div>
 
-                  {/* 비디오 리스트 (course only) */}
-                  {!isWorkshop &&
+                  {/* 비디오 리스트 (showVideos=true 일 때만) */}
+                  {showVideos &&
                     section.videos?.map((video, vIndex) => (
                       <div key={vIndex} className="flex flex-col gap-2 mt-2">
                         <div className="flex items-start gap-4">
@@ -176,7 +188,7 @@ export default function SectionList({
                                 placeholder={`영상 ${vIndex + 1} 제목 입력`}
                                 className="w-full"
                               />
-                              {section.videos.length > 1 && (
+                              {(section.videos?.length ?? 0) > 1 && (
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -203,7 +215,7 @@ export default function SectionList({
                                 placeholder="링크 입력"
                                 className="flex-1"
                               />
-                              {vIndex === section.videos.length - 1 && (
+                              {vIndex === (section.videos?.length ?? 0) - 1 && (
                                 <AddButton
                                   label="영상 링크 추가"
                                   onClick={() => handleAddVideo(index)}
@@ -228,8 +240,8 @@ export default function SectionList({
             }
           />
 
-          {/* 섹션 추가 버튼 */}
-          <AddButton label="섹션 추가" onClick={handleAddSection} />
+          {/* 추가 버튼 */}
+          <AddButton label={addLabel} onClick={handleAddSection} />
         </div>
       </div>
     </div>

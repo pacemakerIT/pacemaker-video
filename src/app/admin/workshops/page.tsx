@@ -145,7 +145,6 @@ export default function Page() {
     onStatusChange: _onStatusChange
   }: {
     row: RowLike;
-    toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
     onStatusChange?: (id: string, newStatus: string) => void;
   }) => {
     const getSelectValue = (status?: string) => {

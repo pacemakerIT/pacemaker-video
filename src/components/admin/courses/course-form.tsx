@@ -5,33 +5,23 @@ import { toast } from 'sonner';
 import SectionList from '@/components/admin/common/section-list';
 import RecommendedSelect from '@/components/admin/common/recommended-select';
 import RecommendedLinkSection from '@/components/admin/common/recommended-link-section';
-import InstructorListSection from '@/components/admin/common/instructor-list-section';
+import InstructorListSection, {
+  InstructorData
+} from '@/components/admin/common/instructor-list-section';
 import CourseBasicSection from '@/components/admin/basic-section';
 import CourseDetailSection from '@/components/admin/detail-section';
 import VisualSection from '@/components/admin/common/visual-section';
 import ActionButtons from '@/components/admin/common/action-buttons';
 import { CourseFormErrors } from '@/types/admin/course-form-errors';
 
-export type FormType = 'course' | 'ebook' | 'workshop';
-
 export type CourseData = {
-  // course only
-  isPublic?: string;
-  processTitle?: string;
-  processContent?: string;
-  videoLink?: string;
-  visualTitle?: string;
-  visualTitle2?: string;
-  recommended?: string[];
-
-  // workshop only
-  recruitStatus?: string;
-  workshopDate?: string;
-  workshopTime?: string;
-  workshopLocation?: string;
-  workshopProcessContent?: string;
-
-  // shared
+  isPublic: string;
+  processTitle: string;
+  processContent: string;
+  videoLink: string;
+  visualTitle: string;
+  visualTitle2: string;
+  recommended: string[];
   category: string;
   showOnMain: boolean;
   title: string;
@@ -40,24 +30,12 @@ export type CourseData = {
   time: string;
   thumbnail: File | null;
   thumbnailUrl: string;
-
   sections: {
     title: string;
     content: string;
-    videos: { title: string; link: string }[];
+    videos?: { title: string; link: string }[];
   }[];
-  instructors: {
-    name: string;
-    intro: string;
-    careers: {
-      startDate: string;
-      endDate: string;
-      isCurrent: boolean;
-      description: string;
-    }[];
-    photo: File | null;
-    photoUrl: string;
-  }[];
+  instructors: InstructorData[];
   links: {
     url: string;
     name: string;
@@ -66,35 +44,26 @@ export type CourseData = {
 };
 
 type Props = {
-  formType: FormType;
   initialData?: CourseData;
   isEdit?: boolean;
   courseId?: string;
 };
 
-export default function AddForm({
-  formType,
+export default function CourseForm({
   initialData,
   isEdit = false,
   courseId
 }: Props) {
-  const isCourse = formType === 'course';
-
   const [courseData, setCourseData] = useState<CourseData>(
     initialData || {
       category: '',
       isPublic: '',
-      recruitStatus: '',
       showOnMain: false,
       title: '',
       intro: '',
       processTitle: '',
       processContent: '',
       videoLink: '',
-      workshopDate: '',
-      workshopTime: '',
-      workshopLocation: '',
-      workshopProcessContent: '',
       price: '',
       time: '',
       thumbnail: null,
@@ -108,12 +77,7 @@ export default function AddForm({
           name: '',
           intro: '',
           careers: [
-            {
-              startDate: '',
-              endDate: '',
-              description: '',
-              isCurrent: false
-            }
+            { startDate: '', endDate: '', description: '', isCurrent: false }
           ],
           photo: null,
           photoUrl: ''
@@ -129,37 +93,21 @@ export default function AddForm({
     const newErrors: CourseFormErrors = {};
 
     if (!courseData.category) newErrors.category = '카테고리를 선택해주세요.';
-
-    if (isCourse) {
-      if (!courseData.isPublic)
-        newErrors.isPublic = '공개 여부를 선택해주세요.';
-    } else {
-      if (!courseData.recruitStatus)
-        newErrors.recruitStatus = '모집 여부를 선택해주세요.';
-    }
-
+    if (!courseData.isPublic) newErrors.isPublic = '공개 여부를 선택해주세요.';
     if (!courseData.title.trim()) newErrors.title = '제목을 입력해주세요.';
     if (!courseData.intro.trim()) newErrors.intro = '소개를 입력해주세요.';
-
-    if (isCourse) {
-      if (!courseData.videoLink?.trim())
-        newErrors.videoLink = '동영상 링크를 입력해주세요.';
-    }
-
+    if (!courseData.videoLink?.trim())
+      newErrors.videoLink = '동영상 링크를 입력해주세요.';
     if (!courseData.price.trim()) newErrors.price = '가격을 입력해주세요.';
     if (!courseData.time.trim()) newErrors.time = '시간을 입력해주세요.';
-
     if (!courseData.thumbnail && !courseData.thumbnailUrl)
       newErrors.thumbnail = '썸네일 이미지를 업로드해주세요.';
-
-    if (isCourse) {
-      if (!courseData.visualTitle?.trim())
-        newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
-      if (!courseData.visualTitle2?.trim())
-        newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
-      if (!courseData.recommended?.length)
-        newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
-    }
+    if (!courseData.visualTitle?.trim())
+      newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
+    if (!courseData.visualTitle2?.trim())
+      newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
+    if (!courseData.recommended?.length)
+      newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
 
     const hasInvalidLink = courseData.links.some(
       (l) => !l.url.trim() || !l.name.trim()
@@ -172,7 +120,6 @@ export default function AddForm({
       if (!section.content.trim()) errs.content = '섹션 내용을 입력해주세요.';
       return Object.keys(errs).length > 0 ? errs : {};
     });
-
     if (sectionErrors.some((err) => Object.keys(err).length > 0)) {
       newErrors.sections = sectionErrors;
     }
@@ -256,9 +203,7 @@ export default function AddForm({
 
       const res = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -293,36 +238,27 @@ export default function AddForm({
       }}
       className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16"
     >
-      {/* 카테고리 / 공개여부(강의) or 모집여부(워크샵) / 메인표시 */}
+      {/* 카테고리 / 공개여부 / 메인표시 */}
       <CourseBasicSection
-        formType={formType}
+        formType="course"
         category={courseData.category}
         setCategory={(v) => {
           updateCourseData('category', v);
           setErrors((prev) => ({ ...prev, category: undefined }));
         }}
-        statusValue={
-          isCourse
-            ? (courseData.isPublic ?? '')
-            : (courseData.recruitStatus ?? '')
-        }
+        statusValue={courseData.isPublic}
         setStatusValue={(v) => {
-          if (isCourse) {
-            updateCourseData('isPublic', v);
-            setErrors((prev) => ({ ...prev, isPublic: undefined }));
-          } else {
-            updateCourseData('recruitStatus', v);
-            setErrors((prev) => ({ ...prev, recruitStatus: undefined }));
-          }
+          updateCourseData('isPublic', v);
+          setErrors((prev) => ({ ...prev, isPublic: undefined }));
         }}
         showOnMain={courseData.showOnMain}
         setShowOnMain={(v) => updateCourseData('showOnMain', v)}
         errors={errors}
       />
 
-      {/* 정보 */}
+      {/* 강의 정보 */}
       <CourseDetailSection
-        formType={formType}
+        formType="course"
         title={courseData.title}
         setTitle={(v) => updateCourseData('title', v)}
         intro={courseData.intro}
@@ -333,16 +269,6 @@ export default function AddForm({
         setProcessContent={(v) => updateCourseData('processContent', v)}
         videoLink={courseData.videoLink}
         setVideoLink={(v) => updateCourseData('videoLink', v)}
-        workshopDate={courseData.workshopDate}
-        setWorkshopDate={(v) => updateCourseData('workshopDate', v)}
-        workshopTime={courseData.workshopTime}
-        setWorkshopTime={(v) => updateCourseData('workshopTime', v)}
-        workshopLocation={courseData.workshopLocation}
-        setWorkshopLocation={(v) => updateCourseData('workshopLocation', v)}
-        workshopProcessContent={courseData.workshopProcessContent}
-        setWorkshopProcessContent={(v) =>
-          updateCourseData('workshopProcessContent', v)
-        }
         price={courseData.price}
         setPrice={(v) => updateCourseData('price', v)}
         time={courseData.time}
@@ -354,41 +280,31 @@ export default function AddForm({
         errors={errors}
       />
 
-      {/* 비주얼 타이틀 (강의 전용) */}
-      {isCourse && (
-        <VisualSection
-          visualTitle={courseData.visualTitle ?? ''}
-          setVisualTitle={(v) => updateCourseData('visualTitle', v)}
-          visualTitle2={courseData.visualTitle2 ?? ''}
-          setVisualTitle2={(v) => updateCourseData('visualTitle2', v)}
-          errors={errors}
-        />
-      )}
+      {/* 비주얼 타이틀 */}
+      <VisualSection
+        visualTitle={courseData.visualTitle}
+        setVisualTitle={(v) => updateCourseData('visualTitle', v)}
+        visualTitle2={courseData.visualTitle2}
+        setVisualTitle2={(v) => updateCourseData('visualTitle2', v)}
+        errors={errors}
+      />
 
-      {/* 추천드려요 (강의 전용) */}
-      {isCourse && (
-        <RecommendedSelect
-          maxSelect={2}
-          value={courseData.recommended}
-          onChange={(v) => updateCourseData('recommended', v)}
-          error={errors.recommended}
-        />
-      )}
+      {/* 추천드려요 */}
+      <RecommendedSelect
+        maxSelect={2}
+        value={courseData.recommended}
+        onChange={(v) => updateCourseData('recommended', v)}
+        error={errors.recommended}
+      />
 
       {/* 섹션 리스트 */}
       <SectionList
-        showVideos={formType === 'course'}
+        label="섹션 별 내용"
+        itemLabel="섹션"
+        addLabel="섹션 추가"
+        showVideos
         value={courseData.sections}
-        onChange={(v) =>
-          updateCourseData(
-            'sections',
-            v.map((s) => ({
-              title: s.title,
-              content: s.content,
-              videos: s.videos ?? []
-            }))
-          )
-        }
+        onChange={(v) => updateCourseData('sections', v)}
         errors={errors.sections}
       />
 
@@ -399,18 +315,17 @@ export default function AddForm({
         errors={errors.instructors}
       />
 
-      {/* 추천 컨텐츠 링크 (강의 전용) */}
-      {isCourse && (
-        <RecommendedLinkSection
-          value={courseData.links}
-          onChange={(v) => updateCourseData('links', v)}
-          error={errors.links}
-        />
-      )}
+      {/* 추천 컨텐츠 링크 */}
+      <RecommendedLinkSection
+        value={courseData.links}
+        onChange={(v) => updateCourseData('links', v)}
+        error={errors.links}
+        required
+      />
 
       {/* 버튼 */}
       <ActionButtons
-        cancelHref={isCourse ? '/admin/courses' : '/admin/workshops'}
+        cancelHref="/admin/courses"
         submitLabel={isEdit ? '수정' : '등록'}
         submitBehavior="submit"
       />
