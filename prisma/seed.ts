@@ -97,9 +97,42 @@ const SECTION_TITLES = [
   'Actual Successful Resumes for North American Developer Jobs'
 ];
 
+const WORKSHOP_CURRICULUM = [
+  {
+    title: 'Foundations & Canadian Job Market Trends',
+    description:
+      'Learn the core concepts and review current hiring trends in the Canadian job market.'
+  },
+  {
+    title: 'Portfolio and Resume Deep Dive',
+    description:
+      'Analyze successful examples and build a practical framework you can apply to your own materials.'
+  },
+  {
+    title: 'Interactive Practice & Feedback',
+    description:
+      'Work through realistic scenarios and receive actionable feedback from the instructor.'
+  },
+  {
+    title: 'Networking & Action Plan',
+    description:
+      'Connect with other participants and leave with clear next steps for your career goals.'
+  }
+] as const;
+
+function createWorkshopCurriculum(workshopTitle: string) {
+  return WORKSHOP_CURRICULUM.map((section, index) => ({
+    id: randomUUID(),
+    title: index === 0 ? `${workshopTitle}: ${section.title}` : section.title,
+    description: section.description,
+    orderIndex: index
+  }));
+}
+
 const SEEDED_INSTRUCTOR_IDS = {
   raphael: 'cd0bf417-d5ff-4ab7-8dd2-6e6682189f77',
-  sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae'
+  sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae',
+  linda: '43969da1-98c7-43e6-ac88-ecccf7459871'
 } as const;
 
 const SEEDED_REFERENCE_DATE = new Date('2026-03-25T12:00:00.000Z');
@@ -201,7 +234,7 @@ async function main() {
     where: { id: instructorId },
     update: {
       name: 'Raphael. Lee',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: '/img/raphael.png',
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -223,7 +256,7 @@ async function main() {
     create: {
       id: instructorId,
       name: 'Raphael. Lee',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: '/img/raphael.png',
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -270,6 +303,32 @@ async function main() {
     }
   });
 
+  const instructorId3 = SEEDED_INSTRUCTOR_IDS.linda;
+  await prisma.instructor.upsert({
+    where: { id: instructorId3 },
+    update: {
+      name: 'Linda. Kim',
+      profileImage: '/img/linda.png',
+      description:
+        'Passionate about helping candidates craft the perfect resume. With 10+ years of HR experience in top tech firms across North America, my goal is to highlight your unique strengths and guide you seamlessly through the recruitment process.',
+      careers: [
+        { period: '2021 ~', position: 'Lead Career Coach at TechBridge' },
+        { period: '2016 ~ 2021', position: 'HR Manager at GlobalTech' }
+      ]
+    },
+    create: {
+      id: instructorId3,
+      name: 'Linda. Kim',
+      profileImage: '/img/linda.png',
+      description:
+        'Passionate about helping candidates craft the perfect resume. With 10+ years of HR experience in top tech firms across North America, my goal is to highlight your unique strengths and guide you seamlessly through the recruitment process.',
+      careers: [
+        { period: '2021 ~', position: 'Lead Career Coach at TechBridge' },
+        { period: '2016 ~ 2021', position: 'HR Manager at GlobalTech' }
+      ]
+    }
+  });
+
   const courseOrderKeys = generateNKeysBetween(null, null, 6);
 
   console.log('Generating English e-books...');
@@ -277,7 +336,6 @@ async function main() {
 
   for (let i = 1; i <= 6; i++) {
     const courseId = courseIds[i - 1];
-    const coursePrice = 2800;
     const thumbnail = getRandomImage(
       COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length]
     );
@@ -520,7 +578,7 @@ async function main() {
     },
     {
       title: 'UX Design Workshop',
-      status: 'RECRUITING',
+      status: 'OPEN',
       category: 'NETWORKING',
       date: '2026-03-20T19:00:00Z'
     }
@@ -534,7 +592,7 @@ async function main() {
     const status =
       startDate < SEEDED_REFERENCE_DATE
         ? WorkshopStatus.COMPLETED
-        : WorkshopStatus.RECRUITING;
+        : WorkshopStatus.OPEN;
 
     const workshopId = randomUUID();
 
@@ -552,7 +610,13 @@ async function main() {
         category: ws.category as WorkshopCategory,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
-          create: [{ instructorId: instructorId2 }]
+          create: (i === 0
+            ? [instructorId, instructorId2, instructorId3]
+            : [instructorId2]
+          ).map((instructorId) => ({ instructorId }))
+        },
+        sectionsRel: {
+          create: createWorkshopCurriculum(ws.title)
         },
         thumbnail: getRandomImage(
           WORKSHOP_THUMBNAILS[i % WORKSHOP_THUMBNAILS.length]
@@ -565,25 +629,25 @@ async function main() {
     {
       title: 'Mind Training for Success',
       category: 'NETWORKING',
-      status: 'ONGOING',
+      status: 'CLOSED',
       date: '2026-03-16T19:00:00Z'
     },
     {
       title: "Let's Connect!",
       category: 'NETWORKING',
-      status: 'RECRUITING',
+      status: 'OPEN',
       date: '2026-05-15T19:00:00Z'
     },
     {
       title: 'Build an English Resume for Career Transitions',
       category: 'RESUME',
-      status: 'RECRUITING',
+      status: 'OPEN',
       date: '2026-08-10T19:00:00Z'
     },
     {
       title: 'Resume Workshop for International Opportunities',
       category: 'NETWORKING',
-      status: 'RECRUITING',
+      status: 'OPEN',
       date: '2026-11-05T19:00:00Z'
     }
   ];
@@ -596,7 +660,7 @@ async function main() {
     const status =
       startDate < SEEDED_REFERENCE_DATE
         ? WorkshopStatus.COMPLETED
-        : WorkshopStatus.RECRUITING;
+        : WorkshopStatus.OPEN;
 
     const workshopId = randomUUID();
 
@@ -614,7 +678,13 @@ async function main() {
         category: ws.category as WorkshopCategory,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
-          create: [{ instructorId: instructorId2 }]
+          create: (i === 0
+            ? [instructorId, instructorId2, instructorId3]
+            : [instructorId2]
+          ).map((instructorId) => ({ instructorId }))
+        },
+        sectionsRel: {
+          create: createWorkshopCurriculum(ws.title)
         },
         thumbnail: getRandomImage(
           WORKSHOP_THUMBNAILS[(i + 2) % WORKSHOP_THUMBNAILS.length]

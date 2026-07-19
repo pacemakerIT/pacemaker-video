@@ -10,7 +10,7 @@ export interface WorkshopRow {
   price: number;
   likes: number;
   purchases: number;
-  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED' | 'HIDDEN';
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED' | 'HIDDEN';
   category: string;
   thumbnail: string | null;
   selected: boolean;

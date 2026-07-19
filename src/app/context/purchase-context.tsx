@@ -29,8 +29,8 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       // Reset purchase status before checking new video
       setIsPurchased(false);
 
-      if (!videoId || !/^[a-zA-Z0-9]+$/.test(videoId)) {
-        toast.error('Invalid video ID format');
+      if (!videoId || !/^[a-zA-Z0-9_-]+$/.test(videoId)) {
+        setCurrentVideoId(null);
         return;
       }
       setCurrentVideoId(videoId);
@@ -43,8 +43,21 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
         const response = await fetch(
           `/api/purchase-video-status?clerkId=${userId}`
         );
-        const data = await response.json();
-        setIsPurchased(data.purchasedVideoIds.includes(videoId));
+        const data: unknown = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const purchasedVideoIds =
+          typeof data === 'object' &&
+          data !== null &&
+          'purchasedVideoIds' in data &&
+          Array.isArray(data.purchasedVideoIds)
+            ? data.purchasedVideoIds
+            : [];
+
+        setIsPurchased(purchasedVideoIds.includes(videoId));
       } catch (error) {
         setIsPurchased(false);
         toast.error(
@@ -59,9 +72,12 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
 
   // Effect to get videoId from URL
   useEffect(() => {
-    const videoIdFromPath = pathname?.split('/')?.[1];
+    const videoIdFromPath = pathname?.match(/^\/courses\/([^/]+)\/?$/)?.[1];
     if (videoIdFromPath && videoIdFromPath !== currentVideoId) {
       checkPurchaseStatus(videoIdFromPath);
+    } else if (!videoIdFromPath && currentVideoId) {
+      setCurrentVideoId(null);
+      setIsPurchased(false);
     }
   }, [pathname, checkPurchaseStatus, currentVideoId]);
 

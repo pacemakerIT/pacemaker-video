@@ -7,7 +7,7 @@ import EventPopup from '@/components/features/workshops/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { calendarStyleMap } from '@/components/ui/calendar-style-map';
+import { getCalendarStyle } from '@/components/ui/calendar-style-map';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const locales = { 'en-US': enUS };
@@ -26,7 +26,7 @@ export type CalendarEvent = {
   end: Date;
   speaker: string;
   fee: string;
-  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED';
+  status: string;
 };
 
 export type WorkshopFromApi = {
@@ -242,7 +242,7 @@ export default function WorkshopCalendar({
           event: ({ event }) => (
             <div
               onClick={(e) => handleEventClick(e, event)}
-              className={`${openedEvent ? 'rounded-t' : 'rounded'} flex max-w-full cursor-pointer items-center justify-center truncate border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
+              className={`${openedEvent ? 'rounded-t' : 'rounded'} flex max-w-full cursor-pointer items-center justify-center truncate border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${getCalendarStyle(event.status).event}`}
             >
               {event.title}
             </div>
@@ -258,7 +258,7 @@ export default function WorkshopCalendar({
           onClose={() => setOpenedEvent(null)}
         >
           <div
-            className={`rounded-b-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
+            className={`rounded-b-lg p-3 ${getCalendarStyle(openedEvent.status).popup}`}
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
@@ -272,7 +272,7 @@ export default function WorkshopCalendar({
                 onSelectWorkshop?.(openedEvent.title); // 워크숍 title을 상위로 전달
                 setOpenedEvent(null);
               }}
-              className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
+              className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${getCalendarStyle(openedEvent.status).button}`}
             >
               View detail
             </Button>

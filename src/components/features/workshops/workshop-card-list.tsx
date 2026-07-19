@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Heart } from 'lucide-react';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
@@ -22,10 +23,9 @@ export default function WorkshopCardList({
   workshops,
   filter,
   selectedMonth,
-  selectedTitle,
-  onCloseDetail
+  selectedTitle
 }: Props) {
-  const [openCardId, setOpenCardId] = useState<string | null>(null);
+  const router = useRouter();
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const { user } = useUserContext();
@@ -85,12 +85,10 @@ export default function WorkshopCardList({
 
   const getStatusLabel = (status: WorkshopStatus) => {
     switch (status) {
-      case WorkshopStatus.RECRUITING:
+      case WorkshopStatus.OPEN:
         return 'Open';
       case WorkshopStatus.CLOSED:
         return 'Closed';
-      case WorkshopStatus.ONGOING:
-        return 'Ongoing';
       case WorkshopStatus.COMPLETED:
         return 'Completed';
       default:
@@ -100,10 +98,9 @@ export default function WorkshopCardList({
 
   const getStatusClass = (status: WorkshopStatus) => {
     switch (status) {
-      case WorkshopStatus.RECRUITING:
+      case WorkshopStatus.OPEN:
         return 'border-[#FF4F02]/20 bg-[#FF4F02]/[0.05] text-[#FF4F02]';
       case WorkshopStatus.CLOSED:
-      case WorkshopStatus.ONGOING:
         return 'border-teal-500/20 bg-teal-50 text-teal-600';
       case WorkshopStatus.COMPLETED:
       default:
@@ -115,7 +112,6 @@ export default function WorkshopCardList({
     if (selectedTitle) {
       const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
       if (matched) {
-        setOpenCardId(matched.id);
         const target = cardRefs.current[matched.id];
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -127,7 +123,6 @@ export default function WorkshopCardList({
   return (
     <div className="flex w-full flex-col space-y-6">
       {filtered.map((w) => {
-        const isOpen = openCardId === w.id;
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
@@ -136,10 +131,20 @@ export default function WorkshopCardList({
         return (
           <div
             key={w.id}
+            role="link"
+            tabIndex={0}
+            aria-label={`View details for ${w.title}`}
+            onClick={() => router.push(`/workshops/${w.id}`)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                router.push(`/workshops/${w.id}`);
+              }
+            }}
             ref={(el) => {
               cardRefs.current[w.id] = el;
             }} // 각 카드에 ref 연결
-            className="pm-card-lift flex flex-col border border-gray-100 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(0,38,59,0.08)] md:min-h-[220px] md:flex-row md:items-center md:gap-5"
+            className="pm-card-lift flex cursor-pointer flex-col border border-gray-100 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(0,38,59,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 md:min-h-[220px] md:flex-row md:items-center md:gap-5"
           >
             {/* 썸네일 + 좋아요 */}
             <div className="relative h-[180px] w-full flex-shrink-0 bg-gray-50 md:w-[260px]">
@@ -150,7 +155,10 @@ export default function WorkshopCardList({
                 className="object-cover"
               />
               <button
-                onClick={() => toggleLike(w.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleLike(w.id);
+                }}
                 aria-label="like"
                 className="group absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md"
               >
@@ -183,7 +191,10 @@ export default function WorkshopCardList({
                     </span>
                   </div>
 
-                  <button className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#333333] transition-colors hover:bg-gray-100">
+                  <button
+                    onClick={(event) => event.stopPropagation()}
+                    className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#333333] transition-colors hover:bg-gray-100"
+                  >
                     <Image
                       src="/icons/cart.svg"
                       alt="장바구니"

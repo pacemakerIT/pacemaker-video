@@ -3,9 +3,9 @@ import prisma from '@/lib/prisma';
 import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
 
 const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
-  모집중: WorkshopStatus.RECRUITING,
+  모집중: WorkshopStatus.OPEN,
   모집완료: WorkshopStatus.CLOSED,
-  진행중: WorkshopStatus.ONGOING,
+  진행중: WorkshopStatus.CLOSED,
   진행완료: WorkshopStatus.COMPLETED
 };
 
@@ -69,8 +69,7 @@ export async function PUT(
         where: { id: workshopId },
         data: {
           category: (category as WorkshopCategory) || null,
-          status:
-            RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.RECRUITING,
+          status: RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.OPEN,
           isMain: showOnMain ?? false,
           title,
           description,
