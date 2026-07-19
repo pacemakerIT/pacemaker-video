@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -8,6 +9,10 @@ import DetailRecommendationSection from '../../common/detail-recommendation-sect
 import { ItemType, TargetAudienceType } from '@prisma/client';
 import { CodeSquare, FileEdit } from 'lucide-react';
 import { RelatedContentItem } from '@/types/video-detail';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useCartContext } from '@/app/context/cart-context';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 export interface TOCItem {
   id: string;
@@ -16,6 +21,7 @@ export interface TOCItem {
 }
 
 interface EbookDetailContainerProps {
+  id: string;
   backgroundImage?: string;
   subtitle?: string;
   sectionTitle?: string;
@@ -32,9 +38,11 @@ interface EbookDetailContainerProps {
   targetAudienceTypes?: TargetAudienceType[];
   tableOfContents?: TOCItem[];
   relatedItems?: RelatedContentItem[];
+  canAccessEbook?: boolean;
 }
 
 export default function EbookDetailContainer({
+  id,
   backgroundImage = '/img/ebook-bg.png',
   subtitle = 'Chosen by Canadian tech companies',
   sectionTitle,
@@ -49,8 +57,91 @@ export default function EbookDetailContainer({
   reviewCount = 185,
   rating = 5,
   tableOfContents,
-  relatedItems = []
+  relatedItems = [],
+  canAccessEbook = false
 }: EbookDetailContainerProps) {
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+  const { cart, addToCart } = useCartContext();
+  const isInCart = cart.some(
+    (item) => item.itemId === id && item.itemType === ItemType.EBOOK
+  );
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    showCancel: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    showCancel: true
+  });
+
+  const showAlert = (title: string, description: string) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm: () => {},
+      showCancel: false
+    });
+  };
+
+  const showConfirm = (
+    title: string,
+    description: string,
+    onConfirm: () => void
+  ) => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      description,
+      onConfirm,
+      showCancel: true
+    });
+  };
+
+  const handleAddToCart = async () => {
+    if (!isSignedIn) {
+      showConfirm(
+        '로그인 필요',
+        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
+      return;
+    }
+
+    if (canAccessEbook) {
+      showAlert('이미 구매한 콘텐츠', '구매내역에서 바로 확인할 수 있습니다.');
+      return;
+    }
+
+    if (isInCart) {
+      router.push('/mypage/cart');
+      return;
+    }
+
+    try {
+      await addToCart(id, ItemType.EBOOK);
+
+      showConfirm(
+        '장바구니 담기 완료',
+        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?',
+        () => {
+          router.push('/mypage/cart');
+        }
+      );
+    } catch {
+      showAlert('오류 발생', '장바구니 담기에 실패했습니다.');
+    }
+  };
+
   // 후기 데이터 (실제로는 API에서 가져올 데이터)
   const reviews = [
     {
@@ -113,6 +204,12 @@ export default function EbookDetailContainer({
     }
   ];
 
+  const heroButtonText = canAccessEbook
+    ? 'Purchased'
+    : isInCart
+      ? 'Go to Cart'
+      : 'Add to Cart';
+
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
       <DetailHeroSection
@@ -123,7 +220,8 @@ export default function EbookDetailContainer({
         instructor={instructor}
         description={description}
         price={price}
-        buttonText="Add to cart"
+        onAddToCart={handleAddToCart}
+        buttonText={heroButtonText}
         instructorLabel="Instructor"
         priceLabel="Price"
         itemType={ItemType.EBOOK}
@@ -165,6 +263,16 @@ export default function EbookDetailContainer({
           reviewCount={reviewCount}
         />
       </div>
+      <ConfirmModal
+        isOpen={modalConfig.isOpen}
+        onOpenChange={(open) =>
+          setModalConfig((prev) => ({ ...prev, isOpen: open }))
+        }
+        title={modalConfig.title}
+        description={modalConfig.description}
+        onConfirm={modalConfig.onConfirm}
+        showCancel={modalConfig.showCancel}
+      />
     </div>
   );
 }
