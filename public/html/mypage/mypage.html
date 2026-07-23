@@ -1,0 +1,1977 @@
+<!doctype html>
+<html
+  class="light"
+  lang="en"
+  style="--font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacemaker | My Page Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02',
+              'orange-hover': '#e04400',
+              'gray-soft': '#f2f4f7',
+              'surface-container-low': '#f2f4f7',
+              surface: '#f7f9fc',
+              body: '#475467'
+            },
+            fontFamily: {
+              headline: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif'],
+              label: ['Poppins', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              '2xl': '16px',
+              full: '9999px'
+            }
+          }
+        }
+      };
+    </script>
+
+    <style>
+      html {
+        scrollbar-gutter: stable;
+      }
+
+      body {
+        max-width: 1920px;
+        margin: 0 auto;
+        background-color: #f7f9fc;
+        font-family: 'Source Sans 3', sans-serif;
+        color: #475467;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #ffffff;
+        border-bottom: 1px solid #f2f4f6;
+        padding: 12px 0;
+      }
+
+      .nav-inner,
+      .page-container {
+        max-width: 1248px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 24px;
+        padding-right: 24px;
+        box-sizing: border-box;
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .nav-logo img {
+        height: 32px;
+        width: auto;
+        display: block;
+      }
+
+      .nav-center {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.925rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        background: none;
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        background: #f3f4f6;
+        color: #00263b;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn-auth {
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+
+      .btn-login {
+        color: #00263b;
+      }
+
+      .btn-login:hover {
+        background: #f3f4f6;
+      }
+
+      .btn-signup {
+        background: #00263b;
+        color: #fff;
+      }
+
+      .btn-signup:hover {
+        background: #001e2f;
+      }
+
+      .nav-mobile-top {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .nav-hamburger {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .mobile-nav-panel {
+        display: none;
+      }
+
+      .mobile-nav-accordion-panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition:
+          grid-template-rows 0.3s ease-out,
+          opacity 0.3s ease-out;
+      }
+      .mobile-nav-accordion-panel.is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+      }
+      .mobile-nav-accordion-chevron {
+        transition: transform 0.3s ease;
+      }
+      .mobile-nav-accordion-toggle[aria-expanded='true']
+        .mobile-nav-accordion-chevron {
+        transform: rotate(180deg);
+      }
+
+      @media (max-width: 768px) {
+        .nav-inner {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .nav-center,
+        .nav-right,
+        .nav-desktop {
+          display: none;
+        }
+
+        .nav-mobile-top {
+          display: flex;
+          width: 100%;
+        }
+
+        .nav-logo {
+          display: none;
+        }
+
+        .mobile-nav-panel {
+          display: block;
+          width: 100%;
+          flex-basis: 100%;
+          overflow: hidden;
+          max-height: 0;
+          opacity: 0;
+          padding-top: 0;
+          pointer-events: none;
+          transition:
+            max-height 0.3s ease-out,
+            opacity 0.25s ease-out,
+            padding-top 0.25s ease-out;
+        }
+
+        .mobile-nav-panel.is-open {
+          max-height: 42rem;
+          opacity: 1;
+          padding-top: 12px;
+          pointer-events: auto;
+        }
+
+        .nav-hamburger [data-menu-close] {
+          display: none;
+        }
+
+        .nav-hamburger.is-open [data-menu-open] {
+          display: none;
+        }
+
+        .nav-hamburger.is-open [data-menu-close] {
+          display: block;
+        }
+      }
+
+      /* Course Filter Button Style from course_list.html */
+      .course-filter-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: auto;
+        height: 32px;
+        padding: 0 1rem;
+        border: 1px solid #d0d5dd;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #667085;
+        font-family: 'Poppins', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition:
+          border-color 0.3s ease,
+          color 0.3s ease,
+          background-color 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      @media (min-width: 768px) {
+        .course-filter-button {
+          min-width: 110px;
+          height: 40px;
+          padding: 0 1.5rem;
+          border-radius: 16px;
+          font-size: 14px;
+        }
+      }
+
+      .course-filter-button:hover {
+        border-color: #ff4f02;
+        color: #ff4f02;
+        background-color: rgba(255, 79, 2, 0.05);
+      }
+
+      .course-filter-button[data-filter='in-progress']:hover {
+        border-color: #00adbd;
+        color: #00adbd;
+        background-color: rgba(0, 173, 189, 0.05);
+      }
+
+      .course-filter-button[data-filter='completed']:hover {
+        border-color: #6b7280;
+        color: #00263b;
+        background-color: #f3f4f6;
+      }
+
+      .course-filter-button.is-active {
+        border-color: #ff4f02;
+        color: #ff4f02;
+        background-color: rgba(255, 79, 2, 0.08);
+        box-shadow: 0 10px 25px -5px rgba(255, 79, 2, 0.12);
+        font-weight: 700;
+      }
+
+      .course-filter-button[data-filter='in-progress'].is-active {
+        border-color: #00adbd;
+        color: #00adbd;
+        background-color: rgba(0, 173, 189, 0.08);
+        box-shadow: 0 10px 25px -5px rgba(0, 173, 189, 0.12);
+        font-weight: 700;
+      }
+
+      .course-filter-button[data-filter='completed'].is-active {
+        border-color: #00263b;
+        color: #00263b;
+        background-color: rgba(0, 38, 59, 0.08);
+        box-shadow: 0 10px 25px -5px rgba(0, 38, 59, 0.12);
+        font-weight: 700;
+      }
+
+      .card-shadow {
+        box-shadow: 0 10px 30px rgba(0, 38, 59, 0.08);
+      }
+
+      .pm-card-lift {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .pm-card-lift:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 38, 59, 0.12);
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-surface font-body text-body antialiased min-h-screen flex flex-col"
+  >
+    <!-- Skip Link for Accessibility -->
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-2xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+      >Skip to content</a
+    >
+
+    <!-- 1. NAVBAR -->
+    <nav>
+      <div class="nav-inner">
+        <!-- Desktop Logo -->
+        <a aria-label="Pacemaker home" class="nav-logo" href="../main.html">
+          <img
+            alt="Pacemaker Logo"
+            src="../../img/logo.webp"
+            style="height: 32px; width: auto; display: block"
+            onerror="this.src = '../../icons/paceup-logo-black.svg'"
+          />
+        </a>
+        <!-- Navigation Menu & Auth (Unified spacing) -->
+        <div class="nav-desktop flex items-center ml-auto">
+          <div class="nav-center">
+            <a class="nav-item" href="../workshops/workshop_list.html"
+              >Workshops</a
+            >
+            <a class="nav-item" href="../courses/course_list.html"
+              >Online Courses</a
+            >
+            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
+
+            <!-- Cart Button -->
+            <a href="#" class="nav-item">
+              <span
+                class="flex h-5 w-5 items-center justify-center rounded-full bg-orange text-white text-[11px] font-extrabold shadow-sm"
+                >3</span
+              >
+              <span>Cart</span>
+            </a>
+
+            <!-- User Profile Dropdown -->
+            <div class="relative group" id="user-profile-menu">
+              <button
+                type="button"
+                id="user-profile-toggle"
+                class="nav-item focus:outline-none"
+                aria-expanded="false"
+              >
+                <span class="material-symbols-outlined text-[20px]"
+                  >account_circle</span
+                >
+                <span>Jamie</span>
+                <span
+                  class="material-symbols-outlined text-sm transition-transform group-hover:rotate-180"
+                  >expand_more</span
+                >
+              </button>
+
+              <!-- Dropdown Menu (Centered relative to Jamie button) -->
+              <div
+                id="user-profile-dropdown"
+                class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-2xl bg-white p-2 shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+              >
+                <a
+                  href="mypage.html"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold text-orange bg-orange/5 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg"
+                    >space_dashboard</span
+                  >
+                  <span>My Page</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg"
+                    >receipt_long</span
+                  >
+                  <span>Order History</span>
+                </a>
+                <a
+                  href="#"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg"
+                    >settings</span
+                  >
+                  <span>Settings</span>
+                </a>
+                <div class="my-1 border-t border-gray-100"></div>
+                <a
+                  href="#"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-lg">logout</span>
+                  <span>Log Out</span>
+                </a>
+              </div>
+            </div>
+          </div>
+      </div>
+      
+      <!-- Mobile Navigation Header (Inside nav-inner) -->
+      <div class="nav-mobile-top">
+        <a href="../main.html" class="flex-shrink-0" style="display: block">
+          <img
+            alt="Pacemaker Logo"
+            src="../../img/logo.webp"
+            style="
+              height: 28px;
+              width: auto;
+              max-width: none;
+              display: block;
+            "
+            onerror="this.src = '../../icons/paceup-logo-black.svg'"
+          />
+        </a>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button
+            aria-controls="mobile-nav-menu"
+            aria-expanded="false"
+            aria-label="Open menu"
+            class="nav-hamburger"
+            id="mobile-nav-toggle"
+            type="button"
+          >
+            <svg
+              data-menu-open
+              fill="none"
+              height="18"
+              stroke="#00263b"
+              stroke-linecap="round"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+              width="18"
+            >
+              <line x1="3" x2="21" y1="6" y2="6"></line>
+              <line x1="3" x2="21" y1="12" y2="12"></line>
+              <line x1="3" x2="21" y1="18" y2="18"></line>
+            </svg>
+            <svg
+              data-menu-close
+              fill="none"
+              height="18"
+              stroke="#00263b"
+              stroke-linecap="round"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+              width="18"
+            >
+              <line x1="6" x2="18" y1="6" y2="18"></line>
+              <line x1="18" x2="6" y1="6" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile Dropdown Panel -->
+      <div class="mobile-nav-panel" id="mobile-nav-menu">
+        <div class="rounded-none border border-gray-200 bg-white p-3">
+          <div class="border-t border-gray-100 pt-2">
+            <div class="py-1">
+              <a
+                class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                href="../main.html"
+                ><span>HOME</span></a
+              >
+            </div>
+            <div class="py-1">
+              <button
+                type="button"
+                aria-expanded="false"
+                class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                data-target="mobile-nav-programs"
+              >
+                <span>PROGRAMS</span>
+                <svg
+                  class="mobile-nav-accordion-chevron w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div
+                class="mobile-nav-accordion-panel"
+                id="mobile-nav-programs"
+              >
+                <div class="overflow-hidden">
+                  <div class="flex flex-col gap-1">
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="../workshops/workshop_list.html"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >calendar_month</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >Workshops</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Live sessions, practical events, and real-world
+                          feedback.
+                        </p>
+                      </div>
+                    </a>
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="../courses/course_list.html"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >play_lesson</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >Online Courses</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Guided lessons to help with resumes, interviews,
+                          and career moves.
+                        </p>
+                      </div>
+                    </a>
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="../ebooks/ebook_list.html"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >menu_book</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >E-books</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Quick reads with practical tips for searching and
+                          applying with confidence.
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="py-1">
+              <a
+                class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                href="#"
+                ><span>LOGIN</span></a
+              >
+            </div>
+            <div class="pt-3">
+              <a
+                class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#001e2f]"
+                href="#"
+                >SIGN UP</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main
+      id="main-content"
+      class="flex-1 max-w-[1248px] w-full mx-auto px-6 py-12"
+    >
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left Sidebar -->
+        <aside class="w-full lg:w-80 shrink-0">
+          <div
+            class="bg-white rounded-none border border-gray-100 p-6 flex flex-col items-center shadow-card relative sticky top-28"
+          >
+            <!-- Settings Gear Button -->
+            <button
+              class="absolute top-4 right-4 p-2.5 text-body hover:text-orange rounded-2xl hover:bg-orange/10 transition-colors"
+              aria-label="Settings"
+              title="Settings"
+            >
+              <span class="material-symbols-outlined text-xl">settings</span>
+            </button>
+
+            <!-- Profile Avatar -->
+            <div
+              class="w-28 h-28 rounded-full border-4 border-orange/10 p-1 mb-4 shadow-sm relative"
+            >
+              <img
+                src="../../img/user3.png"
+                alt="Jamie"
+                class="w-full h-full object-cover rounded-full"
+                onerror="
+                  this.src =
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80'
+                "
+              />
+            </div>
+
+            <!-- Profile Name -->
+            <h2 class="text-xl font-bold text-navy font-headline mb-6">
+              Jamie
+            </h2>
+
+            <!-- Navigation Links -->
+            <nav
+              class="w-full flex flex-col gap-1 border-t border-gray-100 pt-4 !static !p-0 !border-none"
+            >
+              <!-- Active Item: My Account -->
+              <a
+                href="./mypage.html"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-bold text-orange bg-orange/10 border-l-4 border-orange font-headline transition-all"
+              >
+                <span class="material-symbols-outlined text-xl">person</span>
+                <span>My Account</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >shopping_cart</span
+                >
+                <span>Cart</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl">favorite</span>
+                <span>Wish list</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >receipt_long</span
+                >
+                <span>Order History</span>
+              </a>
+
+              <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
+              >
+                <span class="material-symbols-outlined text-xl"
+                  >support_agent</span
+                >
+                <span>Contact Us</span>
+              </a>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Right Main Dashboard Content -->
+        <section class="flex-1 min-w-0">
+          <!-- Top Hero Welcome Banner & Stats -->
+          <div
+            class="bg-[linear-gradient(135deg,rgba(0,38,59,0.04)_0%,rgba(0,173,189,0.1)_55%,rgba(255,79,2,0.08)_100%)] rounded-none p-6 sm:p-8 border border-navy/10 shadow-card mb-10 relative overflow-hidden"
+          >
+            <div class="relative z-10">
+              <h1
+                class="text-2xl sm:text-[2.2rem] font-bold text-navy font-headline tracking-tight mb-4"
+              >
+                Welcome to your Pacemaker Dashboard!
+              </h1>
+              <p class="text-xs text-body mb-4 font-normal">
+                Last login: Apr 6, 2025 9:30 AM
+              </p>
+
+              <!-- 3 Stat Cards Row (Workshops first) -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Stat 1: Workshops -->
+                <div
+                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
+                >
+                  <div>
+                    <h3 class="text-sm font-bold text-navy font-headline">
+                      Workshops
+                    </h3>
+                    <p class="text-xs text-body mt-1">
+                      Next workshop:
+                      <span class="text-orange font-semibold"
+                        >Apr 15 - 7:00 PM</span
+                      >
+                    </p>
+                  </div>
+                  <span
+                    class="text-4xl font-extrabold text-orange font-headline"
+                    >3</span
+                  >
+                </div>
+
+                <!-- Stat 2: Online Courses -->
+                <div
+                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
+                >
+                  <div>
+                    <h3 class="text-sm font-bold text-navy font-headline">
+                      Online Courses
+                    </h3>
+                    <p class="text-xs text-body mt-1">
+                      1 of 4 courses completed
+                    </p>
+                  </div>
+                  <span
+                    class="text-4xl font-extrabold text-orange font-headline"
+                    >4</span
+                  >
+                </div>
+
+                <!-- Stat 3: E-books -->
+                <div
+                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
+                >
+                  <div>
+                    <h3 class="text-sm font-bold text-navy font-headline">
+                      E-books
+                    </h3>
+                    <p class="text-xs text-body mt-1">1 of 3 read</p>
+                  </div>
+                  <span
+                    class="text-4xl font-extrabold text-orange font-headline"
+                    >3</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 1: My Workshops (Moved to Top) -->
+          <div class="mb-12">
+            <h2
+              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
+            >
+              My Workshops
+            </h2>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-wrap gap-3 mb-6">
+              <button
+                class="course-filter-button is-active"
+                type="button"
+                aria-pressed="true"
+              >
+                All
+              </button>
+              <button
+                class="course-filter-button"
+                type="button"
+                aria-pressed="false"
+              >
+                Upcoming
+              </button>
+              <button
+                class="course-filter-button"
+                data-filter="completed"
+                type="button"
+                aria-pressed="false"
+              >
+                Completed
+              </button>
+            </div>
+
+            <!-- Workshops Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Workshop Card 1 -->
+              <div
+                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-orange flex flex-col h-[340px]"
+              >
+                <div
+                  class="relative h-full bg-cover bg-center overflow-hidden"
+                  style="
+                    background-image:
+                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
+                      url('../../img/workshop-1.png');
+                  "
+                >
+                  <div
+                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
+                  >
+                    <div>
+                      <span
+                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
+                      >
+                        Networking
+                      </span>
+                      <div class="h-[56px] flex items-start">
+                        <h3
+                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
+                        >
+                          Mindset training for success
+                        </h3>
+                      </div>
+                      <div
+                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
+                      >
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >calendar_today</span
+                          >
+                          <span>Date · May 20, 2025 · 7 PM</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >location_on</span
+                          >
+                          <span>Where · North York centre</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >person</span
+                          >
+                          <span>Host · Sujin Ku</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
+                    >
+                      <span class="text-orange font-headline">Registered</span>
+                      <a
+                        href="#"
+                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
+                      >
+                        <span>View</span>
+                        <span class="material-symbols-outlined text-lg"
+                          >arrow_forward</span
+                        >
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Workshop Card 2 -->
+              <div
+                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-slate-400 flex flex-col h-[340px]"
+              >
+                <div
+                  class="relative h-full bg-cover bg-center overflow-hidden"
+                  style="
+                    background-image:
+                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
+                      url('../../img/workshop-image.png');
+                  "
+                >
+                  <div
+                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
+                  >
+                    <div>
+                      <span
+                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
+                      >
+                        Networking
+                      </span>
+                      <div class="h-[56px] flex items-start">
+                        <h3
+                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
+                        >
+                          Meet us tonight
+                        </h3>
+                      </div>
+                      <div
+                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
+                      >
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >calendar_today</span
+                          >
+                          <span>Date · May 20, 2025 · 7 PM</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >location_on</span
+                          >
+                          <span>Where · North York centre</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >person</span
+                          >
+                          <span>Host · Sujin Ku</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
+                    >
+                      <span class="text-gray-300 font-headline">Completed</span>
+                      <a
+                        href="#"
+                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
+                      >
+                        <span>View</span>
+                        <span class="material-symbols-outlined text-lg"
+                          >arrow_forward</span
+                        >
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Workshop Card 3 -->
+              <div
+                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-navy flex flex-col h-[340px]"
+              >
+                <div
+                  class="relative h-full bg-cover bg-center overflow-hidden"
+                  style="
+                    background-image:
+                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
+                      url('../../img/workshop-3.png');
+                  "
+                >
+                  <div
+                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
+                  >
+                    <div>
+                      <span
+                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
+                      >
+                        Career switch
+                      </span>
+                      <div class="h-[56px] flex items-start">
+                        <h3
+                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
+                        >
+                          English resumes built to get interviews
+                        </h3>
+                      </div>
+                      <div
+                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
+                      >
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >calendar_today</span
+                          >
+                          <span>Date · May 20, 2025 · 7 PM</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >location_on</span
+                          >
+                          <span>Where · North York centre</span>
+                        </p>
+                        <p class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm"
+                            >person</span
+                          >
+                          <span>Host · Sujin Ku</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
+                    >
+                      <span class="text-orange font-headline">Registered</span>
+                      <a
+                        href="#"
+                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
+                      >
+                        <span>View</span>
+                        <span class="material-symbols-outlined text-lg"
+                          >arrow_forward</span
+                        >
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: My Online Courses -->
+          <div class="mb-12">
+            <h2
+              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
+            >
+              My Online Courses
+            </h2>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-wrap gap-3 mb-6">
+              <button
+                class="course-filter-button is-active"
+                type="button"
+                aria-pressed="true"
+              >
+                All
+              </button>
+              <button
+                class="course-filter-button"
+                data-filter="in-progress"
+                type="button"
+                aria-pressed="false"
+              >
+                In progress
+              </button>
+              <button
+                class="course-filter-button"
+                type="button"
+                aria-pressed="false"
+              >
+                Not started
+              </button>
+              <button
+                class="course-filter-button"
+                data-filter="completed"
+                type="button"
+                aria-pressed="false"
+              >
+                Completed
+              </button>
+            </div>
+
+            <!-- Online Courses Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Course Card 1 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
+                >
+                  <img
+                    src="../../img/online-course-1.png"
+                    alt="Cover letters and interview prep in one course"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                  />
+                  <div class="absolute top-4 left-4 z-10">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: #36a6f6"
+                    >
+                      Interview
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>4 / 8 lessons</span>
+                      <span class="font-bold text-navy font-headline"
+                        >50% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Cover letters and interview prep in one course
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 50%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Continue learning</span>
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Card 2 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
+                >
+                  <img
+                    src="../../img/online-course-2.png"
+                    alt="Resume & Interview Essentials"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                  />
+                  <div class="absolute top-4 left-4 z-10">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: #ff9631"
+                    >
+                      Resume
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>0 / 8 lessons</span>
+                      <span class="font-bold text-navy font-headline"
+                        >0% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Resume & Interview Essentials
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Start course</span>
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Card 3 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
+                >
+                  <img
+                    src="../../img/online-course-3.png"
+                    alt="Networking Fundamentals"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                  />
+                  <div class="absolute top-4 left-4 z-10">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: #9f5be7"
+                    >
+                      Networking
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>8 / 8 lessons</span>
+                      <span class="font-bold text-navy font-headline"
+                        >100% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Networking Fundamentals
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 100%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Write a review</span>
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Card 4 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
+                >
+                  <img
+                    src="../../img/course_image1.png"
+                    alt="Behavioral Interview Practice & Coaching"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                  />
+                  <div class="absolute top-4 left-4 z-10">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: #36a6f6"
+                    >
+                      Interview
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>4 / 8 lessons</span>
+                      <span class="font-bold text-navy font-headline"
+                        >50% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Behavioral Interview Practice & Coaching
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 50%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Continue learning</span>
+                      <span class="material-symbols-outlined text-sm"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Card 5 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
+                >
+                  <img
+                    src="../../img/course_image2.png"
+                    alt="Resume strategy for North America hiring"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                  />
+                  <div class="absolute top-4 left-4 z-10">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: #ff9631"
+                    >
+                      Resume
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>8 / 8 lessons</span>
+                      <span class="font-bold text-navy font-headline"
+                        >100% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Resume strategy for North America hiring
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 100%"
+                      ></div>
+                    </div>
+                    <span class="text-sm text-body font-bold font-headline"
+                      >Completed</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: My E-books (Last Section - Bottom aligned with sidebar) -->
+          <div>
+            <h2
+              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
+            >
+              My E-books
+            </h2>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-wrap gap-3 mb-6">
+              <button
+                class="course-filter-button is-active"
+                type="button"
+                aria-pressed="true"
+              >
+                All
+              </button>
+              <button
+                class="course-filter-button"
+                data-filter="in-progress"
+                type="button"
+                aria-pressed="false"
+              >
+                In progress
+              </button>
+              <button
+                class="course-filter-button"
+                type="button"
+                aria-pressed="false"
+              >
+                Not started
+              </button>
+              <button
+                class="course-filter-button"
+                data-filter="completed"
+                type="button"
+                aria-pressed="false"
+              >
+                Completed
+              </button>
+            </div>
+
+            <!-- E-books Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- E-book Card 1 (Marketing) -->
+              <div
+                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] bg-[#FFF5F2] p-6 flex flex-col justify-start"
+                >
+                  <div class="mb-3">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
+                      style="background: rgb(255, 126, 84)"
+                    >
+                      Marketing
+                    </span>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-[#FF6B3D] text-2xl font-extrabold font-headline leading-tight mb-1"
+                    >
+                      Marketing
+                    </h4>
+                    <p
+                      class="text-[#FF6B3D] text-xs font-medium leading-relaxed line-clamp-3"
+                    >
+                      The 94% Success Formula: A Proven Approach to Job & Career
+                      Transitions
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>9 / 15 pages</span>
+                      <span class="font-bold text-navy font-headline"
+                        >60% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Branding & Networking for Marketers
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 60%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Continue reading</span>
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- E-book Card 2 (Finance & Accounting) -->
+              <div
+                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] bg-[#EEF4FF] p-6 flex flex-col justify-start"
+                >
+                  <div class="mb-3">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
+                      style="background: #3b82f6"
+                    >
+                      Finance
+                    </span>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-[#2563EB] text-2xl font-extrabold font-headline leading-tight mb-1"
+                    >
+                      Finance & Accounting
+                    </h4>
+                    <p
+                      class="text-[#2563EB] text-xs font-medium leading-relaxed line-clamp-3"
+                    >
+                      A practical guide to interviews for finance and accounting
+                      roles, learn once, use for life.
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>0 / 15 pages</span>
+                      <span class="font-bold text-navy font-headline"
+                        >0% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Preparing for Accounting Interviews
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 0%"
+                      ></div>
+                    </div>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
+                    >
+                      <span>Start reading</span>
+                      <span class="material-symbols-outlined text-lg"
+                        >arrow_forward</span
+                      >
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- E-book Card 3 (Public Sector) -->
+              <div
+                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+              >
+                <div
+                  class="relative h-[200px] bg-[#ECFDF5] p-6 flex flex-col justify-start"
+                >
+                  <div class="mb-3">
+                    <span
+                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
+                      style="background: #10b981"
+                    >
+                      Public Sector
+                    </span>
+                  </div>
+                  <div>
+                    <h4
+                      class="text-[#059669] text-2xl font-extrabold font-headline leading-tight mb-1"
+                    >
+                      Public Sector
+                    </h4>
+                    <p
+                      class="text-[#059669] text-xs font-medium leading-relaxed line-clamp-3"
+                    >
+                      A Resume That Gets You Hired In the North American Public
+                      Sector
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+                >
+                  <div>
+                    <div
+                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
+                    >
+                      <span>15 / 15 pages</span>
+                      <span class="font-bold text-navy font-headline"
+                        >100% complete</span
+                      >
+                    </div>
+                    <div class="h-[52px] flex items-start">
+                      <h3
+                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
+                      >
+                        Public Sector Resume
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <div
+                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+                    >
+                      <div
+                        class="bg-orange h-full rounded-full"
+                        style="width: 100%"
+                      ></div>
+                    </div>
+                    <span class="text-sm text-body font-bold font-headline"
+                      >Completed</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-white border-t border-[#eaecf0] pt-[80px] pb-[60px] mt-auto"
+    >
+      <div class="page-container">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+          <!-- Left: Logo + Social -->
+          <div>
+            <div class="mb-7">
+              <img
+                src="../../img/logo.webp"
+                alt="Pacemaker Logo"
+                class="h-8 w-auto block"
+                onerror="this.src = '../../icons/paceup-logo-black.svg'"
+              />
+            </div>
+            <p
+              class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4"
+            >
+              Social
+            </p>
+            <div class="flex gap-3 flex-wrap">
+              <a
+                href="https://www.instagram.com/pacemaker_career"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                aria-label="Instagram"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+              <a
+                href="https://www.facebook.com/globalpacemaker"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                aria-label="Facebook"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://www.youtube.com/channel/UCyc055VyNuwAMF27dd74smA"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center text-[#344054] no-underline transition-all hover:border-navy hover:text-navy"
+                aria-label="YouTube"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.54C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"
+                  />
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                </svg>
+              </a>
+              <a
+                href="https://www.threads.com/@pacemaker_career"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-11 h-11 rounded-full border border-[#d0d5dd] inline-flex items-center justify-center no-underline transition-all hover:border-navy hover:text-navy"
+                style="
+                  font-family: 'Poppins', sans-serif;
+                  font-weight: 800;
+                  font-size: 0.85rem;
+                  color: #344054;
+                "
+                aria-label="Threads"
+              >
+                @
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Contact -->
+          <div class="w-full md:ml-auto md:w-fit md:text-right">
+            <p
+              class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4 md:text-right"
+            >
+              Contact
+            </p>
+            <ul class="list-none flex flex-col gap-3 md:items-end p-0 m-0">
+              <li
+                class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#667085"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  class="flex-shrink-0"
+                >
+                  <path
+                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                  />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <a
+                  href="mailto:Hello@pacemakerca.com"
+                  class="text-[#344054] no-underline hover:text-navy transition-colors"
+                  >Hello@pacemakerca.com</a
+                >
+              </li>
+              <li
+                class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#667085"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  class="flex-shrink-0"
+                >
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.44 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                  />
+                </svg>
+                <a
+                  href="tel:+16476120523"
+                  class="text-[#344054] no-underline hover:text-navy transition-colors"
+                  >+1 647-612-0523</a
+                >
+              </li>
+              <li
+                class="flex items-center gap-2 text-[0.9rem] text-[#344054] md:justify-end"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#667085"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  class="flex-shrink-0"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span>Toronto, ON, Canada</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p class="text-[0.9rem] text-[#98a2b3]">
+          © 2026 Pacemaker. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Mobile Nav Script -->
+    <script>
+      (function mobileNav() {
+        var menuToggle = document.getElementById('mobile-nav-toggle');
+        var menu = document.getElementById('mobile-nav-menu');
+        if (!menuToggle || !menu) return;
+
+        function setMenuOpen(isOpen) {
+          menu.classList.toggle('is-open', isOpen);
+          menuToggle.classList.toggle('is-open', isOpen);
+          menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          menuToggle.setAttribute(
+            'aria-label',
+            isOpen ? 'Close menu' : 'Open menu'
+          );
+        }
+
+        menuToggle.addEventListener('click', function () {
+          setMenuOpen(!menu.classList.contains('is-open'));
+        });
+
+        document.addEventListener('click', function (event) {
+          if (!menu.classList.contains('is-open')) return;
+          if (menu.contains(event.target) || menuToggle.contains(event.target))
+            return;
+          setMenuOpen(false);
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') {
+            setMenuOpen(false);
+          }
+        });
+
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 768) {
+            setMenuOpen(false);
+          }
+        });
+
+        Array.prototype.forEach.call(
+          document.querySelectorAll('.mobile-nav-accordion-toggle'),
+          function (toggle) {
+            var panelId = toggle.getAttribute('data-target');
+            var panel = panelId ? document.getElementById(panelId) : null;
+            if (!panel) return;
+
+            toggle.addEventListener('click', function () {
+              var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+              panel.classList.toggle('is-open', !isOpen);
+            });
+          }
+        );
+      })();
+
+      (function userProfileDropdown() {
+        var toggle = document.getElementById('user-profile-toggle');
+        var dropdown = document.getElementById('user-profile-dropdown');
+        var menu = document.getElementById('user-profile-menu');
+        if (!toggle || !dropdown || !menu) return;
+
+        toggle.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var isOpen = dropdown.classList.contains('!opacity-100');
+          if (isOpen) {
+            dropdown.classList.remove('!opacity-100', '!visible');
+          } else {
+            dropdown.classList.add('!opacity-100', '!visible');
+          }
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!menu.contains(e.target)) {
+            dropdown.classList.remove('!opacity-100', '!visible');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
