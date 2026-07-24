@@ -1,16 +1,14 @@
 'use client';
 
 import { MouseEvent, useEffect, useState } from 'react';
-import Image from 'next/image';
 import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '@/components/features/workshops/calendar-custom.css';
 import EventPopup from '@/components/features/workshops/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { calendarStyleMap } from '@/components/ui/calendar-style-map';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const locales = { 'en-US': enUS };
 
@@ -77,38 +75,32 @@ function CustomToolbar({
   onNavigate,
   count
 }: ToolbarProps<CalendarEvent> & { count: number }) {
+  const monthName = label.split(' ')[0];
+
   return (
-    <div className="w-full flex items-center justify-between gap-4 flex-wrap py-4 pb-8">
+    <div className="mb-4 flex w-full items-center justify-between px-2">
       <button
-        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
+        className="flex h-[56px] w-[56px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#00263B]"
         onClick={() => onNavigate('PREV')}
+        aria-label="Previous month"
       >
-        <Image
-          src="/icons/calendar-arrow-left.svg"
-          alt="prev"
-          width={40}
-          height={40}
-        />
+        <ChevronLeft className="h-6 w-6" />
       </button>
-      <div className="flex-1 text-center min-w-[200px] max-w-[600px] mx-auto">
-        <h2 className="font-bold text-pace-xl text-pace-gray-700 pb-2">
-          {label}
+      <div className="text-center">
+        <h2 className="font-headline text-[24px] font-bold leading-[36px] text-[#00263B]">
+          {label.split(' ')[0].slice(0, 3) + ', ' + label.split(' ')[1]}
         </h2>
-        <p className="text-pace-stone-500 text-pace-base truncate">
-          <span className="text-pace-orange-600">{count}</span> Workshops in{' '}
-          {monthMap[label.split(' ')[0]]}
+        <p className="mt-1 text-[16px] font-bold text-[#666666]">
+          <span className="text-[#FF4F02]">{count}</span> Workshops in{' '}
+          {monthMap[monthName]}
         </p>
       </div>
       <button
-        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
+        className="flex h-[56px] w-[56px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#00263B]"
         onClick={() => onNavigate('NEXT')}
+        aria-label="Next month"
       >
-        <Image
-          src="/icons/calendar-arrow-right.svg"
-          alt="next"
-          width={40}
-          height={40}
-        />
+        <ChevronRight className="h-6 w-6" />
       </button>
     </div>
   );
@@ -128,6 +120,7 @@ export default function WorkshopCalendar({
   } | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [count, setCount] = useState(0);
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [openedEvent, setOpenedEvent] = useState<CalendarEvent | null>(null);
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0 });
 
@@ -154,6 +147,7 @@ export default function WorkshopCalendar({
   };
 
   const handleNavigate = async (newDate: Date) => {
+    setCalendarDate(newDate);
     onMonthChange?.(newDate); // 새로 조회한 날짜 상위에 전달
 
     if (!loadedRange || !isInRange(newDate, loadedRange)) {
@@ -198,6 +192,7 @@ export default function WorkshopCalendar({
         const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
         setAllWorkshops(json.workshops);
         setLoadedRange({ start, end });
+        setCalendarDate(today);
         filterWorkshopsByMonth(today, json.workshops);
         onMonthChange?.(today); // 초기 조회일도 전달
       } catch (error) {
@@ -230,15 +225,16 @@ export default function WorkshopCalendar({
 
   return (
     <div
-      className="w-[62.5%] max-w-[900px] items-center mx-auto justify-center flex flex-col gap-8 bg-white"
+      className="mb-8 flex w-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,38,59,0.04)] md:h-[778px]"
       onClick={() => setOpenedEvent(null)}
     >
       <Calendar
         localizer={localizer}
         events={events}
+        date={calendarDate}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 600, width: '100%' }}
+        style={{ height: 680, width: '100%' }}
         views={['month']}
         onNavigate={handleNavigate}
         components={{
@@ -246,7 +242,7 @@ export default function WorkshopCalendar({
           event: ({ event }) => (
             <div
               onClick={(e) => handleEventClick(e, event)}
-              className={`${openedEvent ? 'rounded-t' : 'rounded'} cursor-pointer text-sm rounded-t px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02] ${calendarStyleMap[event.status].event}`}
+              className={`${openedEvent ? 'rounded-t' : 'rounded'} flex max-w-full cursor-pointer items-center justify-center truncate border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
             >
               {event.title}
             </div>

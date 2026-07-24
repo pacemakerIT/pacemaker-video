@@ -444,6 +444,24 @@ nav {
 }
 
 @layer utilities {
+  .font-body {
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  .pm-card-lift {
+    transition:
+      transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+      box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+      border-color 0.3s ease;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .pm-card-lift:hover {
+    transform: translate3d(0, -6px, 0);
+    box-shadow: 0 20px 40px rgba(0, 38, 59, 0.12);
+    border-color: rgba(0, 38, 59, 0.06);
+  }
+
   #clerk-captcha {
     @apply mb-0 pb-0;
   }
