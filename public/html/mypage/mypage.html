@@ -392,7 +392,7 @@
             <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
 
             <!-- Cart Button -->
-            <a href="#" class="nav-item">
+            <a href="cart.html" class="nav-item">
               <span
                 class="flex h-5 w-5 items-center justify-center rounded-full bg-orange text-white text-[11px] font-extrabold shadow-sm"
                 >3</span
@@ -653,18 +653,197 @@
               </div>
             </div>
             <div class="py-1">
-              <a
-                class="flex items-center h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
-                href="#"
-                ><span>LOGIN</span></a
+              <button
+                type="button"
+                aria-expanded="false"
+                class="mobile-nav-accordion-toggle flex w-full items-center justify-between h-11 rounded-lg px-1 text-sm font-semibold leading-none tracking-wide text-gray-700 transition-colors hover:text-navy"
+                data-target="mobile-nav-user-profile"
               >
-            </div>
-            <div class="pt-3">
-              <a
-                class="inline-flex w-full items-center justify-center rounded-2xl bg-navy px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#001e2f]"
-                href="#"
-                >SIGN UP</a
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]"
+                    >account_circle</span
+                  >
+                  <span>JAMIE</span>
+                </span>
+                <svg
+                  class="mobile-nav-accordion-chevron w-4 h-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m6 9 6 6 6-6"></path>
+                </svg>
+              </button>
+              <div
+                class="mobile-nav-accordion-panel"
+                id="mobile-nav-user-profile"
               >
+                <div class="overflow-hidden">
+                  <div class="flex flex-col gap-1">
+                    <!-- Cart -->
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="cart.html"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100 relative"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >shopping_cart</span
+                        >
+                        <span
+                          class="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-orange text-white text-[10px] font-extrabold shadow-sm"
+                          >3</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >Cart</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Check your selected courses and books.
+                        </p>
+                      </div>
+                    </a>
+                    <!-- My Page -->
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="mypage.html"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >space_dashboard</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >My Page</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          View your statistics, courses, and settings.
+                        </p>
+                      </div>
+                    </a>
+                    <!-- Order History -->
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="#"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >receipt_long</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >Order History</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Manage your purchases and receipt details.
+                        </p>
+                      </div>
+                    </a>
+                    <!-- Settings -->
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      href="#"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >settings</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            >Settings</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Configure account preferences and security.
+                        </p>
+                      </div>
+                    </a>
+                    <!-- Log Out -->
+                    <a
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-red-50"
+                      href="#"
+                    >
+                      <div
+                        class="mt-0.5 p-2 rounded-lg bg-red-50 text-red-500 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-red-600 group-hover/item:border-red-100"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >logout</span
+                        >
+                      </div>
+                      <div class="flex-1">
+                        <div class="flex items-center justify-between">
+                          <span
+                            class="text-[0.95rem] font-bold text-red-500 mb-0.5"
+                            >Log Out</span
+                          >
+                          <span
+                            class="material-symbols-outlined text-[18px] text-red-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            >chevron_right</span
+                          >
+                        </div>
+                        <p
+                          class="text-[0.825rem] text-red-400 font-medium leading-snug line-clamp-2"
+                        >
+                          Safely sign out of your account.
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -678,7 +857,7 @@
     >
       <div class="flex flex-col lg:flex-row gap-8">
         <!-- Left Sidebar -->
-        <aside class="w-full lg:w-80 shrink-0">
+        <aside class="w-full lg:w-[320px] shrink-0">
           <div
             class="bg-white rounded-none border border-gray-100 p-6 flex flex-col items-center shadow-card relative sticky top-28"
           >
@@ -725,7 +904,7 @@
               </a>
 
               <a
-                href="#"
+                href="cart.html"
                 class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
               >
                 <span class="material-symbols-outlined text-xl"
