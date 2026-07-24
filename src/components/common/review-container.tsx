@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-// 리뷰 데이터 타입 정의
 interface Review {
   id: string;
   author: string;
@@ -28,45 +27,58 @@ const ReviewContainer = () => {
   }, []);
 
   return (
-    <div className="w-screen relative flex-col justify-center gap-8 py-20 overflow-hidden bg-pace-ivory-500 flex items-center">
-      <h3 className="text-center text-2xl font-medium">
-        Hear from learners who&apos;ve taken our courses.
-      </h3>
-      <div
-        className={`whitespace-nowrap flex${reviews.length > 0 ? ' animate-marquee' : ''} p-4`}
-      >
-        {[...Array(3)].map((_, idx) =>
-          reviews.map((review) => (
-            <div
-              key={review.id + '-' + idx}
-              className="inline-block bg-white rounded-lg shadow p-4 mx-4 w-[300px]"
-            >
-              <div className="flex justify-between">
-                <div className="font-medium text-[10px] text-pace-orange-600 mb-2">
-                  {review.author}
-                </div>
-                <div className="flex items-center mb-1">
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Image
-                      key={i}
-                      src="/img/rating.png"
-                      alt="star"
-                      width={14}
-                      height={14}
-                      className="inline-block mr-1"
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="text-[10px] text-pace-stone-700 break-words whitespace-pre-line mb-2 max-w-64 line-clamp-4">
-                {review.content}
-              </div>
-              {/* <div className="text-xs text-gray-400">{review.date}</div> */}
-            </div>
-          ))
-        )}
+    <section className="relative overflow-hidden bg-[#F2F4F7] py-16 md:py-24 flex flex-col items-center font-body">
+      <div className="max-w-[1200px] mx-auto px-6 w-full">
+        <div className="text-center mb-16">
+          <h2 className="text-[24px] font-bold text-[#00263B]">
+            Hear from learners who&apos;ve taken our courses.
+          </h2>
+        </div>
       </div>
-      {/* marquee 애니메이션용 스타일 */}
+
+      <div className="w-full overflow-hidden px-4">
+        <div
+          className={`flex gap-6 w-max${reviews.length > 0 ? ' animate-marquee' : ''}`}
+          style={
+            reviews.length > 0
+              ? // Match the sample's marquee speed (~12px/s) regardless of review count:
+                // one loop scrolls reviews.length cards of ~324px each.
+                { animationDuration: `${reviews.length * 27}s` }
+              : undefined
+          }
+        >
+          {[...Array(3)].map((_, idx) =>
+            reviews.map((review) => (
+              <div
+                key={review.id + '-' + idx}
+                className="inline-block bg-white rounded-none border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] p-8 w-[300px] flex-shrink-0"
+              >
+                <div className="flex justify-between mb-2">
+                  <div className="font-medium text-[0.85rem] text-[#00263B]">
+                    {review.author}
+                  </div>
+                  <div className="flex items-center">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Image
+                        key={i}
+                        src="/img/rating.png"
+                        alt="star"
+                        width={14}
+                        height={14}
+                        className="inline-block mr-1"
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="text-[1rem] text-[#475467] break-words whitespace-pre-line leading-relaxed mb-2 line-clamp-4">
+                  {review.content}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
       <style jsx>{`
         @keyframes marquee {
           0% {
@@ -77,10 +89,10 @@ const ReviewContainer = () => {
           }
         }
         .animate-marquee {
-          animation: marquee 300s linear infinite;
+          animation: marquee 60s linear infinite;
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 
