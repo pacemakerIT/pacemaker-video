@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import SectionList from '@/components/admin/common/section-list';
 import EbookRecommendedSelect from './sections/ebook-recommended-select';
@@ -26,6 +27,7 @@ export type EbookData = {
   subTitle: string;
   subDescription: string;
   price: string;
+  time?: string;
   thumbnailUrl: string;
   fileUrl: string;
   visualTitle: string;
@@ -47,28 +49,39 @@ type Props = {
   submitLabel?: string;
 };
 
+export function normalizeEbookData(data?: Partial<EbookData>): EbookData {
+  return {
+    category: data?.category ?? '',
+    isPublic: data?.isPublic ?? '',
+    showOnMain: Boolean(data?.showOnMain),
+    title: data?.title ?? '',
+    intro: data?.intro ?? '',
+    subTitle: data?.subTitle ?? '',
+    subDescription: data?.subDescription ?? '',
+    price: data?.price ?? '',
+    time: data?.time ?? '',
+    thumbnailUrl: data?.thumbnailUrl ?? '',
+    fileUrl: data?.fileUrl ?? '',
+    visualTitle: data?.visualTitle ?? '',
+    visualTitle2: data?.visualTitle2 ?? '',
+    recommended: data?.recommended ?? [],
+    sections: data?.sections ?? [{ title: '', content: '' }],
+    links: data?.links ?? [{ url: '', name: '', errors: {} }]
+  };
+}
+
 export default function EbookForm({ initialData, submitLabel }: Props) {
-  const [ebookData, setEbookData] = useState<EbookData>(
-    initialData || {
-      category: '',
-      isPublic: '',
-      showOnMain: false,
-      title: '',
-      intro: '',
-      subTitle: '',
-      subDescription: '',
-      price: '',
-      thumbnailUrl: '',
-      fileUrl: '',
-      visualTitle: '',
-      visualTitle2: '',
-      recommended: [],
-      sections: [{ title: '', content: '' }],
-      links: [{ url: '', name: '', errors: {} }]
-    }
+  const router = useRouter();
+  const [ebookData, setEbookData] = useState<EbookData>(() =>
+    normalizeEbookData(initialData)
   );
 
   const [errors, setErrors] = useState<EbookFormErrors>({});
+
+  useEffect(() => {
+    setEbookData(normalizeEbookData(initialData));
+    setErrors({});
+  }, [initialData]);
 
   const handleSubmit = () => {
     const newErrors: EbookFormErrors = {};
@@ -141,8 +154,12 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
           await createEbook(payload);
           toast.success('등록 완료!');
         }
-      } catch {
-        toast.error('오류가 발생했습니다.');
+
+        router.push('/admin/ebooks');
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : '오류가 발생했습니다.';
+        toast.error(message);
       }
     };
     transition();
@@ -189,6 +206,8 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
         setSubDescription={(v) => updateEbookData('subDescription', v)}
         price={ebookData.price}
         setPrice={(v) => updateEbookData('price', v)}
+        time={ebookData.time}
+        setTime={(v) => updateEbookData('time', v)}
         thumbnailUrl={ebookData.thumbnailUrl}
         setThumbnailUrl={(v) => {
           updateEbookData('thumbnailUrl', v);

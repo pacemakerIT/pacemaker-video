@@ -49,125 +49,186 @@ type Props = {
   courseId?: string;
 };
 
+const getDefaultCourseData = (): CourseData => ({
+  category: '',
+  isPublic: '',
+  showOnMain: false,
+  title: '',
+  intro: '',
+  processTitle: '',
+  processContent: '',
+  videoLink: '',
+  price: '',
+  time: '',
+  thumbnail: null,
+  thumbnailUrl: '',
+  visualTitle: '',
+  visualTitle2: '',
+  recommended: [],
+  sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
+  instructors: [
+    {
+      name: '',
+      intro: '',
+      careers: [
+        { startDate: '', endDate: '', description: '', isCurrent: false }
+      ],
+      photo: null,
+      photoUrl: ''
+    }
+  ],
+  links: [{ url: '', name: '', errors: {} }]
+});
+
+const normalizeString = (value: string | null | undefined) =>
+  typeof value === 'string' ? value : '';
+
+const normalizeCourseData = (data?: Partial<CourseData>): CourseData => {
+  const base = data ?? {};
+
+  return {
+    category: normalizeString(base.category),
+    isPublic: normalizeString(base.isPublic),
+    showOnMain: Boolean(base.showOnMain),
+    title: normalizeString(base.title),
+    intro: normalizeString(base.intro),
+    processTitle: normalizeString(base.processTitle),
+    processContent: normalizeString(base.processContent),
+    videoLink: normalizeString(base.videoLink),
+    price: normalizeString(base.price),
+    time: normalizeString(base.time),
+    thumbnail: base.thumbnail ?? null,
+    thumbnailUrl: normalizeString(base.thumbnailUrl),
+    visualTitle: normalizeString(base.visualTitle),
+    visualTitle2: normalizeString(base.visualTitle2),
+    recommended: Array.isArray(base.recommended) ? base.recommended : [],
+    sections: (base.sections ?? []).map((section) => ({
+      title: normalizeString(section?.title),
+      content: normalizeString(section?.content),
+      videos: (section?.videos ?? []).map((video) => ({
+        title: normalizeString(video?.title),
+        link: normalizeString(video?.link)
+      }))
+    })),
+    instructors: (base.instructors ?? []).map((inst) => ({
+      name: normalizeString(inst?.name),
+      intro: normalizeString(inst?.intro),
+      careers: (inst?.careers ?? []).map((career) => ({
+        startDate: normalizeString(career?.startDate),
+        endDate: normalizeString(career?.endDate),
+        description: normalizeString(career?.description),
+        isCurrent: Boolean(career?.isCurrent)
+      })),
+      photo: inst?.photo ?? null,
+      photoUrl: normalizeString(inst?.photoUrl)
+    })),
+    links: (base.links ?? []).map((link) => ({
+      url: normalizeString(link?.url),
+      name: normalizeString(link?.name),
+      errors: link?.errors ?? {}
+    }))
+  };
+};
+
+export function getCourseFormValidationErrors(
+  courseData: CourseData
+): CourseFormErrors {
+  const normalized = normalizeCourseData(courseData);
+  const newErrors: CourseFormErrors = {};
+
+  if (!normalized.category) newErrors.category = '카테고리를 선택해주세요.';
+  if (!normalized.isPublic) newErrors.isPublic = '공개 여부를 선택해주세요.';
+  if (!normalized.title.trim()) newErrors.title = '제목을 입력해주세요.';
+  if (!normalized.intro.trim()) newErrors.intro = '소개를 입력해주세요.';
+  if (!normalized.videoLink?.trim())
+    newErrors.videoLink = '동영상 링크를 입력해주세요.';
+  if (!normalized.price.trim()) newErrors.price = '가격을 입력해주세요.';
+  if (!normalized.time.trim()) newErrors.time = '시간을 입력해주세요.';
+  if (!normalized.thumbnail && !normalized.thumbnailUrl)
+    newErrors.thumbnail = '썸네일 이미지를 업로드해주세요.';
+  if (!normalized.visualTitle?.trim())
+    newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
+  if (!normalized.visualTitle2?.trim())
+    newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
+  if (!normalized.recommended?.length)
+    newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
+
+  const hasInvalidLink = normalized.links.some(
+    (link) => !link.url.trim() || !link.name.trim()
+  );
+  if (hasInvalidLink) newErrors.links = '링크와 이름을 모두 입력해주세요.';
+
+  const sectionErrors = normalized.sections.map((section) => {
+    const errs: { title?: string; content?: string } = {};
+    if (!section.title.trim()) errs.title = '섹션 제목을 입력해주세요.';
+    if (!section.content.trim()) errs.content = '섹션 내용을 입력해주세요.';
+    return Object.keys(errs).length > 0 ? errs : {};
+  });
+  if (sectionErrors.some((err) => Object.keys(err).length > 0)) {
+    newErrors.sections = sectionErrors;
+  }
+
+  const instructorErrors = normalized.instructors.map((inst) => {
+    const errs: {
+      name?: string;
+      intro?: string;
+      careers?: {
+        startDate?: string;
+        endDate?: string;
+        isCurrent?: boolean;
+        description?: string;
+      }[];
+      photo?: string;
+    } = {};
+
+    if (!inst.name.trim()) errs.name = '강사 이름을 입력해주세요.';
+    if (!inst.intro.trim()) errs.intro = '강사 소개를 입력해주세요.';
+    if (!inst.photo && !inst.photoUrl)
+      errs.photo = '강사 사진을 업로드해주세요.';
+
+    const careerErrors = (inst.careers ?? []).map((career) => {
+      const cErrors: {
+        startDate?: string;
+        endDate?: string;
+        isCurrent?: boolean;
+        description?: string;
+      } = {};
+      if (!career.startDate.trim())
+        cErrors.startDate = '시작일을 입력해주세요.';
+      if (!career.isCurrent && !career.endDate.trim())
+        cErrors.endDate = '종료일을 입력해주세요.';
+      if (!career.description.trim())
+        cErrors.description = '이력 내용을 입력해주세요.';
+      return Object.keys(cErrors).length > 0 ? cErrors : {};
+    });
+
+    if (careerErrors.some((err) => Object.keys(err).length > 0)) {
+      errs.careers = careerErrors;
+    }
+
+    return Object.keys(errs).length > 0 ? errs : {};
+  });
+
+  if (instructorErrors.some((err) => Object.keys(err).length > 0)) {
+    newErrors.instructors = instructorErrors;
+  }
+
+  return newErrors;
+}
+
 export default function CourseForm({
   initialData,
   isEdit = false,
   courseId
 }: Props) {
-  const [courseData, setCourseData] = useState<CourseData>(
-    initialData || {
-      category: '',
-      isPublic: '',
-      showOnMain: false,
-      title: '',
-      intro: '',
-      processTitle: '',
-      processContent: '',
-      videoLink: '',
-      price: '',
-      time: '',
-      thumbnail: null,
-      thumbnailUrl: '',
-      visualTitle: '',
-      visualTitle2: '',
-      recommended: [],
-      sections: [{ title: '', content: '', videos: [{ title: '', link: '' }] }],
-      instructors: [
-        {
-          name: '',
-          intro: '',
-          careers: [
-            { startDate: '', endDate: '', description: '', isCurrent: false }
-          ],
-          photo: null,
-          photoUrl: ''
-        }
-      ],
-      links: [{ url: '', name: '', errors: {} }]
-    }
+  const [courseData, setCourseData] = useState<CourseData>(() =>
+    normalizeCourseData(initialData ?? getDefaultCourseData())
   );
 
   const [errors, setErrors] = useState<CourseFormErrors>({});
 
   const handleSubmit = async () => {
-    const newErrors: CourseFormErrors = {};
-
-    if (!courseData.category) newErrors.category = '카테고리를 선택해주세요.';
-    if (!courseData.isPublic) newErrors.isPublic = '공개 여부를 선택해주세요.';
-    if (!courseData.title.trim()) newErrors.title = '제목을 입력해주세요.';
-    if (!courseData.intro.trim()) newErrors.intro = '소개를 입력해주세요.';
-    if (!courseData.videoLink?.trim())
-      newErrors.videoLink = '동영상 링크를 입력해주세요.';
-    if (!courseData.price.trim()) newErrors.price = '가격을 입력해주세요.';
-    if (!courseData.time.trim()) newErrors.time = '시간을 입력해주세요.';
-    if (!courseData.thumbnail && !courseData.thumbnailUrl)
-      newErrors.thumbnail = '썸네일 이미지를 업로드해주세요.';
-    if (!courseData.visualTitle?.trim())
-      newErrors.visualTitle = '비주얼 타이틀을 입력해주세요.';
-    if (!courseData.visualTitle2?.trim())
-      newErrors.visualTitle2 = '비주얼 타이틀2를 입력해주세요.';
-    if (!courseData.recommended?.length)
-      newErrors.recommended = '추천 이미지를 최소 1개 선택해주세요.';
-
-    const hasInvalidLink = courseData.links.some(
-      (l) => !l.url.trim() || !l.name.trim()
-    );
-    if (hasInvalidLink) newErrors.links = '링크와 이름을 모두 입력해주세요.';
-
-    const sectionErrors = courseData.sections.map((section) => {
-      const errs: { title?: string; content?: string } = {};
-      if (!section.title.trim()) errs.title = '섹션 제목을 입력해주세요.';
-      if (!section.content.trim()) errs.content = '섹션 내용을 입력해주세요.';
-      return Object.keys(errs).length > 0 ? errs : {};
-    });
-    if (sectionErrors.some((err) => Object.keys(err).length > 0)) {
-      newErrors.sections = sectionErrors;
-    }
-
-    const instructorErrors = courseData.instructors.map((inst) => {
-      const errs: {
-        name?: string;
-        intro?: string;
-        careers?: {
-          startDate?: string;
-          endDate?: string;
-          isCurrent?: boolean;
-          description?: string;
-        }[];
-        photo?: string;
-      } = {};
-
-      if (!inst.name.trim()) errs.name = '강사 이름을 입력해주세요.';
-      if (!inst.intro.trim()) errs.intro = '강사 소개를 입력해주세요.';
-      if (!inst.photo && !inst.photoUrl)
-        errs.photo = '강사 사진을 업로드해주세요.';
-
-      const careerErrors = inst.careers.map((career) => {
-        const cErrors: {
-          startDate?: string;
-          endDate?: string;
-          isCurrent?: boolean;
-          description?: string;
-        } = {};
-        if (!career.startDate.trim())
-          cErrors.startDate = '시작일을 입력해주세요.';
-        if (!career.isCurrent && !career.endDate.trim())
-          cErrors.endDate = '종료일을 입력해주세요.';
-        if (!career.description.trim())
-          cErrors.description = '이력 내용을 입력해주세요.';
-        return Object.keys(cErrors).length > 0 ? cErrors : {};
-      });
-
-      if (careerErrors.some((err) => Object.keys(err).length > 0)) {
-        errs.careers = careerErrors;
-      }
-
-      return Object.keys(errs).length > 0 ? errs : {};
-    });
-
-    if (instructorErrors.some((err) => Object.keys(err).length > 0)) {
-      newErrors.instructors = instructorErrors;
-    }
+    const newErrors = getCourseFormValidationErrors(courseData);
 
     setErrors(newErrors);
 

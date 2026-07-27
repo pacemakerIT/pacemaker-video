@@ -14,6 +14,8 @@ type Props = {
   setSubDescription: (v: string) => void;
   price: string;
   setPrice: (v: string) => void;
+  time?: string;
+  setTime?: (v: string) => void;
   thumbnailUrl: string;
   setThumbnailUrl: (v: string) => void;
   fileUrl: string;
