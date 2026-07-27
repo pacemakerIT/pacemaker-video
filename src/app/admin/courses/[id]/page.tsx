@@ -1,6 +1,7 @@
 'use client';
 
 import AddForm, { CourseData } from '@/components/admin/add-form';
+import { normalizeCourseCareers } from '@/lib/course-form-data';
 
 import { useEffect, useState, use } from 'react';
 import { toast } from 'sonner';
@@ -17,7 +18,7 @@ export default function CourseEditPage({
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch(`/api/courses/detail/${id}`);
+        const res = await fetch(`/api/courses/detail/${id}?scope=admin`);
         if (!res.ok) {
           throw new Error('Failed to fetch course');
         }
@@ -75,23 +76,12 @@ export default function CourseEditPage({
                     (inst: {
                       name: string;
                       description?: string;
-                      careers?: string | unknown[];
+                      careers?: unknown;
                       profileImage?: string;
                     }) => ({
                       name: inst.name,
                       intro: inst.description || '',
-                      careers: inst.careers
-                        ? typeof inst.careers === 'string'
-                          ? JSON.parse(inst.careers)
-                          : inst.careers
-                        : [
-                            {
-                              startDate: '',
-                              endDate: '',
-                              isCurrent: false,
-                              description: ''
-                            }
-                          ],
+                      careers: normalizeCourseCareers(inst.careers),
                       photo: null,
                       photoUrl: inst.profileImage || ''
                     })

@@ -5,6 +5,7 @@ import { Readable } from 'stream';
 import { bucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
 import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
+import { getAdminAccessForClerkUserId } from '@/lib/admin-auth';
 
 function nodeReadableToWebReadable(
   nodeStream: Readable
@@ -51,7 +52,8 @@ export function createGetHandler(s3Client: S3Client) {
         select: {
           id: true,
           price: true,
-          ebookId: true
+          ebookId: true,
+          isPublic: true
         }
       });
 
@@ -59,8 +61,18 @@ export function createGetHandler(s3Client: S3Client) {
         return NextResponse.json({ error: 'Ebook not found' }, { status: 404 });
       }
 
-      const userId = await findUserIdByClerkId(prisma, session.userId);
-      const canAccessEbook = await userCanAccessEbook(prisma, userId, ebook);
+      const adminAccess = await getAdminAccessForClerkUserId(session.userId);
+      const isAdmin = adminAccess.ok;
+
+      if (!ebook.isPublic && !isAdmin) {
+        return NextResponse.json({ error: 'Ebook not found' }, { status: 404 });
+      }
+
+      const userId = isAdmin
+        ? null
+        : await findUserIdByClerkId(prisma, session.userId);
+      const canAccessEbook =
+        isAdmin || (await userCanAccessEbook(prisma, userId, ebook));
 
       if (!canAccessEbook) {
         return NextResponse.json(
