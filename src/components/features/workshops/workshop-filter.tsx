@@ -12,9 +12,8 @@ interface WorkshopFilterProps {
 
 const FILTERS: { label: string; value: FilterKey }[] = [
   { label: 'All', value: 'All' },
-  { label: 'Open', value: WorkshopStatus.RECRUITING },
+  { label: 'Open', value: WorkshopStatus.OPEN },
   { label: 'Closed', value: WorkshopStatus.CLOSED },
-  { label: 'Ongoing', value: WorkshopStatus.ONGOING },
   { label: 'Completed', value: WorkshopStatus.COMPLETED }
 ];
 
@@ -27,7 +26,7 @@ const getSelectedStyle = (status: FilterKey) => {
     };
   }
 
-  if (status === WorkshopStatus.RECRUITING) {
+  if (status === WorkshopStatus.OPEN) {
     return {
       text: 'text-[#FF4F02]',
       border: 'border-[#FF4F02]',
@@ -35,7 +34,7 @@ const getSelectedStyle = (status: FilterKey) => {
     };
   }
 
-  if (status === WorkshopStatus.CLOSED || status === WorkshopStatus.ONGOING) {
+  if (status === WorkshopStatus.CLOSED) {
     return {
       text: 'text-teal-600',
       border: 'border-teal-600',
@@ -51,11 +50,11 @@ const getSelectedStyle = (status: FilterKey) => {
 };
 
 const getHoverStyle = (status: FilterKey) => {
-  if (status === 'All' || status === WorkshopStatus.RECRUITING) {
+  if (status === 'All' || status === WorkshopStatus.OPEN) {
     return 'hover:text-[#FF4F02] hover:border-[#FF4F02]';
   }
 
-  if (status === WorkshopStatus.CLOSED || status === WorkshopStatus.ONGOING) {
+  if (status === WorkshopStatus.CLOSED) {
     return 'hover:text-teal-600 hover:border-teal-600';
   }
 

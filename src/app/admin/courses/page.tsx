@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminVisualRow, {
   RowLike
 } from '@/components/admin/common/admin-visual-row';
@@ -44,29 +44,25 @@ type Row = {
   orderKey: string;
 };
 
+type CourseVisibility = '공개중' | '비공개';
+
 // Status component for courses
 function CourseStatus({
   row,
-  toggleRow
+  onStatusChange,
+  disabled = false
 }: {
   row: RowLike;
-  toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
+  onStatusChange?: (id: string, newStatus: string) => void;
+  disabled?: boolean;
 }) {
-  const [value, setValue] = useState(
-    row.status === '공개중' ? 'public' : 'private'
-  );
-
-  useEffect(() => {
-    setValue(row.status === '공개중' ? 'public' : 'private');
-  }, [row.status]);
-
   return (
     <PaceSelect
-      value={value}
+      value={row.status === '공개중' ? 'public' : 'private'}
       onChange={(val) => {
-        setValue(val);
-        toggleRow(row.id, !!row.selected);
+        onStatusChange?.(row.id, val === 'public' ? '공개중' : '비공개');
       }}
+      disabled={disabled}
       width="w-[124px]"
       options={[
         { value: 'public', label: '공개중' },
@@ -84,6 +80,19 @@ function CourseStatus({
 export default function Page() {
   const [categoryFilter, setCategoryFilter] = useState('TOTAL');
   const [rows, setRows] = useState<Row[]>([]);
+  const [statusChanges, setStatusChanges] = useState<
+    Record<string, CourseVisibility>
+  >({});
+  const [savedStatuses, setSavedStatuses] = useState<
+    Record<string, CourseVisibility>
+  >({});
+  const [savedOrder, setSavedOrder] = useState<string[]>([]);
+  const [savedOrderKeys, setSavedOrderKeys] = useState<Record<string, string>>(
+    {}
+  );
+  const [hasOrderChanges, setHasOrderChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const savingRef = useRef(false);
   const [loading, setLoading] = useState(true);
 
   // Confirm Modal State
@@ -107,13 +116,32 @@ export default function Page() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isBlocked]);
 
+  useEffect(() => {
+    setBlocked(hasOrderChanges || Object.keys(statusChanges).length > 0);
+  }, [hasOrderChanges, setBlocked, statusChanges]);
+
   const fetchCourses = useCallback(async () => {
     try {
-      const res = await fetch('/api/courses');
+      const res = await fetch('/api/courses?scope=admin');
       if (res.ok) {
         const data = await res.json();
         setRows(data);
-        setBlocked(false); // 초기화 시 변경상태 해제
+        setSavedStatuses(
+          Object.fromEntries(
+            data.map((course: Row) => [
+              course.id,
+              course.status === '공개중' ? '공개중' : '비공개'
+            ])
+          )
+        );
+        setSavedOrder(data.map((course: Row) => course.id));
+        setSavedOrderKeys(
+          Object.fromEntries(
+            data.map((course: Row) => [course.id, course.orderKey])
+          )
+        );
+        setStatusChanges({});
+        setHasOrderChanges(false);
       } else {
         toast('Failed to fetch courses');
       }
@@ -122,7 +150,7 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }, [setBlocked]);
+  }, []);
 
   useEffect(() => {
     fetchCourses();
@@ -143,6 +171,29 @@ export default function Page() {
   // 전체 선택 토글
   const toggleAll = (checked: boolean) => {
     setRows((prev) => prev.map((row) => ({ ...row, selected: checked })));
+  };
+
+  const handleStatusChange = (id: string, status: string) => {
+    if (isSaving) return;
+    if (status !== '공개중' && status !== '비공개') return;
+
+    const originalStatus =
+      savedStatuses[id] ?? rows.find((row) => row.id === id)?.status;
+
+    if (!originalStatus) return;
+
+    setRows((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, status } : row))
+    );
+    setStatusChanges((prev) => {
+      if (status === originalStatus) {
+        const remainingChanges = { ...prev };
+        delete remainingChanges[id];
+        return remainingChanges;
+      }
+
+      return { ...prev, [id]: status };
+    });
   };
 
   // 삭제 버튼 클릭 시 모달 오픈
@@ -196,51 +247,90 @@ export default function Page() {
   };
 
   const handleSave = async () => {
-    try {
-      const orderUpdates = rows.map((r) => ({
-        id: r.id,
-        orderKey: r.orderKey
-      }));
-      const selectedRows = rows.filter((row) => row.selected);
+    if (savingRef.current) return;
 
-      const promises: Promise<unknown>[] = [
+    const requests: Promise<Response>[] = [];
+    const statusUpdates = rows
+      .filter((row) => statusChanges[row.id] !== undefined)
+      .map((row) => ({ id: row.id, status: row.status }));
+
+    if (hasOrderChanges) {
+      const orderUpdates = rows.map((row) => ({
+        id: row.id,
+        orderKey: row.orderKey
+      }));
+
+      requests.push(
         fetch('/api/courses/reorder', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ items: orderUpdates })
         })
-      ];
+      );
+    }
 
-      if (selectedRows.length > 0) {
-        const updates = selectedRows.map((row) => ({
-          id: row.id,
-          status: row.status
-        }));
-        promises.push(
-          fetch('/api/courses', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ updates })
-          })
-        );
+    if (statusUpdates.length > 0) {
+      requests.push(
+        fetch('/api/courses', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ updates: statusUpdates })
+        })
+      );
+    }
+
+    if (requests.length === 0) {
+      toast.info('저장할 변경사항이 없습니다.');
+      return;
+    }
+
+    savingRef.current = true;
+    setIsSaving(true);
+
+    try {
+      const responses = await Promise.all(requests);
+      if (responses.some((response) => !response.ok)) {
+        await fetchCourses();
+        toast.error('저장 중 오류가 발생했습니다.');
+        return;
       }
 
-      await Promise.all(promises);
       toast.success('저장되었습니다.');
       await fetchCourses();
-      setBlocked(false);
     } catch {
+      await fetchCourses();
       toast.error('저장 중 오류가 발생했습니다.');
+    } finally {
+      savingRef.current = false;
+      setIsSaving(false);
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (isSaving) return;
+
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     const oldIndex = rows.findIndex((row) => row.id === active.id);
     const newIndex = rows.findIndex((row) => row.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
     const newRows = arrayMove(rows, oldIndex, newIndex);
+    const isOriginalOrder =
+      newRows.length === savedOrder.length &&
+      newRows.every((row, index) => row.id === savedOrder[index]);
+
+    if (isOriginalOrder) {
+      setRows(
+        newRows.map((row) => ({
+          ...row,
+          orderKey: savedOrderKeys[row.id] ?? row.orderKey
+        }))
+      );
+      setHasOrderChanges(false);
+      return;
+    }
 
     const before = newRows[newIndex - 1]?.orderKey ?? null;
     const after = newRows[newIndex + 1]?.orderKey ?? null;
@@ -249,7 +339,7 @@ export default function Page() {
     setRows(
       newRows.map((r) => (r.id === active.id ? { ...r, orderKey: newKey } : r))
     );
-    setBlocked(true);
+    setHasOrderChanges(true);
   };
 
   // 카테고리별로 필터링된 rows
@@ -264,6 +354,7 @@ export default function Page() {
     <AdminListLayout
       title="온라인 강의 관리"
       onSave={handleSave}
+      saveDisabled={isSaving}
       listTitle={
         <div className="border-b border-pace-gray-700 pb-5">
           <span className="text-pace-xl font-bold leading-[52px]">
@@ -353,6 +444,8 @@ export default function Page() {
                 row={row}
                 index={index}
                 toggleRow={toggleRow}
+                onStatusChange={handleStatusChange}
+                statusDisabled={isSaving}
                 onDelete={handleDeleteClick}
                 StatusComponent={CourseStatus}
                 editHref={`/admin/courses/${row.id}`}

@@ -202,11 +202,17 @@ export default function AddForm({
           isCurrent?: boolean;
           description?: string;
         } = {};
-        if (!career.startDate.trim())
-          cErrors.startDate = '시작일을 입력해주세요.';
-        if (!career.isCurrent && !career.endDate.trim())
+        const startDate =
+          typeof career.startDate === 'string' ? career.startDate : '';
+        const endDate =
+          typeof career.endDate === 'string' ? career.endDate : '';
+        const description =
+          typeof career.description === 'string' ? career.description : '';
+
+        if (!startDate.trim()) cErrors.startDate = '시작일을 입력해주세요.';
+        if (!career.isCurrent && !endDate.trim())
           cErrors.endDate = '종료일을 입력해주세요.';
-        if (!career.description.trim())
+        if (!description.trim())
           cErrors.description = '이력 내용을 입력해주세요.';
         return Object.keys(cErrors).length > 0 ? cErrors : {};
       });

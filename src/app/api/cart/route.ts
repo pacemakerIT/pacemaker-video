@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
               });
               break;
             case ItemType.EBOOK:
-              item = await prisma.ebook.findUnique({
-                where: { id: cart.itemId },
+              item = await prisma.ebook.findFirst({
+                where: { id: cart.itemId, isPublic: true },
                 select: {
                   id: true,
                   title: true,
@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
               });
               break;
             case ItemType.COURSE:
-              item = await prisma.course.findUnique({
-                where: { id: cart.itemId },
+              item = await prisma.course.findFirst({
+                where: { id: cart.itemId, isPublic: true },
                 select: {
                   id: true,
                   title: true,
@@ -127,8 +127,8 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.EBOOK:
-          item = await prisma.ebook.findUnique({
-            where: { id: newCart.itemId },
+          item = await prisma.ebook.findFirst({
+            where: { id: newCart.itemId, isPublic: true },
             select: {
               id: true,
               title: true,
@@ -151,8 +151,8 @@ export async function POST(req: NextRequest) {
           });
           break;
         case ItemType.COURSE:
-          item = await prisma.course.findUnique({
-            where: { id: newCart.itemId },
+          item = await prisma.course.findFirst({
+            where: { id: newCart.itemId, isPublic: true },
             select: {
               id: true,
               title: true,

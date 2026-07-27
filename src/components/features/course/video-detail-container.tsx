@@ -28,6 +28,7 @@ import DetailRecommendationSection from '../../common/detail-recommendation-sect
 import { ApiResponse } from '@/types/video-detail';
 import { WistiaPlayer } from '@wistia/wistia-player-react';
 import { resolveImageSrc } from '@/lib/utils';
+import { formatCourseCareers } from '@/lib/course-form-data';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
@@ -390,16 +391,14 @@ export default function VideoDetailContainer({
                           </h4>
                           <table className="w-full">
                             <tbody className="text-pace-stone-500">
-                              {instructor.careers.map((careerItem, index) => (
-                                <tr key={index}>
-                                  <td className="py-1 pr-4">
-                                    {careerItem.period}
-                                  </td>
-                                  <td className="py-1">
-                                    {careerItem.position}
-                                  </td>
-                                </tr>
-                              ))}
+                              {formatCourseCareers(instructor.careers).map(
+                                ({ period, position }, index) => (
+                                  <tr key={index}>
+                                    <td className="py-1 pr-4">{period}</td>
+                                    <td className="py-1">{position}</td>
+                                  </tr>
+                                )
+                              )}
                             </tbody>
                           </table>
                         </div>
