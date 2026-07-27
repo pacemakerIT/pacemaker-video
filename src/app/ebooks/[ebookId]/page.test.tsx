@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@clerk/nextjs/server', () => ({
+  auth: vi.fn()
+}));
+
 const prismaMock = {
   ebook: {
     findFirst: vi.fn(),
@@ -21,6 +25,7 @@ vi.mock('@/components/features/ebook/ebook-detail-container', () => ({
   default: vi.fn(() => null)
 }));
 
+const { auth } = await import('@clerk/nextjs/server');
 const { notFound } = await import('next/navigation');
 const { default: EbookDetailPage } = await import('./page');
 
@@ -33,6 +38,7 @@ function pageContext(ebookId = 'ebook-123') {
 describe('Ebook detail page visibility', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
     prismaMock.ebook.findFirst.mockResolvedValue({
       title: 'Public Ebook',
       description: 'Ebook description',
