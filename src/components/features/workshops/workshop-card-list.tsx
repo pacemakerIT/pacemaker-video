@@ -10,6 +10,7 @@ import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
 import { toast } from 'sonner';
 import { resolveImageSrc } from '@/lib/utils';
+import { getCalendarStyle } from '@/components/ui/calendar-style-map';
 
 interface Props {
   workshops: WorkshopCard[];
@@ -96,18 +97,6 @@ export default function WorkshopCardList({
     }
   };
 
-  const getStatusClass = (status: WorkshopStatus) => {
-    switch (status) {
-      case WorkshopStatus.OPEN:
-        return 'border-[#FF4F02]/20 bg-[#FF4F02]/[0.05] text-[#FF4F02]';
-      case WorkshopStatus.CLOSED:
-        return 'border-teal-500/20 bg-teal-50 text-teal-600';
-      case WorkshopStatus.COMPLETED:
-      default:
-        return 'border-gray-200 bg-gray-100/70 text-gray-400';
-    }
-  };
-
   useEffect(() => {
     if (selectedTitle) {
       const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
@@ -127,6 +116,7 @@ export default function WorkshopCardList({
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
         const instructorName = w.instructors[0]?.instructor?.name;
+        const style = getCalendarStyle(w.status);
 
         return (
           <div
@@ -179,7 +169,7 @@ export default function WorkshopCardList({
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex h-[38px] flex-wrap items-center gap-2 md:gap-4">
                     <span
-                      className={`font-body rounded border px-2 py-0.5 text-[12px] font-bold md:text-[14px] ${getStatusClass(w.status)}`}
+                      className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
                     >
                       {getStatusLabel(w.status)}
                     </span>

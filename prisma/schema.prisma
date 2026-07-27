@@ -304,10 +304,10 @@ model Instructor {
 }
 
 enum WorkshopStatus {
-  OPEN
-  CLOSED
-  COMPLETED
-  HIDDEN
+  OPEN      @map("Open")
+  CLOSED    @map("Closed")
+  COMPLETED @map("Completed")
+  HIDDEN    @map("Hidden")
 }
 
 enum CourseCategory {
