@@ -168,12 +168,13 @@ describe('Card', () => {
     });
   });
 
-  it('renders "Learn more" button', async () => {
+  it('renders "Learn more" link', async () => {
     render(<Card {...mockCard} />);
 
     await waitFor(() => {
-      const button = screen.getByText('Learn more');
-      expect(button).toBeDefined();
+      const link = screen.getByText('Learn more');
+      expect(link).toBeDefined();
+      expect(link.closest('div')).toHaveClass('text-[#00ADBD]');
     });
   });
 
@@ -186,21 +187,22 @@ describe('Card', () => {
       expect(cardContainer).toHaveClass('w-full');
       expect(cardContainer).toHaveClass('bg-white');
       expect(cardContainer).toHaveClass('rounded-none');
-      expect(cardContainer).toHaveClass('shadow-card');
+      expect(cardContainer).toHaveClass('overflow-hidden');
 
-      // Check image container styles
+      // Check image container styles (256px height per new design)
       const imageContainer = screen.getByTestId('card-image').parentElement;
       expect(imageContainer).toHaveClass('h-[256px]');
 
       // Check image styles
       const image = screen.getByTestId('card-image');
       expect(image).toHaveClass('object-cover');
+      expect(image).toHaveClass('object-center');
 
       // Check title styles
       const title = screen.getByText('Test Course');
       expect(title).toHaveClass('text-lg');
       expect(title).toHaveClass('font-bold');
-      expect(title).toHaveClass('text-navy');
+      expect(title).toHaveClass('font-headline');
 
       // Check price styles
       const price = screen.getByText('$49.99');
