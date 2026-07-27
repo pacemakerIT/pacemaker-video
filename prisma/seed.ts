@@ -102,7 +102,12 @@ const SEEDED_INSTRUCTOR_IDS = {
   sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae'
 } as const;
 
-const SEEDED_REFERENCE_DATE = new Date('2026-03-25T12:00:00.000Z');
+const WORKSHOP_DURATION_MS = 2 * 60 * 60 * 1000;
+const WORKSHOP_STATUS = {
+  open: 'OPEN' as unknown as WorkshopStatus,
+  closed: WorkshopStatus.CLOSED,
+  completed: WorkshopStatus.COMPLETED
+};
 
 function isRemoteSupabaseUrl(url: string) {
   return (
@@ -111,6 +116,45 @@ function isRemoteSupabaseUrl(url: string) {
     url.includes('supabase.co')
   );
 }
+
+function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function setLocalTime(date: Date, hour: number, minute = 0) {
+  const result = new Date(date);
+  result.setHours(hour, minute, 0, 0);
+  return result;
+}
+
+function resolveWorkshopStatus(
+  startDate: Date,
+  endDate: Date,
+  referenceDate: Date,
+  desiredStatus?: WorkshopStatus
+) {
+  if (endDate < referenceDate) return WORKSHOP_STATUS.completed;
+  if (desiredStatus === WORKSHOP_STATUS.closed) return WORKSHOP_STATUS.closed;
+  return WORKSHOP_STATUS.open;
+}
+
+type WorkshopSeedData = {
+  title: string;
+  description: string;
+  dayOffset?: number;
+  startHour?: number;
+  startDate?: Date;
+  endDate?: Date;
+  durationHours?: number;
+  status?: WorkshopStatus;
+  price: number;
+  locationOrUrl: string;
+  instructorId: string;
+  category: keyof typeof WorkshopCategory;
+  thumbnailIndex: number;
+};
 
 async function resetLocalSeedData() {
   console.log('🧹 Local environment: Removing existing seed data...');
@@ -499,125 +543,144 @@ async function main() {
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
   let workshopOrderIdx = 0;
-  const uxDesignWorkshopData = [
+  const workshopStatusReferenceDate = new Date();
+  const workshopData: WorkshopSeedData[] = [
     {
-      title: 'UX Design Workshop',
-      status: 'COMPLETED',
+      title: 'Portfolio Review Night',
+      description:
+        'Bring your portfolio and get direct feedback on storytelling, project framing, and interview-ready presentation.',
+      dayOffset: -120,
+      startHour: 19,
+      price: 15,
+      locationOrUrl: 'North York Centre',
+      instructorId,
       category: 'NETWORKING',
-      date: '2026-01-15T19:00:00Z'
+      thumbnailIndex: 0
     },
     {
-      title: 'UX Design Workshop',
-      status: 'COMPLETED',
-      category: 'NETWORKING',
-      date: '2026-02-10T19:00:00Z'
-    },
-    {
-      title: 'UX Design Workshop',
-      status: 'COMPLETED',
-      category: 'NETWORKING',
-      date: '2026-03-05T19:00:00Z'
-    },
-    {
-      title: 'UX Design Workshop',
-      status: 'RECRUITING',
-      category: 'NETWORKING',
-      date: '2026-03-20T19:00:00Z'
-    }
-  ];
-
-  for (let i = 0; i < uxDesignWorkshopData.length; i++) {
-    const ws = uxDesignWorkshopData[i];
-    const startDate = new Date(ws.date);
-    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
-
-    const status =
-      startDate < SEEDED_REFERENCE_DATE
-        ? WorkshopStatus.COMPLETED
-        : WorkshopStatus.RECRUITING;
-
-    const workshopId = randomUUID();
-
-    await prisma.workshop.create({
-      data: {
-        id: workshopId,
-        title: ws.title,
-        description:
-          "Everyone has unique strengths and potential.\nIn this session, you'll gain powerful insights into navigating challenges in a global career environment, leveraging the power of networking, and discovering your own path forward.\nDon't miss this exclusive opportunity to learn directly from Sujin Ku, Career Coach at the University of Toronto.",
-        startDate,
-        endDate,
-        price: 20,
-        locationOrUrl: 'North York centre',
-        status,
-        category: ws.category as WorkshopCategory,
-        orderKey: workshopOrderKeys[workshopOrderIdx++],
-        instructors: {
-          create: [{ instructorId: instructorId2 }]
-        },
-        thumbnail: getRandomImage(
-          WORKSHOP_THUMBNAILS[i % WORKSHOP_THUMBNAILS.length]
-        )
-      }
-    });
-  }
-
-  const homeWorkshopData = [
-    {
-      title: 'Mind Training for Success',
-      category: 'NETWORKING',
-      status: 'ONGOING',
-      date: '2026-03-16T19:00:00Z'
-    },
-    {
-      title: "Let's Connect!",
-      category: 'NETWORKING',
-      status: 'RECRUITING',
-      date: '2026-05-15T19:00:00Z'
-    },
-    {
-      title: 'Build an English Resume for Career Transitions',
+      title: 'Canadian Resume Clinic',
+      description:
+        'A practical resume workshop for translating international experience into clear, recruiter-friendly Canadian resume bullets.',
+      dayOffset: -45,
+      startHour: 18,
+      price: 20,
+      locationOrUrl: 'Online - Zoom',
+      instructorId: instructorId2,
       category: 'RESUME',
-      status: 'RECRUITING',
-      date: '2026-08-10T19:00:00Z'
+      thumbnailIndex: 1
     },
     {
-      title: 'Resume Workshop for International Opportunities',
+      title: 'Interview Storytelling Lab',
+      description:
+        'Practice behavioral interview answers using real prompts and learn how to connect your experience to business impact.',
+      dayOffset: -10,
+      startHour: 19,
+      price: 25,
+      locationOrUrl: 'Downtown Toronto',
+      instructorId,
+      category: 'INTERVIEW',
+      thumbnailIndex: 2
+    },
+    {
+      title: 'Career Transition Bootcamp',
+      description:
+        'A multi-day workshop that has already started and continues into the future. Registration is closed, but the workshop is not completed yet.',
+      startDate: setLocalTime(addDays(workshopStatusReferenceDate, -1), 10),
+      endDate: setLocalTime(addDays(workshopStatusReferenceDate, 2), 17),
+      status: WORKSHOP_STATUS.closed,
+      price: 40,
+      locationOrUrl: 'North York Centre',
+      instructorId: instructorId2,
       category: 'NETWORKING',
-      status: 'RECRUITING',
-      date: '2026-11-05T19:00:00Z'
+      thumbnailIndex: 0
+    },
+    {
+      title: 'Hidden Job Market Workshop',
+      description:
+        'A future workshop whose seats are already full. It should appear as Closed, not Completed.',
+      dayOffset: 5,
+      startHour: 18,
+      status: WORKSHOP_STATUS.closed,
+      price: 20,
+      locationOrUrl: 'North York Centre',
+      instructorId,
+      category: 'NETWORKING',
+      thumbnailIndex: 1
+    },
+    {
+      title: 'LinkedIn Networking Sprint',
+      description:
+        'Build a targeted LinkedIn outreach list and leave with message templates tailored to your career direction.',
+      dayOffset: 14,
+      startHour: 19,
+      price: 10,
+      locationOrUrl: 'Online - Zoom',
+      instructorId: instructorId2,
+      category: 'NETWORKING',
+      thumbnailIndex: 2
+    },
+    {
+      title: 'Tech Resume Rewrite Intensive',
+      description:
+        'Rewrite your developer resume with stronger metrics, tighter project descriptions, and keyword alignment.',
+      dayOffset: 45,
+      startHour: 18,
+      price: 30,
+      locationOrUrl: 'Downtown Toronto',
+      instructorId,
+      category: 'RESUME',
+      thumbnailIndex: 0
+    },
+    {
+      title: 'Mock Interview Circle',
+      description:
+        'Practice technical and behavioral interview rounds in a small-group format with structured peer feedback.',
+      dayOffset: 75,
+      startHour: 19,
+      price: 25,
+      locationOrUrl: 'Online - Zoom',
+      instructorId: instructorId2,
+      category: 'INTERVIEW',
+      thumbnailIndex: 1
     }
   ];
 
-  for (let i = 0; i < homeWorkshopData.length; i++) {
-    const ws = homeWorkshopData[i];
-    const startDate = new Date(ws.date);
-    const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
-
-    const status =
-      startDate < SEEDED_REFERENCE_DATE
-        ? WorkshopStatus.COMPLETED
-        : WorkshopStatus.RECRUITING;
-
+  for (const ws of workshopData) {
+    const startDate =
+      ws.startDate ??
+      setLocalTime(
+        addDays(workshopStatusReferenceDate, ws.dayOffset ?? 0),
+        ws.startHour ?? 19
+      );
+    const durationMs = ws.durationHours
+      ? ws.durationHours * 60 * 60 * 1000
+      : WORKSHOP_DURATION_MS;
+    const endDate = ws.endDate ?? new Date(startDate.getTime() + durationMs);
+    const status = resolveWorkshopStatus(
+      startDate,
+      endDate,
+      workshopStatusReferenceDate,
+      ws.status
+    );
     const workshopId = randomUUID();
 
     await prisma.workshop.create({
       data: {
         id: workshopId,
         title: ws.title,
-        description:
-          'Join this workshop to gain valuable insights and boost your career.',
+        description: ws.description,
         startDate,
         endDate,
-        price: 20,
-        locationOrUrl: 'North York centre',
+        price: ws.price,
+        locationOrUrl: ws.locationOrUrl,
         status,
         category: ws.category as WorkshopCategory,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
-          create: [{ instructorId: instructorId2 }]
+          create: [{ instructorId: ws.instructorId }]
         },
         thumbnail: getRandomImage(
-          WORKSHOP_THUMBNAILS[(i + 2) % WORKSHOP_THUMBNAILS.length]
+          WORKSHOP_THUMBNAILS[ws.thumbnailIndex % WORKSHOP_THUMBNAILS.length]
         )
       }
     });
