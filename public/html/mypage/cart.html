@@ -285,8 +285,38 @@
         overflow: hidden;
         transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-      #cart-drawer-details.is-open {
-        max-height: 400px;
+      /* Save: outline heart → filled on hover */
+      .favorite-heart .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #9ca3af;
+        transition:
+          color 0.3s ease,
+          font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      @media (hover: hover) {
+        .favorite-heart:hover .material-symbols-outlined {
+          font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+          color: #ff4f02;
+        }
+        .favorite-heart--liked:hover .material-symbols-outlined {
+          color: #e04400;
+        }
+      }
+      .favorite-heart--liked .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02;
       }
     </style>
   </head>
@@ -840,7 +870,7 @@
               </a>
 
               <a
-                href="#"
+                href="wishlist.html"
                 class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
               >
                 <span class="material-symbols-outlined text-xl">favorite</span>
@@ -1135,17 +1165,23 @@
                   <div
                     class="relative h-[180px] bg-[#FFF5F2] p-6 flex flex-col justify-start"
                   >
-                    <div class="mb-3 flex items-center justify-between">
+                    <!-- Liked heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Remove from wishlist"
+                    >
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
+                      >
+                    </button>
+                    <div class="mb-3">
                       <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                        class="inline-flex w-fit items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
                         style="background: rgb(255, 126, 84)"
                       >
                         Marketing
                       </span>
-                      <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold uppercase tracking-wider bg-black/40 backdrop-blur-sm px-2.5 h-[22px] rounded-full shadow-sm"
-                        >E-books</span
-                      >
                     </div>
                     <div>
                       <h4
@@ -1163,11 +1199,18 @@
                   </div>
                   <div class="p-5">
                     <div class="flex justify-between items-start gap-3 mb-2">
-                      <h3
-                        class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Branding & Networking for Marketers
-                      </h3>
+                      <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                            >E-books</span
+                          >
+                        </div>
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2 mt-1"
+                        >
+                          Branding & Networking for Marketers
+                        </h3>
+                      </div>
                       <span class="text-base font-extrabold text-navy"
                         >$2800</span
                       >
@@ -1180,14 +1223,16 @@
                     </p>
                   </div>
                 </div>
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
                 <button
-                  class="w-full flex items-center justify-center gap-2 border-t border-gray-100 py-3.5 text-xs font-bold text-navy hover:text-orange hover:bg-orange/5 transition-colors mt-auto"
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
                 >
-                  <span class="material-symbols-outlined text-[16px]"
+                  <span class="material-symbols-outlined text-[18px]"
                     >shopping_cart</span
                   >
                   <span>Add to cart</span>
                 </button>
+              </div>
               </div>
 
               <!-- Recommendation 2 -->
@@ -1201,28 +1246,37 @@
                       alt="Resume + Interview Prep"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
                     />
-                    <div
-                      class="absolute top-6 left-6 right-6 z-10 flex items-center justify-between"
+                    <!-- Wishlist heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Add to wishlist"
                     >
-                      <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
-                        style="background: rgb(54, 166, 247)"
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
                       >
-                        Interview
-                      </span>
-                      <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold uppercase tracking-wider bg-black/40 backdrop-blur-sm px-2.5 h-[22px] rounded-full shadow-sm"
-                        >Online courses</span
-                      >
-                    </div>
+                    </button>
+                    <span
+                      class="absolute top-6 left-6 z-10 inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: rgb(54, 166, 247)"
+                    >
+                      Interview
+                    </span>
                   </div>
                   <div class="p-5">
                     <div class="flex justify-between items-start gap-3 mb-2">
-                      <h3
-                        class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Resume + Interview Prep (All-in-One)
-                      </h3>
+                      <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                            >Online courses</span
+                          >
+                        </div>
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2 mt-1"
+                        >
+                          Resume + Interview Prep (All-in-One)
+                        </h3>
+                      </div>
                       <span class="text-base font-extrabold text-navy"
                         >$2800</span
                       >
@@ -1236,14 +1290,16 @@
                     </p>
                   </div>
                 </div>
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
                 <button
-                  class="w-full flex items-center justify-center gap-2 border-t border-gray-100 py-3.5 text-xs font-bold text-navy hover:text-orange hover:bg-orange/5 transition-colors mt-auto"
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
                 >
-                  <span class="material-symbols-outlined text-[16px]"
+                  <span class="material-symbols-outlined text-[18px]"
                     >shopping_cart</span
                   >
                   <span>Add to cart</span>
                 </button>
+              </div>
               </div>
 
               <!-- Recommendation 3 -->
@@ -1257,28 +1313,37 @@
                       alt="Resume + Interview Prep"
                       class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
                     />
-                    <div
-                      class="absolute top-6 left-6 right-6 z-10 flex items-center justify-between"
+                    <!-- Wishlist heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Add to wishlist"
                     >
-                      <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
-                        style="background: rgb(245, 158, 11)"
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
                       >
-                        Interview
-                      </span>
-                      <span
-                        class="inline-flex items-center justify-center text-white text-[10px] font-bold uppercase tracking-wider bg-black/40 backdrop-blur-sm px-2.5 h-[22px] rounded-full shadow-sm"
-                        >Online courses</span
-                      >
-                    </div>
+                    </button>
+                    <span
+                      class="absolute top-6 left-6 z-10 inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: rgb(245, 158, 11)"
+                    >
+                      Interview
+                    </span>
                   </div>
                   <div class="p-5">
                     <div class="flex justify-between items-start gap-3 mb-2">
-                      <h3
-                        class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Resume + Interview Prep (All-in-One)
-                      </h3>
+                      <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                            >Online courses</span
+                          >
+                        </div>
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2 mt-1"
+                        >
+                          Resume + Interview Prep (All-in-One)
+                        </h3>
+                      </div>
                       <span class="text-base font-extrabold text-navy"
                         >$2800</span
                       >
@@ -1292,14 +1357,16 @@
                     </p>
                   </div>
                 </div>
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
                 <button
-                  class="w-full flex items-center justify-center gap-2 border-t border-gray-100 py-3.5 text-xs font-bold text-navy hover:text-orange hover:bg-orange/5 transition-colors mt-auto"
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
                 >
-                  <span class="material-symbols-outlined text-[16px]"
+                  <span class="material-symbols-outlined text-[18px]"
                     >shopping_cart</span
                   >
                   <span>Add to cart</span>
                 </button>
+              </div>
               </div>
             </div>
           </div>
@@ -1728,6 +1795,16 @@
         });
 
         setDrawerOpen(false);
+      })();
+
+      (function favoriteHeartInit() {
+        var heartButtons = document.querySelectorAll('.favorite-heart');
+        heartButtons.forEach(function (heart) {
+          heart.addEventListener('click', function (e) {
+            e.stopPropagation();
+            heart.classList.toggle('favorite-heart--liked');
+          });
+        });
       })();
     </script>
   </body>
