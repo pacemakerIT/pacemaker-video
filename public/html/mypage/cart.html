@@ -244,7 +244,8 @@
         }
 
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
           opacity: 1;
           padding-top: 12px;
           pointer-events: auto;
@@ -1490,7 +1491,7 @@
           </div>
         </div>
         <p class="text-[0.9rem] text-[#98a2b3]">
-          © 2026 Pacemaker. All rights reserved.
+          ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2026 Pacemaker. All rights reserved.
         </p>
       </div>
     </footer>
@@ -1504,21 +1505,7 @@
         id="cart-drawer-details"
         class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out border-b border-gray-100 bg-white"
       >
-        <div class="max-w-[1248px] mx-auto px-4 sm:px-6 pb-6 pt-4 space-y-4 text-navy">
-          <!-- Centered Close Button Row (Vertically centered in the top gap) -->
-          <div class="flex justify-center items-center py-2">
-            <button
-              id="cart-drawer-close"
-              type="button"
-              class="text-xs font-bold text-gray-400 hover:text-orange flex items-center gap-1 transition-colors"
-            >
-              <span>Close</span>
-              <span class="material-symbols-outlined text-[16px]"
-                >keyboard_arrow_down</span
-              >
-            </button>
-          </div>
-
+        <div class="max-w-[1248px] mx-auto px-4 sm:px-6 pb-6 pt-6 space-y-4 text-navy">
           <div class="flex justify-between items-center">
             <h3 class="text-base font-bold text-navy font-headline">
               Order Summary
@@ -1569,29 +1556,20 @@
       </div>
 
       <!-- 2. Fixed Bar Bottom Row Wrapper - Spans Full Width bg-navy on both mobile and desktop -->
-      <div class="bg-navy text-white border-t border-navy/10 shadow-[0_-8px_30px_rgba(0,38,59,0.15)] pb-3 sm:pb-0">
-        <div class="max-w-[1248px] mx-auto px-4 sm:px-6 py-5 sm:py-4 flex items-center justify-between relative">
-          <!-- Total Price display (Stacked vertically on mobile to prevent overlapping) -->
-          <div class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 shrink-0">
-            <span
-              class="text-[10px] sm:text-xs font-bold text-white/80 uppercase tracking-wider leading-none"
-              >Total</span
-            >
-            <span
-              class="text-lg sm:text-2xl font-extrabold text-white font-headline leading-none"
-              >$269.46</span
-            >
-          </div>
+      <div class="bg-navy text-white border-t border-navy/10 shadow-[0_-8px_30px_rgba(0,38,59,0.15)]">
+        <div
+          class="max-w-[1248px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 relative"
+        >
+          <div class="w-[108px] shrink-0" aria-hidden="true"></div>
 
-          <!-- Centered Toggle Button -->
           <div
-            class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
             id="cart-drawer-toggle-wrapper"
+            class="absolute left-1/2 -translate-x-1/2 flex shrink-0"
           >
             <button
               id="cart-drawer-toggle"
               type="button"
-              class="text-xs font-bold text-white/80 hover:text-white flex items-center gap-0.5 sm:gap-1 transition-all"
+              class="text-xs font-bold text-white/70 hover:text-white flex items-center gap-1 transition-all whitespace-nowrap"
             >
               <span>View details</span>
               <span
@@ -1602,13 +1580,29 @@
             </button>
           </div>
 
-          <!-- Checkout Button -->
-          <button
-            type="button"
-            class="bg-[#ff4f02] hover:bg-[#e04400] text-white font-extrabold text-xs sm:text-sm px-5 sm:px-10 py-2.5 sm:py-3 rounded-full transition-colors shadow-md shadow-orange/20 z-10"
+          <div
+            class="ml-auto flex items-center justify-end gap-3 sm:gap-5 shrink-0"
           >
-            Checkout
-          </button>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-3 text-right"
+            >
+              <span
+                class="text-[10px] sm:text-xs font-bold text-white/65 uppercase tracking-[0.22em] leading-none"
+                >Total</span
+              >
+              <span
+                class="text-lg sm:text-3xl font-extrabold text-white font-headline leading-none"
+                >$269.46</span
+              >
+            </div>
+
+            <button
+              type="button"
+              class="bg-[#ff4f02] hover:bg-[#e04400] text-white font-extrabold text-xs sm:text-sm px-5 sm:px-8 py-2.5 sm:py-3 rounded-full transition-all shadow-[0_12px_24px_rgba(255,79,2,0.28)] whitespace-nowrap shrink-0"
+            >
+              Checkout
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1666,6 +1660,21 @@
 
             toggle.addEventListener('click', function () {
               var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              if (!isOpen) {
+                Array.prototype.forEach.call(
+                  document.querySelectorAll('.mobile-nav-accordion-toggle'),
+                  function (otherToggle) {
+                    if (otherToggle !== toggle) {
+                      otherToggle.setAttribute('aria-expanded', 'false');
+                      var otherPanelId = otherToggle.getAttribute('data-target');
+                      var otherPanel = otherPanelId ? document.getElementById(otherPanelId) : null;
+                      if (otherPanel) {
+                        otherPanel.classList.remove('is-open');
+                      }
+                    }
+                  }
+                );
+              }
               toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
               panel.classList.toggle('is-open', !isOpen);
             });
@@ -1698,24 +1707,29 @@
 
       (function cartDrawer() {
         var toggleBtn = document.getElementById('cart-drawer-toggle');
-        var closeBtn = document.getElementById('cart-drawer-close');
-        var toggleWrapper = document.getElementById(
-          'cart-drawer-toggle-wrapper'
-        );
         var detailsPanel = document.getElementById('cart-drawer-details');
+        var toggleLabel = toggleBtn ? toggleBtn.querySelector('span') : null;
+        var toggleChevron = document.getElementById('toggle-chevron');
 
-        if (!toggleBtn || !closeBtn || !detailsPanel || !toggleWrapper) return;
+        if (!toggleBtn || !detailsPanel || !toggleLabel || !toggleChevron) return;
+
+        function setDrawerOpen(isOpen) {
+          detailsPanel.classList.toggle('is-open', isOpen);
+          toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          toggleLabel.textContent = isOpen ? 'Close' : 'View details';
+          toggleChevron.textContent = isOpen
+            ? 'keyboard_arrow_down'
+            : 'keyboard_arrow_up';
+        }
 
         toggleBtn.addEventListener('click', function () {
-          detailsPanel.classList.add('is-open');
-          toggleWrapper.classList.add('invisible');
+          var isOpen = toggleBtn.getAttribute('aria-expanded') === 'true';
+          setDrawerOpen(!isOpen);
         });
 
-        closeBtn.addEventListener('click', function () {
-          detailsPanel.classList.remove('is-open');
-          toggleWrapper.classList.remove('invisible');
-        });
+        setDrawerOpen(false);
       })();
     </script>
   </body>
 </html>
+
