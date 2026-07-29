@@ -8,7 +8,7 @@
     "endDate": "2025-07-10T21:00:00-04:00",
     "price": 20,
     "locationOrUrl": "North York centre",
-    "status": "ONGOING",
+    "status": "CLOSED",
     "instructor": {
       "name": "구수진",
       "title": "Career Coach",
@@ -26,7 +26,7 @@
     "endDate": "2025-06-15T17:00:00-04:00",
     "price": 30,
     "locationOrUrl": "Zoom",
-    "status": "RECRUITING",
+    "status": "OPEN",
     "instructor": {
       "name": "구수진",
       "title": "Frontend Mentor",
@@ -62,7 +62,7 @@
     "endDate": "2025-07-12T17:00:00-04:00",
     "price": 25,
     "locationOrUrl": "North York Centre",
-    "status": "ONGOING",
+    "status": "CLOSED",
     "instructor": {
       "name": "구수진",
       "title": "Senior Frontend Engineer",
@@ -80,7 +80,7 @@
     "endDate": "2025-07-22T20:00:00-04:00",
     "price": 0,
     "locationOrUrl": "온라인",
-    "status": "RECRUITING",
+    "status": "OPEN",
     "instructor": {
       "name": "구수진",
       "title": "Tech Lead",
@@ -116,7 +116,7 @@
     "endDate": "2025-08-10T17:00:00-04:00",
     "price": 18,
     "locationOrUrl": "Zoom",
-    "status": "RECRUITING",
+    "status": "OPEN",
     "instructor": {
       "name": "구수진",
       "title": "Product Designer",
@@ -170,7 +170,7 @@
     "endDate": "2025-09-05T21:00:00-04:00",
     "price": 0,
     "locationOrUrl": "Zoom",
-    "status": "RECRUITING",
+    "status": "OPEN",
     "instructor": null,
     "sessions": []
   },
@@ -183,7 +183,7 @@
     "endDate": "2025-09-12T20:30:00-04:00",
     "price": 5,
     "locationOrUrl": "Toronto Tech Hub",
-    "status": "ONGOING",
+    "status": "CLOSED",
     "instructor": null,
     "sessions": []
   },
@@ -196,7 +196,7 @@
     "endDate": "2025-09-20T16:00:00-04:00",
     "price": 15,
     "locationOrUrl": "Google Meet",
-    "status": "RECRUITING",
+    "status": "OPEN",
     "instructor": null,
     "sessions": []
   }

@@ -91,18 +91,16 @@ export default function Page() {
   // 개별 Row 선택 토글
   const mapSelectToDbStatus = (selectValue: string) => {
     switch (selectValue) {
-      case 'recruiting':
-        return 'RECRUITING';
+      case 'open':
+        return 'OPEN';
       case 'closed':
         return 'CLOSED';
-      case 'ongoing':
-        return 'ONGOING';
       case 'completed':
         return 'COMPLETED';
       case 'hidden':
         return 'HIDDEN';
       default:
-        return 'RECRUITING';
+        return 'OPEN';
     }
   };
 
@@ -150,18 +148,16 @@ export default function Page() {
   }) => {
     const getSelectValue = (status?: string) => {
       switch (status) {
-        case 'RECRUITING':
-          return 'recruiting';
+        case 'OPEN':
+          return 'open';
         case 'CLOSED':
           return 'closed';
-        case 'ONGOING':
-          return 'ongoing';
         case 'COMPLETED':
           return 'completed';
         case 'HIDDEN':
           return 'hidden';
         default:
-          return 'recruiting';
+          return 'open';
       }
     };
 
@@ -180,14 +176,13 @@ export default function Page() {
         }}
         width="w-[124px]"
         options={[
-          { value: 'recruiting', label: '모집중' },
+          { value: 'open', label: '모집중' },
           { value: 'closed', label: '모집완료' },
-          { value: 'ongoing', label: '진행중' },
           { value: 'completed', label: '진행완료' },
           { value: 'hidden', label: '비공개' }
         ]}
         valueClassMap={{
-          recruiting: 'text-pace-gray-700 font-semibold',
+          open: 'text-pace-gray-700 font-semibold',
           closed: 'text-pace-gray-700 font-semibold',
           completed: 'text-pace-gray-700 font-semibold',
           hidden: 'text-pace-gray-700 font-semibold',
@@ -325,9 +320,8 @@ export default function Page() {
             width="w-[145px]"
             options={[
               { value: 'ALL', label: '전체 상태' },
-              { value: 'RECRUITING', label: '모집중' },
+              { value: 'OPEN', label: '모집중' },
               { value: 'CLOSED', label: '모집완료' },
-              { value: 'ONGOING', label: '진행중' },
               { value: 'COMPLETED', label: '진행완료' },
               { value: 'HIDDEN', label: '비공개' }
             ]}
