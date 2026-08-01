@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { id } = await params;
     const { isPublic } = await req.json();

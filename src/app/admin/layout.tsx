@@ -1,32 +1,17 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { requireAdminUser } from '@/lib/admin-auth';
+import AdminClientLayout from './admin-client-layout';
 
-import '@/app/globals.css';
-import { UserProvider } from '../context/user-context';
-import AdminPage from '@/components/admin/layout/admin-page';
-import { AdminHeader } from '@/components/admin/layout/admin-header';
-import { AdminFooter } from '@/components/admin/layout/admin-footer';
-import { NavigationBlockerProvider } from '@/components/admin/common/navigation-blocker-context';
-
-export default function AdminLayout({
+export default async function AdminLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <UserProvider>
-      <NavigationBlockerProvider>
-        <div className="flex h-screen flex-col">
-          {/* 어드민 전용 헤더 */}
-          <AdminHeader />
+  const adminAccess = await requireAdminUser();
 
-          {/* 본문 (사이드바 + 컨텐츠) */}
-          <div className="flex flex-1">
-            <AdminPage>{children}</AdminPage>
-          </div>
+  if (!adminAccess.ok) {
+    redirect(adminAccess.status === 401 ? '/sign-in?redirect_url=/admin' : '/');
+  }
 
-          <AdminFooter />
-        </div>
-      </NavigationBlockerProvider>
-    </UserProvider>
-  );
+  return <AdminClientLayout>{children}</AdminClientLayout>;
 }
