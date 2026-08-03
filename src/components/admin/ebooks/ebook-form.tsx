@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import SectionList from '@/components/admin/common/section-list';
-import EbookRecommendedSelect from './sections/ebook-recommended-select';
+import RecommendedSelect from '@/components/admin/common/recommended-select';
 import RecommendedLinkSection from '@/components/admin/common/recommended-link-section';
-import EbookBasicSection from './sections/ebook-basic-section';
+import BasicSection from '@/components/admin/basic-section';
 import EbookDetailSection from './sections/ebook-detail-section';
 import VisualSection from '@/components/admin/common/visual-section';
 import ActionButtons from '@/components/admin/common/action-buttons';
@@ -16,6 +16,34 @@ import {
   updateEbook
 } from '@/components/admin/ebooks/actions/ebook-actions';
 import { EbookCategory, TargetAudienceType } from '@prisma/client';
+import { itemCategoryLabel } from '@/constants/labels';
+
+const EBOOK_CATEGORY_OPTIONS = (
+  [
+    EbookCategory.MARKETING,
+    EbookCategory.IT,
+    EbookCategory.DESIGN,
+    EbookCategory.PUBLIC,
+    EbookCategory.ACCOUNTING,
+    EbookCategory.SERVICE
+  ] as const satisfies readonly EbookCategory[]
+).map((value) => ({ value, label: itemCategoryLabel.ko[value] }));
+
+const EBOOK_STATUS_OPTIONS = [
+  { value: 'public', label: '공개' },
+  { value: 'private', label: '비공개' }
+];
+
+const EBOOK_RECOMMENDED_OPTIONS = [
+  { value: TargetAudienceType.IT, label: 'IT 개발' },
+  { value: TargetAudienceType.GOVERNMENT, label: '공무원' },
+  { value: TargetAudienceType.FINANCE, label: '재무회계' },
+  { value: TargetAudienceType.DESIGN, label: '디자인' },
+  { value: TargetAudienceType.RESUME, label: '북미 취업이력서' },
+  { value: TargetAudienceType.INTERVIEW, label: '인터뷰 준비' },
+  { value: TargetAudienceType.NETWORKING, label: '네트워킹' },
+  { value: TargetAudienceType.SERVICE, label: '서비스' }
+];
 
 export type EbookData = {
   id?: string;
@@ -178,17 +206,20 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
   return (
     <div className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16">
       {/* Basic Info */}
-      <EbookBasicSection
+      <BasicSection
+        formType="ebook"
         category={ebookData.category}
         setCategory={(v) => {
-          updateEbookData('category', v);
+          updateEbookData('category', v as EbookCategory);
           setErrors((prev) => ({ ...prev, category: undefined }));
         }}
-        isPublic={ebookData.isPublic}
-        setIsPublic={(v) => {
+        categoryOptions={EBOOK_CATEGORY_OPTIONS}
+        statusValue={ebookData.isPublic}
+        setStatusValue={(v) => {
           updateEbookData('isPublic', v);
           setErrors((prev) => ({ ...prev, isPublic: undefined }));
         }}
+        statusOptions={EBOOK_STATUS_OPTIONS}
         showOnMain={ebookData.showOnMain}
         setShowOnMain={(v) => updateEbookData('showOnMain', v)}
         errors={errors}
@@ -231,10 +262,13 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       />
 
       {/* Recommended */}
-      <EbookRecommendedSelect
+      <RecommendedSelect
         maxSelect={2}
         value={ebookData.recommended}
-        onChange={(v) => updateEbookData('recommended', v)}
+        onChange={(v) =>
+          updateEbookData('recommended', v as TargetAudienceType[])
+        }
+        options={EBOOK_RECOMMENDED_OPTIONS}
         error={errors.recommended}
       />
 

@@ -264,14 +264,15 @@ export async function getEbook(id: string) {
   return ebook;
 }
 
-export async function deleteEbook(id: string) {
+export async function deleteEbooks(ids: string[]) {
   try {
-    await prisma.ebook.delete({
-      where: { id }
+    const { count } = await prisma.ebook.deleteMany({
+      where: { id: { in: ids } }
     });
     revalidatePath('/admin/ebooks');
+    return { count };
   } catch {
-    throw new Error('Failed to delete ebook');
+    throw new Error('Failed to delete ebooks');
   }
 }
 

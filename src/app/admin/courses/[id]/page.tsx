@@ -1,6 +1,6 @@
 'use client';
 
-import AddForm, { CourseData } from '@/components/admin/add-form';
+import CourseForm, { CourseData } from '@/components/admin/courses/course-form';
 import { normalizeCourseCareers } from '@/lib/course-form-data';
 
 import { useEffect, useState, use } from 'react';

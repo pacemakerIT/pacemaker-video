@@ -3,33 +3,65 @@
 import PaceSelect from '@/components/ui/admin/select';
 import { Checkbox } from '@/components/ui/admin/checkbox';
 import ErrorText from '@/components/ui/admin/error-text';
-import { CourseFormErrors } from '@/types/admin/course-form-errors';
 import RequiredMark from '@/components/ui/admin/required-mark';
 import { itemCategoryLabel } from '@/constants/labels';
-type FormType = 'course' | 'ebook' | 'workshop';
+
+type Option = { value: string; label: string };
+
+type BasicSectionErrors = {
+  category?: string;
+  isPublic?: string;
+  recruitStatus?: string;
+};
+
+const DEFAULT_CATEGORY_OPTIONS: Option[] = [
+  { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
+  { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
+  { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
+];
+
+const WORKSHOP_STATUS_OPTIONS: Option[] = [
+  { value: '모집중', label: '모집중' },
+  { value: '모집완료', label: '모집완료' },
+  { value: '진행중', label: '진행중' },
+  { value: '진행완료', label: '진행완료' }
+];
+
+const PUBLIC_STATUS_OPTIONS: Option[] = [
+  { value: '공개', label: '공개' },
+  { value: '비공개', label: '비공개' }
+];
 
 type Props = {
-  formType: FormType;
+  formType: 'course' | 'ebook' | 'workshop';
   category: string;
   setCategory: (v: string) => void;
+  categoryOptions?: Option[];
   statusValue: string;
   setStatusValue: (v: string) => void;
+  statusOptions?: Option[];
   showOnMain: boolean;
   setShowOnMain: (v: boolean) => void;
-  errors?: CourseFormErrors;
+  errors?: BasicSectionErrors;
 };
 
 export default function BasicSection({
   formType,
   category,
   setCategory,
+  categoryOptions,
   statusValue,
   setStatusValue,
+  statusOptions,
   showOnMain,
   setShowOnMain,
   errors
 }: Props) {
   const isWorkshop = formType === 'workshop';
+  const effectiveCategoryOptions = categoryOptions ?? DEFAULT_CATEGORY_OPTIONS;
+  const effectiveStatusOptions =
+    statusOptions ??
+    (isWorkshop ? WORKSHOP_STATUS_OPTIONS : PUBLIC_STATUS_OPTIONS);
 
   return (
     <div className="flex items-center gap-10">
@@ -45,17 +77,13 @@ export default function BasicSection({
             onChange={setCategory}
             width="w-[240px]"
             placeholder="선택"
-            options={[
-              { value: 'INTERVIEW', label: itemCategoryLabel.en.INTERVIEW },
-              { value: 'RESUME', label: itemCategoryLabel.en.RESUME },
-              { value: 'NETWORKING', label: itemCategoryLabel.en.NETWORKING }
-            ]}
+            options={effectiveCategoryOptions}
           />
           <ErrorText message={errors?.category} />
         </div>
       </div>
 
-      {/* 공개여부 (course) / 모집여부 (workshop) */}
+      {/* 공개여부 (course/ebook) / 모집여부 (workshop) */}
       <div className="flex items-start gap-3">
         <label className="w-[100px] text-left text-pace-lg font-bold h-[48px] flex items-center">
           {isWorkshop ? '모집여부' : '공개여부'}
@@ -68,19 +96,7 @@ export default function BasicSection({
             onChange={setStatusValue}
             width="w-[240px]"
             placeholder="선택"
-            options={
-              isWorkshop
-                ? [
-                    { value: '모집중', label: '모집중' },
-                    { value: '모집완료', label: '모집완료' },
-                    { value: '진행중', label: '진행중' },
-                    { value: '진행완료', label: '진행완료' }
-                  ]
-                : [
-                    { value: '공개', label: '공개' },
-                    { value: '비공개', label: '비공개' }
-                  ]
-            }
+            options={effectiveStatusOptions}
           />
           <ErrorText
             message={isWorkshop ? errors?.recruitStatus : errors?.isPublic}
