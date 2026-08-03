@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   getEbooks,
-  deleteEbook,
+  deleteEbooks,
   updateEbookStatuses,
   EbookWithStats
 } from '@/components/admin/ebooks/actions/ebook-actions';
@@ -13,6 +13,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PaceSelect from '@/components/ui/admin/select';
 import { itemCategoryLabel } from '@/constants/labels';
 import { resolveImageSrc } from '@/lib/utils';
+import { toast } from 'sonner';
+import ConfirmModal from '@/components/common/confirm-modal';
 
 import {
   DndContext,
@@ -100,6 +102,13 @@ export default function AdminEbooksPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Confirm Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | undefined>(
+    undefined
+  );
+  const [deleteMessage, setDeleteMessage] = useState('');
+
   const { isBlocked, setBlocked, attemptNavigation } = useNavigationBlocker();
 
   // 브라우저 탭 닫기/새로고침 방지
@@ -176,21 +185,43 @@ export default function AdminEbooksPage() {
     }
   };
 
-  const handleDelete = async (id?: string) => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+  // 삭제 버튼 클릭 시 모달 오픈
+  const handleDeleteClick = (id?: string) => {
+    const targetIds = id
+      ? [id]
+      : rows.filter((r) => r.selected).map((r) => r.id);
+
+    if (targetIds.length === 0) {
+      toast.info('삭제할 항목을 선택해주세요.');
+      return;
+    }
+
+    setDeleteTargetId(id); // id가 없으면 undefined (일괄 삭제)
+    setDeleteMessage(
+      id
+        ? '선택한 전자책을 정말 삭제하시겠습니까?'
+        : `선택한 ${targetIds.length}개의 전자책을 정말 삭제하시겠습니까?`
+    );
+    setDeleteModalOpen(true);
+  };
+
+  // 실제 삭제 로직 (모달 확인 시 실행)
+  const executeDelete = async () => {
+    const targetIds = deleteTargetId
+      ? [deleteTargetId]
+      : rows.filter((r) => r.selected).map((r) => r.id);
 
     try {
-      if (id) {
-        await deleteEbook(id);
-      } else {
-        // Batch delete
-        const selectedIds = rows.filter((r) => r.selected).map((r) => r.id);
-        if (selectedIds.length === 0) return;
-        await Promise.all(selectedIds.map((sid) => deleteEbook(sid)));
-      }
+      await deleteEbooks(targetIds);
+      toast.success(
+        `${targetIds.length}개의 전자책이 성공적으로 삭제되었습니다.`
+      );
       fetchData(currentPage);
     } catch {
-      alert('삭제에 실패했습니다.');
+      toast.error('삭제 중 오류가 발생했습니다.');
+    } finally {
+      setDeleteModalOpen(false);
+      setDeleteTargetId(undefined);
     }
   };
 
@@ -320,7 +351,7 @@ export default function AdminEbooksPage() {
       footerRight={
         <>
           <button
-            onClick={() => handleDelete()}
+            onClick={() => handleDeleteClick()}
             className="w-[112px] h-[60px] bg-pace-white-500 !text-pace-lg text-pace-gray-700 border border-pace-gray-700 rounded-[4px] flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
             삭제
@@ -359,7 +390,7 @@ export default function AdminEbooksPage() {
                   row={row}
                   index={index}
                   toggleRow={toggleRow}
-                  onDelete={handleDelete}
+                  onDelete={handleDeleteClick}
                   StatusComponent={EbookStatus}
                   editHref={`/admin/ebooks/${row.id}`}
                   attemptNavigation={attemptNavigation}
@@ -375,6 +406,16 @@ export default function AdminEbooksPage() {
           </SortableContext>
         </DndContext>
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="전자책 삭제"
+        description={deleteMessage}
+        onConfirm={executeDelete}
+        confirmText="삭제"
+        cancelText="취소"
+      />
     </AdminListLayout>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import AddForm, { CourseData } from '@/components/admin/add-form';
+import CourseForm, { CourseData } from '@/components/admin/courses/course-form';
 import { normalizeCourseCareers } from '@/lib/course-form-data';
 
 import { useEffect, useState, use } from 'react';
@@ -148,12 +148,7 @@ export default function CourseEditPage({
           </span>
         </div>
 
-        <AddForm
-          formType="course"
-          initialData={courseData}
-          isEdit={true}
-          courseId={id}
-        />
+        <CourseForm initialData={courseData} isEdit={true} courseId={id} />
       </div>
     </div>
   );

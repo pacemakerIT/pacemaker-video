@@ -1,38 +1,42 @@
 'use client';
 
 import { useState } from 'react';
-import { TargetAudienceType } from '@prisma/client';
 import { Checkbox } from '@/components/ui/admin/checkbox';
 import RequiredMark from '@/components/ui/admin/required-mark';
 
+type Option = { value: string; label: string };
+
 type RecommendedSelectProps = {
   maxSelect?: number;
-  value?: TargetAudienceType[];
-  onChange?: (selected: TargetAudienceType[]) => void;
+  value?: string[];
+  onChange?: (selected: string[]) => void;
+  options?: Option[];
 };
 
-export default function EbookRecommendedSelect({
+/* TODO: enum으로 관리해서 recomment-auth db랑 연결하는 id로 쓰기 */
+const DEFAULT_OPTIONS: Option[] = [
+  'IT 개발',
+  '공무원',
+  '재무회계',
+  '디자인',
+  '북미 취업이력서',
+  '인터뷰 준비',
+  '네트워킹',
+  '서비스'
+].map((label) => ({ value: label, label }));
+
+export default function RecommendedSelect({
   maxSelect = 2,
   value,
   onChange,
+  options = DEFAULT_OPTIONS,
   error
 }: RecommendedSelectProps & { error?: string }) {
-  const options: { value: TargetAudienceType; label: string }[] = [
-    { value: TargetAudienceType.IT, label: 'IT 개발' },
-    { value: TargetAudienceType.GOVERNMENT, label: '공무원' },
-    { value: TargetAudienceType.FINANCE, label: '재무회계' },
-    { value: TargetAudienceType.DESIGN, label: '디자인' },
-    { value: TargetAudienceType.RESUME, label: '북미 취업이력서' },
-    { value: TargetAudienceType.INTERVIEW, label: '인터뷰 준비' },
-    { value: TargetAudienceType.NETWORKING, label: '네트워킹' },
-    { value: TargetAudienceType.SERVICE, label: '서비스' }
-  ];
-
-  const [localSelected, setLocalSelected] = useState<TargetAudienceType[]>([]);
+  const [localSelected, setLocalSelected] = useState<string[]>([]);
   const effectiveSelected = value !== undefined ? value : localSelected;
 
-  const handleSelect = (option: TargetAudienceType) => {
-    let updated: TargetAudienceType[] = [];
+  const handleSelect = (option: string) => {
+    let updated: string[] = [];
     if (effectiveSelected.includes(option)) {
       updated = effectiveSelected.filter((item) => item !== option);
     } else {
