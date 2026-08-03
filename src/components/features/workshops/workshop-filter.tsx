@@ -13,9 +13,8 @@ interface WorkshopFilterProps {
 
 const FILTERS: { label: string; value: FilterKey }[] = [
   { label: 'All', value: 'All' },
-  { label: 'Open', value: WorkshopStatus.RECRUITING },
+  { label: 'Open', value: WorkshopStatus.OPEN },
   { label: 'Closed', value: WorkshopStatus.CLOSED },
-  { label: 'Ongoing', value: WorkshopStatus.ONGOING },
   { label: 'Completed', value: WorkshopStatus.COMPLETED }
 ];
 

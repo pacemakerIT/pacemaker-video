@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
 
-const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
-  모집중: WorkshopStatus.RECRUITING,
-  모집완료: WorkshopStatus.CLOSED,
-  진행중: WorkshopStatus.ONGOING,
-  진행완료: WorkshopStatus.COMPLETED
+const RECRUIT_STATUS_MAP: Record<string, string> = {
+  모집중: 'OPEN',
+  모집완료: 'CLOSED',
+  진행완료: 'COMPLETED'
 };
+
+const toWorkshopStatus = (status: string): WorkshopStatus =>
+  status as unknown as WorkshopStatus;
 
 interface InstructorInput {
   name: string;
@@ -69,8 +71,7 @@ export async function PUT(
         where: { id: workshopId },
         data: {
           category: (category as WorkshopCategory) || null,
-          status:
-            RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.RECRUITING,
+          status: toWorkshopStatus(RECRUIT_STATUS_MAP[recruitStatus] ?? 'OPEN'),
           isMain: showOnMain ?? false,
           title,
           description,

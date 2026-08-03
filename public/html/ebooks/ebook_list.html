@@ -842,7 +842,8 @@
         }
 
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
 
           opacity: 1;
 
@@ -2122,6 +2123,18 @@
             var panel = document.getElementById(targetId);
             if (!panel) return;
             var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+            if (!isExpanded) {
+              accordions.forEach(function (otherBtn) {
+                if (otherBtn !== btn) {
+                  otherBtn.setAttribute('aria-expanded', 'false');
+                  var otherTargetId = otherBtn.getAttribute('data-target');
+                  var otherPanel = otherTargetId ? document.getElementById(otherTargetId) : null;
+                  if (otherPanel) {
+                    otherPanel.classList.remove('is-open');
+                  }
+                }
+              });
+            }
             btn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
             panel.classList.toggle('is-open', !isExpanded);
           });

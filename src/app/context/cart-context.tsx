@@ -38,13 +38,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchCart = useCallback(async () => {
     try {
-      const res = await fetch(`/api/cart?userId=${userId}`);
+      const res = await fetch('/api/cart');
+      if (!res.ok) {
+        throw new Error(`Failed with status ${res.status}`);
+      }
+
       const data = await res.json();
       setCart(data);
     } catch (err) {
       toast.error(`Failed to fetch cart: ${err}`);
     }
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     if (!userId) {
@@ -60,7 +64,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, itemId, itemType })
+        body: JSON.stringify({ itemId, itemType })
       });
 
       if (res.status === 409) {
@@ -87,7 +91,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const ids = Array.isArray(itemIds) ? itemIds : [itemIds];
 
-      const res = await fetch(`/api/cart?userId=${userId}`, {
+      const res = await fetch('/api/cart', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemIds: ids })

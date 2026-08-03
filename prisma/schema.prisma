@@ -166,9 +166,9 @@ model Workshop {
   endDate        DateTime
   price          Float?
   locationOrUrl  String?
-  status         WorkshopStatus       @default(RECRUITING)
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
+  status         WorkshopStatus    @default(OPEN)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   thumbnail      String?
   category       WorkshopCategory?
   processContent String?
@@ -298,11 +298,10 @@ model Instructor {
 }
 
 enum WorkshopStatus {
-  RECRUITING
-  CLOSED
-  ONGOING
-  COMPLETED
-  HIDDEN
+  OPEN      @map("Open")
+  CLOSED    @map("Closed")
+  COMPLETED @map("Completed")
+  HIDDEN    @map("Hidden")
 }
 
 enum CourseCategory {
