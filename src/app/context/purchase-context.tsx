@@ -1,13 +1,6 @@
 'use client';
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback
-} from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 
 type PurchaseContextType = {
@@ -20,9 +13,7 @@ const PurchaseContext = createContext<PurchaseContextType | null>(null);
 
 export function PurchaseProvider({ children }: { children: React.ReactNode }) {
   const { userId, isLoaded } = useAuth();
-  const pathname = usePathname();
   const [isPurchased, setIsPurchased] = useState(false);
-  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
 
   const checkPurchaseStatus = useCallback(
     async (videoId: string | undefined) => {
@@ -33,7 +24,6 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
         toast.error('Invalid video ID format');
         return;
       }
-      setCurrentVideoId(videoId);
 
       if (!userId || !videoId || !isLoaded) {
         return;
@@ -56,25 +46,6 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     },
     [userId, isLoaded, setIsPurchased]
   );
-
-  // Effect to get videoId from URL
-  useEffect(() => {
-    const videoIdFromPath = pathname?.split('/')?.[1];
-    if (videoIdFromPath && videoIdFromPath !== currentVideoId) {
-      checkPurchaseStatus(videoIdFromPath);
-    }
-  }, [pathname, checkPurchaseStatus, currentVideoId]);
-
-  // Effect to handle auth state changes and page refreshes
-  useEffect(() => {
-    if (isLoaded) {
-      if (!userId) {
-        setIsPurchased(false);
-      } else if (currentVideoId) {
-        checkPurchaseStatus(currentVideoId);
-      }
-    }
-  }, [userId, isLoaded, currentVideoId, checkPurchaseStatus]);
 
   return (
     <PurchaseContext.Provider

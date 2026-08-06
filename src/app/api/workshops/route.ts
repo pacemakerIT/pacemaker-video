@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 const RECRUIT_STATUS_MAP: Record<string, string> = {
   모집중: 'OPEN',
@@ -197,6 +198,14 @@ export async function GET(req: Request) {
 }
 
 export async function POST(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const body = await request.json();
     const {
@@ -286,6 +295,14 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { ids } = await request.json();
 
