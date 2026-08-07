@@ -35,14 +35,14 @@ export default function WorkshopsPage() {
   }, []);
 
   return (
-    <div className="w-screen flex gap-20 flex-col">
-      <div className="w-[62.5%] items-center mx-auto justify-center flex flex-col gap-8 pt-20">
+    <main id="main-content" className="bg-white py-[60px] font-body">
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col px-4">
         {/* 워크샵 헤더 */}
-        <div className="w-full max-w-[1200px] text-left mx-auto">
-          <p className="text-pace-orange-600 font-medium pb-2 text-base">
+        <div className="mb-8 text-center md:text-left">
+          <p className="mb-2 font-manrope text-xs font-bold uppercase tracking-[0.2em] text-[#FF4F02]">
             Connections Create Opportunities
           </p>
-          <h1 className="text-[32px] font-bold text-pace-black-500">
+          <h1 className="font-headline text-3xl font-extrabold leading-tight text-[#00263B] md:text-4xl">
             Pacemaker Workshops
           </h1>
         </div>
@@ -66,9 +66,7 @@ export default function WorkshopsPage() {
           selectedTitle={selectedWorkshopTitle} // 선택된 워크숍 title 전달
           onCloseDetail={() => setSelectedWorkshopTitle(null)} // 상세 닫을 때 상태 초기화
         />
-
-        <br />
       </div>
-    </div>
+    </main>
   );
 }

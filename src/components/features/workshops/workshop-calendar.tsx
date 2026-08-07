@@ -1,16 +1,14 @@
 'use client';
 
 import { MouseEvent, useEffect, useState } from 'react';
-import Image from 'next/image';
 import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import '@/components/features/workshops/calendar-custom.css';
 import EventPopup from '@/components/features/workshops/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { calendarStyleMap } from '@/components/ui/calendar-style-map';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const locales = { 'en-US': enUS };
 
@@ -55,6 +53,24 @@ const monthMap: { [key: string]: string } = {
   December: 'December'
 };
 
+const mobileModalStyleMap: Record<
+  CalendarEvent['status'],
+  { popup: string; button: string }
+> = {
+  OPEN: {
+    popup: 'border-orange/20 bg-[#fff8f6]',
+    button: 'bg-orange hover:bg-orange-hover'
+  },
+  CLOSED: {
+    popup: 'border-teal/20 bg-[#f5fcfe]',
+    button: 'bg-teal hover:bg-teal/90'
+  },
+  COMPLETED: {
+    popup: 'border-gray-200 bg-gray-50',
+    button: 'bg-gray-500 hover:bg-gray-600'
+  }
+};
+
 function get6MonthRange(center: Date) {
   const start = new Date(center.getFullYear(), center.getMonth() - 3, 1);
   const end = new Date(
@@ -77,38 +93,32 @@ function CustomToolbar({
   onNavigate,
   count
 }: ToolbarProps<CalendarEvent> & { count: number }) {
+  const monthName = label.split(' ')[0];
+
   return (
-    <div className="w-full flex items-center justify-between gap-4 flex-wrap py-4 pb-8">
+    <div className="mb-4 flex w-full items-center justify-between px-2">
       <button
-        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
+        className="flex h-[56px] w-[56px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#00263B]"
         onClick={() => onNavigate('PREV')}
+        aria-label="Previous month"
       >
-        <Image
-          src="/icons/calendar-arrow-left.svg"
-          alt="prev"
-          width={40}
-          height={40}
-        />
+        <ChevronLeft className="h-6 w-6" />
       </button>
-      <div className="flex-1 text-center min-w-[200px] max-w-[600px] mx-auto">
-        <h2 className="font-bold text-pace-xl text-pace-gray-700 pb-2">
-          {label}
+      <div className="text-center">
+        <h2 className="font-headline text-[24px] font-bold leading-[36px] text-[#00263B]">
+          {label.split(' ')[0].slice(0, 3) + ', ' + label.split(' ')[1]}
         </h2>
-        <p className="text-pace-stone-500 text-pace-base truncate">
-          <span className="text-pace-orange-600">{count}</span> Workshops in{' '}
-          {monthMap[label.split(' ')[0]]}
+        <p className="mt-1 text-[16px] font-bold text-[#666666]">
+          <span className="text-[#FF4F02]">{count}</span> Workshops in{' '}
+          {monthMap[monthName]}
         </p>
       </div>
       <button
-        className="w-10 h-10 flex-shrink-0 flex items-center justify-center"
+        className="flex h-[56px] w-[56px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#00263B]"
         onClick={() => onNavigate('NEXT')}
+        aria-label="Next month"
       >
-        <Image
-          src="/icons/calendar-arrow-right.svg"
-          alt="next"
-          width={40}
-          height={40}
-        />
+        <ChevronRight className="h-6 w-6" />
       </button>
     </div>
   );
@@ -128,6 +138,7 @@ export default function WorkshopCalendar({
   } | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [count, setCount] = useState(0);
+  const [calendarDate, setCalendarDate] = useState(() => new Date());
   const [openedEvent, setOpenedEvent] = useState<CalendarEvent | null>(null);
   const [popupPos, setPopupPos] = useState({ top: 0, left: 0, width: 0 });
 
@@ -154,6 +165,7 @@ export default function WorkshopCalendar({
   };
 
   const handleNavigate = async (newDate: Date) => {
+    setCalendarDate(newDate);
     onMonthChange?.(newDate); // 새로 조회한 날짜 상위에 전달
 
     if (!loadedRange || !isInRange(newDate, loadedRange)) {
@@ -198,6 +210,7 @@ export default function WorkshopCalendar({
         const json = text ? JSON.parse(text) : { workshops: [], count: 0 };
         setAllWorkshops(json.workshops);
         setLoadedRange({ start, end });
+        setCalendarDate(today);
         filterWorkshopsByMonth(today, json.workshops);
         onMonthChange?.(today); // 초기 조회일도 전달
       } catch (error) {
@@ -230,15 +243,17 @@ export default function WorkshopCalendar({
 
   return (
     <div
-      className="w-[62.5%] max-w-[900px] items-center mx-auto justify-center flex flex-col gap-8 bg-white"
+      className="mb-8 flex w-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,38,59,0.04)] md:h-[778px]"
       onClick={() => setOpenedEvent(null)}
     >
       <Calendar
         localizer={localizer}
         events={events}
+        date={calendarDate}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 600, width: '100%' }}
+        formats={{ dateFormat: 'd' }}
+        style={{ height: 680, width: '100%' }}
         views={['month']}
         onNavigate={handleNavigate}
         components={{
@@ -246,9 +261,15 @@ export default function WorkshopCalendar({
           event: ({ event }) => (
             <div
               onClick={(e) => handleEventClick(e, event)}
-              className={`${openedEvent ? 'rounded-t' : 'rounded'} cursor-pointer text-sm rounded-t px-2 py-[2px] font-medium truncate transition-all duration-200 hover:scale-[1.02] ${calendarStyleMap[event.status].event}`}
+              title={event.title}
+              className={`${openedEvent ? 'md:rounded-t' : 'md:rounded'} flex max-w-full cursor-pointer items-center justify-center truncate rounded-full border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
             >
-              {event.title}
+              <span className="hidden truncate md:inline">{event.title}</span>
+              <span
+                aria-hidden="true"
+                className="inline-block h-1.5 w-1.5 rounded-full bg-current md:hidden"
+              />
+              <span className="sr-only md:hidden">{event.title}</span>
             </div>
           )
         }}
@@ -262,7 +283,37 @@ export default function WorkshopCalendar({
           onClose={() => setOpenedEvent(null)}
         >
           <div
-            className={`rounded-b-lg p-3 ${calendarStyleMap[openedEvent.status].popup}`}
+            className={`border md:hidden ${mobileModalStyleMap[openedEvent.status].popup}`}
+          >
+            <h3 className="border-b border-gray-100 pb-3 font-headline text-[18px] font-bold text-navy">
+              {openedEvent.title}
+            </h3>
+            <div className="flex flex-col gap-3 pt-4 text-[14px] font-medium text-gray-500">
+              {openedEvent.speaker &&
+                openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
+                  <p className="flex gap-4">
+                    <span>Instructor</span>
+                    <span>{openedEvent.speaker}</span>
+                  </p>
+                )}
+              <p className="flex gap-4">
+                <span>Fee</span>
+                <span>{openedEvent.fee}</span>
+              </p>
+            </div>
+            <Button
+              onClick={() => {
+                onSelectWorkshop?.(openedEvent.title);
+                setOpenedEvent(null);
+              }}
+              className={`mt-5 h-auto w-full rounded-2xl px-3 py-2.5 text-center font-headline text-[14px] font-bold text-white transition-colors ${mobileModalStyleMap[openedEvent.status].button}`}
+            >
+              View details
+            </Button>
+          </div>
+
+          <div
+            className={`hidden rounded-b-lg p-3 md:block ${calendarStyleMap[openedEvent.status].popup}`}
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
@@ -273,10 +324,10 @@ export default function WorkshopCalendar({
             <p className="text-pace-sm pb-2">Fee: {openedEvent.fee}</p>
             <Button
               onClick={() => {
-                onSelectWorkshop?.(openedEvent.title); // 워크숍 title을 상위로 전달
+                onSelectWorkshop?.(openedEvent.title);
                 setOpenedEvent(null);
               }}
-              className={`mt-1 w-[87px] h-[22px] text-white text-xs font-light rounded-full mx-auto block p-0 text-center flex items-center justify-center transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
+              className={`mx-auto mt-1 flex h-[22px] w-[87px] items-center justify-center rounded-full p-0 text-center text-xs font-light text-white transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
             >
               View detail
             </Button>
