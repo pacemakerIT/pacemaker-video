@@ -4,6 +4,14 @@ import prisma from '@/lib/prisma';
 import { EbookCategory, TargetAudienceType } from '@prisma/client';
 import { generateKeyBetween } from 'fractional-indexing';
 import { revalidatePath } from 'next/cache';
+import { requireAdminUser } from '@/lib/admin-auth';
+
+async function requireAdminAction() {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    throw new Error(adminAccess.error);
+  }
+}
 
 export type EbookData = {
   id?: string;
@@ -32,6 +40,7 @@ export type EbookData = {
 };
 
 export async function createEbook(data: EbookData) {
+  await requireAdminAction();
   try {
     const {
       category,
@@ -113,6 +122,7 @@ export async function createEbook(data: EbookData) {
 }
 
 export async function updateEbook(id: string, data: EbookData) {
+  await requireAdminAction();
   try {
     const {
       category,
@@ -188,6 +198,7 @@ export async function updateEbook(id: string, data: EbookData) {
 }
 
 export async function getEbooks(page = 1, limit = 10) {
+  await requireAdminAction();
   const skip = (page - 1) * limit;
   const total = await prisma.ebook.count();
 
@@ -258,13 +269,15 @@ export type EbookWithStats = Awaited<
 >['items'][number];
 
 export async function getEbook(id: string) {
+  await requireAdminAction();
   const ebook = await prisma.ebook.findUnique({
     where: { id }
   });
   return ebook;
 }
 
-export async function deleteEbooks(ids: string[]) {
+export async function deleteEbook(id: string) {
+  await requireAdminAction();
   try {
     const { count } = await prisma.ebook.deleteMany({
       where: { id: { in: ids } }
@@ -279,6 +292,7 @@ export async function deleteEbooks(ids: string[]) {
 export async function updateEbookStatuses(
   updates: { id: string; isPublic: boolean }[]
 ) {
+  await requireAdminAction();
   try {
     await prisma.$transaction(
       updates.map(({ id, isPublic }) =>
