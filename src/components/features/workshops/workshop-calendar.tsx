@@ -15,7 +15,7 @@ const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek,
+  startOfWeek: (date: Date) => startOfWeek(date, { weekStartsOn: 1 }),
   getDay,
   locales
 });
@@ -246,34 +246,36 @@ export default function WorkshopCalendar({
       className="mb-8 flex w-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,38,59,0.04)] md:h-[778px]"
       onClick={() => setOpenedEvent(null)}
     >
-      <Calendar
-        localizer={localizer}
-        events={events}
-        date={calendarDate}
-        startAccessor="start"
-        endAccessor="end"
-        formats={{ dateFormat: 'd' }}
-        style={{ height: 680, width: '100%' }}
-        views={['month']}
-        onNavigate={handleNavigate}
-        components={{
-          toolbar: (props) => <CustomToolbar {...props} count={count} />,
-          event: ({ event }) => (
-            <div
-              onClick={(e) => handleEventClick(e, event)}
-              title={event.title}
-              className={`${openedEvent ? 'md:rounded-t' : 'md:rounded'} flex max-w-full cursor-pointer items-center justify-center truncate rounded-full border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
-            >
-              <span className="hidden truncate md:inline">{event.title}</span>
-              <span
-                aria-hidden="true"
-                className="inline-block h-1.5 w-1.5 rounded-full bg-current md:hidden"
-              />
-              <span className="sr-only md:hidden">{event.title}</span>
-            </div>
-          )
-        }}
-      />
+      <div className="h-[500px] w-full md:h-[600px]">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          date={calendarDate}
+          startAccessor="start"
+          endAccessor="end"
+          formats={{ dateFormat: 'd' }}
+          style={{ height: '100%', width: '100%' }}
+          views={['month']}
+          onNavigate={handleNavigate}
+          components={{
+            toolbar: (props) => <CustomToolbar {...props} count={count} />,
+            event: ({ event }) => (
+              <div
+                onClick={(e) => handleEventClick(e, event)}
+                title={event.title}
+                className={`${openedEvent ? 'md:rounded-t' : 'md:rounded'} flex max-w-full cursor-pointer items-center justify-center truncate rounded-full border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
+              >
+                <span className="hidden truncate md:inline">{event.title}</span>
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-1.5 w-1.5 rounded-full bg-current md:hidden"
+                />
+                <span className="sr-only md:hidden">{event.title}</span>
+              </div>
+            )
+          }}
+        />
+      </div>
 
       {openedEvent && (
         <EventPopup

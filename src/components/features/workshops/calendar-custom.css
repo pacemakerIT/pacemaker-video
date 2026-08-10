@@ -60,11 +60,24 @@
 
 /* 행 높이 */
 .rbc-month-row {
-  @apply min-h-[64px] border-b border-gray-100 md:min-h-[104px];
+  @apply min-h-[64px] border-b border-gray-100 md:min-h-[80px];
 }
 
 .rbc-month-row:last-child {
   @apply border-b-0;
+}
+
+/* HTML 시안처럼 날짜는 위, 이벤트 배지는 셀 하단에 배치 */
+.rbc-month-row .rbc-row-content {
+  @apply flex h-full flex-col;
+}
+
+.rbc-month-row .rbc-row-content > .rbc-row:nth-child(2) {
+  @apply mt-auto;
+}
+
+.rbc-month-row .rbc-row-segment {
+  @apply px-1.5 pb-1.5;
 }
 
 /* -------- 이벤트 스타일 -------- */

@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Heart, ChevronDown, ChevronUp } from 'lucide-react';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
@@ -16,17 +15,14 @@ interface Props {
   filter: 'All' | WorkshopStatus;
   selectedMonth: Date;
   selectedTitle?: string | null; // 외부에서 전달된 title로 스크롤 및 열기
-  onCloseDetail?: () => void;
 }
 
 export default function WorkshopCardList({
   workshops,
   filter,
   selectedMonth,
-  selectedTitle,
-  onCloseDetail
+  selectedTitle
 }: Props) {
-  const [openCardId, setOpenCardId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const { user } = useUserContext();
@@ -101,7 +97,6 @@ export default function WorkshopCardList({
     if (selectedTitle) {
       const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
       if (matched) {
-        setOpenCardId(matched.id);
         const target = cardRefs.current[matched.id];
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -113,7 +108,6 @@ export default function WorkshopCardList({
   return (
     <div className="flex w-full flex-col space-y-6">
       {filtered.map((w) => {
-        const isOpen = openCardId === w.id;
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
@@ -138,16 +132,14 @@ export default function WorkshopCardList({
               />
               <button
                 onClick={() => toggleLike(w.id)}
-                aria-label="like"
-                className="group absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md"
+                aria-label={isLiked(w.id) ? 'Saved' : 'Save'}
+                className={`favorite-heart absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
+                  isLiked(w.id) ? 'favorite-heart--liked' : ''
+                }`}
               >
-                <Heart
-                  className={`h-[18px] w-[18px] transition-colors duration-200 ${
-                    isLiked(w.id)
-                      ? 'fill-[#FF4F02] text-[#FF4F02] group-hover:text-[#E04400]'
-                      : 'text-gray-400 group-hover:fill-[#FF4F02] group-hover:text-[#FF4F02]'
-                  }`}
-                />
+                <span className="material-symbols-outlined text-[18px] leading-none">
+                  favorite
+                </span>
               </button>
             </div>
 
@@ -158,7 +150,7 @@ export default function WorkshopCardList({
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex h-[38px] flex-wrap items-center gap-2 md:gap-4">
                     <span
-                      className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
+                      className={`rounded border px-2 py-0.5 text-[12px] font-bold md:text-[14px] ${style.event}`}
                     >
                       {getStatusLabel(w.status)}
                     </span>
