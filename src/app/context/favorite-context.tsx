@@ -44,7 +44,11 @@ export const FavoriteProvider = ({
 
     const fetchFavorites = async () => {
       try {
-        const res = await fetch(`/api/favorites?userId=${userId}`);
+        const res = await fetch('/api/favorites');
+        if (!res.ok) {
+          throw new Error(`Failed with status ${res.status}`);
+        }
+
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
@@ -68,7 +72,7 @@ export const FavoriteProvider = ({
       const res = await fetch('/api/favorites', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, itemId, itemType })
+        body: JSON.stringify({ itemId, itemType })
       });
 
       if (res.status === 409) {
@@ -96,12 +100,17 @@ export const FavoriteProvider = ({
 
   const removeFavorite = async (itemId: string, itemType: ItemType) => {
     try {
-      await fetch(
-        `/api/favorites?userId=${userId}&itemId=${itemId}&itemType=${itemType}`,
+      const res = await fetch(
+        `/api/favorites?itemId=${itemId}&itemType=${itemType}`,
         {
           method: 'DELETE'
         }
       );
+
+      if (!res.ok) {
+        throw new Error(`Failed with status ${res.status}`);
+      }
+
       setFavorites((prev) =>
         prev.filter((f) => !(f.itemId === itemId && f.itemType === itemType))
       );

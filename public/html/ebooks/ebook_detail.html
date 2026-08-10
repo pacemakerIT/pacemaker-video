@@ -301,7 +301,8 @@
             padding-top 0.25s ease-out;
         }
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
           opacity: 1;
           padding-top: 12px;
           pointer-events: auto;
@@ -1543,6 +1544,21 @@
 
             toggle.addEventListener('click', function () {
               var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              if (!isOpen) {
+                Array.prototype.forEach.call(
+                  document.querySelectorAll('.mobile-nav-accordion-toggle'),
+                  function (otherToggle) {
+                    if (otherToggle !== toggle) {
+                      otherToggle.setAttribute('aria-expanded', 'false');
+                      var otherPanelId = otherToggle.getAttribute('data-target');
+                      var otherPanel = otherPanelId ? document.getElementById(otherPanelId) : null;
+                      if (otherPanel) {
+                        otherPanel.classList.remove('is-open');
+                      }
+                    }
+                  }
+                );
+              }
               toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
               panel.classList.toggle('is-open', !isOpen);
             });
