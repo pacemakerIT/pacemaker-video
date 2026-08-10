@@ -276,7 +276,7 @@ export async function getEbook(id: string) {
   return ebook;
 }
 
-export async function deleteEbook(id: string) {
+export async function deleteEbooks(ids: string[]) {
   await requireAdminAction();
   try {
     const { count } = await prisma.ebook.deleteMany({
