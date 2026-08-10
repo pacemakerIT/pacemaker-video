@@ -20,8 +20,8 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       // Reset purchase status before checking new video
       setIsPurchased(false);
 
-      if (!videoId || !/^[a-zA-Z0-9_-]+$/.test(videoId)) {
-        setCurrentVideoId(null);
+      if (!videoId || !/^[a-zA-Z0-9]+$/.test(videoId)) {
+        toast.error('Invalid video ID format');
         return;
       }
 
@@ -33,21 +33,8 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
         const response = await fetch(
           `/api/purchase-video-status?clerkId=${userId}`
         );
-        const data: unknown = await response.json();
-
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const purchasedVideoIds =
-          typeof data === 'object' &&
-          data !== null &&
-          'purchasedVideoIds' in data &&
-          Array.isArray(data.purchasedVideoIds)
-            ? data.purchasedVideoIds
-            : [];
-
-        setIsPurchased(purchasedVideoIds.includes(videoId));
+        const data = await response.json();
+        setIsPurchased(data.purchasedVideoIds.includes(videoId));
       } catch (error) {
         setIsPurchased(false);
         toast.error(
@@ -79,7 +66,4 @@ export function usePurchase() {
     throw new Error('usePurchase must be used within a PurchaseProvider');
   }
   return context;
-}
-function setCurrentVideoId(arg0: null) {
-  throw new Error('Function not implemented.');
 }
