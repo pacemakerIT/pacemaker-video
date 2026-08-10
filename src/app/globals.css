@@ -80,15 +80,6 @@ html {
   box-sizing: border-box;
 }
 
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: #ffffff;
-  border-bottom: 1px solid #f2f4f6;
-  padding: 12px 0;
-}
-
 /* Design-system utilities from main.html */
 .card-shadow {
   box-shadow: 0 10px 30px rgba(0, 38, 59, 0.08);
