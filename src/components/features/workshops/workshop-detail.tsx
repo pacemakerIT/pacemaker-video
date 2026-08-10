@@ -7,12 +7,12 @@ import {
   ArrowRight,
   CalendarDays,
   ChevronDown,
-  Clock3,
-  Heart,
+  Coffee,
   Info,
   MapPin,
   ShoppingCart,
-  UserRound
+  UserRound,
+  UsersRound
 } from 'lucide-react';
 import { ItemType } from '@prisma/client';
 import { toast } from 'sonner';
@@ -50,6 +50,7 @@ type Workshop = {
   category: string | null;
   thumbnail: string | null;
   processContent: string | null;
+  registrationCount: number;
   sections: {
     id: string;
     title: string;
@@ -65,11 +66,14 @@ type Suggested = Pick<
   | 'title'
   | 'description'
   | 'startDate'
+  | 'endDate'
   | 'locationOrUrl'
   | 'status'
   | 'category'
   | 'thumbnail'
->;
+> & {
+  instructors: Pick<Instructor, 'name'>[];
+};
 
 const faqs = [
   {
@@ -101,6 +105,40 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function formatCardDate(value: string) {
+  const date = new Date(value);
+  const day = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Toronto',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(date);
+  const time = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Toronto',
+    hour: 'numeric'
+  }).format(date);
+
+  return `${day} · ${time}`;
+}
+
+function formatCtaDate(value: string) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Toronto',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  })
+    .format(new Date(value))
+    .replace(' at ', ' · ');
+}
+
+function isOnlineWorkshop(location: string | null) {
+  return /online|zoom|meet|teams|https?:\/\//i.test(location || '');
+}
+
 function isOpen(status: string) {
   return status === 'RECRUITING' || status === 'OPEN';
 }
@@ -110,6 +148,20 @@ function statusLabel(status: string) {
   if (status === 'ONGOING') return 'Ongoing Workshop';
   if (status === 'CLOSED') return 'Closed Workshop';
   return 'Completed Workshop';
+}
+
+const WORKSHOP_CAPACITY = 15;
+
+function registrationDeadlineLabel(startDate: string) {
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const daysLeft = Math.ceil(
+    (new Date(startDate).getTime() - Date.now()) / millisecondsPerDay
+  );
+
+  if (daysLeft < 0) return null;
+  if (daysLeft === 0) return 'Registration closes today';
+  if (daysLeft === 1) return 'Registration closes tomorrow';
+  return `Registration closes in ${daysLeft} days`;
 }
 
 export default function WorkshopDetail({
@@ -130,6 +182,13 @@ export default function WorkshopDetail({
     (item) => item.itemId === workshop.id && item.itemType === ItemType.WORKSHOP
   );
   const registrationOpen = isOpen(workshop.status);
+  const deadlineLabel = registrationOpen
+    ? registrationDeadlineLabel(workshop.startDate)
+    : null;
+  const spotsLeft = Math.max(WORKSHOP_CAPACITY - workshop.registrationCount, 0);
+  const [ctaTitle, ...ctaSubtitleParts] = workshop.title.split(':');
+  const ctaSubtitle = ctaSubtitleParts.join(':').trim();
+  const onlineWorkshop = isOnlineWorkshop(workshop.locationOrUrl);
   const imageSrc =
     resolveImageSrc({
       thumbnail: workshop.thumbnail,
@@ -192,30 +251,38 @@ export default function WorkshopDetail({
             </p>
           </div>
 
-          <aside className="space-y-6 border border-gray-100 bg-white p-6 shadow-[0_10px_30px_rgba(0,38,59,0.08)] transition duration-300 hover:-translate-y-2 hover:shadow-xl sm:p-8">
-            <div className="flex items-end justify-between gap-4 border-b border-gray-100 pb-5">
-              <h2 className="font-headline text-2xl font-bold text-[#00263B]">
-                Registration
-              </h2>
-              <div className="text-right">
-                <strong className="block font-headline text-2xl text-[#00263B]">
-                  {workshop.price ? `$${workshop.price.toFixed(2)}` : 'Free'}
-                </strong>
-                <span className="text-xs font-semibold">CAD / per person</span>
+          <aside className="space-y-6 overflow-hidden border border-gray-100 bg-white p-6 shadow-[0_10px_30px_rgba(0,38,59,0.08)] transition duration-300 hover:-translate-y-2 hover:shadow-xl sm:p-8">
+            <div className="space-y-3 border-b border-gray-100 pb-5">
+              {deadlineLabel && (
+                <span className="inline-block whitespace-nowrap rounded bg-[#FF4F02]/10 px-2 py-0.5 text-[10px] font-bold text-[#FF4F02]">
+                  {deadlineLabel}
+                </span>
+              )}
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                <h2 className="font-headline text-2xl font-bold text-[#00263B]">
+                  Registration
+                </h2>
+                <div className="shrink-0 text-left sm:text-right">
+                  <strong className="font-headline text-2xl text-[#00263B] sm:block">
+                    {workshop.price ? `$${workshop.price.toFixed(2)}` : 'Free'}
+                  </strong>
+                  <span className="ml-2 text-xs font-semibold sm:ml-0 sm:block">
+                    CAD / per person
+                  </span>
+                </div>
               </div>
             </div>
             <div className="space-y-4 text-sm font-semibold">
               <Meta icon={CalendarDays}>{formatDate(workshop.startDate)}</Meta>
-              <Meta icon={Clock3}>Ends {formatDate(workshop.endDate)}</Meta>
               <Meta icon={MapPin}>
                 {workshop.locationOrUrl || 'Location to be announced'}
               </Meta>
-              {workshop.instructors.length > 0 && (
-                <Meta icon={UserRound}>
-                  Hosted by{' '}
-                  {workshop.instructors.map(({ name }) => name).join(', ')}
-                </Meta>
-              )}
+              <Meta icon={UsersRound}>
+                Limit {WORKSHOP_CAPACITY} people · {spotsLeft} spots left
+              </Meta>
+              <Meta icon={Coffee}>
+                Snacks, specialty coffee, and catering included
+              </Meta>
             </div>
             <div className="flex gap-3 pt-4">
               <RegisterButton
@@ -228,13 +295,19 @@ export default function WorkshopDetail({
                 aria-label={
                   liked ? 'Remove from favorites' : 'Add to favorites'
                 }
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-100 shadow-sm transition hover:-translate-y-1 hover:bg-orange-50"
+                className={`favorite-heart flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-100 shadow-sm transition hover:-translate-y-1 hover:bg-orange-50 ${
+                  liked ? 'favorite-heart--liked' : ''
+                }`}
               >
-                <Heart
-                  className={`h-6 w-6 ${liked ? 'fill-[#FF4F02] text-[#FF4F02]' : 'text-gray-400'}`}
-                />
+                <span className="material-symbols-outlined text-2xl leading-none">
+                  favorite
+                </span>
               </button>
             </div>
+            <p className="text-center text-xs font-semibold">
+              * You will receive your entry ticket and directions by email right
+              after payment.
+            </p>
           </aside>
         </div>
       </section>
@@ -327,44 +400,88 @@ export default function WorkshopDetail({
           </section>
         )}
 
-        <section id="apply" className="border-t border-gray-100 pt-20">
-          <div className="overflow-hidden bg-[#00263B] p-10 text-center text-white shadow-[0_10px_30px_rgba(0,38,59,0.08)] md:p-14">
-            <h2 className="mb-5 font-headline text-3xl font-extrabold italic text-white md:text-4xl">
-              Join {workshop.title}
-            </h2>
-            <p className="mb-6 font-bold uppercase tracking-[0.16em] text-white/70">
-              {formatDate(workshop.startDate)}
-            </p>
-            <p className="mb-7 font-headline text-5xl font-bold text-[#00ADBD]">
-              {workshop.price ? `$${workshop.price}` : 'Free'}{' '}
-              <span className="text-lg font-normal text-white/50">CAD</span>
-            </p>
-            <RegisterButton
-              disabled={!registrationOpen}
-              inCart={inCart}
-              onClick={register}
-              large
-            />
-            <p className="mt-4 text-xs text-white/50">
-              {workshop.locationOrUrl || 'Location to be announced'}
-            </p>
+        <section
+          id="apply"
+          className="scroll-mt-32 border-t border-gray-100 pt-20"
+        >
+          <div className="mx-auto w-full max-w-[1200px]">
+            <div className="relative w-full overflow-hidden border border-gray-100 bg-[#00263B] p-10 text-center text-white shadow-[0_10px_30px_rgba(0,38,59,0.08)] md:p-14">
+              <div className="absolute right-0 top-0 h-64 w-64 -translate-y-32 translate-x-32 rounded-full bg-[#00ADBD]/10" />
+
+              <div className="relative z-10">
+                <h2 className="mb-6 font-headline text-3xl font-extrabold italic leading-tight text-white md:text-4xl">
+                  Join {ctaTitle.trim()}
+                  {ctaSubtitle && (
+                    <>
+                      :<br className="hidden md:inline" />
+                      <span className="text-[#FF4F02]">{ctaSubtitle}</span>
+                    </>
+                  )}
+                </h2>
+
+                <p className="mx-auto mb-4 max-w-lg text-sm font-bold uppercase tracking-[0.2em] text-white/70 md:text-base">
+                  {formatCtaDate(workshop.startDate)}
+                </p>
+
+                <div className="mb-6 inline-block border border-white/10 bg-[#00263B]/40 p-6 backdrop-blur-sm md:p-8">
+                  <p className="font-headline text-5xl font-bold tracking-tight text-[#00ADBD] md:text-6xl">
+                    {workshop.price ? `$${workshop.price}` : 'Free'}
+                    <span className="ml-2 text-xl font-normal italic text-white/50">
+                      CAD
+                    </span>
+                  </p>
+                  <p className="mt-2 text-xs font-medium text-white/70 md:text-sm">
+                    Admission fee ·{' '}
+                    {onlineWorkshop
+                      ? 'Online workshop & live Q&A'
+                      : 'Offline seminar & live Q&A'}
+                  </p>
+                </div>
+
+                <div>
+                  <button
+                    type="button"
+                    disabled={!registrationOpen}
+                    onClick={register}
+                    className="inline-flex items-center justify-center rounded-2xl bg-[#FF4F02] px-12 py-5 font-headline text-xl font-extrabold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-transform hover:scale-[1.02] hover:bg-[#E04400] disabled:cursor-not-allowed disabled:bg-gray-400"
+                  >
+                    {inCart
+                      ? 'In cart'
+                      : registrationOpen
+                        ? 'Register now'
+                        : 'Registration closed'}
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs font-semibold text-white/50">
+                  {workshop.locationOrUrl || 'Location to be announced'}
+                  {workshop.locationOrUrl &&
+                    ` (${onlineWorkshop ? 'Online Event' : 'Offline Event'})`}
+                </p>
+              </div>
+            </div>
           </div>
         </section>
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-gray-100 bg-white p-4 shadow-lg md:hidden">
-        <div>
-          <p className="max-w-[180px] truncate text-xs font-bold">
+        <div className="min-w-0 flex-1 pr-4">
+          <p className="truncate text-xs font-bold text-[#475467]">
             {workshop.title}
           </p>
-          <strong className="text-lg text-[#00263B]">
-            {workshop.price ? `$${workshop.price}` : 'Free'}
-          </strong>
+          <p className="mt-1 whitespace-nowrap font-headline text-lg font-extrabold leading-none text-[#00263B]">
+            {workshop.price ? `$${workshop.price.toFixed(2)}` : 'Free'}
+            {workshop.price != null && workshop.price > 0 && (
+              <span className="ml-1 text-xs font-normal text-[#475467]">
+                CAD
+              </span>
+            )}
+          </p>
         </div>
         <button
           disabled={!registrationOpen}
           onClick={register}
-          className="flex items-center gap-2 rounded-2xl bg-[#FF4F02] px-6 py-3 font-bold text-white disabled:bg-gray-400"
+          className="flex shrink-0 items-center gap-2 rounded-2xl bg-[#FF4F02] px-6 py-3 font-bold text-white disabled:bg-gray-400"
         >
           <ShoppingCart className="h-4 w-4" />
           {inCart ? 'In cart' : 'Register'}
@@ -590,37 +707,135 @@ function RegisterButton({
 }
 
 function SuggestedCard({ workshop }: { workshop: Suggested }) {
+  const { user } = useUserContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+  const liked = favorites.some(
+    (item) => item.itemId === workshop.id && item.itemType === ItemType.WORKSHOP
+  );
   const src =
     resolveImageSrc({
       thumbnail: workshop.thumbnail,
       itemType: ItemType.WORKSHOP
     }) || '/icons/workshop-card.svg';
+  const state = getSuggestedState(workshop);
+
+  const toggleFavorite = () => {
+    if (!user?.id) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (liked) removeFavorite(workshop.id, ItemType.WORKSHOP);
+    else addFavorite(workshop.id, ItemType.WORKSHOP);
+  };
+
   return (
-    <Link
-      href={`/workshops/${workshop.id}`}
-      className="group block border-t-[10px] border-[#FF4F02] bg-white shadow-[0_10px_30px_rgba(0,38,59,0.08)] transition duration-500 hover:-translate-y-1 hover:shadow-xl"
-    >
-      <div className="relative h-72 overflow-hidden">
+    <article className="group/card flex flex-col gap-5">
+      <div
+        className={`relative h-96 overflow-hidden border-t-[10px] bg-white shadow-[0_10px_30px_rgba(0,38,59,0.05)] transition-shadow duration-500 group-hover/card:shadow-[0_28px_56px_rgba(0,38,59,0.13)] ${state.cardClass}`}
+      >
         <Image
           src={src}
           alt=""
           fill
-          className="object-cover transition duration-500 group-hover:scale-105"
+          sizes="(min-width: 1024px) 384px, (min-width: 768px) 50vw, 100vw"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 flex flex-col justify-end p-7 text-white">
-          <span className="mb-2 text-xs font-bold uppercase tracking-wider text-orange-300">
-            {workshop.category || 'Workshop'}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50" />
+
+        <button
+          type="button"
+          onClick={toggleFavorite}
+          aria-label={liked ? 'Remove from favorites' : 'Add to favorites'}
+          className={`favorite-heart absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
+            liked ? 'favorite-heart--liked' : ''
+          }`}
+        >
+          <span className="material-symbols-outlined text-xl leading-none">
+            favorite
           </span>
-          <h3 className="font-headline text-xl font-bold text-white">
-            {workshop.title}
-          </h3>
-          <p className="mt-3 flex items-center gap-2 text-sm">
-            <CalendarDays className="h-4 w-4" />
-            {formatDate(workshop.startDate)}
-          </p>
-        </div>
+        </button>
+
+        <Link
+          href={`/workshops/${workshop.id}`}
+          className="absolute inset-0 z-10 flex flex-col justify-between p-5 text-white md:p-6"
+        >
+          <div className="pr-12">
+            <span className="mb-3 inline-block bg-[#FF4F02] px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              {formatCategory(workshop.category)}
+            </span>
+            <h3 className="font-headline text-xl font-bold leading-snug text-white md:text-2xl">
+              {workshop.title}
+            </h3>
+
+            <div className="mt-4 space-y-2 text-[0.8rem] font-medium text-white/90 md:text-[0.85rem]">
+              <p className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 shrink-0" />
+                Date · {formatCardDate(workshop.startDate)}
+              </p>
+              <p className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 shrink-0" />
+                Where · {workshop.locationOrUrl || 'To be announced'}
+              </p>
+              {workshop.instructors.length > 0 && (
+                <p className="flex items-center gap-2">
+                  <UserRound className="h-4 w-4 shrink-0" />
+                  Host ·{' '}
+                  {workshop.instructors.map(({ name }) => name).join(', ')}
+                </p>
+              )}
+              {workshop.description && (
+                <p className="line-clamp-2 pt-1 text-[0.78rem] font-medium italic text-white/85 md:text-[0.82rem]">
+                  “{workshop.description}”
+                </p>
+              )}
+            </div>
+          </div>
+
+          <span className="flex items-center gap-2 font-bold transition-transform duration-300 group-hover/card:translate-x-2">
+            Sign up
+            <ArrowRight className="h-5 w-5" />
+          </span>
+        </Link>
       </div>
-    </Link>
+      <p
+        className={`text-center text-[1.05rem] font-bold tracking-wide ${state.labelClass}`}
+      >
+        {state.label}
+      </p>
+    </article>
   );
+}
+
+function formatCategory(category: string | null) {
+  if (!category) return 'Workshop';
+  return category.replaceAll('_', ' ');
+}
+
+function getSuggestedState(workshop: Suggested) {
+  const now = Date.now();
+  const startsAt = new Date(workshop.startDate).getTime();
+  const endsAt = new Date(workshop.endDate).getTime();
+
+  if (startsAt <= now && endsAt >= now) {
+    return {
+      label: 'Live now',
+      cardClass: 'border-[#FF4F02]',
+      labelClass: 'text-[#FF4F02]'
+    };
+  }
+
+  if (endsAt < now || workshop.status === 'COMPLETED') {
+    return {
+      label: 'Ended',
+      cardClass: 'border-slate-400 opacity-85 saturate-50',
+      labelClass: 'text-slate-400'
+    };
+  }
+
+  return {
+    label: 'Coming soon',
+    cardClass: 'border-[#00263B]',
+    labelClass: 'text-[#00263B]'
+  };
 }

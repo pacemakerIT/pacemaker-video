@@ -12,7 +12,8 @@ export default async function WorkshopDetailPage({
     where: { id: workshopId },
     include: {
       sectionsRel: { orderBy: { orderIndex: 'asc' } },
-      instructors: { include: { instructor: true } }
+      instructors: { include: { instructor: true } },
+      _count: { select: { userWorkshops: true } }
     }
   });
 
@@ -21,7 +22,14 @@ export default async function WorkshopDetailPage({
   const suggested = await prisma.workshop.findMany({
     where: { id: { not: workshop.id }, status: { not: 'HIDDEN' } },
     orderBy: { startDate: 'asc' },
-    take: 3
+    take: 3,
+    include: {
+      instructors: {
+        include: {
+          instructor: { select: { name: true } }
+        }
+      }
+    }
   });
 
   return (
@@ -30,12 +38,15 @@ export default async function WorkshopDetailPage({
         ...workshop,
         startDate: workshop.startDate.toISOString(),
         endDate: workshop.endDate.toISOString(),
+        registrationCount: workshop._count.userWorkshops,
         sections: workshop.sectionsRel,
         instructors: workshop.instructors.map(({ instructor }) => instructor)
       }}
       suggested={suggested.map((item) => ({
         ...item,
-        startDate: item.startDate.toISOString()
+        startDate: item.startDate.toISOString(),
+        endDate: item.endDate.toISOString(),
+        instructors: item.instructors.map(({ instructor }) => instructor)
       }))}
     />
   );

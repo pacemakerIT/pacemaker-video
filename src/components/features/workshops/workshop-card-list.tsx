@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Heart } from 'lucide-react';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
@@ -149,16 +148,14 @@ export default function WorkshopCardList({
                   event.stopPropagation();
                   toggleLike(w.id);
                 }}
-                aria-label="like"
-                className="group absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md"
+                aria-label={isLiked(w.id) ? 'Saved' : 'Save'}
+                className={`favorite-heart absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
+                  isLiked(w.id) ? 'favorite-heart--liked' : ''
+                }`}
               >
-                <Heart
-                  className={`h-[18px] w-[18px] transition-colors duration-200 ${
-                    isLiked(w.id)
-                      ? 'fill-[#FF4F02] text-[#FF4F02] group-hover:text-[#E04400]'
-                      : 'text-gray-400 group-hover:fill-[#FF4F02] group-hover:text-[#FF4F02]'
-                  }`}
-                />
+                <span className="material-symbols-outlined text-[18px] leading-none">
+                  favorite
+                </span>
               </button>
             </div>
 
