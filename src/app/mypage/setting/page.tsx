@@ -24,7 +24,8 @@ export default function SettingsPage() {
   useEffect(() => {
     if (!user && !isLoading) {
       toast('Please sign in');
-      return router.push('/');
+      router.push('/');
+      return;
     }
 
     if (user && user.nickname) {
@@ -32,9 +33,19 @@ export default function SettingsPage() {
     }
 
     const fetchInterests = async () => {
-      const res = await fetch(`/api/interest?userId=${user?.id}`);
-      const data = await res.json();
-      setSelectedInterests(data.interest);
+      if (!user) return;
+
+      try {
+        const res = await fetch('/api/interest');
+        if (!res.ok) {
+          throw new Error(`Failed with status ${res.status}`);
+        }
+
+        const data = await res.json();
+        setSelectedInterests(data.interest);
+      } catch (err) {
+        toast.error(`Failed to fetch interests: ${err}`);
+      }
     };
     fetchInterests();
   }, [user, isLoading, router]);
@@ -94,7 +105,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/interest', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, interests: selectedInterests })
+        body: JSON.stringify({ interests: selectedInterests })
       });
 
       if (!res.ok) throw new Error('Failed to update');

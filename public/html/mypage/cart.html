@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pacemaker | My Page Dashboard</title>
+    <title>Pacemaker | Cart</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -262,84 +262,6 @@
         }
       }
 
-      /* Course Filter Button Style from course_list.html */
-      .course-filter-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: auto;
-        height: 32px;
-        padding: 0 1rem;
-        border: 1px solid #d0d5dd;
-        border-radius: 12px;
-        background: #ffffff;
-        color: #667085;
-        font-family: 'Poppins', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 1;
-        white-space: nowrap;
-        flex-shrink: 0;
-        cursor: pointer;
-        transition:
-          border-color 0.3s ease,
-          color 0.3s ease,
-          background-color 0.3s ease,
-          box-shadow 0.3s ease;
-      }
-
-      @media (min-width: 768px) {
-        .course-filter-button {
-          min-width: 110px;
-          height: 40px;
-          padding: 0 1.5rem;
-          border-radius: 16px;
-          font-size: 14px;
-        }
-      }
-
-      .course-filter-button:hover {
-        border-color: #ff4f02;
-        color: #ff4f02;
-        background-color: rgba(255, 79, 2, 0.05);
-      }
-
-      .course-filter-button[data-filter='in-progress']:hover {
-        border-color: #00adbd;
-        color: #00adbd;
-        background-color: rgba(0, 173, 189, 0.05);
-      }
-
-      .course-filter-button[data-filter='completed']:hover {
-        border-color: #6b7280;
-        color: #00263b;
-        background-color: #f3f4f6;
-      }
-
-      .course-filter-button.is-active {
-        border-color: #ff4f02;
-        color: #ff4f02;
-        background-color: rgba(255, 79, 2, 0.08);
-        box-shadow: 0 10px 25px -5px rgba(255, 79, 2, 0.12);
-        font-weight: 700;
-      }
-
-      .course-filter-button[data-filter='in-progress'].is-active {
-        border-color: #00adbd;
-        color: #00adbd;
-        background-color: rgba(0, 173, 189, 0.08);
-        box-shadow: 0 10px 25px -5px rgba(0, 173, 189, 0.12);
-        font-weight: 700;
-      }
-
-      .course-filter-button[data-filter='completed'].is-active {
-        border-color: #00263b;
-        color: #00263b;
-        background-color: rgba(0, 38, 59, 0.08);
-        box-shadow: 0 10px 25px -5px rgba(0, 38, 59, 0.12);
-        font-weight: 700;
-      }
-
       .card-shadow {
         box-shadow: 0 10px 30px rgba(0, 38, 59, 0.08);
       }
@@ -353,6 +275,49 @@
       .pm-card-lift:hover {
         transform: translateY(-8px);
         box-shadow: 0 20px 40px rgba(0, 38, 59, 0.12);
+      }
+
+      /* Collapsible Cart Bottom Drawer */
+      #cart-drawer-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #cart-drawer-details.is-open {
+        max-height: 500px;
+      }
+      /* Save: outline heart → filled on hover */
+      .favorite-heart .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #9ca3af;
+        transition:
+          color 0.3s ease,
+          font-variation-settings 0.45s cubic-bezier(0.33, 1, 0.53, 1);
+      }
+      @media (hover: hover) {
+        .favorite-heart:hover .material-symbols-outlined {
+          font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+          color: #ff4f02;
+        }
+        .favorite-heart--liked:hover .material-symbols-outlined {
+          color: #e04400;
+        }
+      }
+      .favorite-heart--liked .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        color: #ff4f02;
       }
     </style>
   </head>
@@ -379,7 +344,7 @@
             onerror="this.src = '../../icons/paceup-logo-black.svg'"
           />
         </a>
-        <!-- Navigation Menu & Auth (Unified spacing) -->
+        <!-- Navigation Menu & Auth -->
         <div class="nav-desktop flex items-center ml-auto">
           <div class="nav-center">
             <a class="nav-item" href="../workshops/workshop_list.html"
@@ -391,7 +356,7 @@
             <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
 
             <!-- Cart Button -->
-            <a href="cart.html" class="nav-item">
+            <a href="cart.html" class="nav-item text-orange">
               <span
                 class="flex h-5 w-5 items-center justify-center rounded-full bg-orange text-white text-[11px] font-extrabold shadow-sm"
                 >3</span
@@ -417,14 +382,14 @@
                 >
               </button>
 
-              <!-- Dropdown Menu (Centered relative to Jamie button) -->
+              <!-- Dropdown Menu -->
               <div
                 id="user-profile-dropdown"
                 class="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-48 rounded-2xl bg-white p-2 shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
               >
                 <a
                   href="mypage.html"
-                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold text-orange bg-orange/5 transition-colors"
+                  class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy transition-colors"
                 >
                   <span class="material-symbols-outlined text-lg"
                     >space_dashboard</span
@@ -460,20 +425,15 @@
               </div>
             </div>
           </div>
-      </div>
-      
-      <!-- Mobile Navigation Header (Inside nav-inner) -->
+        </div>
+
+      <!-- Mobile Navigation Header -->
       <div class="nav-mobile-top">
         <a href="../main.html" class="flex-shrink-0" style="display: block">
           <img
             alt="Pacemaker Logo"
             src="../../img/logo.webp"
-            style="
-              height: 28px;
-              width: auto;
-              max-width: none;
-              display: block;
-            "
+            style="height: 28px; width: auto; max-width: none; display: block"
             onerror="this.src = '../../icons/paceup-logo-black.svg'"
           />
         </a>
@@ -551,10 +511,7 @@
                   <path d="m6 9 6 6 6-6"></path>
                 </svg>
               </button>
-              <div
-                class="mobile-nav-accordion-panel"
-                id="mobile-nav-programs"
-              >
+              <div class="mobile-nav-accordion-panel" id="mobile-nav-programs">
                 <div class="overflow-hidden">
                   <div class="flex flex-col gap-1">
                     <a
@@ -612,8 +569,8 @@
                         <p
                           class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
                         >
-                          Guided lessons to help with resumes, interviews,
-                          and career moves.
+                          Guided lessons to help with resumes, interviews, and
+                          career moves.
                         </p>
                       </div>
                     </a>
@@ -688,11 +645,11 @@
                   <div class="flex flex-col gap-1">
                     <!-- Cart -->
                     <a
-                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
+                      class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5 font-bold text-orange"
                       href="cart.html"
                     >
                       <div
-                        class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100 relative"
+                        class="mt-0.5 p-2 rounded-lg bg-orange/5 text-orange transition-colors shadow-sm border border-transparent relative"
                       >
                         <span class="material-symbols-outlined text-[20px]"
                           >shopping_cart</span
@@ -705,16 +662,16 @@
                       <div class="flex-1">
                         <div class="flex items-center justify-between">
                           <span
-                            class="text-[0.95rem] font-bold text-navy mb-0.5"
+                            class="text-[0.95rem] font-bold text-orange mb-0.5"
                             >Cart</span
                           >
                           <span
-                            class="material-symbols-outlined text-[18px] text-gray-300 opacity-0 -translate-x-2 transition-all group-hover/item:opacity-100 group-hover/item:translate-x-0"
+                            class="material-symbols-outlined text-[18px] text-orange opacity-100 transition-all"
                             >chevron_right</span
                           >
                         </div>
                         <p
-                          class="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2"
+                          class="text-[0.825rem] text-orange/80 font-medium leading-snug line-clamp-2"
                         >
                           Check your selected courses and books.
                         </p>
@@ -893,18 +850,19 @@
             <nav
               class="w-full flex flex-col gap-1 border-t border-gray-100 pt-4 !static !p-0 !border-none"
             >
-              <!-- Active Item: My Account -->
+              <!-- Inactive Item: My Account -->
               <a
                 href="./mypage.html"
-                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-bold text-orange bg-orange/10 border-l-4 border-orange font-headline transition-all"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
               >
                 <span class="material-symbols-outlined text-xl">person</span>
                 <span>My Account</span>
               </a>
 
+              <!-- Active Item: Cart -->
               <a
-                href="cart.html"
-                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-medium text-body hover:bg-gray-soft hover:text-navy transition-colors"
+                href="./cart.html"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-none font-bold text-orange bg-orange/10 border-l-4 border-orange font-headline transition-all"
               >
                 <span class="material-symbols-outlined text-xl"
                   >shopping_cart</span
@@ -943,939 +901,473 @@
           </div>
         </aside>
 
-        <!-- Right Main Dashboard Content -->
+        <!-- Right Main Dashboard Content (Cart Body) -->
         <section class="flex-1 min-w-0">
-          <!-- Top Hero Welcome Banner & Stats -->
-          <div
-            class="bg-[linear-gradient(135deg,rgba(0,38,59,0.04)_0%,rgba(0,173,189,0.1)_55%,rgba(255,79,2,0.08)_100%)] rounded-none p-6 sm:p-8 border border-navy/10 shadow-card mb-10 relative overflow-hidden"
-          >
-            <div class="relative z-10">
-              <h1
-                class="text-2xl sm:text-[2.2rem] font-bold text-navy font-headline tracking-tight mb-4"
-              >
-                Welcome to your Pacemaker Dashboard!
-              </h1>
-              <p class="text-xs text-body mb-4 font-normal">
-                Last login: Apr 6, 2025 9:30 AM
-              </p>
-
-              <!-- 3 Stat Cards Row (Workshops first) -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Stat 1: Workshops -->
-                <div
-                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
-                >
-                  <div>
-                    <h3 class="text-sm font-bold text-navy font-headline">
-                      Workshops
-                    </h3>
-                    <p class="text-xs text-body mt-1">
-                      Next workshop:
-                      <span class="text-orange font-semibold"
-                        >Apr 15 - 7:00 PM</span
-                      >
-                    </p>
-                  </div>
-                  <span
-                    class="text-4xl font-extrabold text-orange font-headline"
-                    >3</span
-                  >
-                </div>
-
-                <!-- Stat 2: Online Courses -->
-                <div
-                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
-                >
-                  <div>
-                    <h3 class="text-sm font-bold text-navy font-headline">
-                      Online Courses
-                    </h3>
-                    <p class="text-xs text-body mt-1">
-                      1 of 4 courses completed
-                    </p>
-                  </div>
-                  <span
-                    class="text-4xl font-extrabold text-orange font-headline"
-                    >4</span
-                  >
-                </div>
-
-                <!-- Stat 3: E-books -->
-                <div
-                  class="bg-white rounded-none border border-gray-100 p-5 shadow-card flex items-center justify-between pm-card-lift"
-                >
-                  <div>
-                    <h3 class="text-sm font-bold text-navy font-headline">
-                      E-books
-                    </h3>
-                    <p class="text-xs text-body mt-1">1 of 3 read</p>
-                  </div>
-                  <span
-                    class="text-4xl font-extrabold text-orange font-headline"
-                    >3</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 1: My Workshops (Moved to Top) -->
-          <div class="mb-12">
-            <h2
-              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
-            >
-              My Workshops
-            </h2>
-
-            <!-- Category Filter Tabs -->
-            <div class="flex flex-wrap gap-3 mb-6">
-              <button
-                class="course-filter-button is-active"
-                type="button"
-                aria-pressed="true"
-              >
-                All
-              </button>
-              <button
-                class="course-filter-button"
-                type="button"
-                aria-pressed="false"
-              >
-                Upcoming
-              </button>
-              <button
-                class="course-filter-button"
-                data-filter="completed"
-                type="button"
-                aria-pressed="false"
-              >
-                Completed
-              </button>
-            </div>
-
-            <!-- Workshops Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Workshop Card 1 -->
-              <div
-                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-orange flex flex-col h-[340px]"
-              >
-                <div
-                  class="relative h-full bg-cover bg-center overflow-hidden"
-                  style="
-                    background-image:
-                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
-                      url('../../img/workshop-1.png');
-                  "
-                >
-                  <div
-                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
-                  >
-                    <div>
-                      <span
-                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
-                      >
-                        Networking
-                      </span>
-                      <div class="h-[56px] flex items-start">
-                        <h3
-                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
-                        >
-                          Mindset training for success
-                        </h3>
-                      </div>
-                      <div
-                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
-                      >
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >calendar_today</span
-                          >
-                          <span>Date · May 20, 2025 · 7 PM</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >location_on</span
-                          >
-                          <span>Where · North York centre</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >person</span
-                          >
-                          <span>Host · Sujin Ku</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
-                    >
-                      <span class="text-orange font-headline">Registered</span>
-                      <a
-                        href="#"
-                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
-                      >
-                        <span>View</span>
-                        <span class="material-symbols-outlined text-lg"
-                          >arrow_forward</span
-                        >
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Workshop Card 2 -->
-              <div
-                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-slate-400 flex flex-col h-[340px]"
-              >
-                <div
-                  class="relative h-full bg-cover bg-center overflow-hidden"
-                  style="
-                    background-image:
-                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
-                      url('../../img/workshop-image.png');
-                  "
-                >
-                  <div
-                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
-                  >
-                    <div>
-                      <span
-                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
-                      >
-                        Networking
-                      </span>
-                      <div class="h-[56px] flex items-start">
-                        <h3
-                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
-                        >
-                          Meet us tonight
-                        </h3>
-                      </div>
-                      <div
-                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
-                      >
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >calendar_today</span
-                          >
-                          <span>Date · May 20, 2025 · 7 PM</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >location_on</span
-                          >
-                          <span>Where · North York centre</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >person</span
-                          >
-                          <span>Host · Sujin Ku</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
-                    >
-                      <span class="text-gray-300 font-headline">Completed</span>
-                      <a
-                        href="#"
-                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
-                      >
-                        <span>View</span>
-                        <span class="material-symbols-outlined text-lg"
-                          >arrow_forward</span
-                        >
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Workshop Card 3 -->
-              <div
-                class="pm-card-lift group/workshop bg-white shadow-card rounded-none overflow-hidden border-t-[10px] border-navy flex flex-col h-[340px]"
-              >
-                <div
-                  class="relative h-full bg-cover bg-center overflow-hidden"
-                  style="
-                    background-image:
-                      linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.7)),
-                      url('../../img/workshop-3.png');
-                  "
-                >
-                  <div
-                    class="absolute inset-0 p-6 flex flex-col justify-between text-white"
-                  >
-                    <div>
-                      <span
-                        class="bg-orange text-white px-3 py-1 text-xs font-bold tracking-wider uppercase inline-block font-headline mb-3"
-                      >
-                        Career switch
-                      </span>
-                      <div class="h-[56px] flex items-start">
-                        <h3
-                          class="text-xl font-bold font-headline leading-tight text-white line-clamp-2"
-                        >
-                          English resumes built to get interviews
-                        </h3>
-                      </div>
-                      <div
-                        class="mt-4 space-y-2 opacity-95 text-xs font-medium"
-                      >
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >calendar_today</span
-                          >
-                          <span>Date · May 20, 2025 · 7 PM</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >location_on</span
-                          >
-                          <span>Where · North York centre</span>
-                        </p>
-                        <p class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm"
-                            >person</span
-                          >
-                          <span>Host · Sujin Ku</span>
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="flex items-center justify-between font-bold text-sm pt-4 border-t border-white/20"
-                    >
-                      <span class="text-orange font-headline">Registered</span>
-                      <a
-                        href="#"
-                        class="inline-flex items-center gap-1.5 text-white hover:text-teal transition-colors font-headline"
-                      >
-                        <span>View</span>
-                        <span class="material-symbols-outlined text-lg"
-                          >arrow_forward</span
-                        >
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 2: My Online Courses -->
-          <div class="mb-12">
-            <h2
-              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
-            >
-              My Online Courses
-            </h2>
-
-            <!-- Category Filter Tabs -->
-            <div class="flex flex-wrap gap-3 mb-6">
-              <button
-                class="course-filter-button is-active"
-                type="button"
-                aria-pressed="true"
-              >
-                All
-              </button>
-              <button
-                class="course-filter-button"
-                data-filter="in-progress"
-                type="button"
-                aria-pressed="false"
-              >
-                In progress
-              </button>
-              <button
-                class="course-filter-button"
-                type="button"
-                aria-pressed="false"
-              >
-                Not started
-              </button>
-              <button
-                class="course-filter-button"
-                data-filter="completed"
-                type="button"
-                aria-pressed="false"
-              >
-                Completed
-              </button>
-            </div>
-
-            <!-- Online Courses Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- Course Card 1 -->
-              <div
-                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
-                >
-                  <img
-                    src="../../img/online-course-1.png"
-                    alt="Cover letters and interview prep in one course"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
-                  />
-                  <div class="absolute top-4 left-4 z-10">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                      style="background: #36a6f6"
-                    >
-                      Interview
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>4 / 8 lessons</span>
-                      <span class="font-bold text-navy font-headline"
-                        >50% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Cover letters and interview prep in one course
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 50%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Continue learning</span>
-                      <span class="material-symbols-outlined text-lg"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Course Card 2 -->
-              <div
-                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
-                >
-                  <img
-                    src="../../img/online-course-2.png"
-                    alt="Resume & Interview Essentials"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
-                  />
-                  <div class="absolute top-4 left-4 z-10">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                      style="background: #ff9631"
-                    >
-                      Resume
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>0 / 8 lessons</span>
-                      <span class="font-bold text-navy font-headline"
-                        >0% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Resume & Interview Essentials
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 0%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Start course</span>
-                      <span class="material-symbols-outlined text-lg"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Course Card 3 -->
-              <div
-                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
-                >
-                  <img
-                    src="../../img/online-course-3.png"
-                    alt="Networking Fundamentals"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
-                  />
-                  <div class="absolute top-4 left-4 z-10">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                      style="background: #9f5be7"
-                    >
-                      Networking
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>8 / 8 lessons</span>
-                      <span class="font-bold text-navy font-headline"
-                        >100% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Networking Fundamentals
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 100%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Write a review</span>
-                      <span class="material-symbols-outlined text-lg"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Course Card 4 -->
-              <div
-                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
-                >
-                  <img
-                    src="../../img/course_image1.png"
-                    alt="Behavioral Interview Practice & Coaching"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
-                  />
-                  <div class="absolute top-4 left-4 z-10">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                      style="background: #36a6f6"
-                    >
-                      Interview
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>4 / 8 lessons</span>
-                      <span class="font-bold text-navy font-headline"
-                        >50% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Behavioral Interview Practice & Coaching
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 50%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Continue learning</span>
-                      <span class="material-symbols-outlined text-sm"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Course Card 5 -->
-              <div
-                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] w-full overflow-hidden bg-navy/5"
-                >
-                  <img
-                    src="../../img/course_image2.png"
-                    alt="Resume strategy for North America hiring"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
-                  />
-                  <div class="absolute top-4 left-4 z-10">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
-                      style="background: #ff9631"
-                    >
-                      Resume
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>8 / 8 lessons</span>
-                      <span class="font-bold text-navy font-headline"
-                        >100% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Resume strategy for North America hiring
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 100%"
-                      ></div>
-                    </div>
-                    <span class="text-sm text-body font-bold font-headline"
-                      >Completed</span
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 3: My E-books (Last Section - Bottom aligned with sidebar) -->
+          <!-- Cart Header -->
           <div>
-            <h2
-              class="text-[1.5rem] font-bold text-navy font-headline tracking-tight mb-4"
+            <h1 class="text-3xl font-extrabold text-navy font-headline mb-6">
+              Cart
+            </h1>
+            <div
+              class="flex items-center justify-between border-b border-gray-200 pb-4"
             >
-              My E-books
-            </h2>
-
-            <!-- Category Filter Tabs -->
-            <div class="flex flex-wrap gap-3 mb-6">
+              <label class="flex items-center gap-1.5 sm:gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked
+                  class="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-orange focus:ring-orange cursor-pointer"
+                />
+                <span class="text-xs sm:text-sm font-semibold text-navy font-headline"
+                  >Select all</span
+                >
+              </label>
               <button
-                class="course-filter-button is-active"
                 type="button"
-                aria-pressed="true"
+                class="text-xs sm:text-sm font-bold text-gray-500 hover:text-orange border border-gray-200 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl hover:border-orange transition-colors shrink-0"
               >
-                All
-              </button>
-              <button
-                class="course-filter-button"
-                data-filter="in-progress"
-                type="button"
-                aria-pressed="false"
-              >
-                In progress
-              </button>
-              <button
-                class="course-filter-button"
-                type="button"
-                aria-pressed="false"
-              >
-                Not started
-              </button>
-              <button
-                class="course-filter-button"
-                data-filter="completed"
-                type="button"
-                aria-pressed="false"
-              >
-                Completed
+                Remove selected
               </button>
             </div>
+          </div>
 
-            <!-- E-books Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- E-book Card 1 (Marketing) -->
-              <div
-                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
-              >
-                <div
-                  class="relative h-[200px] bg-[#FFF5F2] p-6 flex flex-col justify-start"
-                >
-                  <div class="mb-3">
+          <!-- Cart List -->
+          <div class="space-y-4 mt-6">
+            <!-- Cart Item 1 -->
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white border border-gray-100 p-3 sm:p-4 shadow-card rounded-none gap-3 sm:gap-4"
+            >
+              <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <!-- Checkbox + Type tag -->
+                <div class="flex flex-col items-center gap-1.5 min-w-[50px] sm:min-w-[70px] shrink-0">
+                  <input
+                    type="checkbox"
+                    checked
+                    class="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-orange focus:ring-orange cursor-pointer"
+                  />
+                  <span
+                    class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center leading-tight"
+                    >Online<br />Courses</span
+                  >
+                </div>
+                <!-- Image -->
+                <img
+                  src="../../img/online-course-1.png"
+                  alt="Resume & Interview Essentials"
+                  class="w-16 h-12 sm:w-24 sm:h-16 rounded-none object-cover border border-gray-100 shrink-0"
+                />
+                <!-- Details -->
+                <div class="min-w-0 flex-1 flex flex-col justify-center self-center">
+                  <div class="mb-1">
                     <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
+                      class="text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full uppercase tracking-wider"
+                      style="background: rgb(54, 166, 247)"
+                    >
+                      Interview
+                    </span>
+                  </div>
+                  <h3
+                    class="text-xs sm:text-base font-bold text-navy font-headline leading-tight line-clamp-2"
+                  >
+                    Resume & Interview Essentials
+                  </h3>
+                </div>
+              </div>
+              <div
+                class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pl-[62px] sm:pl-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0"
+              >
+                <span class="text-lg sm:text-xl font-extrabold text-navy">$2800</span>
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-orange transition-colors"
+                >
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cart Item 2 -->
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white border border-gray-100 p-3 sm:p-4 shadow-card rounded-none gap-3 sm:gap-4"
+            >
+              <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <!-- Checkbox + Type tag -->
+                <div class="flex flex-col items-center gap-1.5 min-w-[50px] sm:min-w-[70px] shrink-0">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-orange focus:ring-orange cursor-pointer"
+                  />
+                  <span
+                    class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider"
+                    >E-Books</span
+                  >
+                </div>
+                <!-- Styled CSS Book Cover Thumbnail -->
+                <div
+                  class="w-16 h-12 sm:w-24 sm:h-16 bg-[#FFF5F2] rounded-none flex flex-col justify-center px-1.5 py-0.5 sm:px-2 sm:py-1 select-none border border-orange/10 relative shrink-0"
+                >
+                  <span
+                    class="text-[4px] sm:text-[5px] font-extrabold uppercase text-[#FF6B3D] tracking-wider absolute top-0.5 left-1 sm:top-1 sm:left-2"
+                    >Networking</span
+                  >
+                  <h4
+                    class="text-[#FF6B3D] text-[7px] sm:text-[9px] font-extrabold font-headline leading-none mt-0.5 sm:mt-1"
+                  >
+                    Marketing
+                  </h4>
+                  <p
+                    class="text-[#FF6B3D] text-[4px] sm:text-[5px] font-semibold leading-none line-clamp-2 mt-0.5"
+                  >
+                    The 94% Success Formula
+                  </p>
+                </div>
+                <!-- Details -->
+                <div class="min-w-0 flex-1 flex flex-col justify-center self-center">
+                  <div class="mb-1">
+                    <span
+                      class="text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full uppercase tracking-wider"
                       style="background: rgb(255, 126, 84)"
                     >
                       Marketing
                     </span>
                   </div>
-                  <div>
-                    <h4
-                      class="text-[#FF6B3D] text-2xl font-extrabold font-headline leading-tight mb-1"
-                    >
-                      Marketing
-                    </h4>
-                    <p
-                      class="text-[#FF6B3D] text-xs font-medium leading-relaxed line-clamp-3"
-                    >
-                      The 94% Success Formula: A Proven Approach to Job & Career
-                      Transitions
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>9 / 15 pages</span>
-                      <span class="font-bold text-navy font-headline"
-                        >60% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Branding & Networking for Marketers
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 60%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Continue reading</span>
-                      <span class="material-symbols-outlined text-lg"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
+                  <h3
+                    class="text-xs sm:text-base font-bold text-navy font-headline leading-tight line-clamp-2"
+                  >
+                    Branding & Networking for Marketers
+                  </h3>
                 </div>
               </div>
-
-              <!-- E-book Card 2 (Finance & Accounting) -->
               <div
-                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+                class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pl-[62px] sm:pl-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0"
               >
-                <div
-                  class="relative h-[200px] bg-[#EEF4FF] p-6 flex flex-col justify-start"
+                <span class="text-lg sm:text-xl font-extrabold text-navy">$2800</span>
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-orange transition-colors"
                 >
-                  <div class="mb-3">
-                    <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
-                      style="background: #3b82f6"
-                    >
-                      Finance
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cart Item 3 -->
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white border border-gray-100 p-3 sm:p-4 shadow-card rounded-none gap-3 sm:gap-4"
+            >
+              <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <!-- Checkbox + Type tag -->
+                <div class="flex flex-col items-center gap-1.5 min-w-[50px] sm:min-w-[70px] shrink-0">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-orange focus:ring-orange cursor-pointer"
+                  />
+                  <span
+                    class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider"
+                    >Workshops</span
+                  >
+                </div>
+                <!-- Image -->
+                <img
+                  src="../../img/workshop-1.png"
+                  alt="Mind Training for Success"
+                  class="w-16 h-12 sm:w-24 sm:h-16 rounded-none object-cover border border-gray-100 shrink-0"
+                />
+                <!-- Details -->
+                <div class="min-w-0 flex-1 flex flex-col justify-center self-center">
+                  <div class="mb-1">
+                    <span class="text-gray-400 text-[9px] sm:text-[10px] font-semibold">
+                      May 10, 2025
                     </span>
                   </div>
-                  <div>
-                    <h4
-                      class="text-[#2563EB] text-2xl font-extrabold font-headline leading-tight mb-1"
-                    >
-                      Finance & Accounting
-                    </h4>
-                    <p
-                      class="text-[#2563EB] text-xs font-medium leading-relaxed line-clamp-3"
-                    >
-                      A practical guide to interviews for finance and accounting
-                      roles, learn once, use for life.
-                    </p>
-                  </div>
-                </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
-                >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>0 / 15 pages</span>
-                      <span class="font-bold text-navy font-headline"
-                        >0% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Preparing for Accounting Interviews
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
-                    >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 0%"
-                      ></div>
-                    </div>
-                    <a
-                      href="#"
-                      class="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out font-headline"
-                    >
-                      <span>Start reading</span>
-                      <span class="material-symbols-outlined text-lg"
-                        >arrow_forward</span
-                      >
-                    </a>
-                  </div>
+                  <h3
+                    class="text-xs sm:text-base font-bold text-navy font-headline leading-tight line-clamp-2"
+                  >
+                    Mind Training for Success
+                  </h3>
                 </div>
               </div>
-
-              <!-- E-book Card 3 (Public Sector) -->
               <div
-                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col"
+                class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pl-[62px] sm:pl-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0"
               >
-                <div
-                  class="relative h-[200px] bg-[#ECFDF5] p-6 flex flex-col justify-start"
+                <span class="text-lg sm:text-xl font-extrabold text-navy">$20</span>
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-orange transition-colors"
                 >
-                  <div class="mb-3">
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Cart Item 4 -->
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white border border-gray-100 p-3 sm:p-4 shadow-card rounded-none gap-3 sm:gap-4"
+            >
+              <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <!-- Checkbox + Type tag -->
+                <div class="flex flex-col items-center gap-1.5 min-w-[50px] sm:min-w-[70px] shrink-0">
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-orange focus:ring-orange cursor-pointer"
+                  />
+                  <span
+                    class="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center leading-tight"
+                    >Online<br />Courses</span
+                  >
+                </div>
+                <!-- Image -->
+                <img
+                  src="../../img/online-course-3.png"
+                  alt="Resume & Interview Essentials"
+                  class="w-16 h-12 sm:w-24 sm:h-16 rounded-none object-cover border border-gray-100 shrink-0"
+                />
+                <!-- Details -->
+                <div class="min-w-0 flex-1 flex flex-col justify-center self-center">
+                  <div class="mb-1">
                     <span
-                      class="text-white text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm inline-block"
-                      style="background: #10b981"
+                      class="text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full uppercase tracking-wider"
+                      style="background: rgb(54, 166, 247)"
                     >
-                      Public Sector
+                      Interview
                     </span>
                   </div>
-                  <div>
-                    <h4
-                      class="text-[#059669] text-2xl font-extrabold font-headline leading-tight mb-1"
+                  <h3
+                    class="text-xs sm:text-base font-bold text-navy font-headline leading-tight line-clamp-2"
+                  >
+                    Resume & Interview Essentials
+                  </h3>
+                </div>
+              </div>
+              <div
+                class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pl-[62px] sm:pl-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0"
+              >
+                <span class="text-lg sm:text-xl font-extrabold text-navy">$2800</span>
+                <button
+                  type="button"
+                  class="text-gray-400 hover:text-orange transition-colors"
+                >
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- You Might Also Like -->
+          <div class="pt-8">
+            <h2 class="text-xl font-bold font-headline text-navy mb-6">
+              You Might Also Like
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Recommendation 1 -->
+              <div
+                class="pm-card-lift group/ebook bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col justify-between"
+              >
+                <div>
+                  <div
+                    class="relative h-[180px] bg-[#FFF5F2] p-6 flex flex-col justify-start"
+                  >
+                    <!-- Liked heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart favorite-heart--liked absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Remove from wishlist"
                     >
-                      Public Sector
-                    </h4>
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
+                      >
+                    </button>
+                    <div class="mb-3">
+                      <span
+                        class="inline-flex w-fit items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                        style="background: rgb(255, 126, 84)"
+                      >
+                        Marketing
+                      </span>
+                    </div>
+                    <div>
+                      <h4
+                        class="text-[#FF6B3D] text-xl font-extrabold font-headline leading-tight mb-1"
+                      >
+                        Marketing
+                      </h4>
+                      <p
+                        class="text-[#FF6B3D] text-[11px] font-medium leading-normal line-clamp-3"
+                      >
+                        The 94% Success Formula: A Proven Approach to Job &
+                        Career Transitions
+                      </p>
+                    </div>
+                  </div>
+                  <div class="p-5">
+                    <div class="flex flex-col gap-1 mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                          >E-books</span
+                        >
+                      </div>
+                      <div class="flex justify-between items-start gap-3">
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
+                        >
+                          Branding & Networking for Marketers
+                        </h3>
+                        <span class="text-base font-extrabold text-navy"
+                          >$2800</span
+                        >
+                      </div>
+                    </div>
                     <p
-                      class="text-[#059669] text-xs font-medium leading-relaxed line-clamp-3"
+                      class="text-xs text-body leading-relaxed line-clamp-3 mb-4"
                     >
-                      A Resume That Gets You Hired In the North American Public
-                      Sector
+                      Learn what truly matters in hiring criteria and how to
+                      build the right experience to strengthen your resume.
                     </p>
                   </div>
                 </div>
-                <div
-                  class="p-6 space-y-4 flex-grow flex flex-col justify-between"
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
+                <button
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
                 >
-                  <div>
-                    <div
-                      class="flex items-center justify-between text-xs text-body mb-2 font-medium"
-                    >
-                      <span>15 / 15 pages</span>
-                      <span class="font-bold text-navy font-headline"
-                        >100% complete</span
-                      >
-                    </div>
-                    <div class="h-[52px] flex items-start">
-                      <h3
-                        class="text-lg font-bold font-headline text-navy leading-tight line-clamp-2"
-                      >
-                        Public Sector Resume
-                      </h3>
-                    </div>
-                  </div>
+                  <span class="material-symbols-outlined text-[18px]"
+                    >shopping_cart</span
+                  >
+                  <span>Add to cart</span>
+                </button>
+              </div>
+              </div>
 
-                  <div class="pt-2">
-                    <div
-                      class="w-full bg-gray-soft h-2 rounded-full overflow-hidden mb-4"
+              <!-- Recommendation 2 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col justify-between"
+              >
+                <div>
+                  <div class="relative h-[180px] overflow-hidden bg-navy/5">
+                    <img
+                      src="../../img/online-course-1.png"
+                      alt="Resume + Interview Prep"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                    />
+                    <!-- Wishlist heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Add to wishlist"
                     >
-                      <div
-                        class="bg-orange h-full rounded-full"
-                        style="width: 100%"
-                      ></div>
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
+                      >
+                    </button>
+                    <span
+                      class="absolute top-6 left-6 z-10 inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: rgb(54, 166, 247)"
+                    >
+                      Interview
+                    </span>
+                  </div>
+                  <div class="p-5">
+                    <div class="flex flex-col gap-1 mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                          >Online courses</span
+                        >
+                      </div>
+                      <div class="flex justify-between items-start gap-3">
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
+                        >
+                          Resume + Interview Prep (All-in-One)
+                        </h3>
+                        <span class="text-base font-extrabold text-navy"
+                          >$2800</span
+                        >
+                      </div>
                     </div>
-                    <span class="text-sm text-body font-bold font-headline"
-                      >Completed</span
+                    <p
+                      class="text-xs text-body leading-relaxed line-clamp-3 mb-4"
                     >
+                      This course helps you build transferable skills, craft
+                      strong resumes and personal statements, and prepare for
+                      interviews step by step.
+                    </p>
                   </div>
                 </div>
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
+                <button
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >shopping_cart</span
+                  >
+                  <span>Add to cart</span>
+                </button>
+              </div>
+              </div>
+
+              <!-- Recommendation 3 -->
+              <div
+                class="pm-card-lift group/course bg-white border border-gray-100 shadow-card overflow-hidden rounded-none flex flex-col justify-between"
+              >
+                <div>
+                  <div class="relative h-[180px] overflow-hidden bg-navy/5">
+                    <img
+                      src="../../img/online-course-2.png"
+                      alt="Resume + Interview Prep"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover/course:scale-105"
+                    />
+                    <!-- Wishlist heart button -->
+                    <button
+                      type="button"
+                      class="favorite-heart absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110"
+                      aria-label="Add to wishlist"
+                    >
+                      <span class="material-symbols-outlined text-xl"
+                        >favorite</span
+                      >
+                    </button>
+                    <span
+                      class="absolute top-6 left-6 z-10 inline-flex items-center justify-center text-white text-[10px] font-bold px-3 h-[22px] rounded-full uppercase tracking-wider shadow-sm"
+                      style="background: rgb(245, 158, 11)"
+                    >
+                      Interview
+                    </span>
+                  </div>
+                  <div class="p-5">
+                    <div class="flex flex-col gap-1 mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-semibold text-[#FF6B3D]"
+                          >Online courses</span
+                        >
+                      </div>
+                      <div class="flex justify-between items-start gap-3">
+                        <h3
+                          class="text-sm font-bold font-headline text-navy leading-tight line-clamp-2"
+                        >
+                          Resume + Interview Prep (All-in-One)
+                        </h3>
+                        <span class="text-base font-extrabold text-navy"
+                          >$2800</span
+                        >
+                      </div>
+                    </div>
+                    <p
+                      class="text-xs text-body leading-relaxed line-clamp-3 mb-4"
+                    >
+                      This course helps you build transferable skills, craft
+                      strong resumes and personal statements, and prepare for
+                      interviews step by step.
+                    </p>
+                  </div>
+                </div>
+              <div class="border-t border-gray-100 px-5 py-4 mt-auto flex justify-center">
+                <button
+                  class="flex items-center gap-2 text-xs font-bold text-orange hover:text-orange-hover transition-colors font-headline"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >shopping_cart</span
+                  >
+                  <span>Add to cart</span>
+                </button>
+              </div>
               </div>
             </div>
           </div>
@@ -1990,7 +1482,7 @@
             </div>
           </div>
 
-          <!-- Right: Contact -->
+          <!-- Contact info -->
           <div class="w-full md:ml-auto md:w-fit md:text-right">
             <p
               class="text-[0.85rem] font-bold uppercase tracking-[0.16em] text-[#98a2b3] mb-4 md:text-right"
@@ -2071,6 +1563,121 @@
         </p>
       </div>
     </footer>
+    <!-- Sticky Checkout Bar / Drawer -->
+    <div
+      id="cart-sticky-bar"
+      class="fixed bottom-0 left-0 right-0 z-[200] bg-white border-t border-[#eaecf0] shadow-[0_-8px_30px_rgba(0,38,59,0.06)]"
+    >
+      <!-- 1. Collapsible Drawer Content (Order Summary Details) - Spans Full Width bg-white -->
+      <div
+        id="cart-drawer-details"
+        class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out border-b border-gray-100 bg-white"
+      >
+        <div class="max-w-[1248px] mx-auto px-4 sm:px-6 pb-6 pt-6 space-y-4 text-navy">
+          <div class="flex justify-between items-center">
+            <h3 class="text-base font-bold text-navy font-headline">
+              Order Summary
+            </h3>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start text-sm"
+          >
+            <!-- Pricing Breakdown -->
+            <div class="space-y-3">
+              <div class="flex justify-between text-body">
+                <span>Subtotal (3 courses)</span>
+                <span class="font-bold text-navy">$264.97</span>
+              </div>
+              <div class="flex justify-between text-[#ff4f02]">
+                <span>Discount</span>
+                <span class="font-bold">-$20.00</span>
+              </div>
+              <div class="flex justify-between text-body">
+                <span>Tax</span>
+                <span class="font-bold text-navy">$24.49</span>
+              </div>
+            </div>
+
+            <!-- Promo Code Input -->
+            <div class="space-y-2.5">
+              <span
+                class="text-xs font-bold text-navy uppercase tracking-wider block"
+                >Promo code</span
+              >
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Enter promo code"
+                  class="flex-1 bg-white border border-gray-200 text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-orange focus:border-orange rounded-none placeholder:text-gray-300 text-navy font-medium"
+                />
+                <button
+                  type="button"
+                  class="bg-[#00263b] hover:bg-[#001e2f] text-white text-xs font-bold px-4 py-2 transition-colors rounded-none"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Fixed Bar Bottom Row Wrapper - Spans Full Width bg-navy on both mobile and desktop -->
+      <div class="bg-navy text-white border-t border-navy/10 shadow-[0_-8px_30px_rgba(0,38,59,0.15)]">
+        <div
+          class="max-w-[1248px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4 relative"
+        >
+          <div class="w-[108px] shrink-0" aria-hidden="true"></div>
+
+          <div
+            id="cart-drawer-toggle-wrapper"
+            class="absolute left-1/2 -translate-x-1/2 flex shrink-0"
+          >
+            <button
+              id="cart-drawer-toggle"
+              type="button"
+              class="text-xs font-bold text-white/70 hover:text-white flex items-center gap-1 transition-all whitespace-nowrap"
+            >
+              <span>View details</span>
+              <span
+                class="material-symbols-outlined text-[14px] sm:text-[16px] transition-transform"
+                id="toggle-chevron"
+                >keyboard_arrow_up</span
+              >
+            </button>
+          </div>
+
+          <div
+            class="ml-auto flex items-center justify-end gap-3 sm:gap-5 shrink-0"
+          >
+            <div
+              class="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-3 text-right"
+            >
+              <span
+                class="text-[10px] sm:text-xs font-bold text-white/65 uppercase tracking-[0.22em] leading-none"
+                >Total</span
+              >
+              <span
+                class="text-lg sm:text-3xl font-extrabold text-white font-headline leading-none"
+                >$269.46</span
+              >
+            </div>
+
+            <button
+              type="button"
+              class="bg-[#ff4f02] hover:bg-[#e04400] text-white font-extrabold text-xs sm:text-sm px-5 sm:px-8 py-2.5 sm:py-3 rounded-full transition-all shadow-[0_12px_24px_rgba(255,79,2,0.28)] whitespace-nowrap shrink-0"
+            >
+              Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
 
     <!-- Mobile Nav Script -->
     <script>
@@ -2165,6 +1772,42 @@
           }
         });
       })();
+
+      (function cartDrawer() {
+        var toggleBtn = document.getElementById('cart-drawer-toggle');
+        var detailsPanel = document.getElementById('cart-drawer-details');
+        var toggleLabel = toggleBtn ? toggleBtn.querySelector('span') : null;
+        var toggleChevron = document.getElementById('toggle-chevron');
+
+        if (!toggleBtn || !detailsPanel || !toggleLabel || !toggleChevron) return;
+
+        function setDrawerOpen(isOpen) {
+          detailsPanel.classList.toggle('is-open', isOpen);
+          toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          toggleLabel.textContent = isOpen ? 'Close' : 'View details';
+          toggleChevron.textContent = isOpen
+            ? 'keyboard_arrow_down'
+            : 'keyboard_arrow_up';
+        }
+
+        toggleBtn.addEventListener('click', function () {
+          var isOpen = toggleBtn.getAttribute('aria-expanded') === 'true';
+          setDrawerOpen(!isOpen);
+        });
+
+        setDrawerOpen(false);
+      })();
+
+      (function favoriteHeartInit() {
+        var heartButtons = document.querySelectorAll('.favorite-heart');
+        heartButtons.forEach(function (heart) {
+          heart.addEventListener('click', function (e) {
+            e.stopPropagation();
+            heart.classList.toggle('favorite-heart--liked');
+          });
+        });
+      })();
     </script>
   </body>
 </html>
+
