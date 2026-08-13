@@ -1019,7 +1019,8 @@
 
               <div class="shrink-0 mt-1 md:mt-0 flex md:block justify-start">
                 <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onclick="openOrderDetailModal()"
                   class="inline-flex items-center justify-center px-6 py-2.5 bg-orange hover:bg-orange-hover text-white text-[13px] font-bold rounded-2xl transition-colors font-headline w-full md:w-auto text-center"
                 >
                   View details
@@ -1078,7 +1079,8 @@
 
               <div class="shrink-0 mt-1 md:mt-0 flex md:block justify-start">
                 <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onclick="openOrderDetailModal()"
                   class="inline-flex items-center justify-center px-6 py-2.5 bg-orange hover:bg-orange-hover text-white text-[13px] font-bold rounded-2xl transition-colors font-headline w-full md:w-auto text-center"
                 >
                   View details
@@ -1137,7 +1139,8 @@
 
               <div class="shrink-0 mt-1 md:mt-0 flex md:block justify-start">
                 <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onclick="openOrderDetailModal()"
                   class="inline-flex items-center justify-center px-6 py-2.5 bg-orange hover:bg-orange-hover text-white text-[13px] font-bold rounded-2xl transition-colors font-headline w-full md:w-auto text-center"
                 >
                   View details
@@ -1196,7 +1199,8 @@
 
               <div class="shrink-0 mt-1 md:mt-0 flex md:block justify-start">
                 <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onclick="openOrderDetailModal()"
                   class="inline-flex items-center justify-center px-6 py-2.5 bg-orange hover:bg-orange-hover text-white text-[13px] font-bold rounded-2xl transition-colors font-headline w-full md:w-auto text-center"
                 >
                   View details
@@ -1256,7 +1260,8 @@
 
               <div class="shrink-0 mt-1 md:mt-0 flex md:block justify-start">
                 <a
-                  href="#"
+                  href="javascript:void(0)"
+                  onclick="openOrderDetailModal()"
                   class="inline-flex items-center justify-center px-6 py-2.5 bg-orange hover:bg-orange-hover text-white text-[13px] font-bold rounded-2xl transition-colors font-headline w-full md:w-auto text-center"
                 >
                   View details
@@ -1574,6 +1579,229 @@
           });
         });
       })();
+    </script>
+
+    <!-- ================= INLINE ORDER DETAIL MODAL ================= -->
+    <div id="order-detail-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden">
+      <!-- Backdrop -->
+      <button onclick="closeOrderDetailModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close modal"></button>
+      
+      <!-- Modal Box (Elevated above backdrop) -->
+      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[600px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy">
+        <!-- Close Button -->
+        <button 
+          type="button"
+          onclick="closeOrderDetailModal()" 
+          class="absolute right-6 top-6 w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-navy hover:bg-gray-soft transition-colors cursor-pointer border-0 bg-transparent"
+          aria-label="Close details"
+        >
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+
+        <!-- Modal Title -->
+        <h2 class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy mb-8 whitespace-nowrap">
+          Order Details
+        </h2>
+
+        <!-- Content sections with space-y-[23px] to match grid gaps -->
+        <div class="space-y-[23px]">
+          <!-- Order info -->
+          <div class="space-y-1">
+            <div class="flex justify-between items-baseline">
+              <span class="text-base font-bold text-navy">Order number</span>
+              <span class="text-base font-bold text-navy font-heading">No.ABCD123456</span>
+            </div>
+            <div class="flex justify-between items-baseline text-sm text-body">
+              <span>Purchase date</span>
+              <span class="font-heading">2025-05-30</span>
+            </div>
+          </div>
+
+          <hr class="border-gray-200" />
+
+          <!-- Purchased Items List -->
+          <div class="space-y-3">
+            <h3 class="text-base font-bold text-navy">Purchased items</h3>
+            <div class="space-y-2 text-sm">
+              <!-- Item 1 -->
+              <div class="flex justify-between items-start gap-4">
+                <span class="text-body shrink-0 w-[64px] sm:w-24">Online course</span>
+                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-navy font-bold font-heading">$99.99</span>
+              </div>
+              <!-- Item 2 -->
+              <div class="flex justify-between items-start gap-4">
+                <span class="text-body shrink-0 w-[64px] sm:w-24">E-book</span>
+                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-navy font-bold font-heading">$99.99</span>
+              </div>
+              <!-- Item 3 -->
+              <div class="flex justify-between items-start gap-4">
+                <span class="text-body shrink-0 w-[64px] sm:w-24">Workshop</span>
+                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-navy font-bold font-heading">$99.99</span>
+              </div>
+              <!-- Item 4 -->
+              <div class="flex justify-between items-start gap-4">
+                <span class="text-body shrink-0 w-[64px] sm:w-24">Online course</span>
+                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-navy font-bold font-heading">$99.99</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-200" />
+
+          <!-- Payment Breakdowns -->
+          <div class="space-y-4">
+            <h3 class="text-base font-bold text-navy">Payment details</h3>
+            <div class="space-y-2 text-sm text-navy">
+              <div class="flex justify-between">
+                <span class="text-body">Subtotal</span>
+                <span class="font-heading">$99.99</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-body">Discount</span>
+                <span class="font-heading text-red-600">- $99.99</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-body">Tax</span>
+                <span class="font-heading">$99.99</span>
+              </div>
+            </div>
+            
+            <hr class="border-gray-200" />
+
+            <!-- Payment Card Metadata -->
+            <div class="space-y-2 text-sm text-navy">
+              <div class="flex justify-between">
+                <span class="text-body">Payment method</span>
+                <span>Credit card</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-body">Payment type</span>
+                <span>One-time payment</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-body">Card</span>
+                <span class="font-heading">Visa •••• 0000</span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-200" />
+
+          <!-- Total Price Row (40px spacing above the buttons) -->
+          <div class="flex justify-between items-baseline pb-4">
+            <span class="text-lg font-bold text-navy">Total paid</span>
+            <span class="text-2xl font-bold text-navy font-heading">$999.99</span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:grid sm:grid-cols-2 gap-3 sm:gap-4">
+            <!-- Download receipt -->
+            <button
+              type="button"
+              onclick="showOrderDetailInlineAlert('save')"
+              class="flex min-h-[44px] items-center justify-center bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 transition-all hover:scale-[1.02] cursor-pointer shadow-md border-0"
+            >
+              Download receipt
+            </button>
+            <!-- Request refund -->
+            <button
+              type="button"
+              onclick="showOrderDetailInlineAlert('refund')"
+              class="flex min-h-[44px] items-center justify-center border border-orange hover:bg-orange/5 text-orange font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 transition-all hover:scale-[1.02] cursor-pointer text-center bg-white"
+            >
+              Request refund
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= INLINE ALERTS IN ORDER DETAIL ================= -->
+    <!-- 1. REQUEST REFUND ALERT -->
+    <div id="inline-alert-refund" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+      <!-- Backdrop -->
+      <button onclick="closeOrderDetailInlineAlert('refund')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <!-- Card -->
+      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+        <div class="space-y-6">
+          <div class="space-y-3">
+            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Request refund</h3>
+            <p class="text-sm text-body leading-relaxed">To request a refund, please send an email to pacemaker@gmail.com</p>
+          </div>
+          <button type="button" onclick="closeOrderDetailInlineAlert('refund')" class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SAVE RECEIPT ALERT -->
+    <div id="inline-alert-save" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+      <!-- Backdrop -->
+      <button onclick="closeOrderDetailInlineAlert('save')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <!-- Card -->
+      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+        <div class="space-y-6">
+          <div class="space-y-3">
+            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Save receipt</h3>
+            <p class="text-sm text-body leading-relaxed">Would you like to save the receipt?</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" onclick="confirmSaveReceiptInline()" class="min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+              Confirm
+            </button>
+            <button type="button" onclick="closeOrderDetailInlineAlert('save')" class="min-h-[44px] border border-gray-300 hover:bg-gray-50 text-gray-500 font-semibold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer bg-white">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. RECEIPT SAVED ALERT -->
+    <div id="inline-alert-saved" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+      <!-- Backdrop -->
+      <button onclick="closeOrderDetailInlineAlert('saved')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <!-- Card -->
+      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+        <div class="space-y-6">
+          <div class="space-y-3">
+            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Receipt saved</h3>
+            <p class="text-sm text-body leading-relaxed">Your receipt has been saved successfully.</p>
+          </div>
+          <button type="button" onclick="closeOrderDetailInlineAlert('saved')" class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toggle & Inline Order Detail JS -->
+    <script>
+      function openOrderDetailModal() {
+        document.getElementById('order-detail-modal').classList.remove('hidden');
+      }
+
+      function closeOrderDetailModal() {
+        document.getElementById('order-detail-modal').classList.add('hidden');
+      }
+
+      function showOrderDetailInlineAlert(type) {
+        document.getElementById('inline-alert-' + type).classList.remove('hidden');
+      }
+
+      function closeOrderDetailInlineAlert(type) {
+        document.getElementById('inline-alert-' + type).classList.add('hidden');
+      }
+
+      function confirmSaveReceiptInline() {
+        closeOrderDetailInlineAlert('save');
+        showOrderDetailInlineAlert('saved');
+      }
     </script>
   </body>
 </html>
