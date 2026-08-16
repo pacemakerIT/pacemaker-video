@@ -140,7 +140,7 @@ const config: Config = {
       fontFamily: {
         sans: ['Pretendard', 'sans-serif'],
         headline: ['Poppins', 'sans-serif'],
-        body: ['Source Sans 3', 'sans-serif'],
+        body: ['Manrope', 'sans-serif'],
         label: ['Poppins', 'sans-serif']
       },
 

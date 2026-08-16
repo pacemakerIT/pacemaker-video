@@ -17,6 +17,7 @@ export interface OnlineCards {
   visualTitle?: string;
   visualTitle2?: string;
   uploadDate: Date;
+  rating?: number;
   watchedVideos: unknown[];
   purchasedVideos: unknown[];
   itemType?: ItemType;
