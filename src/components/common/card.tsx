@@ -93,7 +93,22 @@ export default function Card({
         badge: 'bg-[#34D399]',
         text: 'text-[#10B981]'
       },
-      IT: { bg: 'bg-[#F0F7FF]', badge: 'bg-[#36A6F7]', text: 'text-[#36A6F7]' },
+      PUBLIC: {
+        bg: 'bg-[#E6F4EA]',
+        badge: 'bg-[#34D399]',
+        text: 'text-[#34D399]'
+      },
+      ACCOUNTING: {
+        bg: 'bg-[#EFF2F8]',
+        badge: 'bg-[#37446C]',
+        text: 'text-[#37446C]'
+      },
+      SERVICE: {
+        bg: 'bg-[#E4F2F1]',
+        badge: 'bg-[#00ADBD]',
+        text: 'text-[#00ADBD]'
+      },
+      IT: { bg: 'bg-[#EAF2FF]', badge: 'bg-[#36A6F7]', text: 'text-[#36A6F7]' },
       RESUME: {
         bg: 'bg-white',
         badge: 'bg-[#FF9631]',
@@ -184,8 +199,17 @@ export default function Card({
               {description}
             </p>
 
-            <div className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-teal transition-transform duration-300 ease-out hover:translate-x-1">
-              Learn more <ArrowRight className="h-4 w-4" />
+            <div
+              className={`mt-2 inline-flex items-center gap-1 text-sm font-bold transition-transform duration-300 ease-out hover:translate-x-1 ${
+                resolvedItemType === ItemType.EBOOK
+                  ? 'text-orange'
+                  : 'text-teal'
+              }`}
+            >
+              {resolvedItemType === ItemType.EBOOK
+                ? 'View details'
+                : 'Learn more'}{' '}
+              <ArrowRight className="h-4 w-4" />
             </div>
           </div>
         </div>
