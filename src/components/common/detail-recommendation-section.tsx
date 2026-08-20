@@ -12,15 +12,19 @@ interface RecommendationItem {
 interface DetailRecommendationSectionProps {
   title?: string;
   items?: RecommendationItem[];
+  headerClassName?: string;
+  itemClassName?: string;
 }
 
 export default function DetailRecommendationSection({
   title = 'Recommended For',
-  items = []
+  items = [],
+  headerClassName,
+  itemClassName
 }: DetailRecommendationSectionProps) {
   return (
     <div className="flex flex-col w-full gap-8">
-      <SectionHeader title={title} />
+      <SectionHeader title={title} className={headerClassName} />
       <div className="flex w-full gap-6">
         {items.map((item, index) => (
           <IconTextBox
@@ -28,6 +32,7 @@ export default function DetailRecommendationSection({
             icon={item.icon}
             title={item.label}
             text={item.text}
+            className={itemClassName}
           />
         ))}
       </div>

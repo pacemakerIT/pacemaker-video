@@ -1,9 +1,21 @@
 'use client';
 import Image from 'next/image';
-import { Heart } from 'lucide-react';
-import { resolveImageSrc } from '@/lib/utils';
+import { Heart, ArrowRight } from 'lucide-react';
+import { resolveImageSrc, cn } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
-import { CustomBadge } from '@/components/common/custom-badge';
+
+const categoryBg: Record<string, string> = {
+  INTERVIEW: 'bg-pace-blue-500',
+  RESUME: 'bg-pace-purple-500',
+  NETWORKING: 'bg-pace-yellow-500',
+  MARKETING: 'bg-pace-orange-700',
+  DESIGN: 'bg-pace-pink-500',
+  PUBLIC: 'bg-pace-mint-600',
+  IT: 'bg-pace-blue-700',
+  ACCOUNTING: 'bg-pace-navy-500',
+  SERVICE: 'bg-pace-teal-500',
+  RECOMMENDED: 'bg-pace-orange-500'
+};
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUserContext } from '@/app/context/user-context';
 import { toast } from 'sonner';
@@ -16,6 +28,7 @@ interface RelatedContentCardProps {
   linkUrl?: string;
   thumbnailUrl?: string | null;
   thumbnail?: string | null;
+  className?: string;
 }
 
 export default function RelatedContentCard({
@@ -25,7 +38,8 @@ export default function RelatedContentCard({
   category,
   linkUrl,
   thumbnailUrl,
-  thumbnail
+  thumbnail,
+  className
 }: RelatedContentCardProps) {
   const itemType = ItemType.COURSE;
   const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
@@ -64,7 +78,11 @@ export default function RelatedContentCard({
   return (
     <div className="w-full cursor-pointer font-normal">
       <div
-        className="w-full bg-white rounded-lg overflow-hidden shadow-sm border-[#EEEEEE] border hover:shadow-xl dark:bg-gray-950 relative"
+        className={cn(
+          'w-full bg-white rounded-none overflow-hidden border border-gray-100 shadow-[0_10px_30px_rgba(0,38,59,0.08)] relative flex flex-col',
+          'transition-[box-shadow,transform] duration-500 ease-[cubic-bezier(0.33,1,0.53,1)] hover:shadow-[0_28px_56px_rgba(0,38,59,0.13)] hover:-translate-y-1.5',
+          className
+        )}
         onClick={handleCardClick}
       >
         <button
@@ -100,38 +118,36 @@ export default function RelatedContentCard({
               No Image
             </div>
           )}
+          {category && (
+            <div className="absolute top-4 left-4 z-10">
+              <span
+                className={cn(
+                  'text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider',
+                  categoryBg[category.toUpperCase()] ?? 'bg-pace-blue-500'
+                )}
+              >
+                {category}
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="w-full p-6 flex flex-col justify-start items-start gap-4">
+        <div className="w-full p-6 flex flex-col justify-start items-start gap-4 flex-grow">
           <div className="w-full flex flex-col gap-4">
-            <div className="w-full flex justify-between items-center text-pace-sm">
-              {category && (
-                <CustomBadge
-                  variant={category}
-                  className="w-fit min-w-14 flex justify-center items-center py-2 px-3"
-                >
-                  {category}
-                </CustomBadge>
-              )}
-            </div>
-
-            <div className="w-full flex justify-between items-start text-pace-gray-500">
-              <h3 className="text-pace-base">{title}</h3>
+            <div className="w-full flex justify-between items-start gap-4">
+              <h3 className="text-lg font-heading font-bold text-[#00263b] leading-tight line-clamp-3">
+                {title}
+              </h3>
               {price > 0 && (
-                <span className="text-pace-xl font-bold">{`$${price}`}</span>
+                <span className="text-xl font-extrabold text-[#00263b] shrink-0">{`$${price}`}</span>
               )}
             </div>
           </div>
 
           <div className="w-full flex justify-start">
-            <div className="text-[#E86642] font-normal p-0 inline-flex items-center gap-2">
-              {`View detail`}
-              <Image
-                src="/icons/arrow-right.svg"
-                alt="View Details"
-                width={20}
-                height={20}
-              />
+            <div className="text-[#00adbd] font-bold text-sm inline-flex items-center gap-1 hover:translate-x-1 transition-transform duration-300 ease-out">
+              {`Learn more`}
+              <ArrowRight className="w-4 h-4" />
             </div>
           </div>
         </div>
