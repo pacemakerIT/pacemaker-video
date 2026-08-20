@@ -3,13 +3,22 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '@/lib/prisma';
 import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 export async function POST(req: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const formData = await req.formData();
     const file = (formData.get('image') || formData.get('file')) as File | null;
-    const table = (formData.get('table') || formData.get('type')) as
-      string | null;
+    const tableValue = formData.get('table') || formData.get('type');
+    const table = typeof tableValue === 'string' ? tableValue : null;
     const column = formData.get('column') as string | null;
     const recordId = formData.get('recordId') as string | null;
     const courseId = formData.get('courseId') as string | null;

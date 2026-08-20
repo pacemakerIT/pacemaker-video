@@ -155,36 +155,32 @@ model Ebook {
   recommendedLinks    Json?
   targetAudienceTypes TargetAudienceType[] @default([])
   orderKey            String               @default("a0")
+  time                String?
 }
 
 model Workshop {
-  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title          String
   description    String?
   startDate      DateTime
   endDate        DateTime
   price          Float?
   locationOrUrl  String?
-  status         WorkshopStatus    @default(RECRUITING)
+  status         WorkshopStatus    @default(OPEN)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   thumbnail      String?
   category       WorkshopCategory?
   processContent String?
-  isMain         Boolean           @default(false)
-  orderKey       String            @default("a0")
-
-  // 강사: 한 워크샵에 여러 강사, 한 강사가 여러 워크샵 가능 (다대다)
-  instructors   WorkshopInstructor[]
-  // 참여자: 유저가 워크샵에 등록
-  userWorkshops UserWorkshop[]
-  // 섹션, 즐겨찾기, 장바구니
-  sectionsRel   Section[]
-  favorites     Favorite[]
-  cart          Cart[]
+  isMain         Boolean              @default(false)
+  orderKey       String               @default("a0")
+  instructors    WorkshopInstructor[]
+  userWorkshops  UserWorkshop[]
+  sectionsRel    Section[]
+  favorites      Favorite[]
+  cart           Cart[]
 }
 
-// Workshop ↔ Instructor 다대다 중간 테이블
 model WorkshopInstructor {
   workshopId   String     @db.Uuid
   instructorId String     @db.Uuid
@@ -213,19 +209,19 @@ model Order {
   id                      String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                  String?        @db.Uuid
   totalAmountCents        Int
+  status                  OrderStatus    @default(PENDING)
+  stripePaymentIntentId   String?        @unique
+  stripeInvoiceId         String?        @unique
+  stripeInvoiceUrl        String?
+  orderedAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
   subtotalAmountCents     Int?
   discountAmountCents     Int?
   taxAmountCents          Int?
   currency                String         @default("cad")
-  status                  OrderStatus    @default(PENDING)
   stripeCheckoutSessionId String?        @unique
-  stripePaymentIntentId   String?        @unique
   stripeCustomerId        String?
-  stripeInvoiceId         String?        @unique
-  stripeInvoiceUrl        String?
   stripeReceiptUrl        String?
-  orderedAt               DateTime       @default(now())
-  updatedAt               DateTime       @updatedAt
   user                    User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   items                   OrderItem[]
   userWorkshops           UserWorkshop[]
@@ -241,7 +237,6 @@ model OrderItem {
   order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
-// itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원
 model Favorite {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String    @db.Uuid
@@ -256,7 +251,6 @@ model Favorite {
   @@index([workshopId])
 }
 
-// itemId + itemType으로 폴리모픽 처리, workshopId FK로 Prisma relation도 지원
 model Cart {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String    @db.Uuid
@@ -304,11 +298,10 @@ model Instructor {
 }
 
 enum WorkshopStatus {
-  RECRUITING
-  CLOSED
-  ONGOING
-  COMPLETED
-  HIDDEN
+  OPEN      @map("Open")
+  CLOSED    @map("Closed")
+  COMPLETED @map("Completed")
+  HIDDEN    @map("Hidden")
 }
 
 enum CourseCategory {

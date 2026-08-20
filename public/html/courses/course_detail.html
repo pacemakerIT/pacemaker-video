@@ -136,6 +136,7 @@
     <style>
       html {
         scrollbar-gutter: stable;
+        scroll-padding-top: 80px;
       }
       .material-symbols-outlined {
         font-variation-settings:
@@ -444,7 +445,8 @@
             padding-top 0.25s ease-out;
         }
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
           opacity: 1;
           padding-top: 12px;
           pointer-events: auto;
@@ -543,7 +545,7 @@
         <!-- Navigation Menu & Auth (Right-aligned container) -->
         <div class="flex items-center ml-auto">
           <div class="nav-center">
-            <a class="nav-item" href="../main.html#workshopCarousel"
+            <a class="nav-item" href="../workshops/workshop_list.html"
               >Workshops</a
             >
             <a
@@ -552,7 +554,7 @@
               href="#main-content"
               >Online Courses</a
             >
-            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
           </div>
           <!-- Auth Links -->
           <div class="nav-right ml-4">
@@ -650,7 +652,7 @@
                     <div class="flex flex-col gap-1">
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#workshopCarousel"
+                        href="../workshops/workshop_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -711,7 +713,7 @@
                       </a>
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#ebookCarousel"
+                        href="../ebooks/ebook_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -762,7 +764,7 @@
         </div>
       </div>
     </nav>
-    <section class="relative h-[600px] w-full overflow-hidden">
+    <section class="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center py-12 lg:py-0">
       <!-- Adjusted Background image to show more content -->
       <img
         alt="Background"
@@ -771,17 +773,17 @@
       />
 
       <div
-        class="page-container h-full relative flex items-center justify-between"
+        class="page-container h-full relative flex flex-col lg:flex-row items-center justify-center lg:justify-between py-12 lg:py-0 gap-8 w-full"
       >
         <!-- Left Text Content: Aligned with the logo -->
-        <div class="max-w-2xl text-white z-10">
+        <div class="max-w-2xl text-white z-10 text-center lg:text-left">
           <p
-            class="text-[28px] mb-4 font-medium opacity-100 tracking-wide font-[family-name:var(--font-heading)]"
+            class="text-lg sm:text-[28px] mb-4 font-medium opacity-100 tracking-wide font-[family-name:var(--font-heading)]"
           >
             Chosen by Professionals
           </p>
           <h1
-            class="text-[40px] font-[family-name:var(--font-heading)] font-bold leading-[1.3] tracking-tight"
+            class="text-2xl sm:text-3xl md:text-[40px] font-[family-name:var(--font-heading)] font-bold leading-[1.3] tracking-tight"
           >
             From Differentiated Resumes to<br class="hidden md:block" />
             Confident Interviews
@@ -790,7 +792,7 @@
 
         <!-- Right Purchase Card: Fixed overflow/shattering by optimizing internal spacing -->
         <div
-          class="bg-white rounded-none p-7 w-[360px] min-h-[382px] shadow-card relative z-10 flex flex-col justify-between hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300 border border-gray-100"
+          class="bg-white rounded-none p-7 w-full max-w-[360px] min-h-[382px] shadow-card relative z-10 flex flex-col justify-between hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300 border border-gray-100"
         >
           <div>
             <h2
@@ -831,7 +833,7 @@
 
             <div class="flex gap-3 items-center">
               <button
-                class="flex-1 bg-orange text-white font-bold py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-orange-hover hover:scale-[1.02] transition-all text-lg font-[family-name:var(--font-heading)]"
+                class="flex-1 bg-orange text-white font-bold py-3.5 sm:py-4 px-4 sm:px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-orange-hover hover:scale-[1.02] transition-all text-sm sm:text-lg whitespace-nowrap font-[family-name:var(--font-heading)]"
               >
                 Add to cart
               </button>
@@ -894,19 +896,22 @@
           </div>
           <div class="w-full lg:w-[480px] space-y-4">
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -915,7 +920,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -923,7 +928,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -936,19 +941,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -957,7 +965,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -965,7 +973,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -978,19 +986,22 @@
               </div>
             </div>
             <div
-              class="bg-card-light dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
+              class="bg-[#F9F6F3] dark:bg-card-dark rounded-none border border-border-light dark:border-border-dark overflow-hidden transition-colors"
             >
               <div
                 class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onclick="
                   const p = this.nextElementSibling;
                   const icon = this.querySelector('.material-icons');
+                  const label = this.querySelector('.read-label');
                   if (p.style.maxHeight) {
                     p.style.maxHeight = null;
                     icon.textContent = 'expand_more';
+                    if (label) label.textContent = 'Read';
                   } else {
                     p.style.maxHeight = p.scrollHeight + 'px';
                     icon.textContent = 'expand_less';
+                    if (label) label.textContent = 'Close';
                   }
                 "
               >
@@ -999,7 +1010,7 @@
                 </h3>
                 <span
                   class="text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 text-sm"
-                  >Read
+                  ><span class="read-label">Read</span>
                   <span
                     class="material-icons text-sm transition-transform duration-300"
                     >expand_more</span
@@ -1007,7 +1018,7 @@
                 >
               </div>
               <div
-                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-card-dark"
+                class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-[#F9F6F3] dark:bg-card-dark"
               >
                 <div
                   class="p-6 pt-0 text-text-muted-light dark:text-text-muted-dark border-t border-border-light dark:border-border-dark mt-2 pt-4"
@@ -1089,32 +1100,32 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2019 ~</span
                     >
                     <span>Managing Director at Pacemaker</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2015 ~ 2019</span
                     >
                     <span>Director of Operations at Metanet</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2009 ~ 2014</span
                     >
                     <span
                       >Business Development Manager at People In Biz Corp.</span
                     >
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2004 ~ 2008</span
                     >
                     <span>Purchaser at InterContinental Hotels Group</span>
@@ -1123,14 +1134,13 @@
               </div>
               <div class="w-full lg:w-[480px] flex flex-col">
                 <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center p-8 text-center"
+                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
                 >
-                  <div>
-                    <p class="text-2xl font-bold mb-2">Profile Photo</p>
-                    <p class="text-text-muted-light dark:text-text-muted-dark">
-                      Recommended: Avatar-style image<br />(e.g., ZEPETO)
-                    </p>
-                  </div>
+                  <img
+                    src="../../img/raphael.png"
+                    alt="Raphael Lee Profile"
+                    class="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -1151,16 +1161,16 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2021 ~</span
                     >
                     <span>Lead Career Coach at TechBridge</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2016 ~ 2021</span
                     >
                     <span>HR Manager at GlobalTech</span>
@@ -1169,14 +1179,13 @@
               </div>
               <div class="w-full lg:w-[480px] flex flex-col">
                 <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center p-8 text-center"
+                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
                 >
-                  <div>
-                    <p class="text-2xl font-bold mb-2">Profile Photo</p>
-                    <p class="text-text-muted-light dark:text-text-muted-dark">
-                      Recommended: Avatar-style image<br />(e.g., ZEPETO)
-                    </p>
-                  </div>
+                  <img
+                    src="../../img/linda.png"
+                    alt="Linda Kim Profile"
+                    class="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -1197,16 +1206,16 @@
                 </p>
                 <h4 class="font-bold mb-4">Experience</h4>
                 <ul class="space-y-4 text-sm">
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2020 ~</span
                     >
                     <span>Senior Developer at CloudNative</span>
                   </li>
-                  <li class="flex gap-8">
+                  <li class="flex gap-4 sm:gap-8">
                     <span
-                      class="text-text-muted-light dark:text-text-muted-dark w-24"
+                      class="text-text-muted-light dark:text-text-muted-dark w-24 shrink-0"
                       >2015 ~ 2020</span
                     >
                     <span>Software Engineer at Innovate Ltd</span>
@@ -1215,14 +1224,13 @@
               </div>
               <div class="w-full lg:w-[480px] flex flex-col">
                 <div
-                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center p-8 text-center"
+                  class="bg-card-light dark:bg-card-dark flex-1 min-h-[400px] flex items-center justify-center overflow-hidden"
                 >
-                  <div>
-                    <p class="text-2xl font-bold mb-2">Profile Photo</p>
-                    <p class="text-text-muted-light dark:text-text-muted-dark">
-                      Recommended: Avatar-style image<br />(e.g., ZEPETO)
-                    </p>
-                  </div>
+                  <img
+                    src="../../img/heelee.png"
+                    alt="Heelee Park Profile"
+                    class="w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </div>
@@ -1232,17 +1240,17 @@
           <button
             aria-label="Slide 1"
             data-active="true"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 2"
             data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
           <button
             aria-label="Slide 3"
             data-active="false"
-            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#eeeeee] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
+            class="w-[18px] h-[18px] rounded-full transition-colors duration-300 cursor-pointer data-[active=true]:bg-orange data-[active=false]:bg-[#cccccc] data-[active=false]:dark:bg-gray-700 data-[active=false]:hover:bg-gray-300 data-[active=false]:dark:hover:bg-gray-500"
           ></button>
         </div>
         <script>
@@ -1477,11 +1485,11 @@
         </div>
       </section>
       <section>
-        <div class="flex items-end gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-8">
           <h2 class="text-3xl font-[family-name:var(--font-heading)] font-bold">
             Student Reviews
           </h2>
-          <div class="flex items-center gap-2 mb-1">
+          <div class="flex items-center gap-2 sm:mb-1">
             <span class="text-xl font-bold">5 / 5</span>
             <div class="flex text-orange">
               <span class="material-icons text-sm">star</span>
@@ -2024,6 +2032,21 @@
 
             toggle.addEventListener('click', function () {
               var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              if (!isOpen) {
+                Array.prototype.forEach.call(
+                  document.querySelectorAll('.mobile-nav-accordion-toggle'),
+                  function (otherToggle) {
+                    if (otherToggle !== toggle) {
+                      otherToggle.setAttribute('aria-expanded', 'false');
+                      var otherPanelId = otherToggle.getAttribute('data-target');
+                      var otherPanel = otherPanelId ? document.getElementById(otherPanelId) : null;
+                      if (otherPanel) {
+                        otherPanel.classList.remove('is-open');
+                      }
+                    }
+                  }
+                );
+              }
               toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
               panel.classList.toggle('is-open', !isOpen);
             });

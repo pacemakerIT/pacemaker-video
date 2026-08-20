@@ -37,29 +37,29 @@ export default function WorkshopList() {
       {loading ? (
         <p className="text-center">📡 Loading workshops...</p>
       ) : (
-        <div className="flex flex-col w-full max-w-7xl gap-8">
-          <div className="flex flex-col justify-start w-full pt-12">
-            <h5 className="text-pace-orange-600 text-lg">
-              {'Explore Career Topics'}
-            </h5>
-            <div className="flex justify-between items-center">
-              <h3 className="text-pace-black-500 text-pace-3xl font-bold">
-                {'Pacemaker Workshop'}
+        <div className="flex w-full max-w-7xl flex-col gap-12">
+          <div className="flex w-full flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <h5 className="mb-2 text-base font-bold tracking-wide text-orange">
+                {'Workshops for every goal'}
+              </h5>
+              <h3 className="font-headline text-4xl font-extrabold tracking-tight text-navy md:text-5xl">
+                {'Pacemaker workshops'}
               </h3>
-              <Link
-                href="/workshops"
-                className="w-fit flex items-center text-base text-pace-stone-500 font-normal gap-1"
-              >
-                <span>{'View all Workshops'}</span>
-                <Image
-                  src="/icons/arrow_right.svg"
-                  alt="오른쪽 화살표 아이콘"
-                  width={16}
-                  height={16}
-                  className="align-middle"
-                />
-              </Link>
             </div>
+            <Link
+              href="/workshops"
+              className="flex w-fit items-center gap-1 text-base font-semibold text-slate-500 transition-colors hover:text-navy"
+            >
+              <span>{'View all workshops'}</span>
+              <Image
+                src="/icons/arrow_right.svg"
+                alt="오른쪽 화살표 아이콘"
+                width={16}
+                height={16}
+                className="align-middle"
+              />
+            </Link>
           </div>
           {workshops.length === 0 ? (
             <p>📭 No registered workshops.</p>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Checkbox } from '@/components/ui/checkbox';
+import { resolveImageSrc } from '@/lib/utils';
 
 export type RowLike = {
   id: string;
@@ -26,10 +27,12 @@ type AdminVisualRowProps = {
   toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
   onDelete?: (id: string) => void;
   onStatusChange?: (id: string, newStatus: string) => void;
+  statusDisabled?: boolean;
   StatusComponent?: React.ComponentType<{
     row: RowLike;
     toggleRow: (id: string, checked: boolean, newStatus?: string) => void;
     onStatusChange?: (id: string, newStatus: string) => void;
+    disabled?: boolean;
   }>;
   editHref?: string;
   attemptNavigation?: (url: string) => void;
@@ -43,6 +46,7 @@ export default function AdminVisualRow({
   toggleRow,
   onDelete,
   onStatusChange,
+  statusDisabled = false,
   StatusComponent,
   editHref,
   attemptNavigation,
@@ -64,9 +68,8 @@ export default function AdminVisualRow({
     opacity: isDragging ? 0.5 : 1
   };
 
-  const resolvedThumbnailSrc = resolveThumbnail
-    ? resolveThumbnail(row)
-    : (row.thumbnail ?? '');
+  const thumbnailSrc = resolveThumbnail ? resolveThumbnail(row) : row.thumbnail;
+  const resolvedThumbnailSrc = resolveImageSrc({ thumbnail: thumbnailSrc });
 
   return (
     <div
@@ -116,7 +119,7 @@ export default function AdminVisualRow({
             금액
             <span className="font-semibold">
               {row.price?.toLocaleString
-                ? `$${row.price.toLocaleString()}`
+                ? ` $${row.price.toLocaleString()}`
                 : row.price}
             </span>
           </span>
@@ -124,7 +127,7 @@ export default function AdminVisualRow({
             찜 <span className="font-semibold">{row.likes ?? 0}</span>
           </span>
           <span>
-            구매
+            구매{' '}
             <span className="font-semibold">
               {row.purchaseCount ?? row.purchases ?? 0}
             </span>
@@ -138,6 +141,7 @@ export default function AdminVisualRow({
             row={row}
             toggleRow={toggleRow}
             onStatusChange={onStatusChange}
+            disabled={statusDisabled}
           />
         ) : null}
       </div>

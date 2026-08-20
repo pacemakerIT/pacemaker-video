@@ -32,6 +32,7 @@ export default function EbookEditPage() {
             subTitle: ebook.subTitle || '',
             subDescription: ebook.subDescription || '',
             price: ebook.price?.toString() || '',
+            time: ebook.time || '',
             thumbnailUrl: ebook.thumbnail || '',
             fileUrl: ebook.bucketUrl || '',
             visualTitle: ebook.visualTitle1 || '',

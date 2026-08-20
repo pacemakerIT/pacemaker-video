@@ -1,9 +1,9 @@
 'use client';
-import { useState } from 'react';
 import Image from 'next/image';
 import { Heart, ArrowRight } from 'lucide-react';
 import { resolveImageSrc, cn } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
+
 const categoryBg: Record<string, string> = {
   INTERVIEW: 'bg-pace-blue-500',
   RESUME: 'bg-pace-purple-500',
@@ -16,6 +16,9 @@ const categoryBg: Record<string, string> = {
   SERVICE: 'bg-pace-teal-500',
   RECOMMENDED: 'bg-pace-orange-500'
 };
+import { useFavoriteContext } from '@/app/context/favorite-context';
+import { useUserContext } from '@/app/context/user-context';
+import { toast } from 'sonner';
 
 interface RelatedContentCardProps {
   itemId: string;
@@ -38,7 +41,12 @@ export default function RelatedContentCard({
   thumbnail,
   className
 }: RelatedContentCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
+  const itemType = ItemType.COURSE;
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
+  const { user } = useUserContext();
+  const isLiked = favorites.some(
+    (f) => f.itemId === itemId && f.itemType === itemType
+  );
 
   const handleCardClick = () => {
     if (linkUrl) {
@@ -51,8 +59,21 @@ export default function RelatedContentCard({
   const imageSrc = resolveImageSrc({
     thumbnail,
     thumbnailUrl,
-    itemType: ItemType.COURSE // Default to COURSE for related items
+    itemType
   });
+
+  const toggleLike = () => {
+    if (!user?.id) {
+      toast.error('Please log in to use favorite.');
+      return;
+    }
+
+    if (isLiked) {
+      removeFavorite(itemId, itemType);
+    } else {
+      addFavorite(itemId, itemType);
+    }
+  };
 
   return (
     <div className="w-full cursor-pointer font-normal">
@@ -64,7 +85,26 @@ export default function RelatedContentCard({
         )}
         onClick={handleCardClick}
       >
-        <div className="w-full h-[256px] relative overflow-hidden">
+        <button
+          role="button"
+          aria-label="like"
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-100 z-10 group"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleLike();
+          }}
+        >
+          <Heart
+            className={`w-5 h-5 transition-colors duration-200 ${
+              isLiked
+                ? 'text-pace-orange-800 fill-pace-orange-800'
+                : 'text-pace-gray-200 group-hover:text-pace-orange-800'
+            }`}
+          />
+        </button>
+
+        <div className="w-full aspect-[3/2] relative overflow-hidden">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -90,24 +130,6 @@ export default function RelatedContentCard({
               </span>
             </div>
           )}
-          <button
-            role="button"
-            aria-label="like"
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-100 z-10 group"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsLiked(!isLiked);
-            }}
-          >
-            <Heart
-              className={`w-5 h-5 transition-colors duration-300 ${
-                isLiked
-                  ? 'text-[#ff4f02] fill-[#ff4f02] group-hover:text-[#e04400] group-hover:fill-[#e04400]'
-                  : 'text-gray-400 fill-transparent group-hover:text-[#ff4f02] group-hover:fill-[#ff4f02]'
-              }`}
-            />
-          </button>
         </div>
 
         <div className="w-full p-6 flex flex-col justify-start items-start gap-4 flex-grow">

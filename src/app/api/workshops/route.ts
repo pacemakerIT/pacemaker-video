@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
+import { requireAdminUser } from '@/lib/admin-auth';
 
-const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
-  모집중: WorkshopStatus.RECRUITING,
-  모집완료: WorkshopStatus.CLOSED,
-  진행중: WorkshopStatus.ONGOING,
-  진행완료: WorkshopStatus.COMPLETED
+const RECRUIT_STATUS_MAP: Record<string, string> = {
+  모집중: 'OPEN',
+  모집완료: 'CLOSED',
+  진행완료: 'COMPLETED'
 };
+
+const toWorkshopStatus = (status: string): WorkshopStatus =>
+  status as unknown as WorkshopStatus;
 
 interface InstructorInput {
   name: string;
@@ -38,8 +41,11 @@ export async function GET(req: Request) {
   try {
     // 1. 단건 조회
     if (id) {
-      const workshop = await prisma.workshop.findUnique({
-        where: { id },
+      const workshop = await prisma.workshop.findFirst({
+        where: {
+          id,
+          status: { not: WorkshopStatus.HIDDEN }
+        },
         include: {
           instructors: {
             include: { instructor: { select: { name: true } } }
@@ -81,6 +87,7 @@ export async function GET(req: Request) {
 
       const workshops = await prisma.workshop.findMany({
         where: {
+          status: { not: WorkshopStatus.HIDDEN },
           startDate: {
             gte: startDate,
             lte: endDate
@@ -119,6 +126,7 @@ export async function GET(req: Request) {
 
       const workshops = await prisma.workshop.findMany({
         where: {
+          status: { not: WorkshopStatus.HIDDEN },
           startDate: {
             gte: startDate,
             lte: endDate
@@ -152,6 +160,9 @@ export async function GET(req: Request) {
 
     // 4. 전체 조회 (fallback)
     const workshops = await prisma.workshop.findMany({
+      where: {
+        status: { not: WorkshopStatus.HIDDEN }
+      },
       select: {
         id: true,
         title: true,
@@ -187,6 +198,14 @@ export async function GET(req: Request) {
 }
 
 export async function POST(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const body = await request.json();
     const {
@@ -219,8 +238,7 @@ export async function POST(request: Request) {
       const workshop = await tx.workshop.create({
         data: {
           category: (category as WorkshopCategory) || null,
-          status:
-            RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.RECRUITING,
+          status: toWorkshopStatus(RECRUIT_STATUS_MAP[recruitStatus] ?? 'OPEN'),
           isMain: showOnMain ?? false,
           title,
           description,
@@ -277,6 +295,14 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { ids } = await request.json();
 

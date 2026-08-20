@@ -1,20 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import EbookSectionList from './sections/ebook-section-list';
-import EbookRecommendedSelect from './sections/ebook-recommended-select';
-import EbookRecommendedLinkSection from './sections/ebook-recommended-link-section';
-import EbookBasicSection from './sections/ebook-basic-section';
+import SectionList from '@/components/admin/common/section-list';
+import RecommendedSelect from '@/components/admin/common/recommended-select';
+import RecommendedLinkSection from '@/components/admin/common/recommended-link-section';
+import BasicSection from '@/components/admin/basic-section';
 import EbookDetailSection from './sections/ebook-detail-section';
-import EbookVisualSection from './sections/ebook-visual-section';
-import EbookActionButtons from './sections/ebook-action-buttons';
+import VisualSection from '@/components/admin/common/visual-section';
+import ActionButtons from '@/components/admin/common/action-buttons';
 import { EbookFormErrors } from '@/types/admin/ebook-form-errors';
 import {
   createEbook,
   updateEbook
 } from '@/components/admin/ebooks/actions/ebook-actions';
 import { EbookCategory, TargetAudienceType } from '@prisma/client';
+import { itemCategoryLabel } from '@/constants/labels';
+
+const EBOOK_CATEGORY_OPTIONS = (
+  [
+    EbookCategory.MARKETING,
+    EbookCategory.IT,
+    EbookCategory.DESIGN,
+    EbookCategory.PUBLIC,
+    EbookCategory.ACCOUNTING,
+    EbookCategory.SERVICE
+  ] as const satisfies readonly EbookCategory[]
+).map((value) => ({ value, label: itemCategoryLabel.ko[value] }));
+
+const EBOOK_STATUS_OPTIONS = [
+  { value: 'public', label: '공개' },
+  { value: 'private', label: '비공개' }
+];
+
+const EBOOK_RECOMMENDED_OPTIONS = [
+  { value: TargetAudienceType.IT, label: 'IT 개발' },
+  { value: TargetAudienceType.GOVERNMENT, label: '공무원' },
+  { value: TargetAudienceType.FINANCE, label: '재무회계' },
+  { value: TargetAudienceType.DESIGN, label: '디자인' },
+  { value: TargetAudienceType.RESUME, label: '북미 취업이력서' },
+  { value: TargetAudienceType.INTERVIEW, label: '인터뷰 준비' },
+  { value: TargetAudienceType.NETWORKING, label: '네트워킹' },
+  { value: TargetAudienceType.SERVICE, label: '서비스' }
+];
 
 export type EbookData = {
   id?: string;
@@ -26,6 +55,7 @@ export type EbookData = {
   subTitle: string;
   subDescription: string;
   price: string;
+  time?: string;
   thumbnailUrl: string;
   fileUrl: string;
   visualTitle: string;
@@ -47,28 +77,39 @@ type Props = {
   submitLabel?: string;
 };
 
+export function normalizeEbookData(data?: Partial<EbookData>): EbookData {
+  return {
+    category: data?.category ?? '',
+    isPublic: data?.isPublic ?? '',
+    showOnMain: Boolean(data?.showOnMain),
+    title: data?.title ?? '',
+    intro: data?.intro ?? '',
+    subTitle: data?.subTitle ?? '',
+    subDescription: data?.subDescription ?? '',
+    price: data?.price ?? '',
+    time: data?.time ?? '',
+    thumbnailUrl: data?.thumbnailUrl ?? '',
+    fileUrl: data?.fileUrl ?? '',
+    visualTitle: data?.visualTitle ?? '',
+    visualTitle2: data?.visualTitle2 ?? '',
+    recommended: data?.recommended ?? [],
+    sections: data?.sections ?? [{ title: '', content: '' }],
+    links: data?.links ?? [{ url: '', name: '', errors: {} }]
+  };
+}
+
 export default function EbookForm({ initialData, submitLabel }: Props) {
-  const [ebookData, setEbookData] = useState<EbookData>(
-    initialData || {
-      category: '',
-      isPublic: '',
-      showOnMain: false,
-      title: '',
-      intro: '',
-      subTitle: '',
-      subDescription: '',
-      price: '',
-      thumbnailUrl: '',
-      fileUrl: '',
-      visualTitle: '',
-      visualTitle2: '',
-      recommended: [],
-      sections: [{ title: '', content: '' }],
-      links: []
-    }
+  const router = useRouter();
+  const [ebookData, setEbookData] = useState<EbookData>(() =>
+    normalizeEbookData(initialData)
   );
 
   const [errors, setErrors] = useState<EbookFormErrors>({});
+
+  useEffect(() => {
+    setEbookData(normalizeEbookData(initialData));
+    setErrors({});
+  }, [initialData]);
 
   const handleSubmit = () => {
     const newErrors: EbookFormErrors = {};
@@ -141,8 +182,12 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
           await createEbook(payload);
           toast.success('등록 완료!');
         }
-      } catch {
-        toast.error('오류가 발생했습니다.');
+
+        router.push('/admin/ebooks');
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : '오류가 발생했습니다.';
+        toast.error(message);
       }
     };
     transition();
@@ -161,17 +206,20 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
   return (
     <div className="w-full mx-auto flex flex-col gap-8 pt-10 pb-16">
       {/* Basic Info */}
-      <EbookBasicSection
+      <BasicSection
+        formType="ebook"
         category={ebookData.category}
         setCategory={(v) => {
-          updateEbookData('category', v);
+          updateEbookData('category', v as EbookCategory);
           setErrors((prev) => ({ ...prev, category: undefined }));
         }}
-        isPublic={ebookData.isPublic}
-        setIsPublic={(v) => {
+        categoryOptions={EBOOK_CATEGORY_OPTIONS}
+        statusValue={ebookData.isPublic}
+        setStatusValue={(v) => {
           updateEbookData('isPublic', v);
           setErrors((prev) => ({ ...prev, isPublic: undefined }));
         }}
+        statusOptions={EBOOK_STATUS_OPTIONS}
         showOnMain={ebookData.showOnMain}
         setShowOnMain={(v) => updateEbookData('showOnMain', v)}
         errors={errors}
@@ -189,6 +237,8 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
         setSubDescription={(v) => updateEbookData('subDescription', v)}
         price={ebookData.price}
         setPrice={(v) => updateEbookData('price', v)}
+        time={ebookData.time}
+        setTime={(v) => updateEbookData('time', v)}
         thumbnailUrl={ebookData.thumbnailUrl}
         setThumbnailUrl={(v) => {
           updateEbookData('thumbnailUrl', v);
@@ -203,41 +253,48 @@ export default function EbookForm({ initialData, submitLabel }: Props) {
       />
 
       {/* Visual Title */}
-      <EbookVisualSection
+      <VisualSection
         visualTitle={ebookData.visualTitle}
-        setVisualTitle={(v) => updateEbookData('visualTitle', v)}
+        setVisualTitle={(v: string) => updateEbookData('visualTitle', v)}
         visualTitle2={ebookData.visualTitle2}
-        setVisualTitle2={(v) => updateEbookData('visualTitle2', v)}
+        setVisualTitle2={(v: string) => updateEbookData('visualTitle2', v)}
         errors={errors}
       />
 
       {/* Recommended */}
-      <EbookRecommendedSelect
+      <RecommendedSelect
         maxSelect={2}
         value={ebookData.recommended}
-        onChange={(v) => updateEbookData('recommended', v)}
+        onChange={(v) =>
+          updateEbookData('recommended', v as TargetAudienceType[])
+        }
+        options={EBOOK_RECOMMENDED_OPTIONS}
         error={errors.recommended}
       />
 
       {/* Sections */}
-      <EbookSectionList
+      <SectionList
+        label="섹션 별 내용"
+        itemLabel="섹션"
+        addLabel="섹션 추가"
         value={ebookData.sections}
         onChange={(v) => updateEbookData('sections', v)}
         errors={errors.sections}
       />
 
       {/* Recommended Links */}
-      <EbookRecommendedLinkSection
+      <RecommendedLinkSection
         value={ebookData.links}
         onChange={(v) => updateEbookData('links', v)}
         error={errors.links}
       />
 
       {/* Actions */}
-      <EbookActionButtons
+      <ActionButtons
         onSubmit={handleSubmit}
         cancelHref="/admin/ebooks"
-        submitLabel={submitLabel}
+        submitLabel={submitLabel ?? '수정'}
+        submitBehavior="callback"
       />
     </div>
   );

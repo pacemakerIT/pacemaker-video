@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ListHeader from '../common/list-header';
+import React from 'react';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn() })
@@ -33,78 +34,109 @@ vi.mock('embla-carousel-react', () => {
 });
 
 describe('ListHeader', () => {
-  it('renders with basic props', () => {
-    render(<ListHeader title="Test Title" />);
-    expect(screen.getByText('Test Title')).toBeInTheDocument();
+  it('renders default slides when no slides provided', () => {
+    render(<ListHeader />);
+    expect(screen.getByText('Pacemaker Career Services')).toBeInTheDocument();
+    expect(screen.getByText(/Not sure where to start/i)).toBeInTheDocument();
   });
 
-  it('renders without button when buttonText is not provided', () => {
-    render(<ListHeader title="Test Title" />);
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  it('renders custom slides when slides are provided', () => {
+    const customSlides = [
+      {
+        tag: 'Custom Tag',
+        tagColor: 'rgba(0, 173, 189, 0.85)',
+        title: 'Custom Title',
+        highlight: 'Highlight',
+        highlightColor: 'text-teal',
+        description: 'Custom Description',
+        buttonText: 'Click Me',
+        link: '/custom'
+      }
+    ];
+
+    render(<ListHeader slides={customSlides} />);
+    expect(screen.getByText('Custom Tag')).toBeInTheDocument();
+    expect(screen.getByText(/Custom Title/i)).toBeInTheDocument();
+    expect(screen.getByText('Highlight')).toBeInTheDocument();
+    expect(screen.getByText('Custom Description')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Click Me' })
+    ).toBeInTheDocument();
   });
 
-  it('renders with custom height and gradient', () => {
-    const height = 'h-64';
+  it('renders without CTA button when buttonText is not provided', () => {
+    const customSlides = [
+      {
+        tag: 'Custom Tag',
+        tagColor: 'rgba(0, 173, 189, 0.85)',
+        title: 'Custom Title',
+        highlight: 'Highlight',
+        highlightColor: 'text-teal',
+        description: 'Custom Description'
+      }
+    ];
+
+    render(<ListHeader slides={customSlides} />);
+    // The CTA button should not exist. Only dots navigation button(s) should be there.
+    const ctaButton = screen.queryByRole('button', { name: 'Click Me' });
+    expect(ctaButton).not.toBeInTheDocument();
+  });
+
+  it('renders with custom gradient colors style', () => {
     const gradientColors = {
       start: '#FF0000',
       middle: '#00FF00',
       end: '#0000FF'
     };
 
-    render(
-      <ListHeader
-        title="Test Title"
-        height={height}
-        gradientColors={gradientColors}
-      />
-    );
+    render(<ListHeader gradientColors={gradientColors} />);
 
     const header = screen.getByTestId('list-header');
-    expect(header).toHaveClass(height);
+    expect(header.style.backgroundImage).toBe(
+      'linear-gradient(135deg, #FF0000, #00FF00, #0000FF)'
+    );
   });
 
   it('renders slides with dots navigation', () => {
     const slides = [
-      { title: 'Slide 1' },
-      { title: 'Slide 2' },
-      { title: 'Slide 3' }
+      {
+        tag: 'Tag 1',
+        tagColor: 'red',
+        title: 'Title 1',
+        highlight: 'Highlight 1',
+        highlightColor: 'text-teal',
+        description: 'Description 1'
+      },
+      {
+        tag: 'Tag 2',
+        tagColor: 'blue',
+        title: 'Title 2',
+        highlight: 'Highlight 2',
+        highlightColor: 'text-teal',
+        description: 'Description 2'
+      }
     ];
 
-    render(<ListHeader title="Test Title" slides={slides} />);
+    render(<ListHeader slides={slides} />);
 
     const dots = screen.getAllByRole('button', { name: /go to slide/i });
     expect(dots).toHaveLength(slides.length);
   });
 
-  it('renders slides without buttons', () => {
-    const slides = [{ title: 'Slide 1' }, { title: 'Slide 2' }];
-
-    render(<ListHeader title="Test Title" slides={slides} />);
-
-    const slidesElements = screen.getAllByText(/Slide \d/);
-    expect(slidesElements).toHaveLength(slides.length);
-  });
-
   it('auto plays slides when interval is provided', () => {
-    const slides = [{ title: 'Slide 1' }, { title: 'Slide 2' }];
+    const slides = [
+      {
+        tag: 'Tag 1',
+        tagColor: 'red',
+        title: 'Title 1',
+        highlight: 'Highlight 1',
+        highlightColor: 'text-teal',
+        description: 'Description 1'
+      }
+    ];
 
     vi.useFakeTimers();
-    render(
-      <ListHeader title="Test Title" slides={slides} autoPlayInterval={1000} />
-    );
-
-    // Fast-forward timers
-    vi.advanceTimersByTime(1000);
-
-    // Clean up
-    vi.useRealTimers();
-  });
-
-  it('does not auto play when no interval is provided', () => {
-    const slides = [{ title: 'Slide 1' }, { title: 'Slide 2' }];
-
-    vi.useFakeTimers();
-    render(<ListHeader title="Test Title" slides={slides} />);
+    render(<ListHeader slides={slides} autoPlayInterval={1000} />);
 
     // Fast-forward timers
     vi.advanceTimersByTime(1000);

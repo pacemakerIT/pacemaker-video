@@ -20,9 +20,8 @@ async function getWorkshopForEdit(id: string) {
 }
 
 const STATUS_TO_RECRUIT: Record<string, string> = {
-  RECRUITING: '모집중',
+  OPEN: '모집중',
   CLOSED: '모집완료',
-  ONGOING: '진행중',
   COMPLETED: '진행완료',
   HIDDEN: '모집중'
 };

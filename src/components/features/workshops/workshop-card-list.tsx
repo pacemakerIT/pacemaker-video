@@ -43,7 +43,7 @@ export default function WorkshopCardList({
     }
 
     if (isLiked(id)) {
-      removeFavorite(id);
+      removeFavorite(id, ItemType.WORKSHOP);
     } else {
       addFavorite(id, ItemType.WORKSHOP);
     }
@@ -149,13 +149,11 @@ export default function WorkshopCardList({
                     <span
                       className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
                     >
-                      {w.status === 'RECRUITING'
+                      {w.status === 'OPEN'
                         ? 'Open'
                         : w.status === 'CLOSED'
                           ? 'Closed'
-                          : w.status === 'ONGOING'
-                            ? 'Ongoing'
-                            : 'Completed'}
+                          : 'Completed'}
                     </span>
                     {/* TO-DO: category 필드 생기면 대체 */}
                     <span className="text-pace-orange-800 text-pace-sm">

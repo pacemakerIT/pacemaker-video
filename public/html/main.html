@@ -522,7 +522,8 @@
             padding-top 0.25s ease-out;
         }
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
           opacity: 1;
           padding-top: 12px;
           pointer-events: auto;
@@ -785,7 +786,7 @@
       <nav>
         <div class="nav-inner">
           <!-- Desktop Logo -->
-          <a aria-label="Pacemaker home" class="nav-logo" href="#" style="">
+          <a aria-label="Pacemaker home" class="nav-logo" href="main.html" style="">
             <img
               alt="Pacemaker Logo"
               src="../img/logo.webp"
@@ -795,9 +796,15 @@
           <!-- Navigation Menu & Auth (Right-aligned container) -->
           <div class="flex items-center ml-auto">
             <div class="nav-center">
-              <button class="nav-item" style="">Workshops</button>
-              <button class="nav-item" style="">Online Courses</button>
-              <button class="nav-item" style="">E-books</button>
+              <a class="nav-item" href="workshops/workshop_list.html" style=""
+                >Workshops</a
+              >
+              <a class="nav-item" href="courses/course_list.html" style=""
+                >Online Courses</a
+              >
+              <a class="nav-item" href="ebooks/ebook_list.html" style=""
+                >E-books</a
+              >
             </div>
             <!-- Auth Links -->
             <div class="nav-right ml-4">
@@ -807,7 +814,7 @@
           </div>
           <!-- Mobile -->
           <div class="nav-mobile-top">
-            <a class="" href="#" style="display: block">
+            <a class="" href="main.html" style="display: block">
               <img
                 alt="Pacemaker Logo"
                 src="../img/logo.webp"
@@ -895,7 +902,7 @@
                       <div class="flex flex-col gap-1">
                         <a
                           class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                          href="#workshopCarousel"
+                          href="workshops/workshop_list.html"
                         >
                           <div
                             class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -925,7 +932,7 @@
                         </a>
                         <a
                           class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                          href="#onlineCourseCarousel"
+                          href="courses/course_list.html"
                         >
                           <div
                             class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -955,7 +962,7 @@
                         </a>
                         <a
                           class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                          href="#ebookCarousel"
+                          href="ebooks/ebook_list.html"
                         >
                           <div
                             class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -2319,7 +2326,7 @@
         <div class="relative z-[2] mx-auto w-full max-w-[740px] px-6">
           <div
             id="hero-slider"
-            class="relative text-center min-h-[220px] md:min-h-[240px]"
+            class="relative text-center min-h-[300px] sm:min-h-[220px] md:min-h-[240px]"
           >
             <!-- Slide 1 -->
             <div
@@ -2332,12 +2339,16 @@
                 Pacemaker Career Services
               </p>
               <h1
-                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-wrap"
-              >Not sure where to start<br />your job search? <br />Our <em class="not-italic text-teal">Expertise</em></h1>
+                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white"
+              >
+                Not sure where to start<br />your job search?<br />Our
+                <em class="not-italic text-teal">Expertise</em>
+              </h1>
               <p
                 class="mx-auto mb-0 max-w-[560px] text-[1.125rem] leading-[1.55]"
                 style="color: rgba(255, 255, 255, 0.55)"
-              >Help with skills, your resume, and interviews.
+              >
+                Help with skills, your resume, and interviews.
               </p>
             </div>
             <!-- Slide 2 -->
@@ -2347,15 +2358,21 @@
               <p
                 class="mb-4 text-[0.82rem] font-bold uppercase tracking-[0.2em] md:text-[0.9rem]"
                 style="color: rgba(255, 79, 2, 0.85)"
-              >Tailored For You</p>
+              >
+                Tailored For You
+              </p>
               <h1
-                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-wrap"
-              >Get your <em class="not-italic text-orange">resume</em
-                ><br />reviewed by pros</h1>
+                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white"
+              >
+                Get your <em class="not-italic text-orange">resume</em
+                ><br />reviewed by pros
+              </h1>
               <p
                 class="mx-auto mb-0 max-w-[560px] text-[1.125rem] leading-[1.55]"
                 style="color: rgba(255, 255, 255, 0.55)"
-              >A clear resume that helps you land more interviews.</p>
+              >
+                A clear resume that helps you land more interviews.
+              </p>
             </div>
             <!-- Slide 3 -->
             <div
@@ -2364,14 +2381,21 @@
               <p
                 class="mb-4 text-[0.82rem] font-bold uppercase tracking-[0.2em] md:text-[0.9rem]"
                 style="color: rgba(0, 173, 189, 0.85)"
-              >Real Experience</p>
+              >
+                Real Experience
+              </p>
               <h1
-                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-wrap"
-              ><em class="not-italic text-teal">Mock interviews</em><br />with local mentors</h1>
+                class="mb-6 w-full text-[clamp(2rem,4.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-tight text-white"
+              >
+                <em class="not-italic text-teal">Mock interviews</em><br />with
+                local mentors
+              </h1>
               <p
                 class="mx-auto mb-0 max-w-[560px] text-[1.125rem] leading-[1.55]"
                 style="color: rgba(255, 255, 255, 0.55)"
-              >Honest feedback from people who hire in North America.</p>
+              >
+                Honest feedback from people who hire in North America.
+              </p>
             </div>
           </div>
           <!-- Floating CTA Button -->
@@ -2381,7 +2405,9 @@
             <button
               type="button"
               class="inline-flex items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-headline px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02]"
-            >Browse courses</button>
+            >
+              Browse courses
+            </button>
           </div>
           <!-- Frame 92: Dots -->
           <div
@@ -2461,16 +2487,12 @@
               >
                 <a
                   class="inline-flex items-center justify-center px-8 py-4 border-2 border-teal text-teal font-bold text-lg font-headline rounded-2xl hover:bg-teal/5 transition-all duration-500 ease-out hover:scale-[1.02]"
-                  href="#"
-                  style=""
-                >
+                  href="courses/course_list.html" style="">
                   Browse online courses
                 </a>
                 <a
                   class="inline-flex items-center justify-center px-8 py-4 bg-orange hover:bg-orange-hover text-white font-bold text-lg font-headline rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02]"
-                  href="#"
-                  style=""
-                >
+                  href="#" style="">
                   Log in and start learning
                 </a>
               </div>
@@ -2500,9 +2522,7 @@
           </div>
           <a
             class="text-slate-500 font-semibold flex items-center gap-1 hover:text-navy transition-colors text-base"
-            href="#"
-            style=""
-          >
+            href="workshops/workshop_list.html" style="">
             View all workshops
             <span class="material-symbols-outlined text-xl" style=""
               >arrow_forward</span
@@ -2554,13 +2574,13 @@
                         >Networking</span
                       >
                       <h3
-                        class="text-3xl font-bold font-headline leading-tight mt-2"
+                        class="text-xl sm:text-3xl font-bold font-headline leading-tight mt-2"
                         style=""
                       >
                         Mindset training for success
                       </h3>
                       <div
-                        class="mt-8 space-y-2 opacity-90 text-sm md:text-base"
+                        class="mt-5 sm:mt-8 space-y-2 opacity-90 text-sm md:text-base"
                       >
                         <p class="flex items-center gap-2" style="">
                           <span
@@ -2595,15 +2615,12 @@
                         </p>
                       </div>
                     </div>
-                    <div
-                      class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
-                      style=""
-                    >
+                    <a href="workshops/workshop_detail.html" class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer" style="">
                       Sign up
                       <span class="material-symbols-outlined text-xl" style=""
                         >arrow_forward</span
                       >
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -2648,13 +2665,13 @@
                         >Networking</span
                       >
                       <h3
-                        class="text-3xl font-bold font-headline leading-tight mt-2"
+                        class="text-xl sm:text-3xl font-bold font-headline leading-tight mt-2"
                         style=""
                       >
                         Meet us tonight
                       </h3>
                       <div
-                        class="mt-8 space-y-2 opacity-90 text-sm md:text-base"
+                        class="mt-5 sm:mt-8 space-y-2 opacity-90 text-sm md:text-base"
                       >
                         <p class="flex items-center gap-2" style="">
                           <span
@@ -2689,15 +2706,12 @@
                         </p>
                       </div>
                     </div>
-                    <div
-                      class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
-                      style=""
-                    >
+                    <a href="workshops/workshop_detail.html" class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer" style="">
                       Sign up
                       <span class="material-symbols-outlined text-xl" style=""
                         >arrow_forward</span
                       >
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -2742,13 +2756,13 @@
                         >Career switch</span
                       >
                       <h3
-                        class="text-3xl font-bold font-headline leading-tight mt-2"
+                        class="text-xl sm:text-3xl font-bold font-headline leading-tight mt-2"
                         style=""
                       >
                         English resumes built to get interviews
                       </h3>
                       <div
-                        class="mt-8 space-y-2 opacity-90 text-sm md:text-base"
+                        class="mt-5 sm:mt-8 space-y-2 opacity-90 text-sm md:text-base"
                       >
                         <p class="flex items-center gap-2" style="">
                           <span
@@ -2783,15 +2797,12 @@
                         </p>
                       </div>
                     </div>
-                    <div
-                      class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
-                      style=""
-                    >
+                    <a href="workshops/workshop_detail.html" class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer" style="">
                       Sign up
                       <span class="material-symbols-outlined text-xl" style=""
                         >arrow_forward</span
                       >
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -2836,13 +2847,13 @@
                         >Bootcamp</span
                       >
                       <h3
-                        class="text-3xl font-bold font-headline leading-tight mt-2"
+                        class="text-xl sm:text-3xl font-bold font-headline leading-tight mt-2"
                         style=""
                       >
                         Hands-on marketing workshop
                       </h3>
                       <div
-                        class="mt-8 space-y-2 opacity-90 text-sm md:text-base"
+                        class="mt-5 sm:mt-8 space-y-2 opacity-90 text-sm md:text-base"
                       >
                         <p class="flex items-center gap-2" style="">
                           <span
@@ -2877,15 +2888,12 @@
                         </p>
                       </div>
                     </div>
-                    <div
-                      class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer"
-                      style=""
-                    >
+                    <a href="workshops/workshop_detail.html" class="flex items-center gap-2 text-base font-bold mt-auto group-hover/card:translate-x-2 transition-transform duration-300 ease-out cursor-pointer" style="">
                       Sign up
                       <span class="material-symbols-outlined text-xl" style=""
                         >arrow_forward</span
                       >
-                    </div>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -2939,9 +2947,7 @@
           </div>
           <a
             class="text-slate-400 font-semibold flex items-center gap-1 hover:text-navy transition-colors text-sm"
-            href="#"
-            style=""
-          >
+            href="courses/course_list.html" style="">
             View all courses
             <span class="material-symbols-outlined text-xl" style=""
               >arrow_forward</span
@@ -3007,7 +3013,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="courses/course_detail.html"
                   style=""
                 >
                   Learn more
@@ -3067,7 +3073,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="courses/course_detail.html"
                   style=""
                 >
                   Learn more
@@ -3127,7 +3133,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="courses/course_detail.html"
                   style=""
                 >
                   Learn more
@@ -3187,7 +3193,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="courses/course_detail.html"
                   style=""
                 >
                   Learn more
@@ -3241,7 +3247,7 @@
           </div>
           <a
             class="text-slate-400 font-semibold flex items-center gap-1 hover:text-navy transition-colors text-sm"
-            href="#"
+            href="ebooks/ebook_list.html"
             style=""
           >
             View all e-books
@@ -3319,7 +3325,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="ebooks/ebook_detail.html"
                   style=""
                 >
                   Learn more
@@ -3389,7 +3395,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="ebooks/ebook_detail.html"
                   style=""
                 >
                   Learn more
@@ -3459,7 +3465,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="ebooks/ebook_detail.html"
                   style=""
                 >
                   Learn more
@@ -3530,7 +3536,7 @@
                 </p>
                 <a
                   class="inline-flex items-center gap-1 text-teal font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2"
-                  href="#"
+                  href="ebooks/ebook_detail.html"
                   style=""
                 >
                   Learn more
@@ -3618,7 +3624,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Dan</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Pacemaker has been extremely helpful in preparing for my
@@ -3649,7 +3657,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Sam</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   I always worked closely with Jon to find what sector base
@@ -3680,7 +3690,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >JD Cho</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Ralph is a PHENOMENAL consultant. He really helps you with
@@ -3714,7 +3726,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Yolanda</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   From the Cover letter, resume & interview prep, Ralph and
@@ -3744,7 +3758,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Jerry</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   They helped me to customize my marketing materials. It
@@ -3774,7 +3790,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Mark</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Pacemaker is a great resource for anyone looking to advance
@@ -3803,7 +3821,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Emily</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Pacemaker gave me the confidence I needed. The mock interviews
@@ -3831,7 +3851,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Kevin</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Outstanding mentoring! They truly understand the North
@@ -3894,7 +3916,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Lisa</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   The might be right to customize my marketing materials that
@@ -3924,7 +3948,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Ralph</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Ralph is a PHENOMENAL consultant. He really helps you with
@@ -3953,7 +3979,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Sarah</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   Best investment for my career. From networking strategies to
@@ -3981,7 +4009,9 @@
                     style="font-weight: 700; font-size: 13px; color: #00263b"
                     >Tony</span
                   >
-                  <span style="color: #ffb800; font-size: 13px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span style="color: #ffb800; font-size: 13px"
+                    >&#9733;&#9733;&#9733;&#9733;&#9733;</span
+                  >
                 </div>
                 <p style="font-size: 12px; color: #667085; line-height: 1.5">
                   The team at Pacemaker went above and beyond to help me
@@ -4233,6 +4263,21 @@
 
             toggle.addEventListener('click', function () {
               var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+              if (!isOpen) {
+                Array.prototype.forEach.call(
+                  document.querySelectorAll('.mobile-nav-accordion-toggle'),
+                  function (otherToggle) {
+                    if (otherToggle !== toggle) {
+                      otherToggle.setAttribute('aria-expanded', 'false');
+                      var otherPanelId = otherToggle.getAttribute('data-target');
+                      var otherPanel = otherPanelId ? document.getElementById(otherPanelId) : null;
+                      if (otherPanel) {
+                        otherPanel.classList.remove('is-open');
+                      }
+                    }
+                  }
+                );
+              }
               toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
               panel.classList.toggle('is-open', !isOpen);
             });

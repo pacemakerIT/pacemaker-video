@@ -1,44 +1,10 @@
 'use client';
 
-import AddForm, { CourseData } from '@/components/admin/add-form';
+import CourseForm, { CourseData } from '@/components/admin/courses/course-form';
+import { normalizeCourseCareers } from '@/lib/course-form-data';
 
 import { useEffect, useState, use } from 'react';
 import { toast } from 'sonner';
-
-type NormalizedCareer = {
-  startDate: string;
-  endDate: string;
-  isCurrent: boolean;
-  description: string;
-};
-
-// Older courses stored careers as `{ period, position }`; the current admin
-// form reads/writes `{ startDate, endDate, isCurrent, description }`.
-function normalizeCareer(career: unknown): NormalizedCareer {
-  const c = (career || {}) as Record<string, unknown>;
-
-  if ('startDate' in c || 'endDate' in c || 'description' in c) {
-    return {
-      startDate: typeof c.startDate === 'string' ? c.startDate : '',
-      endDate: typeof c.endDate === 'string' ? c.endDate : '',
-      isCurrent: Boolean(c.isCurrent),
-      description: typeof c.description === 'string' ? c.description : ''
-    };
-  }
-
-  // Legacy shape: { period: '2019 ~ 2021', position: 'Role at Company' }
-  const period = typeof c.period === 'string' ? c.period : '';
-  const position = typeof c.position === 'string' ? c.position : '';
-  const [start = '', end = ''] = period.split('~').map((s) => s.trim());
-  const isCurrent = period.includes('~') && !end;
-
-  return {
-    startDate: start,
-    endDate: isCurrent ? '' : end,
-    isCurrent,
-    description: position
-  };
-}
 
 export default function CourseEditPage({
   params
@@ -52,7 +18,7 @@ export default function CourseEditPage({
   useEffect(() => {
     async function fetchCourse() {
       try {
-        const res = await fetch(`/api/courses/detail/${id}`);
+        const res = await fetch(`/api/courses/detail/${id}?scope=admin`);
         if (!res.ok) {
           throw new Error('Failed to fetch course');
         }
@@ -110,24 +76,12 @@ export default function CourseEditPage({
                     (inst: {
                       name: string;
                       description?: string;
-                      careers?: string | unknown[];
+                      careers?: unknown;
                       profileImage?: string;
                     }) => ({
                       name: inst.name,
                       intro: inst.description || '',
-                      careers: inst.careers
-                        ? (typeof inst.careers === 'string'
-                            ? JSON.parse(inst.careers)
-                            : inst.careers
-                          ).map(normalizeCareer)
-                        : [
-                            {
-                              startDate: '',
-                              endDate: '',
-                              isCurrent: false,
-                              description: ''
-                            }
-                          ],
+                      careers: normalizeCourseCareers(inst.careers),
                       photo: null,
                       photoUrl: inst.profileImage || ''
                     })
@@ -157,10 +111,10 @@ export default function CourseEditPage({
             ]
           });
         } else {
-          toast.error(json.message || '강의를 불러오는데 실패했습니다.');
+          toast.error(json.message || 'Failed to fetch course data.');
         }
       } catch {
-        toast.error('강의 데이터를 가져오는 중 오류가 발생했습니다.');
+        toast.error('An error occurred while fetching course data.');
       } finally {
         setLoading(false);
       }
@@ -170,11 +124,11 @@ export default function CourseEditPage({
   }, [id]);
 
   if (loading) {
-    return <div className="p-10">강의 정보를 불러오는 중...</div>;
+    return <div className="p-10">Loading courses...</div>;
   }
 
   if (!courseData) {
-    return <div className="p-10">강의 정보를 찾을 수 없습니다.</div>;
+    return <div className="p-10">Failed to fetch course data.</div>;
   }
 
   return (
@@ -194,12 +148,7 @@ export default function CourseEditPage({
           </span>
         </div>
 
-        <AddForm
-          formType="course"
-          initialData={courseData}
-          isEdit={true}
-          courseId={id}
-        />
+        <CourseForm initialData={courseData} isEdit={true} courseId={id} />
       </div>
     </div>
   );
