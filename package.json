@@ -98,7 +98,7 @@
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.2.0",
-    "postcss": "^8",
+    "postcss": "8.5.23",
     "prettier": "^3.9.4",
     "prisma": "^7.8.0",
     "storybook": "^9.1.19",
@@ -114,7 +114,8 @@
     "@hono/node-server": "1.19.14",
     "@prisma/dev": "0.24.3",
     "effect": "^3.21.0",
-    "node-polyfill-webpack-plugin": "^4.1.0"
+    "node-polyfill-webpack-plugin": "^4.1.0",
+    "postcss": "$postcss"
   },
   "lint-staged": {
     "*.js": [
