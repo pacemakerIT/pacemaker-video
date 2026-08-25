@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { resolveImageSrc } from '@/lib/utils';
+import { Star } from 'lucide-react';
+import { resolveImageSrc, cn } from '@/lib/utils';
 
 interface ReviewCardProps {
   profileImage: string;
@@ -7,6 +8,7 @@ interface ReviewCardProps {
   rating: number;
   reviewDate: string;
   reviewContent: string;
+  className?: string;
 }
 
 export default function ReviewCard({
@@ -14,44 +16,47 @@ export default function ReviewCard({
   profileName,
   rating,
   reviewDate,
-  reviewContent
+  reviewContent,
+  className
 }: ReviewCardProps) {
   const profileImageSrc =
     resolveImageSrc({ thumbnail: profileImage }) ?? '/icons/user.svg';
 
   return (
-    <div className="w-full max-w-[1200px] bg-white border border-pace-gray-100 rounded-lg p-6 shadow-sm">
+    <div
+      className={cn(
+        'w-full max-w-[1200px] border border-gray-200 p-8',
+        className
+      )}
+    >
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 shrink-0">
             <Image
               src={profileImageSrc}
-              width={40}
-              height={40}
+              width={48}
+              height={48}
               alt={profileName}
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-medium text-gray-900">{profileName}</span>
+          <span className="font-bold text-[#ff4f02]">{profileName}</span>
         </div>
         <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1 mb-1">
+          <div className="flex items-center mb-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Image
+              <Star
                 key={i}
-                src={
-                  i < rating ? '/icons/full-star.svg' : '/icons/empty-star.svg'
-                }
-                width={16}
-                height={16}
-                alt={i < rating ? 'Full star' : 'Empty star'}
+                className={`w-3.5 h-3.5 fill-current ${
+                  i < rating ? 'text-yellow-400' : 'text-gray-300'
+                }`}
               />
             ))}
           </div>
-          <span className="text-sm text-gray-500">{reviewDate}</span>
+          <span className="text-xs text-gray-500 mt-2">{reviewDate}</span>
         </div>
       </div>
-      <div className="text-gray-700 leading-relaxed">{reviewContent}</div>
+      <p className="text-gray-500 text-sm leading-relaxed">{reviewContent}</p>
     </div>
   );
 }
