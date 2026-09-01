@@ -5,7 +5,9 @@ import {
   EbookCategory,
   WorkshopCategory,
   TargetAudienceType,
-  WorkshopStatus
+  WorkshopStatus,
+  ItemType,
+  OrderStatus
 } from '@prisma/client';
 import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -403,6 +405,7 @@ async function main() {
 
   console.log('Generating English e-books...');
   const ebookOrderKeys = generateNKeysBetween(null, null, 6);
+  const ebookIds: string[] = [];
   const ebooks = [
     {
       category: EbookCategory.MARKETING,
@@ -494,6 +497,7 @@ async function main() {
   for (let i = 0; i < ebooks.length; i++) {
     const ebook = ebooks[i];
     const documentRecordId = randomUUID();
+    ebookIds.push(documentRecordId);
 
     await prisma.ebook.create({
       data: {
@@ -576,7 +580,11 @@ async function main() {
         clerkId: u.clerkId,
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester',
+        lastLoginAt:
+          u.roleId === 'USER'
+            ? addDays(new Date(), -1)
+            : addDays(new Date(), -7)
       },
       create: {
         id: u.id,
@@ -584,7 +592,11 @@ async function main() {
         clerkId: u.clerkId,
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester',
+        lastLoginAt:
+          u.roleId === 'USER'
+            ? addDays(new Date(), -1)
+            : addDays(new Date(), -7)
       }
     });
   }
@@ -643,6 +655,7 @@ async function main() {
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
   let workshopOrderIdx = 0;
+  const workshopIds: string[] = [];
   const workshopStatusReferenceDate = new Date();
   const workshopData: WorkshopSeedData[] = [
     {
@@ -763,6 +776,7 @@ async function main() {
       ws.status
     );
     const workshopId = randomUUID();
+    workshopIds.push(workshopId);
 
     await prisma.workshop.create({
       data: {
@@ -785,6 +799,89 @@ async function main() {
       }
     });
   }
+
+  console.log('Generating My Page dashboard scenarios...');
+  const dashboardUserId = stableUsers.find(
+    (user) => user.roleId === 'USER'
+  )!.id;
+  const dashboardCourseIds = courseIds.slice(0, 4);
+  const dashboardEbookIds = ebookIds.slice(0, 3);
+  const dashboardWorkshopIds = [
+    workshopIds[0], // completed and attended
+    workshopIds[5], // upcoming online
+    workshopIds[6] // upcoming in person
+  ];
+
+  const dashboardOrder = await prisma.order.create({
+    data: {
+      userId: dashboardUserId,
+      status: OrderStatus.COMPLETED,
+      totalAmountCents: 19600,
+      subtotalAmountCents: 19600,
+      discountAmountCents: 0,
+      taxAmountCents: 0,
+      currency: 'cad',
+      orderedAt: addDays(new Date(), -30),
+      items: {
+        create: [
+          ...dashboardCourseIds.map((itemId) => ({
+            itemId,
+            itemType: ItemType.COURSE,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          })),
+          ...dashboardEbookIds.map((itemId) => ({
+            itemId,
+            itemType: ItemType.EBOOK,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          }))
+        ]
+      }
+    }
+  });
+
+  await prisma.userWorkshop.createMany({
+    data: dashboardWorkshopIds.map((workshopId, index) => ({
+      userId: dashboardUserId,
+      workshopId,
+      orderId: dashboardOrder.id,
+      attended: index === 0,
+      registeredAt: addDays(new Date(), -(20 - index * 4))
+    }))
+  });
+
+  const dashboardVideos = await prisma.video.findMany({
+    where: { courseId: { in: dashboardCourseIds.slice(0, 3) } },
+    select: { id: true, courseId: true },
+    orderBy: { uploadDate: 'asc' }
+  });
+  const videosByCourse = new Map<string, string[]>();
+  for (const video of dashboardVideos) {
+    if (!video.courseId) continue;
+    const ids = videosByCourse.get(video.courseId) ?? [];
+    ids.push(video.id);
+    videosByCourse.set(video.courseId, ids);
+  }
+
+  const completedVideoIds = videosByCourse.get(dashboardCourseIds[0]) ?? [];
+  const partiallyWatchedVideoIds = (
+    videosByCourse.get(dashboardCourseIds[1]) ?? []
+  ).slice(0, 5);
+  await prisma.watchedVideo.createMany({
+    data: [
+      ...completedVideoIds.map((videoId) => ({
+        userId: dashboardUserId,
+        videoId,
+        progress: 100
+      })),
+      ...partiallyWatchedVideoIds.map((videoId, index) => ({
+        userId: dashboardUserId,
+        videoId,
+        progress: index === partiallyWatchedVideoIds.length - 1 ? 35 : 100
+      }))
+    ]
+  });
 
   console.log('🎉 Seed data created successfully!');
 }

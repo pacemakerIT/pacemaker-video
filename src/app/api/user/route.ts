@@ -49,15 +49,21 @@ export async function GET() {
       );
     }
 
+    // Local seed accounts are intentionally stable by email. If the person
+    // signs in through a different Clerk environment, reconnect that existing
+    // application user instead of trying to insert a duplicate email.
     const user = await prisma.user.upsert({
-      where: { clerkId: userId },
+      where: { email },
       create: {
         id: uuidv4(),
         clerkId: userId,
         email,
         name: getClerkUserName(clerkUser)
       },
-      update: {}
+      update: {
+        clerkId: userId,
+        name: getClerkUserName(clerkUser)
+      }
     });
 
     return NextResponse.json(user, { status: 200 });
