@@ -1,9 +1,8 @@
 'use client';
 import { Button } from '../ui/button';
 import { useState } from 'react';
-import SectionHeader from './section-header';
 import ReviewCard from './review-card';
-import Image from 'next/image';
+import { Star } from 'lucide-react';
 
 interface Review {
   id: string | number;
@@ -22,16 +21,20 @@ interface DetailReviewsSectionProps {
   initialVisibleCount?: number;
   loadMoreCount?: number;
   loadMoreButtonText?: string;
+  headerClassName?: string;
+  cardClassName?: string;
 }
 
 export default function DetailReviewsSection({
-  title = '강의 후기',
+  title = 'Student Reviews',
   reviews = [],
   rating = 5,
   reviewCount = 0,
   initialVisibleCount = 5,
   loadMoreCount = 5,
-  loadMoreButtonText = '리뷰 더보기'
+  loadMoreButtonText = 'View more reviews',
+  headerClassName,
+  cardClassName
 }: DetailReviewsSectionProps) {
   const [visibleReviews, setVisibleReviews] = useState(initialVisibleCount);
 
@@ -41,30 +44,28 @@ export default function DetailReviewsSection({
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="flex flex-col sm:flex-row justify-start sm:items-center gap-3 sm:gap-0">
-        <SectionHeader title={title} className={'!w-fit'} />
-        <div className="flex flex-wrap items-center justify-start gap-2 sm:ml-4 pr-12">
-          <span className="text-xl font-medium shrink-0 whitespace-nowrap">
-            {rating} / 5
-          </span>
-          <div className="flex items-center gap-1 shrink-0">
-            {Array.from({ length: rating }).map((_, i) => (
-              <Image
+      <div className={`flex items-end gap-4 mb-8 ${headerClassName ?? ''}`}>
+        <h2 className="text-3xl font-heading font-bold text-[#00263b] shrink-0">
+          {title}
+        </h2>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xl font-bold text-[#00263b]">{rating} / 5</span>
+          <div className="flex items-center text-[#ff4f02]">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
                 key={i}
-                src="/icons/full-star.svg"
-                width={24}
-                height={24}
-                alt="Full star"
+                className={`w-3.5 h-3.5 ${
+                  i < rating ? 'fill-current' : 'fill-transparent'
+                }`}
               />
             ))}
           </div>
-          <span className="text-gray-600 text-sm whitespace-nowrap shrink-0">
-            ({reviewCount}개 후기)
+          <span className="text-gray-500 text-sm whitespace-nowrap">
+            ({reviewCount} reviews)
           </span>
         </div>
       </div>
 
-      {/* 후기 카드들 */}
       <div className="w-full max-w-[1200px] mx-auto">
         <div className="flex flex-col gap-4">
           {reviews.slice(0, visibleReviews).map((review) => (
@@ -75,17 +76,16 @@ export default function DetailReviewsSection({
               rating={review.rating}
               reviewDate={review.reviewDate}
               reviewContent={review.reviewContent}
+              className={cardClassName}
             />
           ))}
         </div>
 
-        {/* 리뷰 더보기 버튼 */}
         {visibleReviews < reviews.length && (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-8">
             <Button
               onClick={handleLoadMoreReviews}
-              variant="outline"
-              className="px-4 py-[13px] rounded-full bg-pace-orange-500 border-pace-orange-500 text-white"
+              className="bg-[#ff4f02] hover:bg-[#e04500] text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
             >
               {loadMoreButtonText}
             </Button>

@@ -36,9 +36,9 @@ const getSelectedStyle = (status: FilterKey) => {
 
   if (status === WorkshopStatus.CLOSED) {
     return {
-      text: 'text-teal-600',
-      border: 'border-teal-600',
-      bg: 'bg-teal-50'
+      text: 'text-[#0D9488]',
+      border: 'border-[#0D9488]',
+      bg: 'bg-[#0D9488]/[0.03]'
     };
   }
 
@@ -55,7 +55,7 @@ const getHoverStyle = (status: FilterKey) => {
   }
 
   if (status === WorkshopStatus.CLOSED) {
-    return 'hover:text-teal-600 hover:border-teal-600';
+    return 'hover:text-[#0D9488] hover:border-[#0D9488]';
   }
 
   return 'hover:text-gray-500 hover:border-gray-500';
@@ -76,9 +76,9 @@ export default function WorkshopFilter({
           <button
             key={label}
             onClick={() => onChange(value)}
-            className={`flex h-[32px] shrink-0 items-center justify-center rounded-[40px] border px-4
+            className={`flex h-[32px] shrink-0 items-center justify-center rounded-xl border px-4
               font-headline text-[12px] font-medium
-              transition-colors md:h-[40px] md:px-6 md:text-[14px]
+              transition-colors md:h-[40px] md:rounded-2xl md:px-6 md:text-[14px]
               ${
                 isSelected
                   ? `${selectedStyle.text} ${selectedStyle.border} ${selectedStyle.bg}`
@@ -90,7 +90,7 @@ export default function WorkshopFilter({
         );
       })}
       {/* purge 방지용 hidden hover 클래스 (진행중/진행완료 hover 색 유지) */}
-      <div className="hidden border-[#FF4F02] bg-[#FF4F02]/[0.03] text-[#FF4F02] hover:border-[#FF4F02] hover:border-teal-600 hover:text-[#FF4F02] hover:text-teal-600" />
+      <div className="hidden border-[#0D9488] border-[#FF4F02] bg-[#0D9488]/[0.03] bg-[#FF4F02]/[0.03] text-[#0D9488] text-[#FF4F02] hover:border-[#0D9488] hover:border-[#FF4F02] hover:text-[#0D9488] hover:text-[#FF4F02]" />
     </div>
   );
 }

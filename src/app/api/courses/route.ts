@@ -81,7 +81,7 @@ export async function GET(request: Request) {
       title: course.title || '',
       visualTitle2: course.visualTitle2,
       description: course.description || '',
-      price: course.price ? `$${course.price}` : 'Free',
+      price: course.price ? `${course.price}` : 'Free',
       likes: favoritesMap.get(course.id) || 0,
       purchases: purchasesMap.get(course.id) || 0,
       status: course.isPublic ? '공개중' : '비공개',

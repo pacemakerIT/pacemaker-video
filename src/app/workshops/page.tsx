@@ -64,7 +64,6 @@ export default function WorkshopsPage() {
           workshops={workshops}
           selectedMonth={currentMonth}
           selectedTitle={selectedWorkshopTitle} // 선택된 워크숍 title 전달
-          onCloseDetail={() => setSelectedWorkshopTitle(null)} // 상세 닫을 때 상태 초기화
         />
       </div>
     </main>

@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma';
 import { EbookCategory, TargetAudienceType } from '@prisma/client';
 import { generateKeyBetween } from 'fractional-indexing';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { requireAdminUser } from '@/lib/admin-auth';
 
 async function requireAdminAction() {
@@ -24,6 +23,7 @@ export type EbookData = {
   subTitle: string;
   subDescription: string;
   price: string;
+  time?: string;
   thumbnailUrl: string;
   fileUrl: string;
   visualTitle: string;
@@ -51,6 +51,7 @@ export async function createEbook(data: EbookData) {
       subTitle,
       subDescription,
       price,
+      time,
       thumbnailUrl,
       fileUrl,
       visualTitle,
@@ -60,8 +61,21 @@ export async function createEbook(data: EbookData) {
       links
     } = data;
 
-    // Filter out empty links (links are optional)
-    const validLinks = links.filter((l) => l.url.trim() && l.name.trim());
+    const columnCheck = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+      SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'Ebook'
+          AND column_name = 'time'
+      )::boolean AS exists
+    `;
+    const hasTimeColumn = Boolean(columnCheck[0]?.exists);
+
+    const validLinks = Array.isArray(links)
+      ? links.filter((l) => (l?.url ?? '').trim() && (l?.name ?? '').trim())
+      : [];
+    const safeSections = Array.isArray(sections) ? sections : [];
 
     const last = await prisma.ebook.findFirst({
       orderBy: { orderKey: 'desc' },
@@ -69,7 +83,7 @@ export async function createEbook(data: EbookData) {
     });
     const nextKey = generateKeyBetween(last?.orderKey ?? null, null);
 
-    await prisma.ebook.create({
+    const created = await prisma.ebook.create({
       data: {
         ebookId: `ebook-${Date.now()}`,
         title,
@@ -85,17 +99,26 @@ export async function createEbook(data: EbookData) {
         visualTitle1: visualTitle,
         visualTitle2: visualTitle2,
         targetAudienceTypes,
-        tableOfContents: sections,
+        tableOfContents: safeSections,
         recommendedLinks: validLinks,
         orderKey: nextKey
       }
     });
 
+    if (hasTimeColumn) {
+      await prisma.$executeRawUnsafe(
+        'UPDATE "Ebook" SET "time" = $1 WHERE "id" = $2::uuid',
+        time ?? '',
+        created.id
+      );
+    }
+
     revalidatePath('/admin/ebooks');
-  } catch {
-    throw new Error('Failed to create ebook');
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to create ebook: ${message}`);
   }
-  redirect('/admin/ebooks');
 }
 
 export async function updateEbook(id: string, data: EbookData) {
@@ -110,6 +133,7 @@ export async function updateEbook(id: string, data: EbookData) {
       subTitle,
       subDescription,
       price,
+      time,
       thumbnailUrl,
       fileUrl,
       visualTitle,
@@ -119,8 +143,21 @@ export async function updateEbook(id: string, data: EbookData) {
       links
     } = data;
 
-    // Filter out empty links (links are optional)
-    const validLinks = links.filter((l) => l.url.trim() && l.name.trim());
+    const columnCheck = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+      SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'Ebook'
+          AND column_name = 'time'
+      )::boolean AS exists
+    `;
+    const hasTimeColumn = Boolean(columnCheck[0]?.exists);
+
+    const validLinks = Array.isArray(links)
+      ? links.filter((l) => (l?.url ?? '').trim() && (l?.name ?? '').trim())
+      : [];
+    const safeSections = Array.isArray(sections) ? sections : [];
 
     await prisma.ebook.update({
       where: { id },
@@ -138,17 +175,26 @@ export async function updateEbook(id: string, data: EbookData) {
         visualTitle1: visualTitle,
         visualTitle2: visualTitle2,
         targetAudienceTypes,
-        tableOfContents: sections,
+        tableOfContents: safeSections,
         recommendedLinks: validLinks
       }
     });
 
+    if (hasTimeColumn) {
+      await prisma.$executeRawUnsafe(
+        'UPDATE "Ebook" SET "time" = $1 WHERE "id" = $2::uuid',
+        time ?? '',
+        id
+      );
+    }
+
     revalidatePath('/admin/ebooks');
     revalidatePath(`/admin/ebooks/${id}`);
-  } catch {
-    throw new Error('Failed to update ebook');
+    return { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to update ebook: ${message}`);
   }
-  redirect('/admin/ebooks');
 }
 
 export async function getEbooks(page = 1, limit = 10) {
@@ -230,15 +276,16 @@ export async function getEbook(id: string) {
   return ebook;
 }
 
-export async function deleteEbook(id: string) {
+export async function deleteEbooks(ids: string[]) {
   await requireAdminAction();
   try {
-    await prisma.ebook.delete({
-      where: { id }
+    const { count } = await prisma.ebook.deleteMany({
+      where: { id: { in: ids } }
     });
     revalidatePath('/admin/ebooks');
+    return { count };
   } catch {
-    throw new Error('Failed to delete ebook');
+    throw new Error('Failed to delete ebooks');
   }
 }
 

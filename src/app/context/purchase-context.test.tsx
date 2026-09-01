@@ -56,6 +56,7 @@ describe('PurchaseProvider', () => {
 
   it('checks the explicitly requested valid video ID', async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
       json: vi.fn().mockResolvedValue({ purchasedVideoIds: ['video123'] })
     } as unknown as Response);
 

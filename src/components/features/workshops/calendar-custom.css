@@ -60,11 +60,24 @@
 
 /* 행 높이 */
 .rbc-month-row {
-  @apply min-h-[64px] border-b border-gray-100 md:min-h-[104px];
+  @apply min-h-[64px] border-b border-gray-100 md:min-h-[80px];
 }
 
 .rbc-month-row:last-child {
   @apply border-b-0;
+}
+
+/* HTML 시안처럼 날짜는 위, 이벤트 배지는 셀 하단에 배치 */
+.rbc-month-row .rbc-row-content {
+  @apply flex h-full flex-col;
+}
+
+.rbc-month-row .rbc-row-content > .rbc-row:nth-child(2) {
+  @apply mt-auto;
+}
+
+.rbc-month-row .rbc-row-segment {
+  @apply px-1.5 pb-1.5;
 }
 
 /* -------- 이벤트 스타일 -------- */
@@ -79,4 +92,34 @@
 /* 선택 효과 제거 */
 .rbc-event.rbc-selected {
   @apply bg-inherit text-inherit shadow-none border-none;
+}
+
+.workshop-event-popup-overlay {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .workshop-event-popup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    display: block;
+    border: 0;
+    background: rgb(0 0 0 / 40%);
+  }
+
+  .workshop-event-popup {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: min(320px, 90vw) !important;
+    transform: translate(-50%, -50%);
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%);
+  }
+
+  .workshop-event-popup > div {
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
 }

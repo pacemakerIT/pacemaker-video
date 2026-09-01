@@ -16,7 +16,6 @@ interface Props {
   filter: 'All' | WorkshopStatus;
   selectedMonth: Date;
   selectedTitle?: string | null; // 외부에서 전달된 title로 스크롤 및 열기
-  onCloseDetail?: () => void;
 }
 
 export default function WorkshopCardList({
@@ -25,8 +24,8 @@ export default function WorkshopCardList({
   selectedMonth,
   selectedTitle
 }: Props) {
-  const router = useRouter();
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const router = useRouter();
 
   const { user } = useUserContext();
   const userId = user?.id;
@@ -144,10 +143,7 @@ export default function WorkshopCardList({
                 className="object-cover"
               />
               <button
-                onClick={(event) => {
-                  event.stopPropagation();
-                  toggleLike(w.id);
-                }}
+                onClick={() => toggleLike(w.id)}
                 aria-label={isLiked(w.id) ? 'Saved' : 'Save'}
                 className={`favorite-heart absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
                   isLiked(w.id) ? 'favorite-heart--liked' : ''
@@ -166,7 +162,7 @@ export default function WorkshopCardList({
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex h-[38px] flex-wrap items-center gap-2 md:gap-4">
                     <span
-                      className={`h-[38px] w-[86px] px-3 py-[8px] rounded-full text-pace-base font-medium border flex items-center justify-center ${style.text} ${style.border}`}
+                      className={`rounded border px-2 py-0.5 text-[12px] font-bold md:text-[14px] ${style.event}`}
                     >
                       {getStatusLabel(w.status)}
                     </span>
