@@ -353,9 +353,9 @@ export default function WorkshopDetail({
           </div>
         </section>
 
-        {workshop.sections.length > 0 && (
-          <section className="space-y-8 border-t border-gray-100 pt-12">
-            <SectionHeading eyebrow="Timeline" title="Curriculum Details" />
+        <section className="space-y-8 border-t border-gray-100 pt-12">
+          <SectionHeading eyebrow="Timeline" title="Curriculum Details" />
+          {workshop.sections.length > 0 ? (
             <div className="space-y-6">
               {workshop.sections.map((section, index) => (
                 <article
@@ -374,8 +374,12 @@ export default function WorkshopDetail({
                 </article>
               ))}
             </div>
-          </section>
-        )}
+          ) : (
+            <p className="border border-gray-100 bg-white p-8 text-sm font-medium shadow-[0_10px_30px_rgba(0,38,59,0.05)]">
+              Curriculum details will be available soon.
+            </p>
+          )}
+        </section>
 
         {workshop.instructors.length > 0 && (
           <section className="border-t border-gray-100 pt-20">
@@ -483,7 +487,6 @@ export default function WorkshopDetail({
           onClick={register}
           className="flex shrink-0 items-center gap-2 rounded-2xl bg-[#FF4F02] px-6 py-3 font-bold text-white disabled:bg-gray-400"
         >
-          <ShoppingCart className="h-4 w-4" />
           {inCart ? 'In cart' : 'Register'}
         </button>
       </div>
@@ -530,7 +533,7 @@ function InstructorCarousel({ instructors }: { instructors: Instructor[] }) {
           onPointerCancel={finishDrag}
         >
           {instructors.map((instructor) => (
-            <div key={instructor.id} className="w-full shrink-0">
+            <div key={instructor.id} className="flex w-full shrink-0">
               <InstructorSlide instructor={instructor} />
             </div>
           ))}
@@ -570,7 +573,7 @@ function InstructorSlide({ instructor }: { instructor: Instructor }) {
     : null;
 
   return (
-    <article className="flex flex-col gap-16 px-1 lg:flex-row lg:justify-between">
+    <article className="flex min-w-0 flex-1 flex-col gap-16 px-1 lg:flex-row lg:justify-between">
       <div className="w-full lg:w-[680px]">
         <h3 className="mb-4 font-headline text-2xl font-bold text-[#00263B]">
           {instructor.name}
@@ -599,15 +602,15 @@ function InstructorSlide({ instructor }: { instructor: Instructor }) {
         )}
       </div>
 
-      <div className="flex w-full flex-col lg:w-[480px]">
-        <div className="relative flex min-h-[400px] flex-1 items-center justify-center overflow-hidden rounded-none border border-gray-100 bg-white shadow-[0_10px_30px_rgba(0,38,59,0.05)]">
+      <div className="mt-auto flex w-full flex-col lg:mt-0 lg:w-[480px]">
+        <div className="relative flex h-[320px] flex-none items-center justify-center overflow-hidden rounded-none border border-gray-100 bg-white shadow-[0_10px_30px_rgba(0,38,59,0.05)] sm:h-[400px] lg:min-h-[400px] lg:flex-1">
           {profileImage ? (
             <Image
               src={profileImage}
               alt={`${instructor.name} profile`}
               fill
               sizes="(min-width: 1024px) 480px, 100vw"
-              className="object-cover"
+              className="object-cover object-center"
               draggable={false}
             />
           ) : (

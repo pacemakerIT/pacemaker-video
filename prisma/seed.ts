@@ -835,7 +835,19 @@ async function main() {
         category: ws.category as WorkshopCategory,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
-          create: [{ instructorId: ws.instructorId }]
+          create: [
+            ...new Set([
+              ws.instructorId,
+              instructorId,
+              instructorId2,
+              instructorId3
+            ])
+          ].map((seededInstructorId) => ({
+            instructorId: seededInstructorId
+          }))
+        },
+        sectionsRel: {
+          create: createWorkshopCurriculum(ws.title)
         },
         thumbnail: getRandomImage(
           WORKSHOP_THUMBNAILS[ws.thumbnailIndex % WORKSHOP_THUMBNAILS.length]

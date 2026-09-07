@@ -113,7 +113,9 @@ export default function WorkshopCardList({
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
-        const instructorName = w.instructors[0]?.instructor?.name;
+        const instructorNames = w.instructors
+          .map(({ instructor }) => instructor?.name?.trim())
+          .filter((name) => name && name.toUpperCase() !== 'UNKNOWN');
         const style = getCalendarStyle(w.status);
 
         return (
@@ -205,14 +207,19 @@ export default function WorkshopCardList({
                     <span className="text-gray-300">|</span>
                     <span>{formatDateTime(w.startDate)}</span>
                   </div>
-                  {instructorName &&
-                    instructorName.toUpperCase() !== 'UNKNOWN' && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-gray-400">Instructor</span>
-                        <span className="text-gray-300">|</span>
-                        <span>{instructorName}</span>
-                      </div>
-                    )}
+                  {instructorNames.length > 0 && (
+                    <div className="flex min-w-0 items-start gap-1.5">
+                      <span className="shrink-0 text-gray-400">
+                        {instructorNames.length > 1
+                          ? 'Instructors'
+                          : 'Instructor'}
+                      </span>
+                      <span className="text-gray-300">|</span>
+                      <span className="min-w-0 break-words">
+                        {instructorNames.join(', ')}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5">
                     <span className="text-gray-400">Location</span>
                     <span className="text-gray-300">|</span>
