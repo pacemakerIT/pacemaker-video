@@ -4,9 +4,18 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { format } from 'date-fns';
 import prisma from '@/lib/prisma';
 import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 // Get all documents
 export async function GET() {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const ebooks = await prisma.ebook.findMany();
     return NextResponse.json(ebooks, { status: 200 });
@@ -20,6 +29,14 @@ export async function GET() {
 
 // Upload new document
 export async function POST(req: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get('document') as File;

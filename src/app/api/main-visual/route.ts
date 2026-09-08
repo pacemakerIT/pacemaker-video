@@ -4,6 +4,7 @@ import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 // Get all main visuals
 export async function GET() {
@@ -23,6 +24,14 @@ export async function GET() {
 // Create new document or mark existing?
 // For this admin, we create a specialized Main Visual Document.
 export async function POST(req: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const formData = await req.formData();
     const title = formData.get('title') as string;

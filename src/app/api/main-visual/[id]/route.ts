@@ -4,6 +4,7 @@ import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { format } from 'date-fns';
 import { revalidatePath } from 'next/cache';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 export async function GET(
   req: Request,
@@ -35,6 +36,14 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { id } = await params;
     const formData = await req.formData();
@@ -114,6 +123,14 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { id } = await params;
     await prisma.mainVisual.delete({

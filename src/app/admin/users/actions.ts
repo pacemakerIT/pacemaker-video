@@ -2,12 +2,21 @@
 
 import prisma from '@/lib/prisma';
 import { UserRow, UserRole } from '@/types/admin/user';
+import { requireAdminUser } from '@/lib/admin-auth';
+
+async function requireAdminAction() {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    throw new Error(adminAccess.error);
+  }
+}
 
 export async function getUsers(
   page: number = 1,
   limit: number = 10,
   roleFilter: 'all' | UserRole = 'all'
 ): Promise<{ users: UserRow[]; total: number }> {
+  await requireAdminAction();
   const skip = (page - 1) * limit;
 
   // Build where clause based on role filter
@@ -95,6 +104,7 @@ export interface OrderDetail {
 }
 
 export async function getUserOrders(userId: string): Promise<OrderDetail[]> {
+  await requireAdminAction();
   const orders = await prisma.order.findMany({
     where: {
       userId: userId
