@@ -14,7 +14,7 @@ export default function EbookHero({
   ctaHref = '#ebook-list'
 }: EbookHeroProps) {
   return (
-    <section className="relative flex min-h-[370px] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#e6f0f8] to-white px-4 py-8 text-center md:h-[370px] md:py-0">
+    <section className="w-screen relative flex min-h-[370px] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#e6f0f8] to-white px-4 py-8 text-center md:h-[370px] md:py-0">
       <div
         aria-hidden="true"
         className="animate-services-hero-glow-drift pointer-events-none absolute left-[12%] top-7 h-[220px] w-[220px] rounded-full blur-[2px]"

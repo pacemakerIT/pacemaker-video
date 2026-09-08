@@ -24,6 +24,8 @@ const categoryMap: Record<string, string> = {
   ACCOUNTING: 'Finance & Accounting'
 };
 
+const FILTER_INACTIVE_BASE = 'border-[#d0d5dd] bg-white text-[#667085]';
+
 const FILTER_HOVER_CLASSES: Record<string, string> = {
   MARKETING: 'hover:border-[#FF7E54] hover:text-[#FF7E54]',
   DESIGN: 'hover:border-[#FF6666] hover:text-[#FF6666]',
@@ -79,10 +81,10 @@ export default function EbookHeader({
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => setCurrentCategory(categoryName)}
-                className={`inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border border-[#d0d5dd] bg-white px-4 font-label text-xs font-medium leading-none text-[#667085] transition-[border-color,color,background-color,box-shadow] duration-300 ease-out md:h-10 md:min-w-[110px] md:rounded-2xl md:px-6 md:text-sm ${
+                className={`inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border px-4 font-label text-xs font-medium leading-none transition-[border-color,color,background-color,box-shadow] duration-300 ease-out md:h-10 md:min-w-[110px] md:rounded-2xl md:px-6 md:text-sm ${
                   isActive
                     ? (FILTER_ACTIVE_CLASSES[key] ?? DEFAULT_ACTIVE)
-                    : (FILTER_HOVER_CLASSES[key] ?? DEFAULT_HOVER)
+                    : `${FILTER_INACTIVE_BASE} ${FILTER_HOVER_CLASSES[key] ?? DEFAULT_HOVER}`
                 }`}
               >
                 {categoryMap[key] || categoryName}
