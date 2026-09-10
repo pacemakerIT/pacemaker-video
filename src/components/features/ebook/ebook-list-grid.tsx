@@ -10,15 +10,7 @@ import { ItemType } from '@prisma/client';
 export default function EbookListGrid() {
   // 전자책 카테고리 (UI 상단 버튼) - 영문 키로 유지
   const category = useMemo(
-    () => [
-      'TOTAL',
-      'MARKETING',
-      'IT',
-      'DESIGN',
-      'PUBLIC',
-      'ACCOUNTING',
-      'SERVICE'
-    ],
+    () => ['TOTAL', 'MARKETING', 'IT', 'DESIGN', 'PUBLIC', 'ACCOUNTING'],
     []
   );
 
@@ -62,7 +54,7 @@ export default function EbookListGrid() {
   }, [allCards, currentCategory]);
 
   return (
-    <div className="w-[1200px] mx-auto flex flex-col items-center justify-center">
+    <div className="page-container flex flex-col items-center pb-20 pt-0">
       {loading ? (
         <p className="p-4 text-pace-base">📡 Loading e-books...</p>
       ) : (

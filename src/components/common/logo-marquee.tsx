@@ -26,7 +26,7 @@ export default function LogoMarquee() {
   ];
 
   return (
-    <div className="w-full bg-white py-4 overflow-hidden">
+    <div className="w-full bg-white py-20 overflow-hidden">
       <div className="flex whitespace-nowrap animate-marquee">
         {repeatedLogos.map((logo, idx) => (
           <div
