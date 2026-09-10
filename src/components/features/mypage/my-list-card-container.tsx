@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { MyCard } from '@/types/my-card';
-import MyPageCard from '@/components/features/mypage/my-page-card';
+import MyPageCard from '@/components/features/mypage/my-account-card';
 
 interface CardContainerProps {
   cards: MyCard[];
@@ -24,6 +24,8 @@ export default function MyLearningListCardContainer({
               purchased={card.purchased}
               totalChapters={card.totalChapters}
               completedChapters={card.completedChapters}
+              description={card.description}
+              image={card.image}
             />
           </div>
         ))}
