@@ -11,22 +11,36 @@ type Props = {
   onClose: () => void;
 };
 
-export default function EventPopup({ top, left, width, children }: Props) {
+export default function EventPopup({
+  top,
+  left,
+  width,
+  children,
+  onClose
+}: Props) {
   return createPortal(
-    <div
-      style={{
-        position: 'absolute',
-        top,
-        left,
-        width,
-        zIndex: 99999,
-        boxSizing: 'border-box'
-      }}
-      className="absolute rounded-lg shadow-md text-pace-xs"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {children}
-    </div>,
+    <>
+      <button
+        type="button"
+        aria-label="Close workshop details"
+        className="workshop-event-popup-overlay"
+        onClick={onClose}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top,
+          left,
+          width,
+          zIndex: 99999,
+          boxSizing: 'border-box'
+        }}
+        className="workshop-event-popup text-pace-xs rounded-lg shadow-md"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </>,
     document.body
   );
 }

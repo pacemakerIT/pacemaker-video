@@ -92,8 +92,6 @@
       }
 
       body {
-        max-width: 1920px;
-        margin: 0 auto;
         background-color: white;
         font-family: 'Manrope', sans-serif;
       }
@@ -269,21 +267,34 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 110px;
-        padding: 0.75rem 1.5rem;
+        min-width: auto;
+        height: 32px;
+        padding: 0 1rem;
         border: 1px solid #d0d5dd;
-        border-radius: 16px;
+        border-radius: 12px;
         background: #ffffff;
         color: #667085;
         font-family: 'Poppins', sans-serif;
-        font-size: 16px;
+        font-size: 12px;
         font-weight: 500;
         line-height: 1;
+        white-space: nowrap;
+        flex-shrink: 0;
         transition:
           border-color 0.3s ease,
           color 0.3s ease,
           background-color 0.3s ease,
           box-shadow 0.3s ease;
+      }
+
+      @media (min-width: 768px) {
+        .course-filter-button {
+          min-width: 110px;
+          height: 40px;
+          padding: 0 1.5rem;
+          border-radius: 16px;
+          font-size: 14px;
+        }
       }
 
       .course-filter-button:hover {
@@ -309,40 +320,54 @@
       .course-filter-button.is-active {
         border-color: #ff4f02;
         color: #ff4f02;
+        background-color: rgba(255, 79, 2, 0.04);
         box-shadow: 0 10px 25px -5px rgba(255, 79, 2, 0.12);
       }
 
       .course-filter-button[data-filter='interview'].is-active {
         border-color: rgb(54, 166, 247);
         color: rgb(54, 166, 247);
+        background-color: rgba(54, 166, 247, 0.04);
         box-shadow: 0 10px 25px -5px rgba(54, 166, 247, 0.2);
       }
 
       .course-filter-button[data-filter='resume'].is-active {
         border-color: rgb(255, 150, 49);
         color: rgb(255, 150, 49);
+        background-color: rgba(255, 150, 49, 0.04);
         box-shadow: 0 10px 25px -5px rgba(255, 150, 49, 0.2);
       }
 
       .course-filter-button[data-filter='networking'].is-active {
         border-color: rgb(159, 91, 231);
         color: rgb(159, 91, 231);
+        background-color: rgba(159, 91, 231, 0.04);
         box-shadow: 0 10px 25px -5px rgba(159, 91, 231, 0.2);
       }
 
       .course-sort-select {
-        min-height: 48px;
+        min-height: 38px;
         border: 1px solid #eaecf0;
-        border-radius: 16px;
-        padding: 0.75rem 3rem 0.75rem 1.25rem;
+        border-radius: 12px;
+        padding: 0.5rem 2.5rem 0.5rem 1rem;
         background-color: #ffffff;
         color: #667085;
         font-family: 'Poppins', sans-serif;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 500;
         line-height: 1;
         appearance: none;
+        background-image: none !important;
         box-shadow: 0 4px 12px rgba(0, 38, 59, 0.08);
+      }
+
+      @media (min-width: 768px) {
+        .course-sort-select {
+          min-height: 48px;
+          border-radius: 16px;
+          padding: 0.75rem 3rem 0.75rem 1.25rem;
+          font-size: 16px;
+        }
       }
 
       .course-sort-select:focus-visible {
@@ -426,7 +451,7 @@
         gap: 6px;
         padding: 8px 16px;
         border-radius: 8px;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-size: 0.925rem;
         font-weight: 600;
         letter-spacing: 0.04em;
@@ -792,7 +817,8 @@
         }
 
         .mobile-nav-panel.is-open {
-          max-height: 42rem;
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
           opacity: 1;
           padding-top: 12px;
           pointer-events: auto;
@@ -831,7 +857,7 @@
         </a>
         <div class="flex items-center ml-auto">
           <div class="nav-center">
-            <a class="nav-item" href="../main.html#workshopCarousel"
+            <a class="nav-item" href="../workshops/workshop_list.html"
               >Workshops</a
             >
             <a
@@ -840,7 +866,7 @@
               href="#main-content"
               >Online Courses</a
             >
-            <a class="nav-item" href="../main.html#ebookCarousel">E-books</a>
+            <a class="nav-item" href="../ebooks/ebook_list.html">E-books</a>
           </div>
           <div class="nav-right ml-4">
             <a class="btn-auth btn-login" href="#">Login</a>
@@ -936,7 +962,7 @@
                     <div class="flex flex-col gap-1">
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#workshopCarousel"
+                        href="../workshops/workshop_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -997,7 +1023,7 @@
                       </a>
                       <a
                         class="group/item flex items-start gap-4 p-3 rounded-xl transition-all hover:bg-navy/5"
-                        href="../main.html#ebookCarousel"
+                        href="../ebooks/ebook_list.html"
                       >
                         <div
                           class="mt-0.5 p-2 rounded-lg bg-gray-50 text-gray-400 transition-colors shadow-sm border border-transparent group-hover/item:bg-white group-hover/item:text-navy group-hover/item:border-gray-100"
@@ -1067,9 +1093,10 @@
         </p>
 
         <h1
-          class="font-headline text-[40px] font-extrabold leading-tight text-primary max-w-[800px] mb-8"
+          class="font-headline text-[32px] md:text-[40px] font-extrabold leading-tight text-primary max-w-[800px] mb-8 px-4"
         >
-          Build a strong foundation<br />for your career abroad
+          Build a strong foundation<br class="hidden md:block" />
+          for your career abroad
         </h1>
 
         <a
@@ -1089,7 +1116,7 @@
           class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4"
         >
           <div>
-            <p class="text-orange font-bold text-[18px] tracking-wide mb-2">
+            <p class="text-orange font-bold text-sm tracking-wide mb-2">
               Explore Our Programs
             </p>
             <h2
@@ -1101,10 +1128,10 @@
         </div>
 
         <div
-          class="mb-8 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between"
+          class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
         >
           <div
-            class="flex flex-wrap gap-3"
+            class="flex flex-wrap gap-2 md:gap-3"
             role="tablist"
             aria-label="Course filters"
           >
@@ -1141,7 +1168,7 @@
               Networking
             </button>
           </div>
-          <div class="relative w-full max-w-[180px] lg:w-auto">
+          <div class="relative w-full max-w-[140px] md:max-w-[180px] md:w-auto">
             <select
               id="courseSortSelect"
               class="course-sort-select w-full"

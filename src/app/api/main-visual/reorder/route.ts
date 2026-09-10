@@ -1,8 +1,17 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 export async function PATCH(req: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const body = await req.json();
     const { items } = body as { items: { id: string; orderIndex: number }[] };

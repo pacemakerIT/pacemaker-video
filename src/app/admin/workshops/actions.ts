@@ -10,7 +10,7 @@ export interface WorkshopRow {
   price: number;
   likes: number;
   purchases: number;
-  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED' | 'HIDDEN';
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED' | 'HIDDEN';
   category: string;
   thumbnail: string | null;
   selected: boolean;
@@ -52,7 +52,7 @@ export async function getWorkshops(): Promise<WorkshopRow[]> {
         price: workshop.price || 0,
         likes: favoritesCount,
         purchases: workshop._count.userWorkshops,
-        status: workshop.status,
+        status: workshop.status as unknown as WorkshopRow['status'],
         category: (workshop.category ?? '') as string,
         thumbnail: workshop.thumbnail,
         selected: false,

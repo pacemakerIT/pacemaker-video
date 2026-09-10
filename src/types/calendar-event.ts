@@ -4,5 +4,5 @@ export type CalendarEvent = {
   end: Date;
   speaker: string;
   fee: string;
-  status: 'RECRUITING' | 'CLOSED' | 'ONGOING' | 'COMPLETED';
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED';
 };

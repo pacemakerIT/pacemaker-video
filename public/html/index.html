@@ -8,8 +8,8 @@
     <style>
       body {
         font:
-          13px/1.35 "Malgun Gothic",
-          "Segoe UI",
+          13px/1.35 'Malgun Gothic',
+          'Segoe UI',
           sans-serif;
         margin: 16px;
         color: #111;
@@ -115,49 +115,26 @@
           <td>로그인 / 회원가입</td>
           <td>로그인·가입 입력 화면</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./modals/auth.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >auth.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
-          <td></td>
+          <td>오프라인용 개별 페이지 구성</td>
         </tr>
-        <tr>
-          <td>(Auth)</td>
-          <td>비밀번호 재설정</td>
-          <td>비번 찾기·재설정 플로우</td>
-          <td></td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>(Auth)</td>
-          <td>회원 정보 입력</td>
-          <td>가입 후 관심사·프로필 등 입력</td>
-          <td></td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td></td>
-        </tr>
+
+
         <tr>
           <td>K_SCR_CLASS_L_list</td>
           <td>강의 목록</td>
@@ -171,53 +148,55 @@
             </a>
           </td>
           <td>
-            <a href="./courses/course_list.html" rel="noopener noreferrer" target="_blank"
-              >course_list.html
-            </a>
+            <a
+              href="./courses/course_list.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >course_list.html</a
+            >
           </td>
+          <a
+            href="./courses/course_list.html"
+            rel="noopener noreferrer"
+            target="_blank"
+            >course_list.html</a
+          >
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
         </tr>
-        <tr>
-          <td>K_SCR_CLASS_L_list_sorting open</td>
-          <td>강의 목록 (정렬 열림)</td>
-          <td>목록 + 정렬/필터 UI 열린 상태</td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td>동일 페이지 상태 변형</td>
-        </tr>
+
         <tr>
           <td>K_SCR_CLASS_detail</td>
           <td>강의 상세</td>
           <td>대표 이미지·커리큘럼·후기 등</td>
           <td></td>
           <td>
-            <a href="./courses/course_detail.html" rel="noopener noreferrer" target="_blank"
-              >course_detail.html
-            </a>
+            <a
+              href="./courses/course_detail.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >course_detail.html</a
+            >
           </td>
+          <a
+            href="./courses/course_detail.html"
+            rel="noopener noreferrer"
+            target="_blank"
+            >course_detail.html</a
+          >
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -228,16 +207,25 @@
           <td>영상·커리큘럼 사이드·탭(소개/후기)</td>
           <td></td>
           <td>
-            <a href="./courses/course_detail_video.html" rel="noopener noreferrer" target="_blank"
-              >course_detail_video.html
-            </a>
+            <a
+              href="./courses/course_detail_video.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >course_detail_video.html</a
+            >
           </td>
+          <a
+            href="./courses/course_detail_video.html"
+            rel="noopener noreferrer"
+            target="_blank"
+            >course_detail_video.html</a
+          >
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -247,29 +235,67 @@
           <td>워크샵 목록</td>
           <td>캘린더·일정 리스트</td>
           <td></td>
-          <td><a href="" rel="noopener noreferrer" target="_blank"></a></td>
+          <td>
+            <a
+              href="./workshops/workshop_list.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >workshop_list.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
         </tr>
         <tr>
+          <td>K_SCR_WS_detail</td>
+          <td>워크샵 상세</td>
+          <td>워크샵 소개·신청·상세 정보</td>
+          <td></td>
+          <td>
+            <a
+              href="./workshops/workshop_detail.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >workshop_detail.html
+            </a>
+          </td>
+          <td>
+            <select aria-label="진행" class="pm-progress">
+              <option value="">—</option>
+              <option value="wait">대기</option>
+              <option value="wip">진행</option>
+              <option value="done" selected="selected">완료</option>
+            </select>
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
           <td>K_SCR_EB_list</td>
           <td>전자책 목록</td>
           <td>배너·카테고리·전자책 카드 그리드</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./ebooks/ebook_list.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >ebook_list.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -279,33 +305,25 @@
           <td>전자책 상세</td>
           <td>구매 영역·소개·추천·후기</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./ebooks/ebook_detail.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >ebook_detail.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
-          <td></td>
+          <td>구매 전 화면</td>
         </tr>
-        <tr>
-          <td>K_SCR_EB_detail_open</td>
-          <td>전자책 상세 (변형)</td>
-          <td>상세 + 모달/드롭 등 열린 상태</td>
-          <td></td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td>상세 상태 변형</td>
-        </tr>
+
         <tr>
           <td>K_SCR_EB_detail_bottom_cart</td>
           <td>전자책 상세 (하단 고정 바)</td>
@@ -322,22 +340,7 @@
           </td>
           <td></td>
         </tr>
-        <tr>
-          <td>(컴포넌트)</td>
-          <td>추천 배너 등</td>
-          <td>추천 배너·우측 조각 UI 묶음</td>
-          <td></td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td>페이지 단위 아님</td>
-        </tr>
+
       </tbody>
     </table>
     <h2>로그인 후</h2>
@@ -359,13 +362,17 @@
           <td>GNB (로그인)</td>
           <td>로그인 상태 상단 헤더 기본</td>
           <td></td>
-          <td></td>
+          <td>
+            <a href="./mypage/mypage.html" rel="noopener noreferrer" target="_blank"
+              >mypage.html
+            </a>
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>컴포넌트</td>
@@ -375,13 +382,17 @@
           <td>GNB 마이 열림</td>
           <td>프로필/마이 메뉴 드롭다운 열린 상태</td>
           <td></td>
-          <td></td>
+          <td>
+            <a href="./mypage/mypage.html" rel="noopener noreferrer" target="_blank"
+              >mypage.html
+            </a>
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>컴포넌트</td>
@@ -391,77 +402,87 @@
           <td>GNB 언어 열림</td>
           <td>언어 선택 드롭다운 열린 상태</td>
           <td></td>
-          <td></td>
+          <td>
+            <a href="./mypage/mypage.html" rel="noopener noreferrer" target="_blank"
+              >mypage.html
+            </a>
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>컴포넌트</td>
         </tr>
-        <tr>
-          <td>Banner-로그인 시</td>
-          <td>로그인 후 배너</td>
-          <td>로그인 사용자용 상단/프로모 배너</td>
-          <td></td>
-          <td></td>
-          <td>
-            <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
-              <option value="wait">대기</option>
-              <option value="wip">진행</option>
-              <option value="done">완료</option>
-            </select>
-          </td>
-          <td></td>
-        </tr>
+
         <tr>
           <td>K_SCR_WS_list</td>
           <td>워크샵 목록</td>
           <td>캘린더·일정 리스트</td>
           <td></td>
-          <td><a href="" rel="noopener noreferrer" target="_blank"></a></td>
+          <td>
+            <a
+              href="./workshops/workshop_list.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >workshop_list.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
         </tr>
         <tr>
           <td>K_SCR_EB_전자책보기</td>
-          <td>전자책 보기(뷰어)</td>
-          <td>진행률·본문·후기 등 읽기 화면</td>
-          <td></td>
+          <td>전자책 상세 (구매 후 / 뷰어)</td>
+          <td>진행률·Hero 변경·본문·후기 등 읽기 화면</td>
           <td></td>
           <td>
+            <a
+              href="./ebooks/ebook_detail_view.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >ebook_detail_view.html</a
+            >
+          </td>
+          <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
-          <td></td>
+          <td>구매 후 화면</td>
         </tr>
         <tr>
           <td>K_SCR_MY_my page</td>
           <td>마이페이지</td>
           <td>프로필·내 강의/콘텐츠 그리드</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./mypage/mypage.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >mypage.html
+            </a>
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -471,13 +492,20 @@
           <td>찜 목록</td>
           <td>찜한 강의/콘텐츠 카드 그리드</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./mypage/wishlist.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >wishlist.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>피그마 라벨: 찜목록</td>
@@ -487,13 +515,17 @@
           <td>장바구니</td>
           <td>담긴 상품·선택·결제 버튼</td>
           <td></td>
-          <td></td>
+          <td>
+            <a href="./mypage/cart.html" rel="noopener noreferrer" target="_blank"
+              >cart.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>레이아웃 변형 있음</td>
@@ -503,13 +535,17 @@
           <td>장바구니 하단 바</td>
           <td>합계·주문하기 고정 하단 UI</td>
           <td></td>
-          <td></td>
+          <td>
+            <a href="./mypage/cart.html" rel="noopener noreferrer" target="_blank"
+              >cart.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>컴포넌트</td>
@@ -535,13 +571,20 @@
           <td>구매 내역</td>
           <td>구매 목록 리스트·상세 버튼</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./mypage/order_history.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >order_history.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -551,29 +594,43 @@
           <td>구매 상세 / 영수증</td>
           <td>결제 상세·영수증형 모달</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./modals/order_detail.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >order_detail.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
-          <td>모달</td>
+          <td>오프라인용 개별 페이지 구성</td>
         </tr>
         <tr>
           <td>K_SCR_MY_설정</td>
           <td>설정(프로필 수정)</td>
           <td>프사·이름·연락처·저장</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./mypage/setting.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >setting.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td></td>
@@ -583,13 +640,20 @@
           <td>강의평 작성</td>
           <td>별점·후기 입력 팝업</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./modals/review.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >review.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
           <td>모달</td>
@@ -599,16 +663,23 @@
           <td>알림 팝업</td>
           <td>확인·취소 등 작은 알림 UI 묶음</td>
           <td></td>
-          <td></td>
+          <td>
+            <a
+              href="./modals/alert.html"
+              rel="noopener noreferrer"
+              target="_blank"
+              >alert.html</a
+            >
+          </td>
           <td>
             <select aria-label="진행" class="pm-progress">
-              <option selected="selected" value="">—</option>
+              <option value="">—</option>
               <option value="wait">대기</option>
               <option value="wip">진행</option>
-              <option value="done">완료</option>
+              <option value="done" selected="selected">완료</option>
             </select>
           </td>
-          <td>컴포넌트</td>
+          <td>오프라인용 개별 페이지 구성 (3종 알림 포함)</td>
         </tr>
       </tbody>
     </table>
@@ -894,31 +965,31 @@
     </p>
     <script>
       (function () {
-        var PREFIX = "pacemaker-index-progress:";
+        var PREFIX = 'pacemaker-index-progress:';
         function rowKey(table, tr) {
-          var tds = tr.querySelectorAll("td");
+          var tds = tr.querySelectorAll('td');
           if (!tds.length) return null;
           if (tds.length === 8) {
-            return tds[0].textContent.trim() + "|" + tds[1].textContent.trim();
+            return tds[0].textContent.trim() + '|' + tds[1].textContent.trim();
           }
           return tds[0].textContent.trim();
         }
         function bind() {
-          document.querySelectorAll("table").forEach(function (table) {
-            var label = table.getAttribute("aria-label") || "";
-            table.querySelectorAll("tbody tr").forEach(function (tr) {
-              var sel = tr.querySelector("select.pm-progress");
+          document.querySelectorAll('table').forEach(function (table) {
+            var label = table.getAttribute('aria-label') || '';
+            table.querySelectorAll('tbody tr').forEach(function (tr) {
+              var sel = tr.querySelector('select.pm-progress');
               if (!sel) return;
               var rk = rowKey(table, tr);
               if (!rk) return;
-              var key = PREFIX + label + ":" + rk;
+              var key = PREFIX + label + ':' + rk;
               try {
                 var saved = localStorage.getItem(key);
-                if (saved !== null && saved !== "") {
+                if (saved !== null && saved !== '') {
                   sel.value = saved;
                 }
               } catch (e) {}
-              sel.addEventListener("change", function () {
+              sel.addEventListener('change', function () {
                 try {
                   localStorage.setItem(key, sel.value);
                 } catch (e) {}
@@ -926,8 +997,8 @@
             });
           });
         }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", bind);
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', bind);
         } else {
           bind();
         }

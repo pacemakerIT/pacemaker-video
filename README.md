@@ -62,6 +62,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `npm run prisma:generate` - Generate Prisma Client
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Run ESLint and auto-fix formatting issues
 - `npm run typecheck` - Run TypeScript type checking
 - `npm run jira -- <command>` - Run the local Jira CLI
 - `npm run validate-branch-name` - Validate git branch name
@@ -171,6 +172,23 @@ build validation with all required environment variables configured.
 }
 ```
 
+### VS Code Auto-fix Setup
+
+To automatically format your code and resolve ESLint errors on save, you can configure your local VS Code workspace. The repository includes `.vscode/settings.json` configured with:
+
+```json
+{
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+```
+
+If you prefer not to commit these workspace settings to Git, you can add `.vscode/` to your `.gitignore` or copy these values to your global VS Code User Settings.
+
 ### Tailwind Color Usage
 
 Tailwind updates often, so some colors may change or be removed.
@@ -245,3 +263,45 @@ npm run jira -- add-to-sprint --issue PACE-123 --current
 ```
 
 Add `--json` to any read command for machine-readable output.
+
+## Git AI Auto-Commit CLI (git-cm)
+
+This repository includes an automated commit message generator using AI (Llama 3.3, GPT-4o-mini, and Gemini 2.5 Flash via OpenRouter).
+
+### Prerequisites & Setup
+
+1. **Install Dependencies**: Make sure you have installed devDependencies.
+   ```bash
+   npm install
+   ```
+2. **Add API Key**: Get an OpenRouter API key and add it to your `.env.local` or `.env` file:
+   ```env
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
+3. **Register Git Alias (Recommended)**: Run this command in your terminal to easily trigger the command with `git cm`:
+   ```bash
+   git config alias.cm "!node scripts/git-cm.js"
+   ```
+
+### Usage
+
+1. Stage your changes:
+   ```bash
+   git add .
+   ```
+2. Run the auto-commit tool:
+   ```bash
+   git cm
+   ```
+3. The CLI will output a suggested commit message standardizing to Conventional Commits. Enter `Y` or press `Enter` to approve and commit, or `n` to cancel.
+
+### Options
+
+- `--verbose`: Includes a detailed explanation paragraph explaining the changes in the commit body.
+  ```bash
+  git cm --verbose
+  ```
+- `-y`: Auto-approves the suggested commit message and commits directly without asking for confirmation.
+  ```bash
+  git cm -y
+  ```

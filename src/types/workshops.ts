@@ -1,8 +1,7 @@
 // types/workshop.ts
 export enum WorkshopStatus {
-  RECRUITING = 'RECRUITING', // 모집중
+  OPEN = 'OPEN', // 모집중
   CLOSED = 'CLOSED', // 모집마감
-  ONGOING = 'ONGOING', // 진행중 -> 모집완료
   COMPLETED = 'COMPLETED' // 진행완료
 }
 

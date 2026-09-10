@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { requireCurrentUserId } from '@/lib/current-user';
+import { apiErrorResponse, hasValidInterests } from '@/lib/api-request';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const userId = req.nextUrl.searchParams.get('userId');
-    if (!userId)
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+    const userId = await requireCurrentUserId();
 
     const userWithInterests = await prisma.user.findUnique({
       where: { id: userId },
@@ -16,20 +16,18 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(userWithInterests);
   } catch (err) {
-    return NextResponse.json(
-      { error: `GET /api/cart error: ${err}` },
-      { status: 500 }
-    );
+    return apiErrorResponse(err, 'Failed to fetch interests');
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
-    const { userId, interests } = await req.json();
+    const userId = await requireCurrentUserId();
+    const { interests } = await req.json().catch(() => ({}));
 
-    if (!userId || !Array.isArray(interests)) {
+    if (!hasValidInterests(interests)) {
       return NextResponse.json(
-        { error: 'Invalid request: userId and interests are required.' },
+        { error: 'Invalid request: interests are required.' },
         { status: 400 }
       );
     }
@@ -45,9 +43,6 @@ export async function PUT(req: NextRequest) {
       { status: 200 }
     );
   } catch (err) {
-    return NextResponse.json(
-      { error: `Failed to update interests: ${err}` },
-      { status: 500 }
-    );
+    return apiErrorResponse(err, 'Failed to update interests');
   }
 }

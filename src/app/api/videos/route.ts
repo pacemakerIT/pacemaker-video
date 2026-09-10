@@ -1,8 +1,17 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { requireAdminUser } from '@/lib/admin-auth';
 
 // Get all videos
 export async function GET() {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const videos = await prisma.video.findMany();
     return NextResponse.json(videos, { status: 200 });
@@ -16,6 +25,14 @@ export async function GET() {
 
 // Create new video
 export async function POST(req: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const body = await req.json();
     const { videoId, title, description, price, courseId } = body;

@@ -48,7 +48,8 @@ describe('GET /api/ebooks/[ebookId]', () => {
     prismaMock.ebook.findUnique.mockResolvedValue({
       id: ebookId,
       ebookId: 'ebook-file.pdf',
-      price: 25
+      price: 25,
+      isPublic: true
     });
     prismaMock.user.findUnique.mockResolvedValue({
       id: 'app-user-123'

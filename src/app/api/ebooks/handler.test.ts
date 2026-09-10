@@ -46,7 +46,8 @@ describe('ebook file handler', () => {
     prismaMock.ebook.findUnique.mockResolvedValue({
       id: 'ebook-123',
       ebookId: 'ebook-file.pdf',
-      price: 25
+      price: 25,
+      isPublic: true
     });
     prismaMock.user.findUnique.mockResolvedValue({ id: 'user-123' });
     prismaMock.orderItem.findFirst.mockResolvedValue({
@@ -97,5 +98,45 @@ describe('ebook file handler', () => {
         })
       })
     );
+  });
+
+  it('hides private ebooks from non-admin users even with a direct file URL', async () => {
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: 'ebook-123',
+      ebookId: 'private-ebook-file.pdf',
+      price: 0,
+      isPublic: false
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ id: 'user-123' });
+
+    const response = await GET(new Request('http://localhost'), context());
+
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: 'Ebook not found' });
+    expect(s3Client.send).not.toHaveBeenCalled();
+  });
+
+  it('allows admins to stream private ebook PDFs without a purchase', async () => {
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: 'ebook-123',
+      ebookId: 'private-ebook-file.pdf',
+      price: 25,
+      isPublic: false
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ roleId: 'ADMIN' });
+    prismaMock.orderItem.findFirst.mockResolvedValue(null);
+
+    const response = await GET(new Request('http://localhost'), context());
+
+    expect(response.status).toBe(200);
+    expect(s3Client.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        input: expect.objectContaining({
+          Bucket: 'ebooks',
+          Key: 'private-ebook-file.pdf'
+        })
+      })
+    );
+    expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,11 @@
 // 공통 타입들
 export interface CareerItem {
-  period: string;
-  position: string;
+  period?: string;
+  position?: string;
+  startDate?: string;
+  endDate?: string;
+  isCurrent?: boolean;
+  description?: string;
 }
 
 export interface ExpandableCard {
@@ -121,7 +125,7 @@ export interface Instructor {
   name: string;
   profileImage: string;
   description: string;
-  careers: CareerItem[];
+  careers: unknown;
 }
 
 export interface ApiResponse {

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { ItemType } from '@prisma/client';
+import { requireCurrentUserId } from '@/lib/current-user';
+import { apiErrorResponse, isItemType } from '@/lib/api-request';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const userId = req.nextUrl.searchParams.get('userId');
-    if (!userId)
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+    const userId = await requireCurrentUserId();
 
     const carts = await prisma.cart.findMany({
       where: { userId },
@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
               });
               break;
             case ItemType.EBOOK:
-              item = await prisma.ebook.findUnique({
-                where: { id: cart.itemId },
+              item = await prisma.ebook.findFirst({
+                where: { id: cart.itemId, isPublic: true },
                 select: {
                   id: true,
                   title: true,
@@ -56,8 +56,8 @@ export async function GET(req: NextRequest) {
               });
               break;
             case ItemType.COURSE:
-              item = await prisma.course.findUnique({
-                where: { id: cart.itemId },
+              item = await prisma.course.findFirst({
+                where: { id: cart.itemId, isPublic: true },
                 select: {
                   id: true,
                   title: true,
@@ -69,10 +69,7 @@ export async function GET(req: NextRequest) {
               break;
           }
         } catch (error) {
-          return NextResponse.json(
-            { error: `Item lookup failed: ${error}` },
-            { status: 500 }
-          );
+          throw new Error('Item lookup failed', { cause: error });
         }
 
         return { ...cart, ...item };
@@ -81,116 +78,112 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(detailedCarts);
   } catch (err) {
-    return NextResponse.json(
-      { error: `GET /api/cart error: ${err}` },
-      { status: 500 }
-    );
+    return apiErrorResponse(err, 'Failed to fetch cart');
   }
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { userId, itemId, itemType } = body;
+  try {
+    const userId = await requireCurrentUserId();
+    const { itemId, itemType } = await req.json().catch(() => ({}));
 
-  if (!userId || !itemId || !itemType)
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    if (typeof itemId !== 'string' || !itemId.trim() || !isItemType(itemType))
+      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
 
-  const existing = await prisma.cart.findFirst({
-    where: { userId, itemId, itemType }
-  });
-
-  if (existing) {
-    return NextResponse.json(
-      { error: 'Item already exists in cart' },
-      { status: 409 }
-    );
-  }
-
-  const cart = await prisma.$transaction(async (tx) => {
-    const newCart = await tx.cart.create({
-      data: { userId, itemId, itemType }
+    const existing = await prisma.cart.findFirst({
+      where: { userId, itemId, itemType }
     });
-    let item = null;
 
-    try {
-      switch (newCart.itemType) {
-        case ItemType.VIDEO:
-          item = await prisma.video.findUnique({
-            where: { videoId: newCart.itemId },
-            select: {
-              id: true,
-              title: true,
-              price: true,
-              description: true,
-              category: true
-            }
-          });
-          break;
-        case ItemType.EBOOK:
-          item = await prisma.ebook.findUnique({
-            where: { id: newCart.itemId },
-            select: {
-              id: true,
-              title: true,
-              price: true,
-              description: true,
-              category: true
-            }
-          });
-          break;
-        case ItemType.WORKSHOP:
-          item = await prisma.workshop.findUnique({
-            where: { id: newCart.itemId },
-            select: {
-              id: true,
-              title: true,
-              price: true,
-              description: true,
-              startDate: true
-            }
-          });
-          break;
-        case ItemType.COURSE:
-          item = await prisma.course.findUnique({
-            where: { id: newCart.itemId },
-            select: {
-              id: true,
-              title: true,
-              price: true,
-              description: true,
-              category: true
-            }
-          });
-          break;
-      }
-    } catch (err) {
+    if (existing) {
       return NextResponse.json(
-        { error: `Failed to get item details: ${err}` },
-        { status: 500 }
+        { error: 'Item already exists in cart' },
+        { status: 409 }
       );
     }
-    return { ...newCart, ...item };
-  });
 
-  return NextResponse.json(cart);
+    const cart = await prisma.$transaction(async (tx) => {
+      const newCart = await tx.cart.create({
+        data: { userId, itemId, itemType }
+      });
+      let item = null;
+
+      try {
+        switch (newCart.itemType) {
+          case ItemType.VIDEO:
+            item = await prisma.video.findUnique({
+              where: { videoId: newCart.itemId },
+              select: {
+                id: true,
+                title: true,
+                price: true,
+                description: true,
+                category: true
+              }
+            });
+            break;
+          case ItemType.EBOOK:
+            item = await prisma.ebook.findFirst({
+              where: { id: newCart.itemId, isPublic: true },
+              select: {
+                id: true,
+                title: true,
+                price: true,
+                description: true,
+                category: true
+              }
+            });
+            break;
+          case ItemType.WORKSHOP:
+            item = await prisma.workshop.findUnique({
+              where: { id: newCart.itemId },
+              select: {
+                id: true,
+                title: true,
+                price: true,
+                description: true,
+                startDate: true
+              }
+            });
+            break;
+          case ItemType.COURSE:
+            item = await prisma.course.findFirst({
+              where: { id: newCart.itemId, isPublic: true },
+              select: {
+                id: true,
+                title: true,
+                price: true,
+                description: true,
+                category: true
+              }
+            });
+            break;
+        }
+      } catch (err) {
+        throw new Error('Failed to get item details', { cause: err });
+      }
+      return { ...newCart, ...item };
+    });
+
+    return NextResponse.json(cart);
+  } catch (err) {
+    return apiErrorResponse(err, 'Failed to add item to cart');
+  }
 }
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
+    const userId = await requireCurrentUserId();
 
-    if (!userId) {
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-    }
-
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
 
     const itemIds: string[] = Array.isArray(body.itemIds)
       ? body.itemIds
       : [body.itemIds];
 
-    if (itemIds.length === 0) {
+    if (
+      itemIds.length === 0 ||
+      itemIds.some((itemId) => typeof itemId !== 'string' || !itemId)
+    ) {
       return NextResponse.json(
         { error: 'No items to delete' },
         { status: 400 }
@@ -209,9 +202,6 @@ export async function DELETE(req: NextRequest) {
       deletedIds: itemIds
     });
   } catch (err) {
-    return NextResponse.json(
-      { error: 'Failed to remove item(s) from cart:', err },
-      { status: 500 }
-    );
+    return apiErrorResponse(err, 'Failed to remove items from cart');
   }
 }

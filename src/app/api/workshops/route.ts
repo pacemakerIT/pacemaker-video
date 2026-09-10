@@ -1,58 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { WorkshopStatus, WorkshopCategory } from '@prisma/client';
+import { requireAdminUser } from '@/lib/admin-auth';
 
-const RECRUIT_STATUS_MAP: Record<string, WorkshopStatus> = {
-  모집중: WorkshopStatus.RECRUITING,
-  모집완료: WorkshopStatus.CLOSED,
-  진행중: WorkshopStatus.ONGOING,
-  진행완료: WorkshopStatus.COMPLETED
+const RECRUIT_STATUS_MAP: Record<string, string> = {
+  모집중: 'OPEN',
+  모집완료: 'CLOSED',
+  진행완료: 'COMPLETED'
 };
 
-type WorkshopWithStatusDates = {
-  startDate: Date | string;
-  endDate: Date | string;
-  status: WorkshopStatus | string;
-};
-
-function getEffectiveWorkshopStatus<T extends WorkshopWithStatusDates>(
-  workshop: T,
-  now = new Date()
-) {
-  if (workshop.status === WorkshopStatus.HIDDEN) {
-    return WorkshopStatus.HIDDEN;
-  }
-
-  const startDate = new Date(workshop.startDate);
-  const endDate = new Date(workshop.endDate);
-
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-    return workshop.status;
-  }
-
-  if (endDate < now) {
-    return WorkshopStatus.COMPLETED;
-  }
-
-  if (startDate <= now && now <= endDate) {
-    return WorkshopStatus.ONGOING;
-  }
-
-  if (workshop.status === WorkshopStatus.CLOSED) {
-    return WorkshopStatus.CLOSED;
-  }
-
-  return WorkshopStatus.RECRUITING;
-}
-
-function withEffectiveWorkshopStatus<T extends WorkshopWithStatusDates>(
-  workshop: T
-) {
-  return {
-    ...workshop,
-    status: getEffectiveWorkshopStatus(workshop)
-  };
-}
+const toWorkshopStatus = (status: string): WorkshopStatus =>
+  status as unknown as WorkshopStatus;
 
 interface InstructorInput {
   name: string;
@@ -100,7 +58,7 @@ export async function GET(req: Request) {
           { status: 404 }
         );
       }
-      return NextResponse.json(withEffectiveWorkshopStatus(workshop));
+      return NextResponse.json(workshop);
     }
 
     // 2. 6개월 조회 (center 기준 앞뒤 3개월)
@@ -156,7 +114,7 @@ export async function GET(req: Request) {
       });
 
       return NextResponse.json({
-        workshops: workshops.map(withEffectiveWorkshopStatus),
+        workshops,
         count: workshops.length
       });
     }
@@ -195,7 +153,7 @@ export async function GET(req: Request) {
       });
 
       return NextResponse.json({
-        workshops: workshops.map(withEffectiveWorkshopStatus),
+        workshops,
         count: workshops.length
       });
     }
@@ -226,7 +184,7 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({
-      workshops: workshops.map(withEffectiveWorkshopStatus),
+      workshops,
       count: workshops.length
     });
   } catch (error) {
@@ -240,6 +198,14 @@ export async function GET(req: Request) {
 }
 
 export async function POST(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const body = await request.json();
     const {
@@ -272,8 +238,7 @@ export async function POST(request: Request) {
       const workshop = await tx.workshop.create({
         data: {
           category: (category as WorkshopCategory) || null,
-          status:
-            RECRUIT_STATUS_MAP[recruitStatus] ?? WorkshopStatus.RECRUITING,
+          status: toWorkshopStatus(RECRUIT_STATUS_MAP[recruitStatus] ?? 'OPEN'),
           isMain: showOnMain ?? false,
           title,
           description,
@@ -330,6 +295,14 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const adminAccess = await requireAdminUser();
+  if (!adminAccess.ok) {
+    return NextResponse.json(
+      { error: adminAccess.error },
+      { status: adminAccess.status }
+    );
+  }
+
   try {
     const { ids } = await request.json();
 

@@ -33,7 +33,7 @@ const mockCard: OnlineCards = {
   uploadDate: new Date(),
   watchedVideos: [],
   purchasedVideos: [],
-  status: 'RECRUITING'
+  status: 'OPEN'
 };
 
 describe('ImageOverlayCard', () => {
@@ -47,8 +47,8 @@ describe('ImageOverlayCard', () => {
     expect(screen.getByText('Card 1')).toBeInTheDocument();
     expect(screen.getByText('WORKSHOP')).toBeInTheDocument();
     expect(screen.getByTestId('card-image')).toBeInTheDocument();
-    expect(screen.getByText('Coming soon')).toBeInTheDocument();
-    expect(screen.getByText('Coming soon')).toHaveClass('text-navy');
+    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('Open')).toHaveClass('text-navy');
   });
 
   it('toggles like state when heart button is clicked', () => {
@@ -58,11 +58,11 @@ describe('ImageOverlayCard', () => {
     expect(mockAddFavorite).toHaveBeenCalledWith('1', ItemType.WORKSHOP);
   });
 
-  it('uses orange for ongoing workshops and gray for ended workshops', () => {
+  it('uses gray for closed and ended workshops', () => {
     const { rerender } = render(
-      <ImageOverlayCard {...mockCard} status="ONGOING" />
+      <ImageOverlayCard {...mockCard} status="CLOSED" />
     );
-    expect(screen.getByText('Ongoing')).toHaveClass('text-orange');
+    expect(screen.getByText('Closed')).toHaveClass('text-slate-400');
 
     rerender(<ImageOverlayCard {...mockCard} status="COMPLETED" />);
     expect(screen.getByText('Ended')).toHaveClass('text-slate-400');
