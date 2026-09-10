@@ -20,12 +20,11 @@ export default function CoursesPage() {
   return (
     <div className="w-screen flex gap-20 flex-col">
       <ListHeader
-        slides={slides}
-        gradientColors={{
-          start: '#A8DBFF60',
-          middle: '#FF823610',
-          end: '#a5b1b940'
-        }}
+        title={'Build a strong foundation\nfor your career abroad'}
+        buttonText="Explore courses"
+        route="#course-list"
+        height={'h-[370px]'}
+        showHeroAnimations={true}
       />
       <div id="course-list">
         <CourseList />

@@ -38,14 +38,28 @@ export default function CourseList() {
   }, [fetchCourses]);
 
   const currentCards = useMemo(() => {
-    if (currentCategory === 'TOTAL') {
-      return allCards;
+    const filtered =
+      currentCategory === 'TOTAL'
+        ? allCards
+        : allCards.filter((card) => card.category === currentCategory);
+
+    if (sortBy === 'Date') {
+      return [...filtered].sort(
+        (a, b) =>
+          new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime()
+      );
     }
-    return allCards.filter((card) => card.category === currentCategory);
-  }, [currentCategory, allCards]);
+    if (sortBy === 'Review') {
+      return [...filtered].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    }
+    return filtered;
+  }, [currentCategory, sortBy, allCards]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center">
+    <div
+      id="course-list"
+      className="max-w-[1248px] w-full items-center mx-auto justify-center flex flex-col px-6 scroll-mt-20"
+    >
       {loading ? (
         <p className="p-4">📡 Loading courses...</p>
       ) : (

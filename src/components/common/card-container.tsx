@@ -68,7 +68,7 @@ export default function CardContainer({
 
   if (layout === 'grid') {
     return (
-      <div className="grid w-full grid-cols-1 gap-x-12 gap-y-16 py-4 md:grid-cols-2">
+      <div className="justify-center grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 w-full py-4">
         {cards.map((card) => (
           <Card key={card.id} {...card} itemType={itemType} />
         ))}

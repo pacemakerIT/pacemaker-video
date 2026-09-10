@@ -93,119 +93,206 @@ interface ListHeaderProps {
     middle: string;
     end: string;
   };
+  slides?: {
+    title: string;
+    subtitle?: string;
+    buttonText?: string;
+    route?: string;
+  }[];
+  autoPlayInterval?: number;
+  interval?: number;
+  showHeroAnimations?: boolean;
 }
 
+const CTA_BASE =
+  'inline-flex items-center justify-center gap-2 bg-[#FF4F02] hover:bg-[#E04400] text-white font-bold text-lg font-headline px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02]';
+
 export default function ListHeader({
-  slides = DEFAULT_SLIDES,
-  autoPlayInterval = 5000,
-  gradientColors
+  title,
+  buttonText,
+  route,
+  height = 'h-96',
+  gradientColors = {
+    start: '#A8DBFF60',
+    middle: '#FF823610',
+    end: '#A8DBFF40'
+  },
+  slides = title && buttonText ? [{ title, buttonText, route }] : [],
+  autoPlayInterval,
+  showHeroAnimations = false
 }: ListHeaderProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
-  const onSelect = useCallback(() => {
+  const handleCtaClick = (targetRoute?: string) => {
+    if (!targetRoute) return;
+    if (targetRoute.startsWith('#')) {
+      document
+        .getElementById(targetRoute.slice(1))
+        ?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    router.push(targetRoute);
+  };
+
+  // Hash routes render as an anchor like the design sample; regular routes
+  // stay a button that navigates via the router.
+  const renderCta = (
+    text: string,
+    targetRoute: string | undefined,
+    className: string
+  ) => {
+    if (targetRoute?.startsWith('#')) {
+      return (
+        <a
+          href={targetRoute}
+          className={className}
+          onClick={(e) => {
+            e.preventDefault();
+            handleCtaClick(targetRoute);
+          }}
+        >
+          {text}
+        </a>
+      );
+    }
+    return (
+      <button className={className} onClick={() => handleCtaClick(targetRoute)}>
+        {text}
+      </button>
+    );
+  };
+
+  const heroBackground = showHeroAnimations
+    ? 'linear-gradient(180deg, #e6f0f8 0%, #ffffff 100%)'
+    : `linear-gradient(30deg, ${gradientColors.start} 5%, ${gradientColors.middle} 40%, ${gradientColors.end} 50%)`;
+
+  useEffect(() => {
     if (!api) return;
-    setCurrent(api.selectedScrollSnap());
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
   }, [api]);
 
   useEffect(() => {
     if (!api) return;
-    onSelect();
-    api.on('select', onSelect);
-    api.on('reInit', onSelect);
-  }, [api, onSelect]);
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap());
+    });
 
-  useEffect(() => {
-    if (!api || autoPlayInterval <= 0 || slides.length <= 1) return;
+    let timer: NodeJS.Timeout;
+    if (autoPlayInterval && slides.length > 1) {
+      timer = setInterval(() => {
+        api?.scrollNext();
+      }, autoPlayInterval);
+    }
 
-    const intervalId = window.setInterval(() => {
-      api.scrollNext();
-    }, autoPlayInterval);
-
-    return () => window.clearInterval(intervalId);
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [api, autoPlayInterval, slides.length]);
+
+  if (slides.length === 0) {
+    return (
+      <div
+        data-testid="list-header"
+        className={`w-full flex flex-col justify-center items-center ${height} relative overflow-hidden`}
+        style={{ background: heroBackground }}
+      >
+        {showHeroAnimations && (
+          <>
+            <div className="hero-dust-overlay" aria-hidden="true" />
+            <div className="hero-orb hero-orb--teal" aria-hidden="true" />
+            <div className="hero-orb hero-orb--orange" aria-hidden="true" />
+          </>
+        )}
+        <div
+          className={`relative z-10 flex flex-col justify-center items-center${showHeroAnimations ? '' : ' gap-8'}`}
+        >
+          {showHeroAnimations && (
+            <p className="text-[#FF4F02] font-bold font-body text-base uppercase tracking-[0.16em] mb-2">
+              WITH PACEMAKER
+            </p>
+          )}
+          <span
+            className={`font-extrabold text-pace-4xl text-center whitespace-pre-line text-[#00263B] leading-tight${showHeroAnimations ? ' font-headline mb-8' : ''}`}
+          >
+            {title}
+          </span>
+          {buttonText &&
+            renderCta(
+              buttonText,
+              route,
+              showHeroAnimations
+                ? `${CTA_BASE} hero-cta-bob`
+                : 'inline-flex items-center justify-center gap-2 bg-pace-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full'
+            )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section
       className={`relative isolate h-[520px] overflow-hidden bg-navy px-6 pb-[46px] pt-[70px]`}
       data-testid="list-header"
-      style={
-        gradientColors
-          ? {
-              backgroundImage: `linear-gradient(135deg, ${gradientColors.start}, ${gradientColors.middle}, ${gradientColors.end})`
-            }
-          : undefined
-      }
+      className={`w-full flex flex-col justify-center items-center ${height} relative overflow-hidden`}
+      style={{ background: heroBackground }}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-[-10%] z-0 grid auto-rows-[90px] grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2 bg-navy opacity-60 [filter:grayscale(0.08)_brightness(0.42)_contrast(1.14)_saturate(0.88)] motion-safe:animate-services-hero-photo-pan will-change-transform"
+      {showHeroAnimations && (
+        <>
+          <div className="hero-dust-overlay" aria-hidden="true" />
+          <div className="hero-orb hero-orb--teal" aria-hidden="true" />
+          <div className="hero-orb hero-orb--orange" aria-hidden="true" />
+        </>
+      )}
+      <Carousel
+        setApi={setApi}
+        className="w-screen h-full flex items-center justify-center relative z-10"
+        opts={{ align: 'center', loop: true }}
       >
-        {Array.from({ length: HERO_TILE_REPEATS }).flatMap((_, repeatIndex) =>
-          HERO_TILE_IMAGES.map((image) => (
-            <div
-              key={`${repeatIndex}-${image}`}
-              className="border border-[rgba(255,255,255,0.06)] bg-cover bg-center [&:nth-child(4n)]:bg-top [&:nth-child(5n)]:bg-[position:60%_center]"
-              style={{
-                backgroundImage: `url('/img/services-hero-tiles/${image}')`
-              }}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Animated Gradient Overlays */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] [background-image:radial-gradient(circle_at_14%_18%,rgb(0_173_189_/_0.3)_0%,rgb(0_173_189_/_0)_44%),radial-gradient(circle_at_84%_14%,rgb(255_79_2_/_0.24)_0%,rgb(255_79_2_/_0)_48%),linear-gradient(135deg,rgb(0_38_59_/_0.96)_0%,rgb(0_38_59_/_0.92)_42%,rgb(0_173_189_/_0.18)_50%,rgb(255_79_2_/_0.15)_58%,rgb(0_38_59_/_0.95)_100%)] [background-position:0%_0%,100%_0%,0%_50%] [background-size:180%_180%,220%_220%,280%_280%] before:absolute before:right-[-8%] before:top-[-40%] before:h-[640px] before:w-[640px] before:rounded-full before:bg-[radial-gradient(circle,rgb(0_173_189_/_0.3)_0%,transparent_68%)] before:content-[''] before:[filter:blur(4px)] after:absolute after:bottom-[-25%] after:left-[-4%] after:h-[420px] after:w-[420px] after:rounded-full after:bg-[radial-gradient(circle,rgb(255_79_2_/_0.24)_0%,transparent_65%)] after:content-[''] after:[filter:blur(3px)] motion-safe:animate-services-hero-gradient-flow motion-safe:before:animate-services-hero-glow-drift motion-safe:after:animate-services-hero-glow-drift-reverse will-change-[background-position]"
-      />
-
-      <div className="relative z-[2] mx-auto w-full max-w-[740px] px-6">
-        <Carousel setApi={setApi} className="w-full" opts={{ loop: true }}>
-          <CarouselContent>
-            {slides.map((slide, index) => (
-              <CarouselItem key={index}>
-                <div className="flex h-[240px] flex-col items-center justify-center overflow-hidden text-center transition-all duration-700">
-                  <p
-                    className="mb-4 text-[0.82rem] font-bold uppercase tracking-[0.2em] md:text-[0.9rem]"
-                    style={{ color: slide.tagColor }}
-                  >
-                    {slide.tag}
-                  </p>
-                  <div className="mb-6 flex w-full items-center justify-center">
-                    <h1
-                      className={`w-full font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-wrap ${slide.titleSizeClass || 'text-[clamp(2rem,4.5vw,2.8rem)]'}`}
-                    >
-                      {slide.title}
-                      <em className={`not-italic ${slide.highlightColor}`}>
-                        {slide.highlight}
-                      </em>
-                      {slide.titleSuffix}
-                    </h1>
-                  </div>
-                  <p className="mx-auto mb-0 max-w-[560px] text-[1rem] md:text-[1.125rem] leading-[1.55] text-white/55 whitespace-pre-wrap">
-                    {slide.description}
-                  </p>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-
-        {/* Floating CTA Button */}
-        <div className="mt-8 flex justify-center animate-services-hero-scroll-float">
-          {slides[current].link && slides[current].buttonText && (
-            <Link href={slides[current].link!}>
-              <Button className="inline-flex h-auto items-center justify-center gap-2 bg-orange px-8 py-4 font-headline text-lg font-bold text-white rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all duration-500 ease-out hover:scale-[1.02] hover:bg-orange-hover">
-                {slides[current].buttonText}
-              </Button>
-            </Link>
-          )}
-        </div>
-
-        {/* Pagination Dots */}
-        <div className="mt-10 flex h-4 items-center justify-center gap-4">
+        <CarouselContent className="w-screen h-full">
           {slides.map((slide, index) => (
+            <CarouselItem key={index} className="w-screen h-full">
+              <div
+                className={`flex flex-col justify-center items-center h-full${showHeroAnimations ? '' : ' gap-8'}`}
+              >
+                {showHeroAnimations && (
+                  <p className="text-[#FF4F02] font-bold font-body text-base uppercase tracking-[0.16em] mb-2">
+                    WITH PACEMAKER
+                  </p>
+                )}
+                <div
+                  className={`flex flex-col justify-center items-center${showHeroAnimations ? '' : ' gap-4 h-full'}`}
+                >
+                  <span
+                    className={`font-extrabold text-pace-4xl text-center whitespace-pre-line pointer-events-none cursor-default select-none text-[#00263B] leading-tight${showHeroAnimations ? ' font-headline mb-8' : ''}`}
+                  >
+                    {slide.title}
+                  </span>
+                  {slide.subtitle && (
+                    <span className="font-medium text-pace-xl text-center whitespace-pre-line pointer-events-none cursor-default select-none">
+                      {slide.subtitle}
+                    </span>
+                  )}
+                </div>
+                {slide.buttonText &&
+                  renderCta(
+                    slide.buttonText,
+                    slide.route,
+                    showHeroAnimations
+                      ? `${CTA_BASE} hero-cta-bob`
+                      : 'inline-flex items-center justify-center gap-2 bg-pace-orange-600 text-white font-bold text-lg px-10 py-6 rounded-full'
+                  )}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+
+      {slides.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 z-10">
+          {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
