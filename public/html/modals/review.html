@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | Leave a Review</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02', // Brand orange token
+              'orange-hover': '#e04400', // Brand orange hover token
+              'gray-soft': '#f2f4f7', // Brand soft gray token
+              body: '#475467' // Brand body text token
+            },
+            fontFamily: {
+              heading: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      /* Accessibility Focus styling */
+      :focus-visible {
+        outline: 2px solid #00adbd !important;
+        outline-offset: 2px !important;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen relative flex items-center justify-center p-4 font-body bg-navy/10"
+  >
+    <!-- Background Backdrop Link: Clicking backdrop redirects back to referer or main.html -->
+    <a
+      href="../main.html"
+      onclick="
+        event.preventDefault();
+        closeModal();
+      "
+      class="absolute inset-0 bg-navy/70 backdrop-blur-sm z-0"
+      aria-label="Close modal and return"
+    ></a>
+
+    <!-- Modal Box (Elevated above backdrop) -->
+    <div
+      class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[480px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy"
+    >
+      <!-- Close Button -->
+      <a
+        href="../main.html"
+        onclick="
+          event.preventDefault();
+          closeModal();
+        "
+        class="absolute right-6 top-6 w-11 h-11 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-navy shadow-md hover:bg-gray-50 transition-all cursor-pointer"
+        aria-label="Close modal"
+      >
+        <span class="material-symbols-outlined text-lg">close</span>
+      </a>
+
+      <!-- 1. REVIEW FORM VIEW -->
+      <div id="review-form-view">
+        <h2
+          class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy mb-8"
+        >
+          Leave a review
+        </h2>
+
+        <form onsubmit="handleReviewSubmit(event)" class="space-y-8">
+          <!-- Star Rating Container -->
+          <div
+            class="flex flex-col items-center justify-center text-center space-y-3"
+          >
+            <h3 class="text-xl font-bold font-heading text-navy">
+              How was this course?
+            </h3>
+
+            <!-- Rating Value Description -->
+            <div
+              id="rating-label"
+              class="text-sm font-semibold text-body min-h-[20px]"
+            >
+              Good!
+            </div>
+
+            <!-- Stars Grid -->
+            <div
+              class="flex items-center justify-center gap-1.5"
+              id="stars-container"
+            >
+              <!-- Star 1 -->
+              <div class="star-item relative w-9 h-9 select-none">
+                <div
+                  class="absolute left-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(0.5)"
+                  onmouseenter="previewRating(0.5)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(1.0)"
+                  onmouseenter="previewRating(1.0)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <svg
+                  class="w-full h-full text-[#eaecf0] fill-current"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                  />
+                </svg>
+                <div
+                  class="star-filled absolute top-0 left-0 h-full overflow-hidden transition-all duration-150"
+                  style="width: 100%"
+                >
+                  <svg
+                    class="w-9 h-9 text-orange fill-current"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Star 2 -->
+              <div class="star-item relative w-9 h-9 select-none">
+                <div
+                  class="absolute left-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(1.5)"
+                  onmouseenter="previewRating(1.5)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(2.0)"
+                  onmouseenter="previewRating(2.0)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <svg
+                  class="w-full h-full text-[#eaecf0] fill-current"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                  />
+                </svg>
+                <div
+                  class="star-filled absolute top-0 left-0 h-full overflow-hidden transition-all duration-150"
+                  style="width: 100%"
+                >
+                  <svg
+                    class="w-9 h-9 text-orange fill-current"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Star 3 -->
+              <div class="star-item relative w-9 h-9 select-none">
+                <div
+                  class="absolute left-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(2.5)"
+                  onmouseenter="previewRating(2.5)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(3.0)"
+                  onmouseenter="previewRating(3.0)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <svg
+                  class="w-full h-full text-[#eaecf0] fill-current"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                  />
+                </svg>
+                <div
+                  class="star-filled absolute top-0 left-0 h-full overflow-hidden transition-all duration-150"
+                  style="width: 100%"
+                >
+                  <svg
+                    class="w-9 h-9 text-orange fill-current"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Star 4 -->
+              <div class="star-item relative w-9 h-9 select-none">
+                <div
+                  class="absolute left-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(3.5)"
+                  onmouseenter="previewRating(3.5)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(4.0)"
+                  onmouseenter="previewRating(4.0)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <svg
+                  class="w-full h-full text-[#eaecf0] fill-current"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                  />
+                </svg>
+                <div
+                  class="star-filled absolute top-0 left-0 h-full overflow-hidden transition-all duration-150"
+                  style="width: 100%"
+                >
+                  <svg
+                    class="w-9 h-9 text-orange fill-current"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Star 5 -->
+              <div class="star-item relative w-9 h-9 select-none">
+                <div
+                  class="absolute left-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(4.5)"
+                  onmouseenter="previewRating(4.5)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <div
+                  class="absolute right-0 top-0 w-1/2 h-full z-20 cursor-pointer"
+                  onclick="setRating(5.0)"
+                  onmouseenter="previewRating(5.0)"
+                  onmouseleave="clearPreview()"
+                ></div>
+                <svg
+                  class="w-full h-full text-[#eaecf0] fill-current"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                  />
+                </svg>
+                <div
+                  class="star-filled absolute top-0 left-0 h-full overflow-hidden transition-all duration-150"
+                  style="width: 0%"
+                >
+                  <svg
+                    class="w-9 h-9 text-orange fill-current"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 .587l3.668 7.431 8.2 1.19-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.208l8.2-1.19z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Textarea Container -->
+          <div>
+            <textarea
+              required
+              id="review-textarea"
+              placeholder="Share your thoughts about this course."
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400 resize-none h-[120px]"
+              aria-label="Share your thoughts about this course."
+            ></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center justify-center gap-4">
+            <button
+              type="submit"
+              class="flex w-[182px] h-[52px] items-center justify-center bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] cursor-pointer"
+            >
+              Submit review
+            </button>
+            <button
+              type="button"
+              onclick="closeModal()"
+              class="flex w-[182px] h-[52px] items-center justify-center border border-orange hover:bg-orange/5 text-orange font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl transition-all hover:scale-[1.02] cursor-pointer text-center"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 2. SUCCESS VIEW (Hidden by default) -->
+      <div id="success-view" class="space-y-6 hidden text-center">
+        <div class="space-y-3">
+          <h3
+            class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Review submitted
+          </h3>
+          <p class="text-sm text-body leading-relaxed">
+            Thank you! Your review has been saved successfully.
+          </p>
+        </div>
+        <button
+          type="button"
+          onclick="closeModal()"
+          class="w-[182px] h-[52px] flex items-center justify-center bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl transition-all hover:scale-[1.02] cursor-pointer mx-auto"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- Rating Logic -->
+    <script>
+      let currentRating = 4.0;
+      let hoveredRating = null;
+
+      const ratingLabels = {
+        0: 'Select your rating',
+        0.5: 'Worst',
+        1.0: 'Terrible',
+        1.5: 'Bad',
+        2.0: 'Below Average',
+        2.5: 'Okay',
+        3.0: 'Average',
+        3.5: 'Decent',
+        4.0: 'Good!',
+        4.5: 'Great!',
+        5.0: 'Excellent!'
+      };
+
+      function updateStarsDisplay(rating) {
+        const stars = document.querySelectorAll('.star-item');
+        stars.forEach((star, index) => {
+          const starVal = index + 1;
+          const filledPart = star.querySelector('.star-filled');
+          if (rating >= starVal) {
+            filledPart.style.width = '100%';
+          } else if (rating >= starVal - 0.5) {
+            filledPart.style.width = '50%';
+          } else {
+            filledPart.style.width = '0%';
+          }
+        });
+      }
+
+      function updateLabelDisplay(rating) {
+        const labelEl = document.getElementById('rating-label');
+        if (labelEl) {
+          labelEl.textContent = ratingLabels[rating] || 'Select your rating';
+        }
+      }
+
+      function setRating(rating) {
+        currentRating = rating;
+        updateStarsDisplay(currentRating);
+        updateLabelDisplay(currentRating);
+      }
+
+      function previewRating(rating) {
+        hoveredRating = rating;
+        updateStarsDisplay(hoveredRating);
+        updateLabelDisplay(hoveredRating);
+      }
+
+      function clearPreview() {
+        hoveredRating = null;
+        updateStarsDisplay(currentRating);
+        updateLabelDisplay(currentRating);
+      }
+
+      function closeModal() {
+        if (document.referrer && document.referrer.includes('mypage.html')) {
+          window.location.href = '../mypage/mypage.html';
+        } else {
+          window.location.href = '../main.html';
+        }
+      }
+
+      function handleReviewSubmit(e) {
+        e.preventDefault();
+        document.getElementById('review-form-view').classList.add('hidden');
+        document.getElementById('success-view').classList.remove('hidden');
+      }
+
+      // Initialize with default rating
+      setRating(currentRating);
+    </script>
+  </body>
+</html>

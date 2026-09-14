@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | Create your account</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02', // Brand orange token
+              'orange-hover': '#e04400', // Brand orange hover token
+              'gray-soft': '#f2f4f7', // Brand soft gray token
+              body: '#475467' // Brand body text token
+            },
+            fontFamily: {
+              heading: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      /* Accessibility Focus styling aligned with design-system.md */
+      :focus-visible {
+        outline: 2px solid #00adbd !important;
+        outline-offset: 2px !important;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen relative flex items-center justify-center p-4 font-body bg-[#f9fafb]"
+  >
+    <!-- Background Backdrop Link: Clicking backdrop redirects to main.html -->
+    <a
+      href="../main.html"
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"
+      aria-label="Close modal and return to main page"
+    ></a>
+
+    <!-- Modal Box (Elevated above backdrop) -->
+    <div
+      class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[480px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy"
+    >
+      <!-- Close Button: Redirects back to main.html. Sized to w-11 h-11 (44px) for WCAG accessibility touch targets -->
+      <a
+        href="../main.html"
+        class="absolute right-6 top-6 w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-navy hover:bg-gray-soft transition-colors cursor-pointer"
+        aria-label="Close modal"
+      >
+        <span class="material-symbols-outlined text-lg">close</span>
+      </a>
+
+      <!-- ================= SIGN UP FLOW ================= -->
+      <div id="signup-flow" class="space-y-[23px]">
+        <h2
+          class="text-[24px] font-bold text-center tracking-tight font-heading leading-tight text-navy whitespace-nowrap"
+        >
+          Create your account
+        </h2>
+
+        <!-- Google Sign-in. Styled to rounded-2xl (mandatory for buttons) and font-heading per typography tokens -->
+        <button 
+          type="button"
+          class="w-full min-h-[44px] border border-gray-300 hover:bg-gray-50 text-navy font-bold py-4 px-3 sm:px-6 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] flex items-center justify-center gap-3 cursor-pointer"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.97 1 12 1 7.35 1 3.4 3.65 1.56 7.56l3.86 3C6.35 7.67 8.93 5.04 12 5.04z"/>
+            <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.33H12v4.42h6.43c-.28 1.44-1.1 2.66-2.33 3.47v2.88h3.77c2.2-2.02 3.62-5 3.62-8.44z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.23-.69-.35-1.43-.35-2.2s.13-1.51.35-2.2V6.69H1.98C1.21 8.24.77 9.97.77 11.8s.44 3.56 1.21 5.11l3.86-3z"/>
+            <path fill="#34A853" d="M12 23c3.24 0 5.97-1.08 7.96-2.91l-3.77-2.88c-1.04.7-2.38 1.12-4.19 1.12-3.07 0-5.65-2.07-6.58-4.86H1.56v3.08C3.4 20.35 7.35 23 12 23z"/>
+          </svg>
+          <span class="whitespace-nowrap">Continue with google</span>
+        </button>
+
+        <!-- OR Separator (Poppins font-heading style) -->
+        <div
+          class="text-center font-bold text-sm tracking-[0.18em] font-heading text-navy"
+        >
+          OR
+        </div>
+
+        <!-- Form fields. Styled to rounded-xl and px-4 py-3 per spacing tokens -->
+        <form onsubmit="handleAuthSubmit(event, 'signup')">
+          <div class="space-y-[23px]">
+            <div class="grid grid-cols-2 gap-4">
+              <input
+                type="text"
+                required
+                placeholder="First name"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              />
+              <input
+                type="text"
+                required
+                placeholder="Last name"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              />
+            </div>
+
+            <input
+              type="email"
+              required
+              placeholder="Email address"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            />
+
+            <input
+              type="password"
+              required
+              placeholder="Password"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Submit Button. Styled to rounded-2xl, py-4, text-lg font-bold, font-heading with standard shadow token -->
+          <button
+            type="submit"
+            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+          >
+            CONTINUE
+          </button>
+        </form>
+
+        <!-- Footer Link (Underlined text-navy) -->
+        <div class="text-center text-sm text-body mt-[40px]">
+          Already have an account?
+          <button
+            type="button"
+            onclick="toggleFlow('login')"
+            class="font-semibold text-navy underline ml-1 hover:text-orange transition-colors cursor-pointer"
+          >
+            Log in
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= SIGN IN FLOW (Hidden by default) ================= -->
+      <div id="login-flow" class="space-y-[23px] hidden">
+        <h2
+          class="text-[24px] font-bold text-center tracking-tight font-heading leading-tight text-navy whitespace-nowrap"
+        >
+          Sign in to Pacemaker
+        </h2>
+
+        <!-- Google Sign-in. Rounded-2xl and font-heading -->
+        <button 
+          type="button"
+          class="w-full min-h-[44px] border border-gray-300 hover:bg-gray-50 text-navy font-bold py-4 px-3 sm:px-6 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] flex items-center justify-center gap-3 cursor-pointer"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.97 1 12 1 7.35 1 3.4 3.65 1.56 7.56l3.86 3C6.35 7.67 8.93 5.04 12 5.04z"/>
+            <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.33H12v4.42h6.43c-.28 1.44-1.1 2.66-2.33 3.47v2.88h3.77c2.2-2.02 3.62-5 3.62-8.44z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.23-.69-.35-1.43-.35-2.2s.13-1.51.35-2.2V6.69H1.98C1.21 8.24.77 9.97.77 11.8s.44 3.56 1.21 5.11l3.86-3z"/>
+            <path fill="#34A853" d="M12 23c3.24 0 5.97-1.08 7.96-2.91l-3.77-2.88c-1.04.7-2.38 1.12-4.19 1.12-3.07 0-5.65-2.07-6.58-4.86H1.56v3.08C3.4 20.35 7.35 23 12 23z"/>
+          </svg>
+          <span class="whitespace-nowrap">Continue with google</span>
+        </button>
+
+        <!-- OR Separator -->
+        <div
+          class="text-center font-bold text-sm tracking-[0.18em] font-heading text-navy"
+        >
+          OR
+        </div>
+
+        <!-- Form fields. Rounded-xl and px-4 py-3 -->
+        <form onsubmit="handleAuthSubmit(event, 'login')">
+          <div class="space-y-[23px]">
+            <input
+              type="email"
+              required
+              placeholder="Email address"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            />
+
+            <input
+              type="password"
+              required
+              placeholder="Password"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Submit Button. Rounded-2xl, py-4, text-lg font-bold, font-heading -->
+          <button
+            type="submit"
+            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+          >
+            CONTINUE
+          </button>
+        </form>
+
+        <!-- Footer Link -->
+        <div class="text-center text-sm text-body mt-[40px]">
+          Don't have an account?
+          <button
+            type="button"
+            onclick="toggleFlow('signup')"
+            class="font-semibold text-navy underline ml-1 hover:text-orange transition-colors cursor-pointer"
+          >
+            Sign up
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline Script for Flow Switcher (Completely Offline Safe) -->
+    <script>
+      function toggleFlow(flow) {
+        const signupFlow = document.getElementById('signup-flow');
+        const loginFlow = document.getElementById('login-flow');
+
+        if (flow === 'signup') {
+          signupFlow.classList.remove('hidden');
+          loginFlow.classList.add('hidden');
+          document.title = 'Pacemaker | Create your account';
+        } else {
+          signupFlow.classList.add('hidden');
+          loginFlow.classList.remove('hidden');
+          document.title = 'Pacemaker | Sign In';
+        }
+      }
+
+      function handleAuthSubmit(event, type) {
+        event.preventDefault();
+        alert(
+          type === 'login'
+            ? 'Logged in successfully! (Demo)'
+            : 'Account created successfully! (Demo)'
+        );
+        window.location.href = '../main.html';
+      }
+    </script>
+  </body>
+</html>

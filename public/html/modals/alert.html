@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pacemaker | Alert Popups</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: '#00263b',
+              teal: '#00adbd',
+              orange: '#ff4f02', // Brand orange token
+              'orange-hover': '#e04400', // Brand orange hover token
+              'gray-soft': '#f2f4f7', // Brand soft gray token
+              body: '#475467' // Brand body text token
+            },
+            fontFamily: {
+              heading: ['Poppins', 'sans-serif'],
+              body: ['Source Sans 3', 'sans-serif']
+            },
+            boxShadow: {
+              card: '0 10px 30px rgba(0,38,59,0.08)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      /* Accessibility Focus styling */
+      :focus-visible {
+        outline: 2px solid #00adbd !important;
+        outline-offset: 2px !important;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen relative flex items-center justify-center p-4 font-body bg-[#f9fafb]"
+  >
+    <!-- State Toggle Selector for Developers/Reviewers -->
+    <div
+      class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-full shadow-md flex gap-1 border border-gray-200 text-xs"
+    >
+      <button
+        onclick="switchAlert('refund')"
+        id="tab-refund"
+        class="px-4 py-2 rounded-full font-bold transition-all bg-orange text-white"
+      >
+        Request refund
+      </button>
+      <button
+        onclick="switchAlert('save')"
+        id="tab-save"
+        class="px-4 py-2 rounded-full font-bold transition-all text-navy hover:bg-gray-100"
+      >
+        Save receipt
+      </button>
+      <button
+        onclick="switchAlert('saved')"
+        id="tab-saved"
+        class="px-4 py-2 rounded-full font-bold transition-all text-navy hover:bg-gray-100"
+      >
+        Receipt saved
+      </button>
+    </div>
+
+    <!-- Background Backdrop Link: Redirects to order history -->
+    <a
+      href="../mypage/order_history.html"
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"
+      aria-label="Close alert and return to order history"
+    ></a>
+
+    <!-- Modal Box (Elevated, max-w-[360px] per standard compact alert size) -->
+    <div
+      class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-10 p-8 text-center text-navy"
+    >
+      <!-- 1. REQUEST REFUND ALERT -->
+      <div id="alert-refund" class="space-y-6">
+        <div class="space-y-3">
+          <h3
+            class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Request refund
+          </h3>
+          <p class="text-sm text-body leading-relaxed">
+            To request a refund, please send an email to pacemaker@gmail.com
+          </p>
+        </div>
+        <button
+          type="button"
+          onclick="closeAlert()"
+          class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          Confirm
+        </button>
+      </div>
+
+      <!-- 2. SAVE RECEIPT ALERT -->
+      <div id="alert-save" class="space-y-6 hidden">
+        <div class="space-y-3">
+          <h3
+            class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Save receipt
+          </h3>
+          <p class="text-sm text-body leading-relaxed">
+            Would you like to save the receipt?
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onclick="switchAlert('saved')"
+            class="min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer"
+          >
+            Confirm
+          </button>
+          <button
+            type="button"
+            onclick="closeAlert()"
+            class="min-h-[44px] border border-gray-300 hover:bg-gray-50 text-gray-500 font-semibold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. RECEIPT SAVED ALERT -->
+      <div id="alert-saved" class="space-y-6 hidden">
+        <div class="space-y-3">
+          <h3
+            class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Receipt saved
+          </h3>
+          <p class="text-sm text-body leading-relaxed">
+            Your receipt has been saved successfully.
+          </p>
+        </div>
+        <button
+          type="button"
+          onclick="closeAlert()"
+          class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+
+    <!-- Toggle & Navigation Logic -->
+    <script>
+      function switchAlert(type) {
+        // Hide all templates
+        document.getElementById('alert-refund').classList.add('hidden');
+        document.getElementById('alert-save').classList.add('hidden');
+        document.getElementById('alert-saved').classList.add('hidden');
+
+        // Show active template
+        document.getElementById('alert-' + type).classList.remove('hidden');
+
+        // Reset tabs styling
+        const tabs = ['refund', 'save', 'saved'];
+        tabs.forEach((t) => {
+          const tabBtn = document.getElementById('tab-' + t);
+          if (t === type) {
+            tabBtn.className =
+              'px-4 py-2 rounded-full font-bold transition-all bg-orange text-white';
+          } else {
+            tabBtn.className =
+              'px-4 py-2 rounded-full font-bold transition-all text-navy hover:bg-gray-100';
+          }
+        });
+      }
+
+      function closeAlert() {
+        window.location.href = '../mypage/order_history.html';
+      }
+    </script>
+  </body>
+</html>

@@ -263,3 +263,45 @@ npm run jira -- add-to-sprint --issue PACE-123 --current
 ```
 
 Add `--json` to any read command for machine-readable output.
+
+## Git AI Auto-Commit CLI (git-cm)
+
+This repository includes an automated commit message generator using AI (Llama 3.3, GPT-4o-mini, and Gemini 2.5 Flash via OpenRouter).
+
+### Prerequisites & Setup
+
+1. **Install Dependencies**: Make sure you have installed devDependencies.
+   ```bash
+   npm install
+   ```
+2. **Add API Key**: Get an OpenRouter API key and add it to your `.env.local` or `.env` file:
+   ```env
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
+3. **Register Git Alias (Recommended)**: Run this command in your terminal to easily trigger the command with `git cm`:
+   ```bash
+   git config alias.cm "!node scripts/git-cm.js"
+   ```
+
+### Usage
+
+1. Stage your changes:
+   ```bash
+   git add .
+   ```
+2. Run the auto-commit tool:
+   ```bash
+   git cm
+   ```
+3. The CLI will output a suggested commit message standardizing to Conventional Commits. Enter `Y` or press `Enter` to approve and commit, or `n` to cancel.
+
+### Options
+
+- `--verbose`: Includes a detailed explanation paragraph explaining the changes in the commit body.
+  ```bash
+  git cm --verbose
+  ```
+- `-y`: Auto-approves the suggested commit message and commits directly without asking for confirmation.
+  ```bash
+  git cm -y
+  ```
