@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { CartItem } from '@/types/my-card';
 import { amountToCents, formatMoneyFromCents } from '@/lib/money';
 import { toast } from 'sonner';
@@ -34,16 +33,15 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const discountCents = 0;
   const taxCents = 0;
   const totalCents = subtotalCents - discountCents + taxCents;
-  const isCheckoutDisabled = selectedItem.length === 0 || isCheckingOut;
+  const isCheckoutDisabled =
+    selectedItem.length === 0 || isCheckingOut || isApplyingPromotionCode;
   const formatCartAmount = (cents: number) =>
     formatMoneyFromCents(cents, 'cad', 'en-US');
   const trimmedPromotionCode = promotionCodeInput.trim();
   const discountDisplay = appliedPromotionCode
-    ? 'Stripe Checkout에서 적용'
+    ? 'Applied at checkout'
     : `-${formatCartAmount(discountCents)}`;
-  const totalLabel = appliedPromotionCode
-    ? '할인 전 예상 금액'
-    : '총 결제 금액';
+  const totalLabel = appliedPromotionCode ? 'Before discount' : 'Total';
 
   const handlePromotionCodeChange = (value: string) => {
     setPromotionCodeInput(value);
@@ -58,14 +56,14 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
 
   const applyPromotionCode = async () => {
     if (selectedItem.length === 0) {
-      const message = '결제할 항목을 선택해주세요.';
+      const message = 'Please select items to check out.';
       setCheckoutError(message);
       toast.error(message);
       return;
     }
 
     if (!trimmedPromotionCode) {
-      const message = '프로모션 코드를 입력해주세요.';
+      const message = 'Please enter a promo code.';
       setCheckoutError(message);
       toast.error(message);
       return;
@@ -86,17 +84,17 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
       const data = await response.json();
 
       if (!response.ok || !data.promotionCode?.code) {
-        throw new Error(data.error || '프로모션 코드를 적용하지 못했습니다.');
+        throw new Error(data.error || 'Unable to apply the promo code.');
       }
 
       setAppliedPromotionCode(data.promotionCode.code);
       setPromotionCodeInput(data.promotionCode.code);
-      toast.success('프로모션 코드가 적용되었습니다.');
+      toast.success('Promo code applied.');
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
-          : '프로모션 코드를 적용하지 못했습니다.';
+          : 'Unable to apply the promo code.';
 
       setAppliedPromotionCode(null);
       setCheckoutError(message);
@@ -108,14 +106,14 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
 
   const startCheckout = async () => {
     if (selectedItem.length === 0) {
-      const message = '결제할 항목을 선택해주세요.';
+      const message = 'Please select items to check out.';
       setCheckoutError(message);
       toast.error(message);
       return;
     }
 
     if (trimmedPromotionCode && !appliedPromotionCode) {
-      const message = '프로모션 코드를 먼저 등록해주세요.';
+      const message = 'Please apply your promo code before checkout.';
       setCheckoutError(message);
       toast.error(message);
       return;
@@ -138,15 +136,13 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
       const data = await response.json();
 
       if (!response.ok || !data.checkoutUrl) {
-        throw new Error(data.error || '체크아웃을 시작하지 못했습니다.');
+        throw new Error(data.error || 'Unable to start checkout.');
       }
 
       window.location.assign(data.checkoutUrl);
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : '체크아웃을 시작하지 못했습니다.';
+        error instanceof Error ? error.message : 'Unable to start checkout.';
 
       setCheckoutError(message);
       toast.error(message);
@@ -155,167 +151,140 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
     }
   };
 
-  const renderPromotionControls = (className = '') => (
-    <div className={className}>
-      <div className="flex gap-1 text-pace-sm">
-        <input
-          type="text"
-          value={promotionCodeInput}
-          onChange={(event) => handlePromotionCodeChange(event.target.value)}
-          placeholder="프로모션 코드 입력"
-          className="min-w-0 flex-1 rounded-full border border-[#EEEEEE] px-4 py-2 placeholder-[#757575] focus:border-[#6F6F6F] focus:outline-none"
-        />
-        <button
-          type="button"
-          className="shrink-0 rounded-full border border-[#EEEEEE] px-4 py-2 text-pace-gray-700 hover:border-[#6F6F6F] disabled:cursor-not-allowed disabled:text-pace-stone-500 disabled:hover:border-[#EEEEEE]"
-          onClick={applyPromotionCode}
-          disabled={
-            isApplyingPromotionCode ||
-            selectedItem.length === 0 ||
-            !trimmedPromotionCode
-          }
-        >
-          {isApplyingPromotionCode
-            ? '확인 중...'
-            : appliedPromotionCode
-              ? '변경'
-              : '등록'}
-        </button>
+  return (
+    <aside
+      aria-label="Checkout summary"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[#eaecf0] bg-white shadow-[0_-8px_30px_rgba(0,38,59,0.06)]"
+    >
+      <div
+        id="cart-order-details"
+        hidden={!showDetails}
+        className="max-h-[65dvh] overflow-y-auto border-b border-gray-100 bg-white"
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') setShowDetails(false);
+        }}
+      >
+        <div className="mx-auto max-w-[1248px] space-y-4 px-4 py-6 text-navy sm:px-6">
+          <h2 className="font-headline text-base font-bold">Order Summary</h2>
+          <div className="grid grid-cols-1 items-start gap-8 text-sm md:grid-cols-2">
+            <dl className="space-y-3">
+              <div className="flex justify-between gap-4 text-body-text">
+                <dt>
+                  Subtotal ({selectedItem.length}{' '}
+                  {selectedItem.length === 1 ? 'item' : 'items'})
+                </dt>
+                <dd className="font-bold text-navy">
+                  {formatCartAmount(subtotalCents)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 text-orange">
+                <dt>Discount</dt>
+                <dd className="font-bold">{discountDisplay}</dd>
+              </div>
+              <div className="flex justify-between gap-4 text-body-text">
+                <dt>Tax</dt>
+                <dd className="font-bold text-navy">
+                  {formatCartAmount(taxCents)}
+                </dd>
+              </div>
+            </dl>
+            <div className="space-y-2.5">
+              <label
+                htmlFor="cart-promo-code"
+                className="block text-xs font-bold uppercase tracking-wider text-navy"
+              >
+                Promo code
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="cart-promo-code"
+                  type="text"
+                  value={promotionCodeInput}
+                  onChange={(event) =>
+                    handlePromotionCodeChange(event.target.value)
+                  }
+                  placeholder="Enter promo code"
+                  className="min-w-0 flex-1 rounded-none border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-navy placeholder:text-gray-300 focus:border-orange focus:outline-none focus:ring-1 focus:ring-orange"
+                />
+                <button
+                  type="button"
+                  onClick={applyPromotionCode}
+                  disabled={
+                    isApplyingPromotionCode ||
+                    isCheckingOut ||
+                    selectedItem.length === 0 ||
+                    !trimmedPromotionCode
+                  }
+                  className="shrink-0 bg-navy px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[#001e2f] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isApplyingPromotionCode
+                    ? 'Checking...'
+                    : appliedPromotionCode
+                      ? 'Change'
+                      : 'Apply'}
+                </button>
+              </div>
+              {appliedPromotionCode && (
+                <p className="text-xs text-orange">
+                  Applied code: {appliedPromotionCode}
+                </p>
+              )}
+              {appliedPromotionCode && (
+                <p className="text-xs text-body-text">
+                  Your promo discount will be reflected at checkout.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-      {appliedPromotionCode && (
-        <p className="mt-2 text-pace-sm text-pace-orange-600">
-          적용된 코드: {appliedPromotionCode}
+      {checkoutError && (
+        <p
+          role="alert"
+          className="mx-auto max-w-[1248px] px-4 py-2 text-sm text-red-600 sm:px-6"
+        >
+          {checkoutError}
         </p>
       )}
-    </div>
-  );
-
-  return (
-    <>
-      <aside className="hidden lg:block w-80 h-full border-l p-10 pt-20">
-        <h2 className="text-lg font-bold mb-4">예상 결제 금액</h2>
-        <ul className="space-y-4 mb-6 font-normal border-b border-pace-gray-700 pb-6 text-pace-base text-pace-gray-700">
-          <li className="flex justify-between">
-            <span className="text-[#6B7280]">
-              소계 ({selectedItem.length}개 항목)
-            </span>
-            <span>{formatCartAmount(subtotalCents)}</span>
-          </li>
-          <li className="flex justify-between">
-            <span className="text-[#6B7280]">할인 금액</span>
-            <span>{discountDisplay}</span>
-          </li>
-          <li className="flex justify-between">
-            <span className="text-[#6B7280]">세금</span>
-            <span>{formatCartAmount(taxCents)}</span>
-          </li>
-        </ul>
-        <div className="flex justify-between text-pace-base font-semibold pb-6">
-          <span className="text-pace-gray-700">{totalLabel}</span>
-          <span className="text-[#E86642] font-bold">
-            {formatCartAmount(totalCents)}
-          </span>
-        </div>
-        {appliedPromotionCode && (
-          <p className="-mt-4 mb-4 text-pace-sm text-pace-stone-500">
-            프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
-          </p>
-        )}
-        {renderPromotionControls('mb-4')}
-        <button
-          className="w-full h-[56px] bg-orange-500 text-white py-2 rounded-full disabled:cursor-not-allowed disabled:bg-pace-stone-300"
-          onClick={startCheckout}
-          disabled={isCheckoutDisabled}
-        >
-          {isCheckingOut ? '처리 중...' : '결제하기'}
-        </button>
-        {checkoutError && (
-          <p className="mt-3 text-pace-sm text-red-600">{checkoutError}</p>
-        )}
-        <div className="flex justify-center mt-6 text-pace-stone-700 text-[12px]">
-          Secure payment powered by Stripe
-        </div>
-      </aside>
-
-      {/* Sticky Payment Summary */}
-      <aside className="block lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-pace-orange-600 py-4 z-10">
-        <div className="flex flex-col items-center">
-          {/* 상세보기 버튼 */}
-          <div className="flex flex-col items-center text-pace-sm text-pace-stone-800 font-light mb-4">
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => setShowDetails(!showDetails)}
+      <div className="border-t border-navy/10 bg-navy pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_30px_rgba(0,38,59,0.15)]">
+        <div className="relative mx-auto flex max-w-[1248px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+          <button
+            type="button"
+            aria-expanded={showDetails}
+            aria-controls="cart-order-details"
+            onClick={() => setShowDetails(!showDetails)}
+            className="flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-bold text-white/70 transition-colors hover:text-white lg:absolute lg:left-1/2 lg:-translate-x-1/2"
+          >
+            {showDetails ? 'Close' : 'View details'}
+            {showDetails ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronUp className="h-4 w-4" />
+            )}
+          </button>
+          <div className="ml-auto flex items-center justify-end gap-3 sm:gap-5">
+            <div
+              className="flex flex-col gap-0.5 text-right sm:flex-row sm:items-center sm:gap-3"
+              aria-live="polite"
             >
-              {showDetails ? '닫기' : '상세보기'}
-              <Image
-                src={
-                  showDetails
-                    ? '/icons/chevron-down.svg'
-                    : '/icons/chevron-up.svg'
-                }
-                alt=""
-                width={24}
-                height={24}
-              />
-            </Button>
-          </div>
-
-          {/* 상세보기 내용 */}
-          {showDetails && (
-            <div className="w-2/3 text-pace-base text-pace-gray-700">
-              <h2 className="text-pace-gray-500 text-pace-lg font-bold mb-4">
-                예상 결제 금액
-              </h2>
-              <ul className="space-y-4 font-normal text-pace-base text-pace-gray-700">
-                <li className="flex justify-between">
-                  <span className="text-[#6B7280]">
-                    소계 ({selectedItem.length}개 항목)
-                  </span>
-                  <span>{formatCartAmount(subtotalCents)}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-[#6B7280]">할인 금액</span>
-                  <span>{discountDisplay}</span>
-                </li>
-                <li className="flex justify-between">
-                  <span className="text-[#6B7280]">세금</span>
-                  <span>{formatCartAmount(taxCents)}</span>
-                </li>
-              </ul>
-              {renderPromotionControls('my-6 ml-auto w-60')}
-              <div className="mt-4 border-b border-pace-gray-700" />
-            </div>
-          )}
-
-          {/* 총 금액 & 결제 버튼 */}
-          <div className="w-2/3 flex justify-between items-center text-pace-xl">
-            <span className="font-medium">{totalLabel}</span>
-            <div className="flex items-center gap-4">
-              <span className="text-[#E86642] font-bold">
+              <span className="text-[10px] font-bold uppercase leading-none tracking-[0.22em] text-white/65 sm:text-xs">
+                {totalLabel}
+              </span>
+              <span className="font-headline text-lg font-extrabold leading-none sm:text-3xl">
                 {formatCartAmount(totalCents)}
               </span>
-              <button
-                className="w-60 h-[56px] bg-orange-500 text-white px-4 py-2 rounded-full text-pace-lg disabled:cursor-not-allowed disabled:bg-pace-stone-300"
-                onClick={startCheckout}
-                disabled={isCheckoutDisabled}
-              >
-                {isCheckingOut ? '처리 중...' : '결제하기'}
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={startCheckout}
+              disabled={isCheckoutDisabled}
+              className="shrink-0 whitespace-nowrap rounded-full bg-orange px-5 py-2.5 text-xs font-extrabold text-white shadow-[0_12px_24px_rgba(255,79,2,0.28)] transition-colors hover:bg-orange-hover disabled:cursor-not-allowed disabled:opacity-50 sm:px-8 sm:py-3 sm:text-sm"
+            >
+              {isCheckingOut ? 'Processing...' : 'Checkout'}
+            </button>
           </div>
-          {appliedPromotionCode && (
-            <p className="mt-3 w-2/3 text-right text-pace-sm text-pace-stone-500">
-              프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.
-            </p>
-          )}
-          {checkoutError && (
-            <p className="mt-3 w-2/3 text-right text-pace-sm text-red-600">
-              {checkoutError}
-            </p>
-          )}
         </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Prisma } from '@prisma/client';
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn(),
@@ -22,7 +23,7 @@ const { GET } = await import('./route');
 
 describe('GET /api/user', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     vi.mocked(auth).mockResolvedValue({ userId: null } as never);
     vi.mocked(currentUser).mockResolvedValue(null as never);
   });
@@ -113,5 +114,71 @@ describe('GET /api/user', () => {
       error: 'Unable to provision the authenticated user.'
     });
     expect(prismaMock.user.upsert).not.toHaveBeenCalled();
+  });
+
+  it('returns the same Clerk user created by a concurrent request', async () => {
+    const user = { id: 'user-id', clerkId: 'clerk-user-id' };
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk-user-id' } as never);
+    vi.mocked(currentUser).mockResolvedValue({
+      primaryEmailAddress: { emailAddress: 'new-user@example.com' },
+      unsafeMetadata: {}
+    } as never);
+    prismaMock.user.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(user);
+    prismaMock.user.upsert.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: 'test',
+        meta: { target: ['email'] }
+      })
+    );
+
+    const response = await GET();
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(user);
+    expect(prismaMock.user.findUnique).toHaveBeenLastCalledWith({
+      where: { clerkId: 'clerk-user-id' }
+    });
+  });
+
+  it('reports an email conflict without relinking another account', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk-user-id' } as never);
+    vi.mocked(currentUser).mockResolvedValue({
+      primaryEmailAddress: { emailAddress: 'existing@example.com' },
+      unsafeMetadata: {}
+    } as never);
+    prismaMock.user.findUnique.mockResolvedValue(null);
+    prismaMock.user.upsert.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: 'test',
+        meta: { target: ['email'] }
+      })
+    );
+
+    const response = await GET();
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({
+      code: 'ACCOUNT_LINK_CONFLICT'
+    });
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+    expect(prismaMock.user.findUnique).toHaveBeenLastCalledWith({
+      where: { clerkId: 'clerk-user-id' }
+    });
+  });
+
+  it('does not expose database errors in the response', async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: 'clerk-user-id' } as never);
+    prismaMock.user.findUnique.mockRejectedValue(new Error('database details'));
+
+    const response = await GET();
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      error: 'Unable to load your account. Please try again.'
+    });
   });
 });

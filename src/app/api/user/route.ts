@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { v4 as uuidv4 } from 'uuid';
+import { Prisma } from '@prisma/client';
 
 function getClerkUserName(clerkUser: Awaited<ReturnType<typeof currentUser>>) {
   if (!clerkUser) return null;
@@ -49,21 +50,45 @@ export async function GET() {
       );
     }
 
-    const user = await prisma.user.upsert({
-      where: { clerkId: userId },
-      create: {
-        id: uuidv4(),
-        clerkId: userId,
-        email,
-        name: getClerkUserName(clerkUser)
-      },
-      update: {}
-    });
+    const user = await prisma.user
+      .upsert({
+        where: { clerkId: userId },
+        create: {
+          id: uuidv4(),
+          clerkId: userId,
+          email,
+          name: getClerkUserName(clerkUser)
+        },
+        update: {}
+      })
+      .catch(async (error: unknown) => {
+        if (
+          !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+          error.code !== 'P2002'
+        ) {
+          throw error;
+        }
+
+        // A webhook or another request may have created this user concurrently.
+        // Never transfer an account (including its role/orders) by email alone.
+        return prisma.user.findUnique({ where: { clerkId: userId } });
+      });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          error:
+            'Your email is already linked to another account. Please contact support to restore your account connection.',
+          code: 'ACCOUNT_LINK_CONFLICT'
+        },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json(user, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: `Failed to fetch users: ${error}` },
+      { error: 'Unable to load your account. Please try again.' },
       { status: 500 }
     );
   }

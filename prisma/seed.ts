@@ -5,7 +5,8 @@ import {
   EbookCategory,
   WorkshopCategory,
   TargetAudienceType,
-  WorkshopStatus
+  WorkshopStatus,
+  ItemType
 } from '@prisma/client';
 import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -573,7 +574,7 @@ async function main() {
     await prisma.user.upsert({
       where: { email: u.email },
       update: {
-        clerkId: u.clerkId,
+        // Keep the existing Clerk identity; seed IDs may belong to another instance.
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
         nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
@@ -785,6 +786,44 @@ async function main() {
       }
     });
   }
+
+  console.log('Generating cart test data...');
+  const testUser = await prisma.user.findUniqueOrThrow({
+    where: { email: 'user@paceupcareer.com' }
+  });
+  const testEbook = await prisma.ebook.findFirstOrThrow({
+    where: { ebookId: 'ebook-1' }
+  });
+  const testWorkshop = await prisma.workshop.findFirstOrThrow({
+    orderBy: { orderKey: 'asc' }
+  });
+
+  await prisma.cart.createMany({
+    data: [
+      {
+        userId: testUser.id,
+        itemId: courseIds[0],
+        itemType: ItemType.COURSE
+      },
+      {
+        userId: testUser.id,
+        itemId: testEbook.id,
+        itemType: ItemType.EBOOK
+      },
+      {
+        userId: testUser.id,
+        itemId: '32ktrbrf3j',
+        itemType: ItemType.VIDEO
+      },
+      {
+        userId: testUser.id,
+        itemId: testWorkshop.id,
+        itemType: ItemType.WORKSHOP,
+        workshopId: testWorkshop.id
+      }
+    ],
+    skipDuplicates: true
+  });
 
   console.log('🎉 Seed data created successfully!');
 }
