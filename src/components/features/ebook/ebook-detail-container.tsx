@@ -7,7 +7,7 @@ import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ItemType, TargetAudienceType } from '@prisma/client';
-import { CodeSquare, FileEdit } from 'lucide-react';
+import { Code, FileText } from 'lucide-react';
 import { RelatedContentItem } from '@/types/video-detail';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
@@ -193,12 +193,12 @@ export default function EbookDetailContainer({
 
   const recommendationItems = [
     {
-      icon: CodeSquare,
+      icon: Code,
       label: 'IT Specialist',
       text: 'For those interested in North American tech careers'
     },
     {
-      icon: FileEdit,
+      icon: FileText,
       label: 'Resume Prep',
       text: 'For those who need help with North American resumes'
     }
@@ -227,23 +227,23 @@ export default function EbookDetailContainer({
         itemType={ItemType.EBOOK}
       />
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
-        <div className="w-full flex flex-col gap-8">
+        <div className="w-full flex flex-col">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title={sectionTitle ?? title ?? ''}
+            className="mb-12"
           />
-          <div className="w-full flex gap-8">
-            <div className="w-[60%]">
-              <p className="text-pace-stone-500 leading-relaxed">
-                {subDescription}
-              </p>
-            </div>
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-16">
+            <p className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-line">
+              {subDescription}
+            </p>
             <ExpandableCards
               items={
                 tableOfContents && Array.isArray(tableOfContents)
                   ? tableOfContents
                   : []
               }
+              className="w-full lg:w-[480px] max-w-none mx-0"
             />
           </div>
         </div>
@@ -255,6 +255,7 @@ export default function EbookDetailContainer({
         <DetailRelatedContentSection
           title="Recommended E-books"
           items={relatedItems}
+          itemType={ItemType.EBOOK}
         />
         <DetailReviewsSection
           title="Reader Reviews"
