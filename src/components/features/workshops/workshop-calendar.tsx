@@ -7,8 +7,9 @@ import EventPopup from '@/components/features/workshops/event-popup';
 import { Button } from '@/components/ui/button';
 import { enUS } from 'date-fns/locale';
 import { toast } from 'sonner';
-import { calendarStyleMap } from '@/components/ui/calendar-style-map';
+import { getCalendarStyle } from '@/components/ui/calendar-style-map';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { WorkshopStatus } from '@/types/workshops';
 
 const locales = { 'en-US': enUS };
 
@@ -26,7 +27,7 @@ export type CalendarEvent = {
   end: Date;
   speaker: string;
   fee: string;
-  status: 'OPEN' | 'CLOSED' | 'COMPLETED';
+  status: WorkshopStatus;
 };
 
 export type WorkshopFromApi = {
@@ -157,7 +158,7 @@ export default function WorkshopCalendar({
       end: new Date(w.endDate),
       speaker: w.instructors[0]?.instructor?.name ?? 'Unknown',
       fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
-      status: w.status as CalendarEvent['status']
+      status: w.status as WorkshopStatus
     }));
 
     setEvents(formatted);
@@ -263,7 +264,7 @@ export default function WorkshopCalendar({
               <div
                 onClick={(e) => handleEventClick(e, event)}
                 title={event.title}
-                className={`${openedEvent ? 'md:rounded-t' : 'md:rounded'} flex max-w-full cursor-pointer items-center justify-center truncate rounded-full border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${calendarStyleMap[event.status].event}`}
+                className={`${openedEvent ? 'md:rounded-t' : 'md:rounded'} flex max-w-full cursor-pointer items-center justify-center truncate rounded-full border px-1 py-0.5 text-[11px] font-bold transition-all duration-200 hover:scale-[1.02] md:px-1.5 md:text-[14px] ${getCalendarStyle(event.status).event}`}
               >
                 <span className="hidden truncate md:inline">{event.title}</span>
                 <span
@@ -315,7 +316,7 @@ export default function WorkshopCalendar({
           </div>
 
           <div
-            className={`hidden rounded-b-lg p-3 md:block ${calendarStyleMap[openedEvent.status].popup}`}
+            className={`hidden rounded-b-lg p-3 md:block ${getCalendarStyle(openedEvent.status).popup}`}
           >
             {openedEvent.speaker &&
               openedEvent.speaker.toUpperCase() !== 'UNKNOWN' && (
@@ -329,7 +330,7 @@ export default function WorkshopCalendar({
                 onSelectWorkshop?.(openedEvent.title);
                 setOpenedEvent(null);
               }}
-              className={`mx-auto mt-1 flex h-[22px] w-[87px] items-center justify-center rounded-full p-0 text-center text-xs font-light text-white transition-all duration-200 ${calendarStyleMap[openedEvent.status].button}`}
+              className={`mx-auto mt-1 flex h-[22px] w-[87px] items-center justify-center rounded-full p-0 text-center text-xs font-light text-white transition-all duration-200 ${getCalendarStyle(openedEvent.status).button}`}
             >
               View detail
             </Button>
