@@ -1,6 +1,7 @@
 'use client';
 import SectionHeader from './section-header';
 import RelatedContentCard from './related-content-card';
+import { ItemType } from '@prisma/client';
 
 import { RelatedContentItem } from '@/types/video-detail';
 
@@ -10,6 +11,7 @@ interface DetailRelatedContentSectionProps {
   gridCols?: '1' | '2' | '3';
   headerClassName?: string;
   cardClassName?: string;
+  itemType?: ItemType;
 }
 
 export default function DetailRelatedContentSection({
@@ -17,7 +19,8 @@ export default function DetailRelatedContentSection({
   items = [],
   gridCols = '3',
   headerClassName,
-  cardClassName
+  cardClassName,
+  itemType
 }: DetailRelatedContentSectionProps) {
   const getGridClass = () => {
     switch (gridCols) {
@@ -44,6 +47,8 @@ export default function DetailRelatedContentSection({
             category={item.category}
             linkUrl={item.linkUrl}
             thumbnail={item.thumbnail}
+            tagline={item.tagline}
+            itemType={itemType}
             className={cardClassName}
           />
         ))}

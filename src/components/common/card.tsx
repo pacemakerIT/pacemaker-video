@@ -9,6 +9,7 @@ import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUserContext } from '@/app/context/user-context';
 import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
+import { getCategoryColors } from '@/lib/category-colors';
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType;
@@ -76,47 +77,7 @@ export default function Card({
 
   const displayTitle = visualTitle2 || title || '';
 
-  const colorMap: Record<string, { bg: string; badge: string; text: string }> =
-    {
-      MARKETING: {
-        bg: 'bg-[#FFF5F2]',
-        badge: 'bg-[#FF7E54]',
-        text: 'text-[#FF6B3D]'
-      },
-      DESIGN: {
-        bg: 'bg-[#FFF1F1]',
-        badge: 'bg-[#FF6666]',
-        text: 'text-[#FF7272]'
-      },
-      GOV: {
-        bg: 'bg-[#F0FDF4]',
-        badge: 'bg-[#34D399]',
-        text: 'text-[#10B981]'
-      },
-      IT: { bg: 'bg-[#F0F7FF]', badge: 'bg-[#36A6F7]', text: 'text-[#36A6F7]' },
-      RESUME: {
-        bg: 'bg-white',
-        badge: 'bg-[#FF9631]',
-        text: 'text-navy'
-      },
-      INTERVIEW: {
-        bg: 'bg-white',
-        badge: 'bg-[#36A6F7]',
-        text: 'text-navy'
-      },
-      NETWORKING: {
-        bg: 'bg-white',
-        badge: 'bg-[#9F5BE7]',
-        text: 'text-navy'
-      },
-      DEFAULT: {
-        bg: 'bg-[#FFFFFF]',
-        badge: 'bg-[#A0AEC0]',
-        text: 'text-[#4A5568]'
-      }
-    };
-
-  const colors = colorMap[category?.toUpperCase() || ''] || colorMap.DEFAULT;
+  const colors = getCategoryColors(category);
 
   return (
     <div className="cursor-pointer group">

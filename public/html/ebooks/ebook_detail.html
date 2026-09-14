@@ -1550,8 +1550,11 @@
                   function (otherToggle) {
                     if (otherToggle !== toggle) {
                       otherToggle.setAttribute('aria-expanded', 'false');
-                      var otherPanelId = otherToggle.getAttribute('data-target');
-                      var otherPanel = otherPanelId ? document.getElementById(otherPanelId) : null;
+                      var otherPanelId =
+                        otherToggle.getAttribute('data-target');
+                      var otherPanel = otherPanelId
+                        ? document.getElementById(otherPanelId)
+                        : null;
                       if (otherPanel) {
                         otherPanel.classList.remove('is-open');
                       }

@@ -30,6 +30,7 @@ export interface RelatedContentItem {
   type: string;
   thumbnail: string | null;
   linkUrl?: string;
+  tagline?: string;
 }
 
 export interface Review {
