@@ -66,6 +66,32 @@ const config: Config = {
         error: '#ba1a1a',
         'body-text': '#475467',
 
+        // ebook/course category palette (used by src/lib/category-colors.ts)
+        category: {
+          marketing: '#FF6B3D',
+          'marketing-bg': '#FFF5F2',
+          'marketing-badge': '#FF6B3D',
+          design: '#FF7272',
+          'design-bg': '#FFF1F1',
+          'design-badge': '#FF7272',
+          it: '#36A6F7',
+          'it-bg': '#EAF2FF',
+          public: '#10B981',
+          'public-bg': '#F0FDF4',
+          gov: '#10B981',
+          'gov-bg': '#F0FDF4',
+          'gov-badge': '#34D399',
+          accounting: '#9F5BE7',
+          'accounting-bg': '#F5F3FF',
+          service: '#F5A623',
+          'service-bg': '#FFFBEB',
+          'resume-badge': '#FF9631',
+          'interview-badge': '#36A6F7',
+          'networking-badge': '#9F5BE7',
+          default: '#4A5568',
+          'default-badge': '#A0AEC0'
+        },
+
         // pace custom
         'pace-beige': { 500: '#F0E8E0' },
         'pace-black': {
