@@ -53,7 +53,7 @@ describe('ImageOverlayCard', () => {
 
   it('toggles like state when heart button is clicked', () => {
     render(<ImageOverlayCard {...mockCard} />);
-    const likeButton = screen.getByRole('button', { name: /like/i });
+    const likeButton = screen.getByRole('button', { name: 'Save' });
     fireEvent.click(likeButton);
     expect(mockAddFavorite).toHaveBeenCalledWith('1', ItemType.WORKSHOP);
   });

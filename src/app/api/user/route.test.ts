@@ -72,13 +72,16 @@ describe('GET /api/user', () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(provisionedUser);
     expect(prismaMock.user.upsert).toHaveBeenCalledWith({
-      where: { clerkId: 'clerk-user-id' },
+      where: { email: 'new-user@example.com' },
       create: expect.objectContaining({
         clerkId: 'clerk-user-id',
         email: 'new-user@example.com',
         name: 'New User'
       }),
-      update: {}
+      update: {
+        clerkId: 'clerk-user-id',
+        name: 'New User'
+      }
     });
   });
 
@@ -97,9 +100,12 @@ describe('GET /api/user', () => {
     await GET();
 
     expect(prismaMock.user.upsert).toHaveBeenCalledWith({
-      where: { clerkId: 'clerk-user-id' },
+      where: { email: 'new-user@example.com' },
       create: expect.objectContaining({ name: 'Email User' }),
-      update: {}
+      update: {
+        clerkId: 'clerk-user-id',
+        name: 'Email User'
+      }
     });
   });
 

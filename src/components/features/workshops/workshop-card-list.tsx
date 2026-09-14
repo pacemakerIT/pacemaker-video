@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { WorkshopCard, WorkshopStatus } from '@/types/workshops';
 import { useUserContext } from '@/app/context/user-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
@@ -24,6 +25,7 @@ export default function WorkshopCardList({
   selectedTitle
 }: Props) {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const router = useRouter();
 
   const { user } = useUserContext();
   const userId = user?.id;
@@ -111,16 +113,28 @@ export default function WorkshopCardList({
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
           '/icons/workshop-card.svg';
-        const instructorName = w.instructors[0]?.instructor?.name;
+        const instructorNames = w.instructors
+          .map(({ instructor }) => instructor?.name?.trim())
+          .filter((name) => name && name.toUpperCase() !== 'UNKNOWN');
         const style = getCalendarStyle(w.status);
 
         return (
           <div
             key={w.id}
+            role="link"
+            tabIndex={0}
+            aria-label={`View details for ${w.title}`}
+            onClick={() => router.push(`/workshops/${w.id}`)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                router.push(`/workshops/${w.id}`);
+              }
+            }}
             ref={(el) => {
               cardRefs.current[w.id] = el;
             }} // 각 카드에 ref 연결
-            className="pm-card-lift flex flex-col border border-gray-100 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(0,38,59,0.08)] md:min-h-[220px] md:flex-row md:items-center md:gap-5"
+            className="pm-card-lift flex cursor-pointer flex-col border border-gray-100 bg-white px-6 py-5 shadow-[0_10px_30px_rgba(0,38,59,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 md:min-h-[220px] md:flex-row md:items-center md:gap-5"
           >
             {/* 썸네일 + 좋아요 */}
             <div className="relative h-[180px] w-full flex-shrink-0 bg-gray-50 md:w-[260px]">
@@ -162,7 +176,10 @@ export default function WorkshopCardList({
                     </span>
                   </div>
 
-                  <button className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#333333] transition-colors hover:bg-gray-100">
+                  <button
+                    onClick={(event) => event.stopPropagation()}
+                    className="inline-flex h-[28px] w-[28px] items-center justify-center rounded-full text-[#333333] transition-colors hover:bg-gray-100"
+                  >
                     <Image
                       src="/icons/cart.svg"
                       alt="장바구니"
@@ -190,14 +207,19 @@ export default function WorkshopCardList({
                     <span className="text-gray-300">|</span>
                     <span>{formatDateTime(w.startDate)}</span>
                   </div>
-                  {instructorName &&
-                    instructorName.toUpperCase() !== 'UNKNOWN' && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-gray-400">Instructor</span>
-                        <span className="text-gray-300">|</span>
-                        <span>{instructorName}</span>
-                      </div>
-                    )}
+                  {instructorNames.length > 0 && (
+                    <div className="flex min-w-0 items-start gap-1.5">
+                      <span className="shrink-0 text-gray-400">
+                        {instructorNames.length > 1
+                          ? 'Instructors'
+                          : 'Instructor'}
+                      </span>
+                      <span className="text-gray-300">|</span>
+                      <span className="min-w-0 break-words">
+                        {instructorNames.join(', ')}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-1.5">
                     <span className="text-gray-400">Location</span>
                     <span className="text-gray-300">|</span>

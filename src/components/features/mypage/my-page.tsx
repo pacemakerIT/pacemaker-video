@@ -9,7 +9,7 @@ import MyPageSidebar from './my-page-side-bar';
 export default function MyPage({ children }: { children: React.ReactNode }) {
   const { user, isLoading, error } = useUserContext();
   const router = useRouter();
-  const isCart = usePathname() === '/mypage/cart';
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -22,7 +22,9 @@ export default function MyPage({ children }: { children: React.ReactNode }) {
   if (error) return <p>Error: {error}</p>;
   if (!user) return null;
 
-  if (isCart) {
+  if (pathname === '/mypage') return children;
+
+  if (pathname === '/mypage/cart') {
     return (
       <div className="min-h-screen bg-surface pb-28 font-body text-body-text">
         <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-8 px-6 py-12 lg:flex-row">

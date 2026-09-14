@@ -50,40 +50,22 @@ export async function GET() {
       );
     }
 
-    const user = await prisma.user
-      .upsert({
-        where: { clerkId: userId },
-        create: {
-          id: uuidv4(),
-          clerkId: userId,
-          email,
-          name: getClerkUserName(clerkUser)
-        },
-        update: {}
-      })
-      .catch(async (error: unknown) => {
-        if (
-          !(error instanceof Prisma.PrismaClientKnownRequestError) ||
-          error.code !== 'P2002'
-        ) {
-          throw error;
-        }
-
-        // A webhook or another request may have created this user concurrently.
-        // Never transfer an account (including its role/orders) by email alone.
-        return prisma.user.findUnique({ where: { clerkId: userId } });
-      });
-
-    if (!user) {
-      return NextResponse.json(
-        {
-          error:
-            'Your email is already linked to another account. Please contact support to restore your account connection.',
-          code: 'ACCOUNT_LINK_CONFLICT'
-        },
-        { status: 409 }
-      );
-    }
+    // Local seed accounts are intentionally stable by email. If the person
+    // signs in through a different Clerk environment, reconnect that existing
+    // application user instead of trying to insert a duplicate email.
+    const user = await prisma.user.upsert({
+      where: { email },
+      create: {
+        id: uuidv4(),
+        clerkId: userId,
+        email,
+        name: getClerkUserName(clerkUser)
+      },
+      update: {
+        clerkId: userId,
+        name: getClerkUserName(clerkUser)
+      }
+    });
 
     return NextResponse.json(user, { status: 200 });
   } catch {
