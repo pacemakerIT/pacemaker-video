@@ -25,6 +25,7 @@ export async function GET() {
                 select: {
                   id: true,
                   title: true,
+                  thumbnail: true,
                   price: true,
                   description: true,
                   category: true
@@ -37,6 +38,7 @@ export async function GET() {
                 select: {
                   id: true,
                   title: true,
+                  thumbnail: true,
                   price: true,
                   description: true,
                   category: true
@@ -49,6 +51,7 @@ export async function GET() {
                 select: {
                   id: true,
                   title: true,
+                  thumbnail: true,
                   price: true,
                   description: true,
                   startDate: true
@@ -56,16 +59,22 @@ export async function GET() {
               });
               break;
             case ItemType.COURSE:
-              item = await prisma.course.findFirst({
-                where: { id: cart.itemId, isPublic: true },
-                select: {
-                  id: true,
-                  title: true,
-                  price: true,
-                  description: true,
-                  category: true
-                }
-              });
+              {
+                const course = await prisma.course.findFirst({
+                  where: { id: cart.itemId, isPublic: true },
+                  select: {
+                    id: true,
+                    title: true,
+                    thumbnailUrl: true,
+                    price: true,
+                    description: true,
+                    category: true
+                  }
+                });
+                item = course
+                  ? { ...course, thumbnail: course.thumbnailUrl }
+                  : null;
+              }
               break;
           }
         } catch (error) {
@@ -115,6 +124,7 @@ export async function POST(req: NextRequest) {
               select: {
                 id: true,
                 title: true,
+                thumbnail: true,
                 price: true,
                 description: true,
                 category: true
@@ -127,6 +137,7 @@ export async function POST(req: NextRequest) {
               select: {
                 id: true,
                 title: true,
+                thumbnail: true,
                 price: true,
                 description: true,
                 category: true
@@ -139,6 +150,7 @@ export async function POST(req: NextRequest) {
               select: {
                 id: true,
                 title: true,
+                thumbnail: true,
                 price: true,
                 description: true,
                 startDate: true
@@ -146,16 +158,22 @@ export async function POST(req: NextRequest) {
             });
             break;
           case ItemType.COURSE:
-            item = await prisma.course.findFirst({
-              where: { id: newCart.itemId, isPublic: true },
-              select: {
-                id: true,
-                title: true,
-                price: true,
-                description: true,
-                category: true
-              }
-            });
+            {
+              const course = await prisma.course.findFirst({
+                where: { id: newCart.itemId, isPublic: true },
+                select: {
+                  id: true,
+                  title: true,
+                  thumbnailUrl: true,
+                  price: true,
+                  description: true,
+                  category: true
+                }
+              });
+              item = course
+                ? { ...course, thumbnail: course.thumbnailUrl }
+                : null;
+            }
             break;
         }
       } catch (err) {

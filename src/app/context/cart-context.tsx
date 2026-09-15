@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useUserContext } from './user-context';
 
 export type Cart = {
+  thumbnail?: string | null;
   itemId: string;
   itemType: ItemType;
   id: string;

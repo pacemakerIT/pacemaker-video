@@ -13,10 +13,85 @@ const menuItems = [
   { label: '1:1문의', href: '/mypage/inquiries' }
 ];
 
-export default function MyPageSidebar() {
+export default function MyPageSidebar({
+  cartDesign = false
+}: {
+  cartDesign?: boolean;
+}) {
   const { user } = useUserContext();
   const pathname = usePathname();
   const router = useRouter();
+
+  if (cartDesign) {
+    const labels = [
+      'My Account',
+      'Cart',
+      'Wish list',
+      'Order History',
+      'Contact Us'
+    ];
+    const icons = [
+      'person',
+      'shopping_cart',
+      'favorite',
+      'receipt_long',
+      'support_agent'
+    ];
+    return (
+      <aside className="w-full shrink-0 lg:w-[320px]">
+        <div className="relative flex flex-col items-center border border-gray-100 bg-white p-6 shadow-[0_10px_30px_rgba(0,38,59,0.08)] lg:sticky lg:top-28">
+          <Link
+            href="/mypage/setting"
+            aria-label="Settings"
+            className="absolute right-4 top-4 rounded-2xl p-2.5 text-body-text transition-colors hover:bg-orange/10 hover:text-orange"
+          >
+            <span
+              className="material-symbols-outlined text-xl"
+              aria-hidden="true"
+            >
+              settings
+            </span>
+          </Link>
+          <div className="mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-orange/10 p-1 shadow-sm">
+            {user?.image ? (
+              <Image
+                src={user.image}
+                alt={getUserDisplayName(user)}
+                width={104}
+                height={104}
+                className="h-full w-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="font-headline text-4xl font-bold text-navy">
+                {getUserDisplayName(user).slice(0, 1).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <h2 className="mb-6 font-headline text-xl font-bold text-navy">
+            {getUserDisplayName(user)}
+          </h2>
+          <nav aria-label="My account" className="flex w-full flex-col gap-1">
+            {menuItems.map((item, index) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={pathname === item.href ? 'page' : undefined}
+                className={`flex items-center gap-3 px-4 py-3.5 transition-colors ${pathname === item.href ? 'border-l-4 border-orange bg-orange/10 font-headline font-bold text-orange' : 'font-medium text-body-text hover:bg-gray-soft hover:text-navy'}`}
+              >
+                <span
+                  className="material-symbols-outlined text-xl"
+                  aria-hidden="true"
+                >
+                  {icons[index]}
+                </span>
+                {labels[index]}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="hidden md:flex flex-col w-80 h-full shrink-0 border-r bg-white py-8">
