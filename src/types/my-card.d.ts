@@ -30,8 +30,13 @@ export interface MyCard extends MyCardBase {
   price?: number | string;
   like?: boolean;
   date?: Date;
+  image?: string;
 }
 
 export interface MyWorkshopCard extends MyCardBase {
   date: Date;
+  category?: string;
+  location?: string;
+  host?: string;
+  image?: string;
 }

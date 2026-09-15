@@ -40,7 +40,7 @@ export function Header() {
 
   return (
     <nav className="w-screen sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
-      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between">
+      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between p-4">
         {/* Logo - Stays fixed on the left */}
         <Link href="/" className="block">
           <Image
