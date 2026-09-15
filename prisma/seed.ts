@@ -953,6 +953,28 @@ async function main() {
     ]
   });
 
+  console.log('Generating wishlist mock data...');
+  await prisma.favorite.createMany({
+    data: [
+      ...courseIds.slice(0, 3).map((itemId) => ({
+        userId: dashboardUserId,
+        itemId,
+        itemType: ItemType.COURSE
+      })),
+      ...ebookIds.slice(0, 2).map((itemId) => ({
+        userId: dashboardUserId,
+        itemId,
+        itemType: ItemType.EBOOK
+      })),
+      {
+        userId: dashboardUserId,
+        itemId: workshopIds[5],
+        itemType: ItemType.WORKSHOP,
+        workshopId: workshopIds[5]
+      }
+    ]
+  });
+
   console.log('🎉 Seed data created successfully!');
 }
 
