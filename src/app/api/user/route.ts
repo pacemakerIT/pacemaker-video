@@ -53,21 +53,50 @@ export async function GET() {
     // Local seed accounts are intentionally stable by email. If the person
     // signs in through a different Clerk environment, reconnect that existing
     // application user instead of trying to insert a duplicate email.
-    const user = await prisma.user.upsert({
-      where: { email },
-      create: {
-        id: uuidv4(),
-        clerkId: userId,
-        email,
-        name: getClerkUserName(clerkUser)
-      },
-      update: {
-        clerkId: userId,
-        name: getClerkUserName(clerkUser)
-      }
-    });
+    try {
+      const user = await prisma.user.upsert({
+        where: { email },
+        create: {
+          id: uuidv4(),
+          clerkId: userId,
+          email,
+          name: getClerkUserName(clerkUser)
+        },
+        update: {
+          clerkId: userId,
+          name: getClerkUserName(clerkUser)
+        }
+      });
 
-    return NextResponse.json(user, { status: 200 });
+      return NextResponse.json(user, { status: 200 });
+    } catch (error) {
+      if (
+        !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+        error.code !== 'P2002'
+      ) {
+        throw error;
+      }
+
+      // Another request may have created this Clerk user between the initial
+      // lookup and the upsert. Return it when that race has completed.
+      const concurrentUser = await prisma.user.findUnique({
+        where: { clerkId: userId }
+      });
+
+      if (concurrentUser) {
+        return NextResponse.json(concurrentUser, { status: 200 });
+      }
+
+      // A remaining uniqueness conflict means this email belongs to another
+      // Clerk account. Do not silently relink that account.
+      return NextResponse.json(
+        {
+          error: 'An account already exists for this email address.',
+          code: 'ACCOUNT_LINK_CONFLICT'
+        },
+        { status: 409 }
+      );
+    }
   } catch {
     return NextResponse.json(
       { error: 'Unable to load your account. Please try again.' },
