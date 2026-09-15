@@ -1,3 +1,16 @@
+export function cartProductHref(type: string, itemId: string) {
+  switch (type) {
+    case 'COURSE':
+      return `/courses/${itemId}`;
+    case 'EBOOK':
+      return `/ebooks/${itemId}`;
+    case 'WORKSHOP':
+      return `/workshops/${itemId}`;
+    default:
+      return '/courses';
+  }
+}
+
 export function cartTypeLabel(type: string) {
   return (
     (

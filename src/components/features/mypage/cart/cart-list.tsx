@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCartContext } from '@/app/context/cart-context';
 import { resolveImageSrc } from '@/lib/utils';
 import { amountToCents, formatMoneyFromCents } from '@/lib/money';
-import { CartCategory, cartTypeLabel } from './cart-product';
+import { CartCategory, cartProductHref, cartTypeLabel } from './cart-product';
 
 interface CartListProps {
   cartItems: CartItem[];
@@ -88,16 +88,22 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
                     {cartTypeLabel(item.type)}
                   </span>
                 </div>
-                <Image
-                  src={
-                    resolveImageSrc({ thumbnail: item.thumbnail }) ||
-                    '/img/resume_lecture.jpeg'
-                  }
-                  alt={item.title}
-                  width={96}
-                  height={64}
-                  className="h-12 w-16 shrink-0 border border-gray-100 object-cover sm:h-16 sm:w-24"
-                />
+                <Link
+                  href={cartProductHref(item.type, item.itemId)}
+                  aria-label={`View ${item.title}`}
+                  className="shrink-0 rounded-sm transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+                >
+                  <Image
+                    src={
+                      resolveImageSrc({ thumbnail: item.thumbnail }) ||
+                      '/img/resume_lecture.jpeg'
+                    }
+                    alt={item.title}
+                    width={96}
+                    height={64}
+                    className="h-12 w-16 shrink-0 border border-gray-100 object-cover sm:h-16 sm:w-24"
+                  />
+                </Link>
                 <div className="min-w-0 flex-1">
                   <div className="mb-1">
                     {item.date ? (
@@ -113,7 +119,12 @@ export default function CartList({ cartItems, setCartItems }: CartListProps) {
                     )}
                   </div>
                   <h2 className="line-clamp-2 font-headline text-xs font-bold leading-tight text-navy sm:text-base">
-                    {item.title}
+                    <Link
+                      href={cartProductHref(item.type, item.itemId)}
+                      className="rounded-sm hover:text-orange hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+                    >
+                      {item.title}
+                    </Link>
                   </h2>
                 </div>
               </div>
