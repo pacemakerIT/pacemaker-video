@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowRight, Heart, Calendar, MapPin, User } from 'lucide-react';
+import { ArrowRight, Calendar, MapPin, User } from 'lucide-react';
 import { OnlineCards } from '@/types/online';
 import Link from 'next/link';
 import { ItemType } from '@prisma/client';
@@ -111,20 +111,18 @@ export default function ImageOverlayCard({
 
               <button
                 role="button"
-                aria-label="like"
-                className="group absolute right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-500 ease-out hover:scale-110 hover:shadow-xl"
+                aria-label={isLiked ? 'Saved' : 'Save'}
+                className={`favorite-heart absolute right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-500 ease-out hover:scale-110 hover:shadow-xl ${
+                  isLiked ? 'favorite-heart--liked' : ''
+                }`}
                 onClick={(e) => {
                   e.preventDefault();
                   toggleLike();
                 }}
               >
-                <Heart
-                  className={`h-6 w-6 transition-colors duration-200 ${
-                    isLiked
-                      ? 'fill-orange text-orange'
-                      : 'text-gray-400 group-hover:text-orange'
-                  }`}
-                />
+                <span className="material-symbols-outlined text-2xl leading-none">
+                  favorite
+                </span>
               </button>
 
               <div className="absolute inset-0 flex flex-col justify-between p-10 text-white">

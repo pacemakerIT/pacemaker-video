@@ -116,7 +116,7 @@ export default function MyPageCard({
 
                 {purchased ? (
                   <div className="flex items-center justify-end w-full">
-                    <span className="text-pace-sm text-pace-stone-600">{`${completedChapters}/${totalChapters} 
+                    <span className="text-pace-sm text-pace-stone-600">{`${completedChapters}/${totalChapters}
                     ${itemTypeLabels[type] === '온라인 강의' ? '레슨' : itemTypeLabels[type] === '전자책' ? '페이지' : ''} 남음`}</span>
                   </div>
                 ) : (
