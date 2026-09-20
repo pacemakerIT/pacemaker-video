@@ -5,7 +5,9 @@ import {
   EbookCategory,
   WorkshopCategory,
   TargetAudienceType,
-  WorkshopStatus
+  WorkshopStatus,
+  ItemType,
+  OrderStatus
 } from '@prisma/client';
 import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -97,9 +99,42 @@ const SECTION_TITLES = [
   'Actual Successful Resumes for North American Developer Jobs'
 ];
 
+const WORKSHOP_CURRICULUM = [
+  {
+    title: 'Foundations & Canadian Job Market Trends',
+    description:
+      'Learn the core concepts and review current hiring trends in the Canadian job market.'
+  },
+  {
+    title: 'Portfolio and Resume Deep Dive',
+    description:
+      'Analyze successful examples and build a practical framework you can apply to your own materials.'
+  },
+  {
+    title: 'Interactive Practice & Feedback',
+    description:
+      'Work through realistic scenarios and receive actionable feedback from the instructor.'
+  },
+  {
+    title: 'Networking & Action Plan',
+    description:
+      'Connect with other participants and leave with clear next steps for your career goals.'
+  }
+] as const;
+
+function createWorkshopCurriculum(workshopTitle: string) {
+  return WORKSHOP_CURRICULUM.map((section, index) => ({
+    id: randomUUID(),
+    title: index === 0 ? `${workshopTitle}: ${section.title}` : section.title,
+    description: section.description,
+    orderIndex: index
+  }));
+}
+
 const SEEDED_INSTRUCTOR_IDS = {
   raphael: 'cd0bf417-d5ff-4ab7-8dd2-6e6682189f77',
-  sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae'
+  sujin: 'f5b45574-ad41-4614-bd75-d15a885fe4ae',
+  linda: '43969da1-98c7-43e6-ac88-ecccf7459871'
 } as const;
 
 const WORKSHOP_DURATION_MS = 2 * 60 * 60 * 1000;
@@ -245,7 +280,7 @@ async function main() {
     where: { id: instructorId },
     update: {
       name: 'Raphael. Lee',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: '/img/raphael.png',
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -267,7 +302,7 @@ async function main() {
     create: {
       id: instructorId,
       name: 'Raphael. Lee',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: '/img/raphael.png',
       description:
         'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
       careers: [
@@ -314,6 +349,32 @@ async function main() {
     }
   });
 
+  const instructorId3 = SEEDED_INSTRUCTOR_IDS.linda;
+  await prisma.instructor.upsert({
+    where: { id: instructorId3 },
+    update: {
+      name: 'Linda. Kim',
+      profileImage: '/img/linda.png',
+      description:
+        'Passionate about helping candidates craft the perfect resume. With 10+ years of HR experience in top tech firms across North America, my goal is to highlight your unique strengths and guide you seamlessly through the recruitment process.',
+      careers: [
+        { period: '2021 ~', position: 'Lead Career Coach at TechBridge' },
+        { period: '2016 ~ 2021', position: 'HR Manager at GlobalTech' }
+      ]
+    },
+    create: {
+      id: instructorId3,
+      name: 'Linda. Kim',
+      profileImage: '/img/linda.png',
+      description:
+        'Passionate about helping candidates craft the perfect resume. With 10+ years of HR experience in top tech firms across North America, my goal is to highlight your unique strengths and guide you seamlessly through the recruitment process.',
+      careers: [
+        { period: '2021 ~', position: 'Lead Career Coach at TechBridge' },
+        { period: '2016 ~ 2021', position: 'HR Manager at GlobalTech' }
+      ]
+    }
+  });
+
   const courseOrderKeys = generateNKeysBetween(null, null, 6);
 
   console.log('Generating English e-books...');
@@ -321,7 +382,6 @@ async function main() {
 
   for (let i = 1; i <= 6; i++) {
     const courseId = courseIds[i - 1];
-    const coursePrice = 2800;
     const thumbnail = getRandomImage(
       COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length]
     );
@@ -403,6 +463,7 @@ async function main() {
 
   console.log('Generating English e-books...');
   const ebookOrderKeys = generateNKeysBetween(null, null, 6);
+  const ebookIds: string[] = [];
   const ebooks = [
     {
       category: EbookCategory.MARKETING,
@@ -506,6 +567,7 @@ async function main() {
   for (let i = 0; i < ebooks.length; i++) {
     const ebook = ebooks[i];
     const documentRecordId = randomUUID();
+    ebookIds.push(documentRecordId);
 
     await prisma.ebook.create({
       data: {
@@ -589,7 +651,11 @@ async function main() {
         clerkId: u.clerkId,
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester',
+        lastLoginAt:
+          u.roleId === 'USER'
+            ? addDays(new Date(), -1)
+            : addDays(new Date(), -7)
       },
       create: {
         id: u.id,
@@ -597,7 +663,11 @@ async function main() {
         clerkId: u.clerkId,
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
-        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester'
+        nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester',
+        lastLoginAt:
+          u.roleId === 'USER'
+            ? addDays(new Date(), -1)
+            : addDays(new Date(), -7)
       }
     });
   }
@@ -656,6 +726,7 @@ async function main() {
   console.log('Generating dummy workshops...');
   const workshopOrderKeys = generateNKeysBetween(null, null, 8);
   let workshopOrderIdx = 0;
+  const workshopIds: string[] = [];
   const workshopStatusReferenceDate = new Date();
   const workshopData: WorkshopSeedData[] = [
     {
@@ -776,6 +847,7 @@ async function main() {
       ws.status
     );
     const workshopId = randomUUID();
+    workshopIds.push(workshopId);
 
     await prisma.workshop.create({
       data: {
@@ -790,7 +862,19 @@ async function main() {
         category: ws.category as WorkshopCategory,
         orderKey: workshopOrderKeys[workshopOrderIdx++],
         instructors: {
-          create: [{ instructorId: ws.instructorId }]
+          create: [
+            ...new Set([
+              ws.instructorId,
+              instructorId,
+              instructorId2,
+              instructorId3
+            ])
+          ].map((seededInstructorId) => ({
+            instructorId: seededInstructorId
+          }))
+        },
+        sectionsRel: {
+          create: createWorkshopCurriculum(ws.title)
         },
         thumbnail: getRandomImage(
           WORKSHOP_THUMBNAILS[ws.thumbnailIndex % WORKSHOP_THUMBNAILS.length]
@@ -798,6 +882,89 @@ async function main() {
       }
     });
   }
+
+  console.log('Generating My Page dashboard scenarios...');
+  const dashboardUserId = stableUsers.find(
+    (user) => user.roleId === 'USER'
+  )!.id;
+  const dashboardCourseIds = courseIds.slice(0, 4);
+  const dashboardEbookIds = ebookIds.slice(0, 3);
+  const dashboardWorkshopIds = [
+    workshopIds[0], // completed and attended
+    workshopIds[5], // upcoming online
+    workshopIds[6] // upcoming in person
+  ];
+
+  const dashboardOrder = await prisma.order.create({
+    data: {
+      userId: dashboardUserId,
+      status: OrderStatus.COMPLETED,
+      totalAmountCents: 19600,
+      subtotalAmountCents: 19600,
+      discountAmountCents: 0,
+      taxAmountCents: 0,
+      currency: 'cad',
+      orderedAt: addDays(new Date(), -30),
+      items: {
+        create: [
+          ...dashboardCourseIds.map((itemId) => ({
+            itemId,
+            itemType: ItemType.COURSE,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          })),
+          ...dashboardEbookIds.map((itemId) => ({
+            itemId,
+            itemType: ItemType.EBOOK,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          }))
+        ]
+      }
+    }
+  });
+
+  await prisma.userWorkshop.createMany({
+    data: dashboardWorkshopIds.map((workshopId, index) => ({
+      userId: dashboardUserId,
+      workshopId,
+      orderId: dashboardOrder.id,
+      attended: index === 0,
+      registeredAt: addDays(new Date(), -(20 - index * 4))
+    }))
+  });
+
+  const dashboardVideos = await prisma.video.findMany({
+    where: { courseId: { in: dashboardCourseIds.slice(0, 3) } },
+    select: { id: true, courseId: true },
+    orderBy: { uploadDate: 'asc' }
+  });
+  const videosByCourse = new Map<string, string[]>();
+  for (const video of dashboardVideos) {
+    if (!video.courseId) continue;
+    const ids = videosByCourse.get(video.courseId) ?? [];
+    ids.push(video.id);
+    videosByCourse.set(video.courseId, ids);
+  }
+
+  const completedVideoIds = videosByCourse.get(dashboardCourseIds[0]) ?? [];
+  const partiallyWatchedVideoIds = (
+    videosByCourse.get(dashboardCourseIds[1]) ?? []
+  ).slice(0, 5);
+  await prisma.watchedVideo.createMany({
+    data: [
+      ...completedVideoIds.map((videoId) => ({
+        userId: dashboardUserId,
+        videoId,
+        progress: 100
+      })),
+      ...partiallyWatchedVideoIds.map((videoId, index) => ({
+        userId: dashboardUserId,
+        videoId,
+        progress: index === partiallyWatchedVideoIds.length - 1 ? 35 : 100
+      }))
+    ]
+  });
 
   console.log('🎉 Seed data created successfully!');
 }

@@ -1,245 +1,203 @@
+import { auth } from '@clerk/nextjs/server';
+import { ItemType, OrderStatus } from '@prisma/client';
 import MyList from '@/components/features/mypage/my-list';
-import MyPageWorkshopCard from '@/components/features/mypage/my-page-workshop-card';
+import MyWorkshopList from '@/components/features/mypage/my-workshop-list';
+import MyAccountLayout from '@/components/features/mypage/my-account-layout';
+import prisma from '@/lib/prisma';
 import { MyCard, MyWorkshopCard } from '@/types/my-card';
-import { ItemType } from '@prisma/client';
 
-export default function MyPage() {
-  function formatKoreanDateTime(dateString?: string) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    let hour = date.getHours();
-    const isPM = hour >= 12;
-    const period = isPM ? '오후' : '오전';
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-    return `${year}년 ${month}월 ${day}일 ${period} ${hour}시`;
-  }
+function titleCase(value: string | null) {
+  if (!value) return 'General';
+  return value
+    .toLowerCase()
+    .replace(
+      /(^|_)(\w)/g,
+      (_, space, letter) => `${space ? ' ' : ''}${letter.toUpperCase()}`
+    );
+}
 
-  const cardData = [
-    {
-      type: 'video',
-      total: 8,
-      inProgress: 5,
-      completed: 3
-    },
-    {
-      type: 'document',
-      total: 8,
-      inProgress: 4,
-      notStarted: 4
-    },
-    {
-      type: 'workshop',
-      total: 3,
-      nextDate: '2025-10-15T19:00:00'
-    }
+function countTableOfContents(value: unknown) {
+  return Array.isArray(value) ? value.length : 0;
+}
+
+async function getDashboardData() {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { clerkId },
+    select: { id: true, lastLoginAt: true }
+  });
+  if (!user) return null;
+
+  const [orderItems, registrations] = await Promise.all([
+    prisma.orderItem.findMany({
+      where: { order: { userId: user.id, status: OrderStatus.COMPLETED } },
+      select: { itemId: true, itemType: true }
+    }),
+    prisma.userWorkshop.findMany({
+      where: { userId: user.id },
+      include: {
+        workshop: {
+          include: {
+            instructors: { include: { instructor: true }, take: 1 }
+          }
+        }
+      },
+      orderBy: { workshop: { startDate: 'asc' } }
+    })
+  ]);
+
+  const courseIds = [
+    ...new Set(
+      orderItems
+        .filter((item) => item.itemType === ItemType.COURSE)
+        .map((item) => item.itemId)
+    )
+  ];
+  const ebookIds = [
+    ...new Set(
+      orderItems
+        .filter((item) => item.itemType === ItemType.EBOOK)
+        .map((item) => item.itemId)
+    )
   ];
 
-  const courseCards: MyCard[] = [
-    {
-      id: '1',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      category: 'Marketing',
-      type: ItemType.VIDEO,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 4
-    },
-    {
-      id: '2',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      category: 'Interview',
-      type: ItemType.VIDEO,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 8
-    },
-    {
-      id: '3',
-      itemId: '4e8wv1z7tl',
-      title: 'Test3',
-      category: 'Resume',
-      type: ItemType.VIDEO,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 0
-    },
-    {
-      id: '4',
-      itemId: '4e8wv1z7tl',
-      title: 'Test3',
-      category: 'Resume',
-      type: ItemType.VIDEO,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 0
-    },
-    {
-      id: '5',
-      itemId: '4e8wv1z7tl',
-      title: 'Test3',
-      category: 'Resume',
-      type: ItemType.VIDEO,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 0
-    }
-  ];
+  const [courses, ebooks] = await Promise.all([
+    prisma.course.findMany({
+      where: { id: { in: courseIds } },
+      include: {
+        videos: {
+          select: {
+            id: true,
+            watchedVideos: {
+              where: { userId: user.id },
+              select: { progress: true }
+            }
+          }
+        }
+      }
+    }),
+    prisma.ebook.findMany({ where: { id: { in: ebookIds } } })
+  ]);
 
-  const ebookCards: MyCard[] = [
-    {
-      id: '1',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      category: 'Marketing',
-      type: ItemType.EBOOK,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 4
-    },
-    {
-      id: '2',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      category: 'Interview',
-      type: ItemType.EBOOK,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 8
-    },
-    {
-      id: '3',
-      itemId: '4e8wv1z7tl',
-      title: 'Test3',
-      category: 'Resume',
-      type: ItemType.EBOOK,
-      purchased: true,
-      totalChapters: 8,
-      completedChapters: 0
-    }
-  ];
+  const courseCards: MyCard[] = courses.map((course) => ({
+    id: course.id,
+    itemId: course.id,
+    title: course.title || 'Untitled course',
+    category: titleCase(course.category),
+    type: ItemType.COURSE,
+    purchased: true,
+    totalChapters: course.videos.length,
+    completedChapters: course.videos.filter((video) =>
+      video.watchedVideos.some((watched) => watched.progress >= 100)
+    ).length,
+    description: course.description || undefined,
+    image: course.thumbnailUrl || undefined
+  }));
 
-  const workshopCards: MyWorkshopCard[] = [
+  const ebookCards: MyCard[] = ebooks.map((ebook) => ({
+    id: ebook.id,
+    itemId: ebook.id,
+    title: ebook.title || 'Untitled e-book',
+    category: titleCase(ebook.category),
+    type: ItemType.EBOOK,
+    purchased: true,
+    totalChapters: countTableOfContents(ebook.tableOfContents),
+    completedChapters: 0,
+    description: ebook.description || ebook.subDescription || undefined,
+    image: ebook.thumbnail || undefined
+  }));
+
+  const workshopCards: MyWorkshopCard[] = registrations.map(({ workshop }) => ({
+    id: workshop.id,
+    itemId: workshop.id,
+    title: workshop.title,
+    date: workshop.startDate,
+    category: titleCase(workshop.category),
+    location: workshop.locationOrUrl || 'Location to be announced',
+    host: workshop.instructors[0]?.instructor.name || 'Pacemaker',
+    image: workshop.thumbnail || undefined
+  }));
+
+  return {
+    courseCards,
+    ebookCards,
+    workshopCards,
+    lastLoginAt: user.lastLoginAt
+  };
+}
+
+export default async function MyPage() {
+  const data = await getDashboardData();
+  const courseCards = data?.courseCards ?? [];
+  const ebookCards = data?.ebookCards ?? [];
+  const workshopCards = data?.workshopCards ?? [];
+  const completedCourses = courseCards.filter(
+    (card) =>
+      card.totalChapters !== 0 && card.completedChapters === card.totalChapters
+  ).length;
+  const completedEbooks = ebookCards.filter(
+    (card) =>
+      card.totalChapters !== 0 && card.completedChapters === card.totalChapters
+  ).length;
+  const nextWorkshop = workshopCards
+    .filter((card) => card.date >= new Date())
+    .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
+  const lastLogin =
+    data?.lastLoginAt?.toLocaleString('en-CA', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }) ?? 'Not available';
+  const stats = [
     {
-      id: '1',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      date: new Date('2025-03-15T19:00:00')
+      label: 'Workshops',
+      detail: nextWorkshop
+        ? `Next workshop: ${nextWorkshop.date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' })} - ${nextWorkshop.date.toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' })}`
+        : 'No upcoming workshops',
+      total: workshopCards.length
     },
     {
-      id: '2',
-      itemId: '4e8wv1z7tl',
-      title: 'UX Design Fundamentals',
-      date: new Date('2025-12-15T19:00:00')
+      label: 'Online Courses',
+      detail: `${completedCourses} of ${courseCards.length} courses completed`,
+      total: courseCards.length
     },
     {
-      id: '3',
-      itemId: '4e8wv1z7tl',
-      title: 'Test3',
-      date: new Date('2025-09-15T16:00:00')
+      label: 'E-books',
+      detail: `${completedEbooks} of ${ebookCards.length} read`,
+      total: ebookCards.length
     }
   ];
 
   return (
-    <>
-      {/* Hero Section */}
-      <div className="w-full h-[416px] px-10 py-20 bg-pace-ivory-500">
-        <div className="flex flex-col h-full justify-between">
-          <div>
-            <h1 className="text-pace-gray-500 font-bold text-pace-3xl mb-4">
-              페이스 메이커 강의 페이지입니다!
-            </h1>
-            <p className="text-pace-stone-700 text-pace-sm">
-              마지막 로그인: 2025년 4월 6일 9:30 AM
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cardData.map((card) => (
-              <div
-                key={card.type}
-                className="h-fit bg-pace-white-500 rounded-lg shadow p-6 flex flex-col justify-between items-center"
-              >
-                <div className="flex flex-row justify-between items-center w-full">
-                  <div>
-                    <div className="text-pace-stone-500 mb-4">
-                      {card.type === 'video'
-                        ? '온라인 강의'
-                        : card.type === 'document'
-                          ? '전자책'
-                          : card.type === 'workshop'
-                            ? '워크샵'
-                            : ''}
-                    </div>
-                    <div className="text-pace-stone-600 text-pace-sm">
-                      {card.type === 'video'
-                        ? `${card.inProgress} 강의 수강 중, ${card.completed} 강의 수강완료`
-                        : card.type === 'document'
-                          ? `${card.inProgress}개 강의 수강중, ${card.notStarted}개 강의 미수강`
-                          : card.type === 'workshop'
-                            ? workshopCards && workshopCards.length > 0
-                              ? (() => {
-                                  const now = new Date();
-                                  const upcoming = workshopCards.filter(
-                                    (w) => w.date > now
-                                  );
-                                  if (upcoming.length === 0)
-                                    return '예정된 워크샵이 없습니다';
-                                  const nearest = upcoming.reduce((a, b) =>
-                                    a.date < b.date ? a : b
-                                  );
-                                  return (
-                                    <>
-                                      다음 워크샵:{' '}
-                                      <span className="text-pace-orange-500">
-                                        {formatKoreanDateTime(
-                                          nearest.date.toISOString()
-                                        )}
-                                      </span>
-                                    </>
-                                  );
-                                })()
-                              : '예정된 워크샵이 없습니다'
-                            : null}
-                    </div>
-                  </div>
-                  <div className="text-pace-orange-600 text-pace-4xl font-bold text-right">
-                    {card.total}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <MyList title="내 온라인 강의 목록" cards={courseCards} />
-      <MyList title="내 전자책 목록" cards={ebookCards} />
-
-      <div className="my-20 mx-10">
-        <h1 className="text-pace-gray-700 font-bold text-pace-xl mb-6">
-          내 워크샵 목록
+    <MyAccountLayout>
+      <section className="relative mb-10 overflow-hidden border border-[#00263B]/10 bg-[linear-gradient(135deg,rgba(0,38,59,0.04)_0%,rgba(0,173,189,0.10)_55%,rgba(255,79,2,0.08)_100%)] p-6 shadow-card sm:p-8">
+        <h1 className="mb-4 font-headline text-2xl font-bold tracking-tight text-[#00263B] sm:text-[2.2rem]">
+          Welcome to your Pacemaker Dashboard!
         </h1>
-        <div className="w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workshopCards.map((card) => (
-              <div key={card.id} className="w-full">
-                <MyPageWorkshopCard
-                  id={card.id}
-                  title={card.title}
-                  itemId={card.itemId}
-                  date={card.date}
-                />
+        <p className="mb-4 text-xs text-[#475467]">Last login: {lastLogin}</p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-center justify-between border border-gray-100 bg-white p-5 shadow-card transition-transform duration-300 hover:-translate-y-1"
+            >
+              <div>
+                <h2 className="font-headline text-sm font-bold text-[#00263B]">
+                  {stat.label}
+                </h2>
+                <p className="mt-1 text-xs text-[#475467]">{stat.detail}</p>
               </div>
-            ))}
-          </div>
+              <strong className="ml-3 font-headline text-4xl font-extrabold text-[#FF4F02]">
+                {stat.total}
+              </strong>
+            </div>
+          ))}
         </div>
-      </div>
-    </>
+      </section>
+      <MyWorkshopList cards={workshopCards} />
+      <MyList title="My Online Courses" cards={courseCards} />
+      <MyList title="My E-books" cards={ebookCards} />
+    </MyAccountLayout>
   );
 }

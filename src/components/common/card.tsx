@@ -145,8 +145,17 @@ export default function Card({
               {description}
             </p>
 
-            <div className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-teal transition-transform duration-300 ease-out hover:translate-x-1">
-              Learn more <ArrowRight className="h-4 w-4" />
+            <div
+              className={`mt-2 inline-flex items-center gap-1 text-sm font-bold transition-transform duration-300 ease-out hover:translate-x-1 ${
+                resolvedItemType === ItemType.EBOOK
+                  ? 'text-orange'
+                  : 'text-teal'
+              }`}
+            >
+              {resolvedItemType === ItemType.EBOOK
+                ? 'View details'
+                : 'Learn more'}{' '}
+              <ArrowRight className="h-4 w-4" />
             </div>
           </div>
         </div>
