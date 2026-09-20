@@ -3,6 +3,7 @@ import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
+import EbookPurchasedHero from './ebook-purchased-hero';
 import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
@@ -210,23 +211,40 @@ export default function EbookDetailContainer({
       ? 'Go to Cart'
       : 'Add to Cart';
 
+  const handleContinueReading = () => {
+    document
+      .getElementById('ebook-content')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
-      <DetailHeroSection
-        backgroundImage={backgroundImage}
-        visualTitle={visualTitle}
-        visualTitle2={visualTitle2}
-        title={courseTitle || title.replace('\n', ' ')}
-        instructor={instructor}
-        description={description}
-        price={price}
-        onAddToCart={handleAddToCart}
-        buttonText={heroButtonText}
-        instructorLabel="Instructor"
-        priceLabel="Price"
-        itemType={ItemType.EBOOK}
-      />
-      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
+      {canAccessEbook ? (
+        <EbookPurchasedHero
+          title={title.replace('\n', ' ')}
+          subtitle={subtitle}
+          onContinueReading={handleContinueReading}
+        />
+      ) : (
+        <DetailHeroSection
+          backgroundImage={backgroundImage}
+          visualTitle={visualTitle}
+          visualTitle2={visualTitle2}
+          title={courseTitle || title.replace('\n', ' ')}
+          instructor={instructor}
+          description={description}
+          price={price}
+          onAddToCart={handleAddToCart}
+          buttonText={heroButtonText}
+          instructorLabel="Instructor"
+          priceLabel="Price"
+          itemType={ItemType.EBOOK}
+        />
+      )}
+      <div
+        id="ebook-content"
+        className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
+      >
         <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}

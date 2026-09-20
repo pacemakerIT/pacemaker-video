@@ -37,6 +37,16 @@ vi.mock('../../common/detail-hero-section', () => ({
   }) => <button onClick={onAddToCart}>{buttonText}</button>
 }));
 
+vi.mock('./ebook-purchased-hero', () => ({
+  default: ({
+    ctaText = 'Continue reading',
+    onContinueReading
+  }: {
+    ctaText?: string;
+    onContinueReading?: () => void;
+  }) => <button onClick={onContinueReading}>{ctaText}</button>
+}));
+
 vi.mock('@/components/common/confirm-modal', () => ({
   default: ({
     isOpen,
@@ -133,12 +143,15 @@ describe('EbookDetailContainer', () => {
     expect(mocks.addToCart).not.toHaveBeenCalled();
   });
 
-  it('shows already-purchased behavior when the user can access the ebook', () => {
+  it('shows the reading hero instead of the purchase card when the user can access the ebook', () => {
     render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Purchased' }));
-
-    expect(screen.getByText('이미 구매한 콘텐츠')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Continue reading' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Purchased' })
+    ).not.toBeInTheDocument();
     expect(mocks.addToCart).not.toHaveBeenCalled();
   });
 });
