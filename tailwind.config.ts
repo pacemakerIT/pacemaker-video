@@ -66,6 +66,32 @@ const config: Config = {
         error: '#ba1a1a',
         'body-text': '#475467',
 
+        // ebook/course category palette (used by src/lib/category-colors.ts)
+        category: {
+          marketing: '#FF6B3D',
+          'marketing-bg': '#FFF5F2',
+          'marketing-badge': '#FF6B3D',
+          design: '#FF7272',
+          'design-bg': '#FFF1F1',
+          'design-badge': '#FF7272',
+          it: '#36A6F7',
+          'it-bg': '#EAF2FF',
+          public: '#10B981',
+          'public-bg': '#F0FDF4',
+          gov: '#10B981',
+          'gov-bg': '#F0FDF4',
+          'gov-badge': '#34D399',
+          accounting: '#9F5BE7',
+          'accounting-bg': '#F5F3FF',
+          service: '#F5A623',
+          'service-bg': '#FFFBEB',
+          'resume-badge': '#FF9631',
+          'interview-badge': '#36A6F7',
+          'networking-badge': '#9F5BE7',
+          default: '#4A5568',
+          'default-badge': '#A0AEC0'
+        },
+
         // pace custom
         'pace-beige': { 500: '#F0E8E0' },
         'pace-black': {
@@ -123,32 +149,6 @@ const config: Config = {
           500: '#F6AD36'
         },
         'pace-white': { 500: '#FFFFFF' },
-
-        // 전자책/코스 카테고리 팔레트 (bg=배경 틴트, badge=뱃지, 나머지=텍스트)
-        category: {
-          'marketing-bg': '#FFF5F2',
-          'marketing-badge': '#FF7E54',
-          marketing: '#FF6B3D',
-          'design-bg': '#FFF1F1',
-          'design-badge': '#FF6666',
-          design: '#FF7272',
-          'it-bg': '#EAF2FF',
-          it: '#36A6F7',
-          'public-bg': '#E6F4EA',
-          public: '#34D399',
-          'gov-bg': '#F0FDF4',
-          'gov-badge': '#34D399',
-          gov: '#10B981',
-          'accounting-bg': '#EFF2F8',
-          accounting: '#37446C',
-          'service-bg': '#E4F2F1',
-          service: '#00ADBD',
-          'resume-badge': '#FF9631',
-          'interview-badge': '#36A6F7',
-          'networking-badge': '#9F5BE7',
-          'default-badge': '#A0AEC0',
-          default: '#4A5568'
-        },
 
         // basic
         foreground: 'var(--foreground)',
