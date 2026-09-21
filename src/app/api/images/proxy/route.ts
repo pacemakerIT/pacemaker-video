@@ -3,6 +3,7 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import prisma from '@/lib/prisma';
 import { bucketName, imgBucketName, s3clientSupabase } from '@/lib/supabase';
+import { isStorageObjectKey } from '@/lib/image-url';
 
 export async function GET(req: Request) {
   try {
@@ -15,11 +16,9 @@ export async function GET(req: Request) {
         where: { fileName }
       });
 
-      rawUrl =
-        image?.url ||
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${
-          imgBucketName || bucketName
-        }/${fileName}`;
+      // Image records created by older uploads may contain either a public URL
+      // or only the storage object key. Keep both formats working.
+      rawUrl = image?.url || fileName;
     }
 
     if (!rawUrl) {
@@ -40,7 +39,7 @@ export async function GET(req: Request) {
 
     // Parse Supabase public URL: .../object/public/[bucket]/[path]
     const match = decodedUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
-    let targetBucket = bucketName;
+    let targetBucket = bucketName || imgBucketName;
     let filePath = decodedUrl;
 
     if (match) {
@@ -64,6 +63,11 @@ export async function GET(req: Request) {
           'Cache-Control': 'public, max-age=3600, immutable'
         }
       });
+    } else if (isStorageObjectKey(decodedUrl)) {
+      // Legacy records pass only the object key. These files belong in the
+      // image bucket, while full Supabase public URLs are handled above.
+      targetBucket = imgBucketName || bucketName;
+      filePath = decodedUrl;
     }
 
     // S3 GetObject 커맨드 생성
