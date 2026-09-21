@@ -74,60 +74,64 @@ export default function Card({
     }
   };
 
-  const displayTitle = visualTitle2 || title || '';
+  const displayTitle = title || visualTitle2 || '';
 
   const colorMap: Record<string, { bg: string; badge: string; text: string }> =
     {
       MARKETING: {
-        bg: 'bg-[#FFF5F2]',
-        badge: 'bg-[#FF7E54]',
-        text: 'text-[#FF6B3D]'
+        bg: 'bg-category-marketing-bg',
+        badge: 'bg-category-marketing-badge',
+        text: 'text-category-marketing'
       },
       DESIGN: {
-        bg: 'bg-[#FFF1F1]',
-        badge: 'bg-[#FF6666]',
-        text: 'text-[#FF7272]'
+        bg: 'bg-category-design-bg',
+        badge: 'bg-category-design-badge',
+        text: 'text-category-design'
       },
       GOV: {
-        bg: 'bg-[#F0FDF4]',
-        badge: 'bg-[#34D399]',
-        text: 'text-[#10B981]'
+        bg: 'bg-category-gov-bg',
+        badge: 'bg-category-gov-badge',
+        text: 'text-category-gov'
       },
       PUBLIC: {
-        bg: 'bg-[#E6F4EA]',
-        badge: 'bg-[#34D399]',
-        text: 'text-[#34D399]'
+        bg: 'bg-category-public-bg',
+        badge: 'bg-category-public',
+        text: 'text-category-public'
       },
       ACCOUNTING: {
-        bg: 'bg-[#EFF2F8]',
-        badge: 'bg-[#37446C]',
-        text: 'text-[#37446C]'
+        bg: 'bg-category-accounting-bg',
+        badge: 'bg-category-accounting',
+        text: 'text-category-accounting'
       },
       SERVICE: {
-        bg: 'bg-[#E4F2F1]',
-        badge: 'bg-[#00ADBD]',
-        text: 'text-[#00ADBD]'
+        bg: 'bg-category-service-bg',
+        badge: 'bg-category-service',
+        text: 'text-category-service'
       },
-      IT: { bg: 'bg-[#EAF2FF]', badge: 'bg-[#36A6F7]', text: 'text-[#36A6F7]' },
+      IT: {
+        bg: 'bg-category-it-bg',
+        badge: 'bg-category-it',
+        text: 'text-category-it'
+      },
       RESUME: {
         bg: 'bg-white',
-        badge: 'bg-[#FF9631]',
+        badge: 'bg-category-resume-badge',
         text: 'text-navy'
       },
       INTERVIEW: {
         bg: 'bg-white',
-        badge: 'bg-[#36A6F7]',
+        badge: 'bg-category-interview-badge',
         text: 'text-navy'
       },
       NETWORKING: {
         bg: 'bg-white',
-        badge: 'bg-[#9F5BE7]',
+        badge: 'bg-category-networking-badge',
         text: 'text-navy'
       },
       DEFAULT: {
-        bg: 'bg-[#FFFFFF]',
-        badge: 'bg-[#A0AEC0]',
-        text: 'text-[#4A5568]'
+        bg: 'bg-white',
+        badge: 'bg-category-default-badge',
+        text: 'text-category-default'
       }
     };
 
@@ -195,7 +199,7 @@ export default function Card({
               </span>
             </div>
 
-            <p className="line-clamp-2 font-body text-sm leading-relaxed text-[#667085]">
+            <p className="line-clamp-2 font-body text-sm leading-relaxed text-gray-500">
               {description}
             </p>
 
