@@ -365,6 +365,12 @@ html {
   color: #00263b;
 }
 
+.nav-item.is-active {
+  background: none;
+  color: #ff4f02;
+  font-weight: 700;
+}
+
 .nav-right {
   display: flex;
   align-items: center;
