@@ -87,11 +87,12 @@ export function Header() {
             <SignedIn>
               <Link
                 href="/mypage/cart"
-                className="relative flex items-center p-2 text-navy hover:text-orange transition-colors"
+                aria-label="Open cart"
+                className="relative flex items-center p-2 text-navy transition-colors hover:text-orange"
               >
-                <ShoppingCart size={24} />
+                <ShoppingCart size={24} className="pointer-events-none" />
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange text-[10px] font-bold text-white">
+                  <span className="pointer-events-none absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange text-[10px] font-bold text-white">
                     {cart.length}
                   </span>
                 )}
@@ -286,9 +287,10 @@ export function Header() {
               <Link
                 href="/mypage/cart"
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label={`Open cart${cart.length ? ` (${cart.length} items)` : ''}`}
                 className="flex items-center h-12 rounded-xl px-4 text-base font-bold text-navy hover:bg-gray-50 gap-3"
               >
-                <ShoppingCart size={20} />
+                <ShoppingCart size={20} className="pointer-events-none" />
                 Cart ({cart.length})
               </Link>
               <div className="p-4 border-t border-gray-100">

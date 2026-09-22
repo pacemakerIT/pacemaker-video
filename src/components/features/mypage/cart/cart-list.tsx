@@ -1,191 +1,160 @@
 'use client';
 
 import Image from 'next/image';
-import { ItemType } from '@prisma/client';
+import Link from 'next/link';
+import { X } from 'lucide-react';
 import { CartItem } from '@/types/my-card';
-import { itemCategoryLabel, itemTypeLabels } from '@/constants/labels';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { XIcon } from 'lucide-react';
-import MyPageCard from '../my-page-card';
-import { CustomBadge } from '../../../common/custom-badge';
 import { useCartContext } from '@/app/context/cart-context';
-import { toast } from 'sonner';
-
-const cards = [
-  {
-    id: '1',
-    itemId: '49f25e81-52ec-4d2e-9e64-a8a5533d4fe0',
-    title: 'UX Design Fundamentals',
-    price: 12.43,
-    description:
-      '자소서를 위한 스펙이 무엇인지와, 스펙을 쌓기 위하여 어떻게 정보를 구해야 할지 도와드릴게요.',
-    category: 'Marketing',
-    type: ItemType.WORKSHOP
-  },
-  {
-    id: '2',
-    itemId: 'wistia_gitlab_interview_001',
-    title: 'UX Design Fundamentals',
-    price: 15.99,
-    description:
-      '2~30대의 다양한 선택지를 두루 경험한 제가, 취준 일변도가 아니라 다양한 분야에서 쓰일 수 있는 스펙 쌓기부터 각종 자소서 작성 및 면접 준비까지 차근차근 준비해나가실 수 있도록 도와드리겠습니다.',
-    category: 'Interview',
-    type: ItemType.VIDEO
-  },
-  {
-    id: '3',
-    itemId: 'Celpip_template.pdf',
-    title: 'Test3',
-    price: 9.99,
-    description: 'test3',
-    category: 'Resume',
-    type: ItemType.EBOOK
-  }
-];
+import { resolveImageSrc } from '@/lib/utils';
+import { amountToCents, formatMoneyFromCents } from '@/lib/money';
+import { CartCategory, cartProductHref, cartTypeLabel } from './cart-product';
 
 interface CartListProps {
   cartItems: CartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
+const checkboxClass =
+  'h-4 w-4 rounded border-gray-300 data-[state=checked]:border-orange data-[state=checked]:bg-orange data-[state=checked]:text-white sm:h-5 sm:w-5';
+
 export default function CartList({ cartItems, setCartItems }: CartListProps) {
   const { removeFromCart } = useCartContext();
-
-  const toggleSelect = (id: string) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
-    );
-  };
-
-  const toggleAll = (checked: boolean) => {
-    setCartItems((prev) =>
-      prev.map((item) => ({ ...item, selected: checked }))
-    );
-  };
-
-  const removeSelectedItems = async () => {
-    const itemsToRemove = cartItems.filter((item) => item.selected);
-    if (itemsToRemove.length === 0) {
-      toast.error('No items selected');
-      return;
-    }
-    const itemIds = itemsToRemove.map((item) => item.itemId);
-    removeFromCart(itemIds);
-  };
-
-  const handleRemove = (id: string) => {
-    removeFromCart([id]);
-  };
+  const selectedCount = cartItems.filter((item) => item.selected).length;
 
   return (
-    <section className="flex-1 p-10 pt-20">
-      <h1 className="text-pace-xl font-bold mb-6 text-pace-gray-700">
-        장바구니
+    <section aria-labelledby="cart-heading">
+      <h1
+        id="cart-heading"
+        className="mb-6 font-headline text-3xl font-extrabold text-navy"
+      >
+        Cart
       </h1>
-
-      {cartItems.length > 0 ? (
-        <>
-          <div className="flex items-center mb-4 text-pace-sm">
-            <Checkbox
-              className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
-              checked={cartItems.every((item) => item.selected)}
-              onCheckedChange={(val) => toggleAll(!!val)}
-            />
-            <span className="ml-2">전체선택</span>
-            <Button
-              variant="ghost"
-              className="ml-auto text-pace-gray-700 border rounded-full border-[#EEEEEE]"
-              onClick={removeSelectedItems}
+      <div className="flex items-center justify-between gap-3 border-b border-gray-200 pb-4">
+        <label className="flex cursor-pointer items-center gap-1.5 font-headline text-xs font-semibold text-navy sm:gap-3 sm:text-sm">
+          <Checkbox
+            aria-label="Select all"
+            className={checkboxClass}
+            disabled={!cartItems.length}
+            checked={selectedCount === cartItems.length && cartItems.length > 0}
+            onCheckedChange={(checked) =>
+              setCartItems((items) =>
+                items.map((item) => ({ ...item, selected: checked === true }))
+              )
+            }
+          />
+          Select all
+        </label>
+        <button
+          type="button"
+          disabled={!selectedCount}
+          onClick={() =>
+            removeFromCart(
+              cartItems
+                .filter((item) => item.selected)
+                .map((item) => item.itemId)
+            )
+          }
+          className="shrink-0 rounded-2xl border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-500 transition-colors hover:border-orange hover:text-orange disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:py-2 sm:text-sm"
+        >
+          Remove selected
+        </button>
+      </div>
+      {cartItems.length ? (
+        <div className="mt-6 space-y-4">
+          {cartItems.map((item) => (
+            <article
+              key={`${item.type}-${item.itemId}`}
+              className="flex flex-col items-start justify-between gap-3 border border-gray-100 bg-white p-3 shadow-[0_10px_30px_rgba(0,38,59,0.08)] sm:flex-row sm:items-center sm:gap-4 sm:p-4"
             >
-              선택삭제
-            </Button>
-          </div>
-          <div className="space-y-4 text-[20px] text-pace-gray-500">
-            {cartItems.map((item, index) => (
-              <div
-                key={item.id}
-                className={`flex items-center border-b p-4 !m-0 ${index == 0 ? 'border-t' : ''}`}
-              >
-                <Checkbox
-                  checked={item.selected}
-                  onCheckedChange={() => toggleSelect(item.id)}
-                  className="data-[state=checked]:bg-pace-orange-800 data-[state=checked]:border-pace-orange-800 data-[state=checked]:text-pace-white-500"
-                />
-                <div className="w-20 h-4 text-pace-sm text-center text-pace-stone-500 mx-6">
-                  {itemTypeLabels[item.type] || item.type}
+              <div className="flex w-full min-w-0 items-center gap-3 sm:flex-1 sm:gap-4">
+                <div className="flex w-[50px] min-w-[50px] shrink-0 flex-col items-center gap-1.5 sm:w-[70px] sm:min-w-[70px]">
+                  <Checkbox
+                    aria-label={`Select ${item.title}`}
+                    className={checkboxClass}
+                    checked={!!item.selected}
+                    onCheckedChange={(checked) =>
+                      setCartItems((items) =>
+                        items.map((entry) =>
+                          entry.itemId === item.itemId &&
+                          entry.type === item.type
+                            ? { ...entry, selected: checked === true }
+                            : entry
+                        )
+                      )
+                    }
+                  />
+                  <span className="w-full break-words text-center text-[8px] font-bold uppercase leading-tight tracking-wider text-gray-400 sm:text-[10px]">
+                    {cartTypeLabel(item.type)}
+                  </span>
                 </div>
-                <Image
-                  src="/img/resume_lecture.jpeg"
-                  alt={item.title}
-                  width={160}
-                  height={106}
-                  className="w-40 h-[106px] rounded-lg object-cover"
-                />
-                <div className="ml-6">
-                  {item.category && (
-                    <CustomBadge
-                      variant={
-                        itemCategoryLabel.en[item.category] ?? item.category
-                      }
-                      className="w-fit flex justify-center items-center py-2 px-3"
-                    >
-                      {itemCategoryLabel.en[item.category] ?? item.category}
-                    </CustomBadge>
-                  )}
-
-                  {item.date && (
-                    <div className="text-pace-sm">
-                      {item.date && (
-                        <div className="text-pace-sm">
-                          {item.date
-                            .toISOString()
-                            .slice(0, 10)
-                            .replace(/-/g, '.')}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="mt-2">{item.title}</div>
-                </div>
-                <div className="text-right font-semibold text-pace-lg ml-auto">
-                  ${item.price}
-                </div>
-                <button
-                  onClick={() => handleRemove(item.itemId)}
-                  className="ml-6 text-gray-400 hover:text-red-500 transition-colors"
+                <Link
+                  href={cartProductHref(item.type, item.itemId)}
+                  aria-label={`View ${item.title}`}
+                  className="shrink-0 rounded-sm transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
                 >
-                  <XIcon className="w-5 h-5" />
+                  <Image
+                    src={
+                      resolveImageSrc({ thumbnail: item.thumbnail }) ||
+                      '/img/resume_lecture.jpeg'
+                    }
+                    alt={item.title}
+                    width={96}
+                    height={64}
+                    className="h-12 w-16 shrink-0 border border-gray-100 object-cover sm:h-16 sm:w-24"
+                  />
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1">
+                    {item.date ? (
+                      <span className="text-[9px] font-semibold text-gray-400 sm:text-[10px]">
+                        {item.date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    ) : (
+                      <CartCategory category={item.category} />
+                    )}
+                  </div>
+                  <h2 className="line-clamp-2 font-headline text-xs font-bold leading-tight text-navy sm:text-base">
+                    <Link
+                      href={cartProductHref(item.type, item.itemId)}
+                      className="rounded-sm hover:text-orange hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange"
+                    >
+                      {item.title}
+                    </Link>
+                  </h2>
+                </div>
+              </div>
+              <div className="flex w-full shrink-0 items-center justify-between gap-6 border-t border-gray-100 pl-[62px] pt-3 sm:w-auto sm:justify-end sm:border-0 sm:pl-0 sm:pt-0">
+                <span className="text-lg font-extrabold text-navy sm:text-xl">
+                  {formatMoneyFromCents(amountToCents(Number(item.price) || 0))}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`Remove ${item.title} from cart`}
+                  onClick={() => removeFromCart([item.itemId])}
+                  className="p-1 text-gray-400 transition-colors hover:text-orange"
+                >
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-            ))}
-          </div>
-        </>
+            </article>
+          ))}
+        </div>
       ) : (
-        <p>장바구니가 비어있습니다.</p>
+        <div className="mt-6 border border-gray-100 bg-white px-6 py-12 text-center shadow-[0_10px_30px_rgba(0,38,59,0.08)]">
+          <p className="mb-4 text-body-text">Your cart is empty.</p>
+          <Link
+            href="/courses"
+            className="font-semibold text-orange hover:underline"
+          >
+            Explore courses
+          </Link>
+        </div>
       )}
-
-      <h1 className="text-pace-xl font-bold mt-20 mb-6 text-pace-gray-700">
-        You Might Also Like
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cards.map((card, index) => (
-          <MyPageCard
-            key={index}
-            id={card.id}
-            title={card.title}
-            price={card.price}
-            description={card.description}
-            category={card.category}
-            type={card.type}
-            itemId={card.itemId}
-            purchased={false}
-          />
-        ))}
-      </div>
     </section>
   );
 }
