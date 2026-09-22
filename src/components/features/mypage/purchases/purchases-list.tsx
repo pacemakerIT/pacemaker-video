@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import type { OrderStatus } from '@prisma/client';
+import { ChevronDown } from 'lucide-react';
 import { formatMoneyFromCents } from '@/lib/money';
 import PurchaseDetailsPopup from './purchase-details-popup';
 
@@ -35,7 +35,6 @@ type PurchasesListProps = {
   currency: string;
   payment: PurchasePaymentInfo;
   receiptUrl: string | null;
-  isFirst: boolean;
 };
 
 export default function PurchasesList({
@@ -47,75 +46,67 @@ export default function PurchasesList({
   date,
   currency,
   payment,
-  receiptUrl,
-  isFirst
+  receiptUrl
 }: PurchasesListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isRefunded = status === 'REFUNDED';
-  const textColorClass = isRefunded ? 'text-pace-stone-800' : '';
-  const firstTitle = items[0]?.title ?? '구매 항목';
+  const firstTitle = items[0]?.title ?? 'Purchased item';
+  const statusClass = isRefunded
+    ? 'border-red-100 bg-red-50 text-red-700'
+    : 'border-emerald-100 bg-emerald-50 text-emerald-700';
 
   return (
-    <div className={`border-b pt-6 pb-8 ${isFirst ? 'border-t' : ''}`}>
-      <div className={`flex justify-between items-center ${textColorClass}`}>
-        <div>
-          <div
-            className={`text-pace-sm font-light space-x-4 text-pace-stone-500 ${textColorClass}`}
-          >
-            <span>날짜 : {date} 결제</span>
-            <span>주문번호 : {orderNumber}</span>
-          </div>
-
-          <h2
-            className={`text-[20px] font-medium mt-1 text-pace-gray-500 ${textColorClass}`}
-          >
-            {firstTitle}
-          </h2>
-
-          <button
-            className="flex items-center mt-2"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            <p className={`text-pace-gray-500 ${textColorClass}`}>
-              Total Items({items.length}){' '}
-            </p>
-            <span
-              className={`ml-1 text-pace-sm font-light text-pace-stone-800 ${textColorClass}`}
-            >
-              {isExpanded ? 'close' : 'More'}
-            </span>
-            <Image
-              src={`/icons/chevron-${isExpanded ? 'up' : 'down'}.svg`}
-              alt={isExpanded ? 'up' : 'down'}
-              width={24}
-              height={24}
-            />
-          </button>
-
-          {isExpanded && (
-            <ul className={`mt-2 font-light space-y-2 ${textColorClass}`}>
-              {items.map((item) => (
-                <li key={item.id}>
-                  {item.type} · {item.title}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <div className="mt-2">
-            <span
-              className={`text-pace-lg font-bold text-pace-gray-500 ${textColorClass}`}
-            >
-              {formatMoneyFromCents(amountCents, currency)}
-            </span>
-            <span
-              className={`ml-2 font-light text-pace-sm text-pace-gray-700 ${textColorClass}`}
-            >
-              {statusLabel}
-            </span>
-          </div>
+    <article className="flex flex-col justify-between gap-4 border-b border-gray-soft py-5 last:border-b-0 md:flex-row md:items-center">
+      <div className={`min-w-0 flex-1 ${isRefunded ? 'opacity-40' : ''}`}>
+        <div className="mb-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 font-body text-xs font-medium text-gray-400">
+          <span className="whitespace-nowrap">Placed on {date}</span>
+          <span className="whitespace-nowrap">
+            Order no. {orderNumber.replace(/^No\.\s*/, '')}
+          </span>
         </div>
 
+        <h2 className="mb-1.5 font-headline text-[17px] font-bold tracking-tight text-navy">
+          {firstTitle}
+        </h2>
+
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          className="mb-2.5 inline-flex items-center gap-1 text-[13px] font-semibold text-gray-400 transition-colors hover:text-navy"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>
+            {items.length} {items.length === 1 ? 'item' : 'items'}
+          </span>
+          <span>{isExpanded ? 'Close' : 'More'}</span>
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {isExpanded && (
+          <ul className="mb-2.5 flex flex-col gap-1 border-l border-gray-200 pl-3 text-[13px] text-gray-500">
+            {items.map((item) => (
+              <li key={item.id}>
+                {item.type} · {item.title}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <div className="flex items-center gap-2">
+          <span className="font-headline text-base font-bold text-navy">
+            {formatMoneyFromCents(amountCents, currency)}
+          </span>
+          <span
+            className={`inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${statusClass}`}
+          >
+            {statusLabel}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-1 flex shrink-0 justify-start md:mt-0">
         <PurchaseDetailsPopup
           orderNumber={orderNumber}
           date={date}
@@ -124,6 +115,6 @@ export default function PurchasesList({
           receiptUrl={receiptUrl}
         />
       </div>
-    </div>
+    </article>
   );
 }
