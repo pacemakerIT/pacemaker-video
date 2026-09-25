@@ -8,6 +8,7 @@ export interface MyCardBase {
 
 // Added selected property for the cart list in /mypage/cart
 export interface CartItem extends MyCardBase {
+  thumbnail?: string | null;
   category: string;
   price: number | string;
   type: string;

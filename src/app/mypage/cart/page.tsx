@@ -1,36 +1,61 @@
-'use client';
-import { useEffect, useState } from 'react';
-import CartList from '@/components/features/mypage/cart/cart-list';
-import PaymentSummary from '@/components/features/mypage/cart/payment-summary';
-import { CartItem } from '@/types/my-card';
-import { useCartContext } from '@/app/context/cart-context';
+import prisma from '@/lib/prisma';
+import CartContent from '@/components/features/mypage/cart/cart-content';
+import CartRecommendations from '@/components/features/mypage/cart/cart-recommendations';
+import { ItemType } from '@prisma/client';
 
-export default function CartPage() {
-  const { cart } = useCartContext();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    setCartItems(
-      cart.map((item) => ({
-        id: item.id || item.itemId,
-        itemId: item.itemId,
-        title: item.title || '',
-        category: item.category || '',
-        price:
-          typeof item.price === 'string'
-            ? parseFloat(item.price.replace(/[^0-9.-]+/g, ''))
-            : Number(item.price) || 0,
-        type: item.itemType,
-        date: item.startDate ? new Date(item.startDate) : undefined,
-        selected: true
-      }))
-    );
-  }, [cart]);
-
+export default async function CartPage() {
+  const ebookSelect = {
+    id: true,
+    title: true,
+    description: true,
+    price: true,
+    category: true,
+    thumbnail: true
+  };
+  const courseSelect = {
+    id: true,
+    title: true,
+    description: true,
+    price: true,
+    category: true,
+    thumbnailUrl: true
+  };
+  const [ebooks, courses] = await Promise.all([
+    prisma.ebook.findMany({
+      where: { isPublic: true },
+      select: ebookSelect,
+      orderBy: { orderKey: 'asc' },
+      take: 3
+    }),
+    prisma.course.findMany({
+      where: { isPublic: true },
+      select: courseSelect,
+      orderBy: { orderKey: 'asc' },
+      take: 3
+    })
+  ]);
+  const recommendations = [
+    ...ebooks.slice(0, 1).map((item) => ({
+      ...item,
+      title: item.title ?? '',
+      type: ItemType.EBOOK
+    })),
+    ...courses.map((item) => ({
+      ...item,
+      title: item.title ?? '',
+      price: item.price === null ? null : Number(item.price),
+      thumbnail: item.thumbnailUrl,
+      type: ItemType.COURSE
+    })),
+    ...ebooks.slice(1).map((item) => ({
+      ...item,
+      title: item.title ?? '',
+      type: ItemType.EBOOK
+    }))
+  ];
   return (
-    <div className="flex justify-between w-full">
-      <CartList cartItems={cartItems} setCartItems={setCartItems} />
-      <PaymentSummary cartItems={cartItems} />
-    </div>
+    <CartContent>
+      <CartRecommendations items={recommendations} />
+    </CartContent>
   );
 }
