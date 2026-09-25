@@ -45,25 +45,27 @@ export default function CourseList() {
   }, [currentCategory, allCards]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center">
-      {loading ? (
-        <p className="p-4">📡 Loading courses...</p>
-      ) : (
-        <>
-          <CourseHeader
-            category={category}
-            currentCategory={currentCategory}
-            setCurrentCategory={setCurrentCategory}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-          />
-          <CardContainer
-            layout={'grid'}
-            cards={currentCards}
-            itemType={ItemType.COURSE}
-          />
-        </>
-      )}
-    </div>
+    <section id="course-list" className="w-full bg-white py-[80px]">
+      <div className="mx-auto flex w-full max-w-[1248px] flex-col px-6">
+        {loading ? (
+          <p className="p-4 text-center">📡 Loading courses...</p>
+        ) : (
+          <>
+            <CourseHeader
+              category={category}
+              currentCategory={currentCategory}
+              setCurrentCategory={setCurrentCategory}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+            />
+            <CardContainer
+              layout={'grid'}
+              cards={currentCards}
+              itemType={ItemType.COURSE}
+            />
+          </>
+        )}
+      </div>
+    </section>
   );
 }

@@ -28,43 +28,49 @@ const ReviewContainer = () => {
   }, []);
 
   return (
-    <div className="w-screen relative flex-col justify-center gap-8 py-20 overflow-hidden bg-pace-ivory-500 flex items-center">
-      <h3 className="text-center text-2xl font-medium">
-        Hear from learners who&apos;ve taken our courses.
-      </h3>
-      <div
-        className={`whitespace-nowrap flex${reviews.length > 0 ? ' animate-marquee' : ''} p-4`}
-      >
-        {[...Array(3)].map((_, idx) =>
-          reviews.map((review) => (
-            <div
-              key={review.id + '-' + idx}
-              className="inline-block bg-white rounded-lg shadow p-4 mx-4 w-[300px]"
-            >
-              <div className="flex justify-between">
-                <div className="font-medium text-[10px] text-pace-orange-600 mb-2">
-                  {review.author}
+    <section className="relative w-screen overflow-hidden bg-gray-soft py-16 md:py-24">
+      <div className="mx-auto max-w-[1200px] px-6">
+        <div className="mx-auto mb-12 max-w-[800px] text-center md:mb-16">
+          <h2 className="font-headline text-[24px] font-bold text-navy md:text-[28px]">
+            Hear from learners who&apos;ve taken our courses.
+          </h2>
+        </div>
+      </div>
+
+      <div className="w-full overflow-hidden px-4">
+        <div
+          className={`flex whitespace-nowrap${reviews.length > 0 ? ' animate-marquee' : ''} p-4`}
+        >
+          {[...Array(3)].map((_, idx) =>
+            reviews.map((review) => (
+              <div
+                key={review.id + '-' + idx}
+                className="mx-3 md:mx-4 inline-block w-[300px] md:w-[340px] shrink-0 rounded-none border border-gray-100 bg-white p-6 md:p-8 shadow-card"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="mb-2 font-headline text-sm font-bold text-navy md:text-base">
+                    {review.author}
+                  </div>
+                  <div className="mb-1 flex items-center shrink-0">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Image
+                        key={i}
+                        src="/img/rating.png"
+                        alt="star"
+                        width={14}
+                        height={14}
+                        className="mr-1 inline-block"
+                      />
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center mb-1">
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Image
-                      key={i}
-                      src="/img/rating.png"
-                      alt="star"
-                      width={14}
-                      height={14}
-                      className="inline-block mr-1"
-                    />
-                  ))}
+                <div className="mb-2 line-clamp-4 max-w-full break-words whitespace-pre-line font-body text-xs md:text-sm leading-relaxed text-body-text">
+                  {review.content}
                 </div>
               </div>
-              <div className="text-[10px] text-pace-stone-700 break-words whitespace-pre-line mb-2 max-w-64 line-clamp-4">
-                {review.content}
-              </div>
-              {/* <div className="text-xs text-gray-400">{review.date}</div> */}
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
       {/* marquee 애니메이션용 스타일 */}
       <style jsx>{`
@@ -77,10 +83,10 @@ const ReviewContainer = () => {
           }
         }
         .animate-marquee {
-          animation: marquee 300s linear infinite;
+          animation: marquee 10s linear infinite;
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 

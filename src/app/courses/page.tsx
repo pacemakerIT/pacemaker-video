@@ -1,35 +1,12 @@
-import ListHeader from '@/components/common/list-header';
 import ReviewContainer from '@/components/common/review-container';
+import CourseHero from '@/components/features/course/course-hero';
 import CourseList from '@/components/features/course/course-list-grid';
 
 export default function CoursesPage() {
-  const slides = [
-    {
-      tag: 'Online Courses',
-      tagColor: 'rgba(0, 173, 189, 0.85)',
-      title: 'Build a strong foundation\nfor your career abroad ',
-      highlight: 'with Pacemaker',
-      highlightColor: 'text-teal',
-      description:
-        'From resumes to interview skills and networking, every step is supported.',
-      buttonText: 'Explore courses',
-      link: '#course-list'
-    }
-  ];
-
   return (
-    <div className="w-screen flex gap-20 flex-col">
-      <ListHeader
-        slides={slides}
-        gradientColors={{
-          start: '#A8DBFF60',
-          middle: '#FF823610',
-          end: '#a5b1b940'
-        }}
-      />
-      <div id="course-list">
-        <CourseList />
-      </div>
+    <div className="w-screen flex flex-col">
+      <CourseHero />
+      <CourseList />
       <ReviewContainer />
     </div>
   );

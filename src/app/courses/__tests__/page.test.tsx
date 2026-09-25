@@ -26,17 +26,8 @@ vi.mock('@/components/common/card-container', () => ({
   )
 }));
 
-vi.mock('@/components/common/list-header', () => ({
-  default: ({
-    slides
-  }: {
-    slides?: { title?: string; highlight?: string }[];
-  }) => (
-    <div data-testid="list-header">
-      {slides?.[0]?.title}
-      {slides?.[0]?.highlight}
-    </div>
-  )
+vi.mock('@/components/features/course/course-hero', () => ({
+  default: () => <div data-testid="course-hero">Course Hero</div>
 }));
 
 vi.mock('@/components/features/course/course-header', () => ({
@@ -251,15 +242,13 @@ describe('CoursesPage', () => {
     expect(resumeBadge.className).toContain('text-pace-orange-600');
   });
 
-  it('renders ListHeader with correct props', async () => {
+  it('renders CourseHero', async () => {
     render(<CoursesPage />);
 
     await waitFor(
       () => {
-        const listHeader = screen.getByTestId('list-header');
-        expect(listHeader).toBeInTheDocument();
-        expect(listHeader.textContent).toContain('Build a strong foundation');
-        expect(listHeader.textContent).toContain('with Pacemaker');
+        const hero = screen.getByTestId('course-hero');
+        expect(hero).toBeInTheDocument();
       },
       { timeout: 5000 }
     );
