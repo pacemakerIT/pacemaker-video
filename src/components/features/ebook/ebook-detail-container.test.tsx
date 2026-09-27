@@ -248,7 +248,7 @@ describe('EbookDetailContainer', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'like' }));
 
-    expect(screen.getByText('로그인 필요')).toBeInTheDocument();
+    expect(screen.getByText('Login Required')).toBeInTheDocument();
     expect(mocks.addFavorite).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: '확인' }));
