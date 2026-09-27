@@ -12,6 +12,7 @@ import { RelatedContentItem } from '@/types/video-detail';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
 
 export interface TOCItem {
@@ -63,8 +64,12 @@ export default function EbookDetailContainer({
   const { isSignedIn } = useUser();
   const router = useRouter();
   const { cart, addToCart } = useCartContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const isInCart = cart.some(
     (item) => item.itemId === id && item.itemType === ItemType.EBOOK
+  );
+  const isLiked = favorites.some(
+    (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
 
   const [modalConfig, setModalConfig] = useState<{
@@ -103,6 +108,29 @@ export default function EbookDetailContainer({
       onConfirm,
       showCancel: true
     });
+  };
+
+  const handleToggleLike = async (nextLiked: boolean) => {
+    if (!isSignedIn) {
+      showConfirm(
+        'Login Required',
+        'You need to log in to use the favorite feature. Would you like to log in now?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
+      return;
+    }
+
+    try {
+      if (nextLiked) {
+        await addFavorite(id, ItemType.EBOOK);
+      } else {
+        await removeFavorite(id, ItemType.EBOOK);
+      }
+    } catch {
+      showAlert('Error occurred', 'An error occurred. Please try again.');
+    }
   };
 
   const handleAddToCart = async () => {
@@ -204,6 +232,8 @@ export default function EbookDetailContainer({
     }
   ];
 
+  const hasSubDescription = Boolean(subDescription?.trim());
+
   const heroButtonText = canAccessEbook
     ? 'Purchased'
     : isInCart
@@ -211,7 +241,7 @@ export default function EbookDetailContainer({
       : 'Add to Cart';
 
   return (
-    <div className="w-full flex flex-col justify-between items-center gap-20">
+    <div className="w-full flex flex-col justify-between items-center gap-12 md:gap-20">
       <DetailHeroSection
         backgroundImage={backgroundImage}
         visualTitle={visualTitle}
@@ -221,29 +251,35 @@ export default function EbookDetailContainer({
         description={description}
         price={price}
         onAddToCart={handleAddToCart}
+        onToggleLike={handleToggleLike}
+        isLiked={isLiked}
         buttonText={heroButtonText}
         instructorLabel="Instructor"
         priceLabel="Price"
         itemType={ItemType.EBOOK}
       />
-      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
+      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] px-4 md:px-8 lg:px-0 gap-12 md:gap-20 pb-20 md:pb-40">
         <div className="w-full flex flex-col">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title={sectionTitle ?? title ?? ''}
-            className="mb-12"
+            className="mb-8 md:mb-12"
           />
-          <div className="flex flex-col lg:flex-row lg:justify-between gap-16">
-            <p className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-line">
-              {subDescription}
-            </p>
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-10 lg:gap-16">
+            {hasSubDescription && (
+              <p className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-line break-words">
+                {subDescription}
+              </p>
+            )}
             <ExpandableCards
               items={
                 tableOfContents && Array.isArray(tableOfContents)
                   ? tableOfContents
                   : []
               }
-              className="w-full lg:w-[480px] max-w-none mx-0"
+              className={`w-full max-w-none mx-0 ${
+                hasSubDescription ? 'lg:w-[480px]' : 'lg:w-full'
+              }`}
             />
           </div>
         </div>
