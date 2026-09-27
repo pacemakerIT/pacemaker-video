@@ -47,7 +47,7 @@ export default function DetailHeroSection({
   };
 
   return (
-    <div className="w-full flex justify-between items-center h-[600px] relative overflow-hidden">
+    <div className="w-full flex justify-between items-center py-12 md:py-16 lg:py-0 lg:h-[600px] relative overflow-hidden">
       {isCourse ? (
         backgroundImage ? (
           <>
@@ -72,18 +72,18 @@ export default function DetailHeroSection({
       ) : (
         <div className="absolute inset-0 w-full h-full bg-[#EBF5FF]"></div>
       )}
-      <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
+      <div className="w-full max-w-[1200px] px-4 md:px-8 xl:w-[62.5%] xl:min-w-[1200px] xl:max-w-none xl:px-0 items-center mx-auto justify-center flex flex-col lg:flex-row gap-10 lg:gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
-        <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
+        <div className="w-full lg:w-[60%] flex flex-col justify-center items-start relative z-10">
           <div
-            className={`text-[28px] font-heading tracking-wide mb-4 whitespace-pre-line ${
+            className={`text-[20px] md:text-[24px] lg:text-[28px] font-heading tracking-wide mb-3 md:mb-4 whitespace-pre-line ${
               isCourse ? 'text-white/80 font-medium' : 'text-orange font-bold'
             }`}
           >
             {visualTitle}
           </div>
           <h1
-            className={`text-[40px] font-heading font-bold leading-[1.3] tracking-tight whitespace-pre-line ${
+            className={`text-[28px] md:text-[34px] lg:text-[40px] font-heading font-bold leading-[1.3] tracking-tight whitespace-pre-line ${
               isCourse ? 'text-white' : 'text-navy'
             }`}
           >
@@ -92,15 +92,15 @@ export default function DetailHeroSection({
         </div>
 
         {/* 오른쪽 40% - 강의 정보 카드 */}
-        <div className="w-[40%] flex justify-center items-center px-8 relative z-10 ">
-          <div className="flex flex-col bg-white rounded-none p-7 shadow-[0_10px_30px_rgba(0,38,59,0.08)] w-full max-w-[360px] min-h-[382px] justify-between gap-4 border border-gray-100 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300">
+        <div className="w-full lg:w-[40%] flex justify-start lg:justify-center items-center lg:px-8 relative z-10 ">
+          <div className="flex flex-col bg-white rounded-none p-6 md:p-7 shadow-[0_10px_30px_rgba(0,38,59,0.08)] w-full max-w-[420px] md:max-w-[480px] lg:max-w-[360px] lg:min-h-[382px] justify-between gap-4 border border-gray-100 lg:hover:-translate-y-[10px] lg:hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300">
             <div>
-              <h2 className="text-[1.5rem] font-heading font-bold text-[#00263b] leading-tight mb-4">
+              <h2 className="text-[1.25rem] md:text-[1.5rem] font-heading font-bold text-navy leading-tight mb-4">
                 {title}
               </h2>
               <div className="space-y-3 mb-4">
                 <div className="flex items-start gap-3 text-[0.875rem]">
-                  <span className="font-bold text-[#00263b] min-w-[80px]">
+                  <span className="font-bold text-navy min-w-[80px]">
                     {instructorLabel}
                   </span>
                   <span className="text-gray-600 font-medium">
@@ -114,10 +114,10 @@ export default function DetailHeroSection({
             </div>
             <div className="mt-auto">
               <div className="flex justify-between items-center pt-3 border-t border-gray-100 mb-5">
-                <span className="font-bold text-[#00263b] text-sm">
+                <span className="font-bold text-navy text-sm">
                   {priceLabel}
                 </span>
-                <span className="text-2xl font-heading font-bold text-[#00263b]">
+                <span className="text-2xl font-heading font-bold text-navy">
                   $
                   {typeof price === 'number'
                     ? (price as number).toLocaleString()
@@ -128,22 +128,24 @@ export default function DetailHeroSection({
               </div>
               <div className="flex gap-3 items-center">
                 <Button
-                  className="flex-1 h-auto bg-[#ff4f02] text-white font-heading font-bold py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-[#e04400] hover:scale-[1.02] transition-all text-lg"
+                  className="flex-1 min-w-0 h-auto bg-orange text-white font-heading font-bold py-4 px-4 md:px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-orange-hover hover:scale-[1.02] transition-all text-base md:text-lg"
                   onClick={handleAddToCart}
                 >
                   {buttonText}
                 </Button>
                 <button
+                  type="button"
                   role="button"
                   aria-label="like"
-                  className="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl text-[#ff4f02] hover:bg-[#ff4f02]/5 transition-all shadow-sm hover:-translate-y-[3px] group"
+                  aria-pressed={isLiked}
+                  className="w-12 h-12 shrink-0 flex items-center justify-center border border-gray-100 rounded-xl text-orange hover:bg-orange/5 transition-all shadow-sm hover:-translate-y-[3px] group"
                   onClick={handleLikeToggle}
                 >
                   <Heart
                     className={`w-6 h-6 transition-colors duration-200 ${
                       isLiked
-                        ? 'text-[#ff4f02] fill-[#ff4f02]'
-                        : 'text-gray-300 fill-transparent group-hover:text-[#ff4f02]'
+                        ? 'text-orange fill-orange'
+                        : 'text-gray-300 fill-transparent group-hover:text-orange'
                     }`}
                   />
                 </button>
