@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useUserContext } from '@/app/context/user-context';
 import MyAccountLayout from './my-account-layout';
+import MyPageSidebar from './my-page-side-bar';
 
 export default function MyPage({ children }: { children: React.ReactNode }) {
   const { user, isLoading, error } = useUserContext();
@@ -23,6 +24,17 @@ export default function MyPage({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   if (pathname === '/mypage') return children;
+
+  if (pathname === '/mypage/cart') {
+    return (
+      <div className="min-h-screen bg-surface pb-28 font-body text-body-text">
+        <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-8 px-6 py-12 lg:flex-row">
+          <MyPageSidebar cartDesign />
+          <div className="min-w-0 flex-1">{children}</div>
+        </div>
+      </div>
+    );
+  }
 
   return <MyAccountLayout>{children}</MyAccountLayout>;
 }

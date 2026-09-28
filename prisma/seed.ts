@@ -635,7 +635,7 @@ async function main() {
     await prisma.user.upsert({
       where: { email: u.email },
       update: {
-        clerkId: u.clerkId,
+        // Keep the existing Clerk identity; seed IDs may belong to another instance.
         roleId: u.roleId,
         name: u.roleId === 'ADMIN' ? 'Admin User' : 'Test User',
         nickname: u.roleId === 'ADMIN' ? 'Admin' : 'Tester',

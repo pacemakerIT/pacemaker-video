@@ -3,6 +3,7 @@
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import SignInModalButton from '@/components/auth/sign-in-modal-button';
 import SignUpModalButton from '@/components/auth/sign-up-modal-button';
@@ -21,8 +22,12 @@ import {
 
 export function Header() {
   const { cart } = useCartContext();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
+
+  const isActivePath = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -34,7 +39,7 @@ export function Header() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
+    <nav className="w-screen sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
       <div className="nav-inner relative z-[110] bg-white flex items-center justify-between p-4">
         {/* Logo - Stays fixed on the left */}
         <Link href="/" className="block">
@@ -51,13 +56,25 @@ export function Header() {
         {/* Desktop Navigation - Hidden on mobile */}
         <div className="hidden md:flex items-center ml-auto">
           <div className="nav-center">
-            <Link href="/workshops" className="nav-item">
+            <Link
+              href="/workshops"
+              aria-current={isActivePath('/workshops') ? 'page' : undefined}
+              className={`nav-item ${isActivePath('/workshops') ? 'is-active' : ''}`}
+            >
               Workshop
             </Link>
-            <Link href="/courses" className="nav-item">
+            <Link
+              href="/courses"
+              aria-current={isActivePath('/courses') ? 'page' : undefined}
+              className={`nav-item ${isActivePath('/courses') ? 'is-active' : ''}`}
+            >
               Online Course
             </Link>
-            <Link href="/ebooks" className="nav-item">
+            <Link
+              href="/ebooks"
+              aria-current={isActivePath('/ebooks') ? 'page' : undefined}
+              className={`nav-item ${isActivePath('/ebooks') ? 'is-active' : ''}`}
+            >
               E-book
             </Link>
           </div>
@@ -70,11 +87,12 @@ export function Header() {
             <SignedIn>
               <Link
                 href="/mypage/cart"
-                className="relative flex items-center p-2 text-navy hover:text-orange transition-colors"
+                aria-label="Open cart"
+                className="relative flex items-center p-2 text-navy transition-colors hover:text-orange"
               >
-                <ShoppingCart size={24} />
+                <ShoppingCart size={24} className="pointer-events-none" />
                 {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange text-[10px] font-bold text-white">
+                  <span className="pointer-events-none absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange text-[10px] font-bold text-white">
                     {cart.length}
                   </span>
                 )}
@@ -143,14 +161,29 @@ export function Header() {
                   <Link
                     href="/workshops"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    aria-current={
+                      isActivePath('/workshops') ? 'page' : undefined
+                    }
                     className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-navy/5 transition-all"
                   >
-                    <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-navy group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all">
+                    <div
+                      className={`p-2.5 rounded-xl bg-gray-50 group-hover:bg-white group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all ${
+                        isActivePath('/workshops')
+                          ? 'text-orange'
+                          : 'text-gray-400 group-hover:text-navy'
+                      }`}
+                    >
                       <CalendarDays size={20} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[1rem] font-bold text-navy">
+                        <span
+                          className={`text-[1rem] font-bold ${
+                            isActivePath('/workshops')
+                              ? 'text-orange'
+                              : 'text-navy'
+                          }`}
+                        >
                           Workshops
                         </span>
                         <ChevronRight
@@ -168,14 +201,27 @@ export function Header() {
                   <Link
                     href="/courses"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    aria-current={isActivePath('/courses') ? 'page' : undefined}
                     className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-navy/5 transition-all"
                   >
-                    <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-navy group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all">
+                    <div
+                      className={`p-2.5 rounded-xl bg-gray-50 group-hover:bg-white group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all ${
+                        isActivePath('/courses')
+                          ? 'text-orange'
+                          : 'text-gray-400 group-hover:text-navy'
+                      }`}
+                    >
                       <SquarePlay size={20} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[1rem] font-bold text-navy">
+                        <span
+                          className={`text-[1rem] font-bold ${
+                            isActivePath('/courses')
+                              ? 'text-orange'
+                              : 'text-navy'
+                          }`}
+                        >
                           Online Courses
                         </span>
                         <ChevronRight
@@ -193,14 +239,27 @@ export function Header() {
                   <Link
                     href="/ebooks"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    aria-current={isActivePath('/ebooks') ? 'page' : undefined}
                     className="group flex items-start gap-4 p-4 rounded-2xl hover:bg-navy/5 transition-all"
                   >
-                    <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-navy group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all">
+                    <div
+                      className={`p-2.5 rounded-xl bg-gray-50 group-hover:bg-white group-hover:shadow-sm border border-transparent group-hover:border-gray-100 transition-all ${
+                        isActivePath('/ebooks')
+                          ? 'text-orange'
+                          : 'text-gray-400 group-hover:text-navy'
+                      }`}
+                    >
                       <BookOpenText size={20} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[1rem] font-bold text-navy">
+                        <span
+                          className={`text-[1rem] font-bold ${
+                            isActivePath('/ebooks')
+                              ? 'text-orange'
+                              : 'text-navy'
+                          }`}
+                        >
                           E-books
                         </span>
                         <ChevronRight
@@ -228,9 +287,10 @@ export function Header() {
               <Link
                 href="/mypage/cart"
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label={`Open cart${cart.length ? ` (${cart.length} items)` : ''}`}
                 className="flex items-center h-12 rounded-xl px-4 text-base font-bold text-navy hover:bg-gray-50 gap-3"
               >
-                <ShoppingCart size={20} />
+                <ShoppingCart size={20} className="pointer-events-none" />
                 Cart ({cart.length})
               </Link>
               <div className="p-4 border-t border-gray-100">
