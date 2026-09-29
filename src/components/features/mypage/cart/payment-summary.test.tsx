@@ -62,8 +62,9 @@ describe('PaymentSummary', () => {
     });
 
     render(<PaymentSummary cartItems={cartItems} />);
+    fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
-    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
@@ -94,19 +95,20 @@ describe('PaymentSummary', () => {
     );
 
     expect(
-      screen.getAllByRole('button', { name: '결제하기' })[0]
+      screen.getAllByRole('button', { name: 'Checkout' })[0]
     ).toBeDisabled();
   });
 
   it('shows CAD amounts and promotion controls', () => {
     render(<PaymentSummary cartItems={cartItems} />);
+    fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
     expect(screen.getAllByText('CA$49.99').length).toBeGreaterThan(0);
     expect(
-      screen.getAllByPlaceholderText('프로모션 코드 입력').length
+      screen.getAllByPlaceholderText('Enter promo code').length
     ).toBeGreaterThan(0);
     expect(
-      screen.getAllByRole('button', { name: '등록' }).length
+      screen.getAllByRole('button', { name: 'Apply' }).length
     ).toBeGreaterThan(0);
   });
 
@@ -128,11 +130,12 @@ describe('PaymentSummary', () => {
       });
 
     render(<PaymentSummary cartItems={cartItems} />);
+    fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
-    fireEvent.change(screen.getAllByPlaceholderText('프로모션 코드 입력')[0], {
+    fireEvent.change(screen.getAllByPlaceholderText('Enter promo code')[0], {
       target: { value: 'SAVE10' }
     });
-    fireEvent.click(screen.getAllByRole('button', { name: '등록' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Apply' })[0]);
 
     await waitFor(() => {
       expect(fetch).toHaveBeenNthCalledWith(
@@ -152,20 +155,17 @@ describe('PaymentSummary', () => {
         })
       );
     });
-    expect(await screen.findAllByText('적용된 코드: SAVE10')).toHaveLength(1);
-    expect(
-      screen.getAllByText('Stripe Checkout에서 적용').length
-    ).toBeGreaterThan(0);
-    expect(
-      screen.getAllByText(
-        '프로모션 할인은 Stripe Checkout에서 최종 반영됩니다.'
-      ).length
-    ).toBeGreaterThan(0);
-    expect(mocks.toastSuccessMock).toHaveBeenCalledWith(
-      '프로모션 코드가 적용되었습니다.'
+    expect(await screen.findAllByText('Applied code: SAVE10')).toHaveLength(1);
+    expect(screen.getAllByText('Applied at checkout').length).toBeGreaterThan(
+      0
     );
+    expect(
+      screen.getAllByText('Your promo discount will be reflected at checkout.')
+        .length
+    ).toBeGreaterThan(0);
+    expect(mocks.toastSuccessMock).toHaveBeenCalledWith('Promo code applied.');
 
-    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     await waitFor(() => {
       expect(fetch).toHaveBeenNthCalledWith(
@@ -192,14 +192,15 @@ describe('PaymentSummary', () => {
 
   it('requires typed promotion codes to be registered before checkout', () => {
     render(<PaymentSummary cartItems={cartItems} />);
+    fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
-    fireEvent.change(screen.getAllByPlaceholderText('프로모션 코드 입력')[0], {
+    fireEvent.change(screen.getAllByPlaceholderText('Enter promo code')[0], {
       target: { value: 'SAVE10' }
     });
-    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     expect(mocks.toastErrorMock).toHaveBeenCalledWith(
-      '프로모션 코드를 먼저 등록해주세요.'
+      'Please apply your promo code before checkout.'
     );
     expect(fetch).not.toHaveBeenCalled();
     expect(locationAssignMock).not.toHaveBeenCalled();
@@ -214,12 +215,13 @@ describe('PaymentSummary', () => {
     });
 
     render(<PaymentSummary cartItems={cartItems} />);
+    fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
-    fireEvent.click(screen.getAllByRole('button', { name: '결제하기' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     expect(
       await screen.findAllByText('Already purchased: Checkout Course')
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(mocks.toastErrorMock).toHaveBeenCalledWith(
       'Already purchased: Checkout Course'
     );
