@@ -47,6 +47,11 @@ vi.mock('./ebook-purchased-hero', () => ({
   }) => <button onClick={onContinueReading}>{ctaText}</button>
 }));
 
+vi.mock('./ebook-pdf-modal', () => ({
+  default: ({ isOpen, ebookId }: { isOpen: boolean; ebookId: string }) =>
+    isOpen ? <div data-testid="pdf-reader">{ebookId}</div> : null
+}));
+
 vi.mock('@/components/common/confirm-modal', () => ({
   default: ({
     isOpen,
@@ -153,5 +158,15 @@ describe('EbookDetailContainer', () => {
       screen.queryByRole('button', { name: 'Purchased' })
     ).not.toBeInTheDocument();
     expect(mocks.addToCart).not.toHaveBeenCalled();
+  });
+
+  it('opens the pdf reader when a reader continues an owned ebook', () => {
+    render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
+
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue reading' }));
+
+    expect(screen.getByTestId('pdf-reader')).toHaveTextContent('ebook-1');
   });
 });
