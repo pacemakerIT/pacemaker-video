@@ -226,7 +226,7 @@ export default function EbookDetailContainer({
         priceLabel="Price"
         itemType={ItemType.EBOOK}
       />
-      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40">
+      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20 pb-40 px-6">
         <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}

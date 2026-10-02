@@ -47,7 +47,7 @@ export default function DetailHeroSection({
   };
 
   return (
-    <div className="w-full flex justify-between items-center h-[600px] relative overflow-hidden">
+    <section className="relative min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center py-12 lg:py-0">
       {/* 배경 이미지 및 오버레이 */}
       {backgroundImage ? (
         <>
@@ -56,51 +56,52 @@ export default function DetailHeroSection({
             style={{
               backgroundImage: `url('${backgroundImage}')`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              minWidth: '100%',
-              minHeight: '100%'
+              backgroundPosition: 'top center',
+              backgroundRepeat: 'no-repeat'
             }}
-          ></div>
+          />
           <div
-            className={`absolute inset-0 ${isCourse ? 'bg-black/40' : ''}`}
-          ></div>
+            className={`absolute inset-0 ${isCourse ? 'bg-black/40' : 'bg-black/20'}`}
+          />
         </>
       ) : (
         <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
           No Image
         </div>
       )}
-      <div className="w-[62.5%] min-w-[1200px] items-center mx-auto justify-center flex gap-8">
-        {/* 왼쪽 60% - 부제목과 제목 */}
-        <div className="w-[60%] flex flex-col justify-center items-start relative z-10">
-          <div
-            className={`text-[28px] font-heading font-medium tracking-wide mb-4 whitespace-pre-line ${
-              isCourse ? 'text-white/80' : 'text-black/80'
-            }`}
-          >
-            {visualTitle}
-          </div>
+
+      <div className="max-w-[1248px] mx-auto px-6 h-full relative flex flex-col lg:flex-row items-center justify-center lg:justify-between py-12 lg:py-0 gap-8 w-full z-10">
+        {/* 왼쪽 텍스트 - 비주얼 타이틀과 헤드라인 */}
+        <div className="max-w-2xl w-full text-white z-10 text-center lg:text-left">
+          {visualTitle && (
+            <p
+              className={`text-lg sm:text-[28px] mb-4 font-medium opacity-100 tracking-wide font-heading whitespace-pre-line ${
+                isCourse ? 'text-white/90' : 'text-white'
+              }`}
+            >
+              {visualTitle}
+            </p>
+          )}
           <h1
-            className={`text-[40px] font-heading font-bold leading-[1.3] tracking-tight whitespace-pre-line ${
-              isCourse ? 'text-white' : 'text-black'
+            className={`text-2xl sm:text-3xl md:text-[40px] font-heading font-bold leading-[1.3] tracking-tight whitespace-pre-line ${
+              isCourse ? 'text-white' : 'text-white'
             }`}
           >
             {visualTitle2}
           </h1>
         </div>
 
-        {/* 오른쪽 40% - 강의 정보 카드 */}
-        <div className="w-[40%] flex justify-center items-center px-8 relative z-10 ">
+        {/* 오른쪽 강의 정보 카드 */}
+        <div className="w-full lg:w-auto flex justify-center items-center z-10">
           {isCourse ? (
-            <div className="flex flex-col bg-white rounded-none p-7 shadow-[0_10px_30px_rgba(0,38,59,0.08)] w-full max-w-[360px] min-h-[382px] justify-between gap-4 border border-gray-100 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300">
+            <div className="bg-white rounded-none p-7 w-full max-w-[360px] min-h-[382px] shadow-[0_10px_30px_rgba(0,38,59,0.08)] flex flex-col justify-between gap-4 border border-gray-100 hover:-translate-y-[10px] hover:shadow-[0_20px_40px_rgba(0,38,59,0.12)] transition-[transform,box-shadow] duration-300">
               <div>
-                <h2 className="text-[1.5rem] font-heading font-bold text-[#00263b] leading-tight mb-4">
+                <h2 className="text-[1.5rem] font-heading font-bold text-navy leading-tight mb-4">
                   {title}
                 </h2>
                 <div className="space-y-3 mb-4">
                   <div className="flex items-start gap-3 text-[0.875rem]">
-                    <span className="font-bold text-[#00263b] min-w-[80px]">
+                    <span className="font-bold text-navy min-w-[80px]">
                       {instructorLabel}
                     </span>
                     <span className="text-gray-600 font-medium">
@@ -114,10 +115,10 @@ export default function DetailHeroSection({
               </div>
               <div className="mt-auto">
                 <div className="flex justify-between items-center pt-3 border-t border-gray-100 mb-5">
-                  <span className="font-bold text-[#00263b] text-sm">
+                  <span className="font-bold text-navy text-sm">
                     {priceLabel}
                   </span>
-                  <span className="text-2xl font-heading font-bold text-[#00263b]">
+                  <span className="text-2xl font-heading font-bold text-navy">
                     $
                     {typeof price === 'number'
                       ? (price as number).toLocaleString()
@@ -128,7 +129,7 @@ export default function DetailHeroSection({
                 </div>
                 <div className="flex gap-3 items-center">
                   <Button
-                    className="flex-1 h-auto bg-[#ff4f02] text-white font-heading font-bold py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-[#e04400] hover:scale-[1.02] transition-all text-lg"
+                    className="flex-1 h-auto bg-orange text-white font-heading font-bold py-3.5 sm:py-4 px-4 sm:px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] hover:bg-orange-hover hover:scale-[1.02] transition-all text-sm sm:text-lg whitespace-nowrap"
                     onClick={handleAddToCart}
                   >
                     {buttonText}
@@ -136,14 +137,14 @@ export default function DetailHeroSection({
                   <button
                     role="button"
                     aria-label="like"
-                    className="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl text-[#ff4f02] hover:bg-[#ff4f02]/5 transition-all shadow-sm hover:-translate-y-[3px] group"
+                    className="w-12 h-12 flex items-center justify-center border border-gray-100 rounded-xl text-orange hover:bg-orange/5 transition-all shadow-sm hover:-translate-y-[3px] group"
                     onClick={handleLikeToggle}
                   >
                     <Heart
                       className={`w-6 h-6 transition-colors duration-200 ${
                         isLiked
-                          ? 'text-[#ff4f02] fill-[#ff4f02]'
-                          : 'text-gray-300 fill-transparent group-hover:text-[#ff4f02]'
+                          ? 'text-orange fill-orange'
+                          : 'text-gray-300 fill-transparent group-hover:text-orange'
                       }`}
                     />
                   </button>
@@ -199,6 +200,6 @@ export default function DetailHeroSection({
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

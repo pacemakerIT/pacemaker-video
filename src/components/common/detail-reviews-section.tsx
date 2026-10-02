@@ -43,14 +43,18 @@ export default function DetailReviewsSection({
   };
 
   return (
-    <div className="flex w-full flex-col gap-6">
-      <div className={`flex items-end gap-4 mb-8 ${headerClassName ?? ''}`}>
-        <h2 className="text-3xl font-heading font-bold text-[#00263b] shrink-0">
+    <div className="flex w-full flex-col gap-4 sm:gap-6">
+      <div
+        className={`flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-2 sm:mb-4 ${headerClassName ?? ''}`}
+      >
+        <h2 className="text-3xl font-heading font-bold text-navy shrink-0">
           {title}
         </h2>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl font-bold text-[#00263b]">{rating} / 5</span>
-          <div className="flex items-center text-[#ff4f02]">
+        <div className="flex items-center gap-2 sm:mb-1 flex-wrap">
+          <span className="text-lg sm:text-xl font-bold text-navy">
+            {rating} / 5
+          </span>
+          <div className="flex items-center text-orange">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
@@ -85,7 +89,7 @@ export default function DetailReviewsSection({
           <div className="flex justify-center mt-8">
             <Button
               onClick={handleLoadMoreReviews}
-              className="bg-[#ff4f02] hover:bg-[#e04500] text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
+              className="bg-orange hover:bg-orange-hover text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02]"
             >
               {loadMoreButtonText}
             </Button>

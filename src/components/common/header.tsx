@@ -39,16 +39,23 @@ export function Header() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="w-screen sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
-      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between p-4">
+    <nav className="w-full sticky top-0 z-[100] bg-white border-b border-surface-border py-[12px]">
+      <a
+        href="#main-content"
+        className="fixed left-4 top-4 z-[9999] -translate-y-[200%] rounded-xl bg-navy px-4 py-3 text-sm font-bold text-white focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-teal"
+      >
+        Skip to content
+      </a>
+      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between">
         {/* Logo - Stays fixed on the left */}
-        <Link href="/" className="block">
+        <Link href="/" className="nav-logo block" aria-label="Pacemaker home">
           <Image
             src="/img/logo.webp"
             alt="Pacemaker Logo"
             width={155}
             height={32}
-            className="h-8 w-auto"
+            className="h-8 w-auto text-body-text"
+            style={{ color: 'rgb(71, 84, 103)' }}
             priority
           />
         </Link>
@@ -61,21 +68,21 @@ export function Header() {
               aria-current={isActivePath('/workshops') ? 'page' : undefined}
               className={`nav-item ${isActivePath('/workshops') ? 'is-active' : ''}`}
             >
-              Workshop
+              Workshops
             </Link>
             <Link
               href="/courses"
               aria-current={isActivePath('/courses') ? 'page' : undefined}
               className={`nav-item ${isActivePath('/courses') ? 'is-active' : ''}`}
             >
-              Online Course
+              Online Courses
             </Link>
             <Link
               href="/ebooks"
               aria-current={isActivePath('/ebooks') ? 'page' : undefined}
               className={`nav-item ${isActivePath('/ebooks') ? 'is-active' : ''}`}
             >
-              E-book
+              E-books
             </Link>
           </div>
 
@@ -190,7 +197,7 @@ export function Header() {
                           className="text-gray-300 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
                         />
                       </div>
-                      <p className="text-[0.85rem] text-gray-400 font-medium leading-snug">
+                      <p className="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
                         Live sessions, practical events, and real-world
                         feedback.
                       </p>
@@ -228,7 +235,7 @@ export function Header() {
                           className="text-gray-300 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
                         />
                       </div>
-                      <p className="text-[0.85rem] text-gray-400 font-medium leading-snug">
+                      <p className="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
                         Guided lessons to help with resumes, interviews, and
                         career moves.
                       </p>
@@ -266,7 +273,7 @@ export function Header() {
                           className="text-gray-300 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
                         />
                       </div>
-                      <p className="text-[0.85rem] text-gray-400 font-medium leading-snug">
+                      <p className="text-[0.825rem] text-gray-400 font-medium leading-snug line-clamp-2">
                         Quick reads with practical tips for searching and
                         applying with confidence.
                       </p>

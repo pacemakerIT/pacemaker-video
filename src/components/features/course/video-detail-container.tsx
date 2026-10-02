@@ -5,6 +5,7 @@ import {
   ChevronDown,
   CirclePlay,
   ChevronLeft,
+  X,
   CodeXml,
   FileSignature,
   HelpCircle,
@@ -15,7 +16,8 @@ import {
   FileText,
   MessageSquare,
   Share2,
-  Heart
+  Heart,
+  VideoOff
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -44,6 +46,33 @@ import {
 
 interface VideoDetailContainerProps {
   id: string;
+}
+
+function isDummyWistiaId(id: string): boolean {
+  if (!id) return true;
+  const trimmed = id.trim();
+  return (
+    trimmed.startsWith('temp-') ||
+    trimmed.startsWith('vidx-') ||
+    trimmed.startsWith('video-')
+  );
+}
+
+function getWistiaMediaId(id: string): string | null {
+  if (!id) return null;
+  const trimmed = id.trim();
+  if (trimmed.includes('wistia.com') || trimmed.includes('wistia.net')) {
+    const parts = trimmed.split('/').filter(Boolean);
+    const last = parts[parts.length - 1];
+    return last ? last.split('?')[0] : trimmed;
+  }
+  if (isDummyWistiaId(trimmed)) {
+    if (process.env.NODE_ENV === 'development') {
+      return '32ktrbrf3j';
+    }
+    return null;
+  }
+  return trimmed;
 }
 
 export default function VideoDetailContainer({
@@ -183,13 +212,11 @@ export default function VideoDetailContainer({
 
   const toggleSession = (sessionId: string) => {
     setExpandedSessions((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(sessionId)) {
-        newSet.delete(sessionId);
+      if (prev.has(sessionId)) {
+        return new Set();
       } else {
-        newSet.add(sessionId);
+        return new Set([sessionId]);
       }
-      return newSet;
     });
   };
 
@@ -207,6 +234,10 @@ export default function VideoDetailContainer({
             .find((video) => video.canAccessVideo && video.videoId);
 
           setSelectedMediaId(firstAccessibleVideo?.videoId || '');
+          const firstSectionId = result.data.course.sections[0]?.id;
+          setExpandedSessions(
+            firstSectionId ? new Set([firstSectionId]) : new Set()
+          );
         } else {
           setError(result.message || '데이터를 불러오는데 실패했습니다.');
         }
@@ -302,12 +333,11 @@ export default function VideoDetailContainer({
           type: course.type,
           thumbnail: course.thumbnail
         })) || [];
+
   const canAccessCourse = Boolean(data.entitlements?.canAccessCourse);
-  const requiresPurchase = Boolean(data.entitlements?.requiresPurchase);
-  const accessibleVideos = data.course.sections
-    .flatMap((section) => section.videos)
-    .filter((video) => video.canAccessVideo && video.videoId);
-  const hasAccessibleVideos = accessibleVideos.length > 0;
+  const allVideos = data.course.sections.flatMap((section) => section.videos);
+  const totalVideosCount = allVideos.length;
+  const selectedVideo = allVideos.find((v) => v.videoId === selectedMediaId);
 
   const heroButtonText = canAccessCourse
     ? 'Purchased'
@@ -316,42 +346,100 @@ export default function VideoDetailContainer({
       : 'Add to Cart';
 
   return (
-    <div className="flex flex-col h-full h-full relative flex">
-      <DetailHeroSection
-        visualTitle={data.course.visualTitle || undefined}
-        visualTitle2={data.course.visualTitle2}
-        title={data.course.title || ''}
-        description={data.course.description || ''}
-        price={data.course.price || ''}
-        instructor={
-          data.instructors?.map((inst) => inst.name).join(', ') || 'Pacemaker'
-        }
-        backgroundImage={resolveImageSrc({
-          thumbnailUrl: data.course.thumbnailUrl,
-          itemType: ItemType.COURSE
-        })}
-        onAddToCart={handleAddToCart}
-        onToggleLike={handleToggleLike}
-        isLiked={isLiked}
-        buttonText={heroButtonText}
-        itemType={ItemType.COURSE}
-      />
+    <div className="flex flex-col min-h-screen relative w-full overflow-x-hidden">
+      {canAccessCourse ? (
+        /* PURCHASED STATE: Top Video Player Section matching course_detail_video.html */
+        <section className="w-full bg-gray-soft py-10 border-b border-pace-gray-100">
+          <div className="max-w-[1248px] mx-auto px-6">
+            <div
+              id="videoPlayerCard"
+              className="flex flex-col shadow-2xl relative overflow-hidden bg-white rounded-2xl"
+            >
+              <div
+                id="videoPlayerContainer"
+                className="flex-1 flex flex-col bg-white relative"
+              >
+                {/* Video Screen */}
+                <div
+                  id="videoScreenSection"
+                  className="relative w-full aspect-video min-h-[200px] sm:min-h-[360px] bg-black flex items-center justify-center overflow-hidden"
+                >
+                  {(() => {
+                    const effectiveMediaId = getWistiaMediaId(selectedMediaId);
+                    if (effectiveMediaId) {
+                      return (
+                        <WistiaPlayer
+                          key={effectiveMediaId}
+                          mediaId={effectiveMediaId}
+                          id="wistia-player-container-1"
+                          className="w-full h-full block"
+                          style={{ width: '100%', height: '100%' }}
+                        />
+                      );
+                    }
+                    return (
+                      <div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-white/80">
+                        <VideoOff className="w-8 h-8 text-white/60 mb-1" />
+                        <p className="text-base font-semibold font-heading">
+                          영상이 준비 중입니다
+                        </p>
+                        <p className="text-xs text-white/60 font-body">
+                          올바른 동영상 ID가 등록되지 않았습니다.
+                        </p>
+                      </div>
+                    );
+                  })()}
+                </div>
 
-      <div className="max-w-[1200px] mx-auto px-6 py-20 space-y-20">
-        {isSignedIn && hasAccessibleVideos && selectedMediaId && (
-          <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl relative">
-            <WistiaPlayer
-              mediaId={selectedMediaId}
-              id="wistia-player-container-1"
-            />
+                {/* Video Info Bar */}
+                <div className="p-6 bg-white border-t border-pace-gray-100">
+                  <h2
+                    id="videoTitle"
+                    className="text-2xl font-headline font-bold text-navy mb-1 leading-tight"
+                  >
+                    {selectedVideo?.title || data.course.title || ''}
+                  </h2>
+                  <p
+                    id="videoSubtitle"
+                    className="text-sm font-body text-gray-700 font-medium leading-normal"
+                  >
+                    {selectedVideo?.description ||
+                      data.course.description ||
+                      ''}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-        {isSignedIn && requiresPurchase && !hasAccessibleVideos && (
-          <div className="rounded-lg border border-pace-gray-100 bg-pace-gray-50 px-6 py-5 text-center text-pace-stone-600">
-            구매 완료 후 강의를 수강할 수 있습니다.
-          </div>
-        )}
+        </section>
+      ) : (
+        /* UNPURCHASED STATE: DetailHeroSection matching course_detail.html */
+        <DetailHeroSection
+          visualTitle={data.course.visualTitle || undefined}
+          visualTitle2={data.course.visualTitle2}
+          title={data.course.title || ''}
+          description={data.course.description || ''}
+          price={data.course.price || ''}
+          instructor={
+            data.instructors?.map((inst) => inst.name).join(', ') || 'Pacemaker'
+          }
+          backgroundImage={resolveImageSrc({
+            thumbnailUrl: data.course.thumbnailUrl,
+            itemType: ItemType.COURSE
+          })}
+          onAddToCart={handleAddToCart}
+          onToggleLike={handleToggleLike}
+          isLiked={isLiked}
+          buttonText={heroButtonText}
+          itemType={ItemType.COURSE}
+        />
+      )}
 
+      {/* MAIN CONTENT SECTION (for both states) */}
+      <main
+        id="main-content"
+        className="max-w-[1200px] w-full mx-auto px-6 py-12 sm:py-20 space-y-12 sm:space-y-20 min-w-0"
+      >
         <section>
           <SectionHeader
             subtitle="How the Course Works"
@@ -359,9 +447,9 @@ export default function VideoDetailContainer({
               data.course.processTitle ||
               'Step by Step: From a Strong Developer Resume to Interviews'
             }
-            className="mb-12"
+            className="mb-6 sm:mb-12"
           />
-          <div className="flex flex-col lg:flex-row lg:justify-between gap-16">
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-16">
             <div className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-wrap">
               {data.course.processContent ||
                 'Detailed course description not available.'}
@@ -375,12 +463,15 @@ export default function VideoDetailContainer({
 
         <DetailRecommendationSection
           items={recommendationItems}
-          headerClassName="mb-12"
+          headerClassName="mb-2 sm:mb-4"
         />
 
         {data.instructors && data.instructors.length > 0 && (
           <section className="flex flex-col w-full">
-            <SectionHeader title="Instructor Introduction" className="mb-12" />
+            <SectionHeader
+              title="Instructor Profile"
+              className="mb-6 sm:mb-12"
+            />
             <Carousel setApi={setApi} className="w-full">
               <CarouselContent>
                 {data.instructors.map((instructor, idx) => (
@@ -460,7 +551,7 @@ export default function VideoDetailContainer({
         <DetailRelatedContentSection
           title="You May Also Like"
           items={relatedContentItems}
-          headerClassName="mb-4"
+          headerClassName="mb-2 sm:mb-4"
         />
 
         <DetailReviewsSection
@@ -480,80 +571,116 @@ export default function VideoDetailContainer({
             })) || []
           }
         />
-      </div>
+      </main>
 
-      {isSignedIn && hasAccessibleVideos && !isPlaylistOpen && (
-        <button
-          type="button"
-          onClick={() => setIsPlaylistOpen(true)}
-          className="fixed right-0 top-[40%] z-[60] h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50"
-        >
-          <ChevronLeft className="h-5 w-5 text-pace-base" />
-        </button>
-      )}
+      {/* TOC SIDEBAR & FLOATING TOGGLE (ONLY FOR PURCHASED STATE) */}
+      {canAccessCourse && (
+        <>
+          {/* Floating TOC Open Button */}
+          <button
+            type="button"
+            id="openTocBtn"
+            aria-label="Open Table of Contents"
+            onClick={() => setIsPlaylistOpen(true)}
+            className="fixed right-0 top-1/2 -translate-y-1/2 z-30 w-8 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md flex items-center justify-center text-gray-500 hover:text-orange hover:shadow-lg transition-all duration-300 cursor-pointer"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
 
-      <div
-        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ease-in-out ${
-          isPlaylistOpen
-            ? 'opacity-100 pointer-events-auto'
-            : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <button
-          type="button"
-          onClick={() => setIsPlaylistOpen(false)}
-          className={`relative top-[40%] z-40 h-20 inline-flex items-center gap-2 rounded-l-md border border-pace-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-900 shadow-lg transition-all duration-300 ease-in-out hover:bg-pace-gray-50 ${
-            isPlaylistOpen
-              ? 'opacity-100 translate-x-0'
-              : 'opacity-0 translate-x-full'
-          }`}
-        >
-          <ChevronRight className="h-5 w-5 text-pace-base" />
-        </button>
-        <div
-          className={`absolute inset-0 bg-black/70 transition-opacity duration-300 ease-in-out ${
-            isPlaylistOpen ? 'opacity-100' : 'opacity-0'
-          }`}
-          role="presentation"
-          onClick={() => setIsPlaylistOpen(false)}
-        />
-        <aside
-          className={`relative h-full w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-in-out flex flex-col ${
-            isPlaylistOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            <div className="flex flex-col gap-2">
+          {/* Modal Backdrop overlay */}
+          <div
+            id="tocBackdrop"
+            onClick={() => setIsPlaylistOpen(false)}
+            className={`fixed inset-0 bg-black/55 backdrop-blur-sm z-[90] transition-opacity duration-300 ${
+              isPlaylistOpen
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+            }`}
+          />
+
+          {/* TOC Sidebar Drawer */}
+          <aside
+            id="tocSidebar"
+            className={`fixed right-0 top-0 bottom-0 h-[100dvh] w-full sm:w-[500px] bg-gray-soft border-l border-gray-200 flex flex-col transition-all duration-300 ease-in-out z-[100] shadow-2xl ${
+              isPlaylistOpen
+                ? 'translate-x-0 visible'
+                : 'translate-x-full invisible'
+            }`}
+          >
+            {/* Close TOC Button (Desktop floating left edge) */}
+            <button
+              type="button"
+              id="closeTocBtn"
+              aria-label="Close Table of Contents"
+              onClick={() => setIsPlaylistOpen(false)}
+              className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 w-10 h-16 rounded-l-xl bg-white border border-r-0 border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-orange transition-all duration-300 cursor-pointer"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+
+            {/* TOC Header */}
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white shadow-sm z-10">
+              <h3 className="font-headline font-bold text-navy text-[1rem]">
+                Course Outline
+              </h3>
+              <div className="flex items-center gap-4">
+                <span
+                  id="totalLessonsCount"
+                  className="text-xs font-semibold text-gray-400"
+                >
+                  {totalVideosCount} Lessons
+                </span>
+                <button
+                  type="button"
+                  id="closeTocBtnMobile"
+                  aria-label="Close Table of Contents"
+                  onClick={() => setIsPlaylistOpen(false)}
+                  className="sm:hidden flex items-center justify-center text-gray-400 hover:text-navy transition-colors focus:outline-none"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* TOC Sections */}
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-[10px] bg-gray-soft">
               {data.course.sections.map((section) => {
                 const isExpanded = expandedSessions.has(section.id);
                 return (
                   <div
                     key={section.id}
-                    className="border border-pace-gray-100 rounded-lg overflow-hidden bg-white"
+                    className="toc-section border border-gray-100 rounded-none shadow-card overflow-hidden bg-white"
                   >
                     <button
                       type="button"
                       onClick={() => toggleSession(section.id)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-pace-gray-50 transition-colors"
+                      className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-soft transition-colors focus:outline-none"
                     >
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-[18px] font-bold text-navy font-headline">
                         {section.title}
                       </span>
-                      {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-pace-stone-500 flex-shrink-0" />
-                      )}
+                      <div className="flex items-center gap-1 text-[14px] text-body">
+                        <span>{isExpanded ? 'Close' : 'Read'}</span>
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </div>
                     </button>
+
                     <div
-                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      className={`overflow-hidden transition-all duration-300 ease-in-out px-5 ${
                         isExpanded
-                          ? 'max-h-[1000px] opacity-100'
-                          : 'max-h-0 opacity-0'
+                          ? 'max-h-[1000px] opacity-100 pb-5'
+                          : 'max-h-0 opacity-0 pb-0'
                       }`}
                     >
-                      <div className="border-t border-pace-gray-100 bg-pace-gray-50/50">
-                        {section.videos.map((video) => {
+                      <div className="text-[14px] font-medium text-navy mb-3">
+                        Course Outline
+                      </div>
+                      <div className="flex flex-col gap-0.5">
+                        {section.videos.map((video, vIdx) => {
                           const canAccessVideo = Boolean(
                             video.canAccessVideo && video.videoId
                           );
@@ -571,31 +698,34 @@ export default function VideoDetailContainer({
                                   );
                                   return;
                                 }
-
                                 setSelectedMediaId(video.videoId);
                                 setIsPlaylistOpen(false);
                               }}
-                              className={`w-full text-left px-4 py-3 transition-colors flex items-center gap-2 justify-between ${
-                                isActive
-                                  ? 'bg-pace-base/10 border-l-4 border-pace-base text-pace-base'
-                                  : canAccessVideo
-                                    ? 'hover:bg-white text-pace-stone-700'
-                                    : 'cursor-not-allowed text-pace-stone-300'
-                              }`}
+                              className={`lesson-item w-full py-2 text-left flex justify-between items-start hover:bg-gray-soft rounded transition-colors duration-200 ${
+                                isActive ? 'active' : ''
+                              } ${!canAccessVideo ? 'cursor-not-allowed opacity-50' : ''}`}
                             >
-                              <div
-                                className={`size-2 rounded-full flex items-center justify-center flex-shrink-0  ${
-                                  isActive
-                                    ? 'bg-pace-base'
-                                    : canAccessVideo
-                                      ? 'bg-pace-gray-300'
-                                      : 'bg-pace-gray-100'
+                              <div className="flex items-start flex-1 min-w-0 pr-3">
+                                <span
+                                  className={`lesson-session-label text-[14px] font-medium w-[85px] flex-shrink-0 mt-[1px] ${
+                                    isActive ? 'text-navy' : 'text-body'
+                                  }`}
+                                >
+                                  Session {String(vIdx + 1).padStart(2, '0')}
+                                </span>
+                                <span
+                                  className={`lesson-title-text text-[14px] font-medium leading-snug break-words pr-2 ${
+                                    isActive ? 'text-navy' : 'text-gray-400'
+                                  }`}
+                                >
+                                  {video.title || `Session ${vIdx + 1}`}
+                                </span>
+                              </div>
+                              <CirclePlay
+                                className={`h-[18px] w-[18px] flex-shrink-0 mt-[2px] ${
+                                  isActive ? 'text-teal' : 'text-gray-400'
                                 }`}
                               />
-                              <span className="text-sm font-medium truncate w-full">
-                                {video.title}
-                              </span>
-                              <CirclePlay className="h-4 w-4" />
                             </button>
                           );
                         })}
@@ -605,9 +735,9 @@ export default function VideoDetailContainer({
                 );
               })}
             </div>
-          </div>
-        </aside>
-      </div>
+          </aside>
+        </>
+      )}
 
       <ConfirmModal
         isOpen={modalConfig.isOpen}

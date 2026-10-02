@@ -25,7 +25,7 @@ export default function ReviewCard({
   return (
     <div
       className={cn(
-        'w-full max-w-[1200px] border border-gray-200 p-8',
+        'w-full max-w-[1200px] border border-gray-200 p-4 sm:p-8',
         className
       )}
     >
@@ -40,7 +40,7 @@ export default function ReviewCard({
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-bold text-[#ff4f02]">{profileName}</span>
+          <span className="font-bold text-orange">{profileName}</span>
         </div>
         <div className="flex flex-col items-end">
           <div className="flex items-center mb-1">

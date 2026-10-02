@@ -15,14 +15,16 @@ export default function IconTextBox({
 }: IconTextBoxProps) {
   return (
     <div
-      className={`w-full flex items-center gap-6  p-4 border border-gray-200 ${className}`}
+      className={`w-full flex items-center gap-4 sm:gap-6 p-4 sm:p-6 border border-gray-200 ${className}`}
     >
       <div className="flex-shrink-0">
-        <Icon className="w-14 h-14 " />
+        <Icon className="w-10 h-10 sm:w-14 sm:h-14" />
       </div>
-      <div className="flex-1 gap-2 flex flex-col justify-start">
-        <h3 className="text-xl font-bold leading-relaxed">{title}</h3>
-        <h5 className="text-base font-normal text-gray-500 leading-relaxed">
+      <div className="flex-1 min-w-0 gap-1 sm:gap-2 flex flex-col justify-start">
+        <h3 className="text-base sm:text-xl font-bold leading-relaxed break-words">
+          {title}
+        </h3>
+        <h5 className="text-sm sm:text-base font-normal text-gray-500 leading-relaxed break-words">
           {text}
         </h5>
       </div>

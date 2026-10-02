@@ -135,17 +135,17 @@ export default function RelatedContentCard({
         <div className="w-full p-6 flex flex-col justify-start items-start gap-4 flex-grow">
           <div className="w-full flex flex-col gap-4">
             <div className="w-full flex justify-between items-start gap-4">
-              <h3 className="text-lg font-heading font-bold text-[#00263b] leading-tight line-clamp-3">
+              <h3 className="text-lg font-heading font-bold text-navy leading-tight line-clamp-3">
                 {title}
               </h3>
               {price > 0 && (
-                <span className="text-xl font-extrabold text-[#00263b] shrink-0">{`$${price}`}</span>
+                <span className="text-xl font-extrabold text-navy shrink-0">{`$${price}`}</span>
               )}
             </div>
           </div>
 
           <div className="w-full flex justify-start">
-            <div className="text-[#00adbd] font-bold text-sm inline-flex items-center gap-1 hover:translate-x-1 transition-transform duration-300 ease-out">
+            <div className="text-teal font-bold text-sm inline-flex items-center gap-1 hover:translate-x-1 transition-transform duration-300 ease-out">
               {`Learn more`}
               <ArrowRight className="w-4 h-4" />
             </div>
