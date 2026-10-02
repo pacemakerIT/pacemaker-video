@@ -474,7 +474,9 @@ async function main() {
         'Learn what truly matters in hiring criteria and how to build the right experience to strengthen your resume.',
       price: 2800,
       visualTitle1: 'Branding & Networking',
-      visualTitle2: 'for Marketers'
+      visualTitle2: 'for Marketers',
+      subDescription:
+        "To land a marketing role in North America, strong campaign skills aren't enough. Understanding job postings and what companies are truly looking for is just as important. With marketing budgets under growing scrutiny, roles have become more competitive than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker marketers hired by Canadian companies, you'll learn how to analyze job postings and reflect those insights directly in your resume."
     },
     {
       category: EbookCategory.DESIGN,
@@ -485,7 +487,9 @@ async function main() {
         'Identify your unique strengths and communicate your design thinking with confidence during interviews.',
       price: 2800,
       visualTitle1: 'Preparing for',
-      visualTitle2: 'Design Interviews'
+      visualTitle2: 'Design Interviews',
+      subDescription:
+        "To land a design role in North America, a strong portfolio alone isn't enough. Understanding job postings and what companies are truly looking for is just as important. As teams expect designers to explain their thinking, interviews have become more competitive than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker designers hired by Canadian companies, you'll learn how to analyze job postings and reflect those insights directly in your portfolio and resume."
     },
     {
       category: EbookCategory.PUBLIC,
@@ -495,7 +499,9 @@ async function main() {
         'Learn how to structure your resume to meet public sector hiring criteria and leave a strong, positive impression on recruiters.',
       price: 2800,
       visualTitle1: 'Public Sector',
-      visualTitle2: 'Resume'
+      visualTitle2: 'Resume',
+      subDescription:
+        "To land a public sector role in North America, qualifications alone aren't enough. Understanding job postings and the specific criteria recruiters screen for is just as important. Public sector hiring follows strict, structured processes, making a well-tailored resume more critical than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker candidates hired into Canadian public roles, you'll learn how to analyze job postings and reflect those insights directly in your resume."
     },
     {
       category: EbookCategory.IT,
@@ -505,7 +511,9 @@ async function main() {
         'Understand what hiring managers look for and learn how to build a resume and interview strategy aligned with North American IT hiring standards.',
       price: 2800,
       visualTitle1: 'IT Resume &',
-      visualTitle2: 'Interview Preparation'
+      visualTitle2: 'Interview Preparation',
+      subDescription:
+        "To land a developer role in North America, strong coding skills aren't enough. Understanding job postings and what companies are truly looking for is just as important. With AI-driven productivity on the rise, developer job openings in North America have decreased by nearly 35% over the past five years, making hiring more competitive than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker developers hired by Canadian companies, you'll learn how to analyze job postings and reflect those insights directly in your resume."
     },
     {
       category: EbookCategory.ACCOUNTING,
@@ -516,7 +524,9 @@ async function main() {
         'Learn how to identify your strengths and clues to present them in resumes and interviews.',
       price: 2800,
       visualTitle1: 'Preparing for',
-      visualTitle2: 'Accounting Interviews'
+      visualTitle2: 'Accounting Interviews',
+      subDescription:
+        "To land a finance or accounting role in North America, technical accuracy alone isn't enough. Understanding job postings and what companies are truly looking for is just as important. As employers weigh both credentials and communication, interviews have become more competitive than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker candidates hired into Canadian finance roles, you'll learn how to analyze job postings and reflect those insights directly in your resume."
     },
     {
       category: EbookCategory.SERVICE,
@@ -527,7 +537,9 @@ async function main() {
         'Learn what truly matters in resumes and how to build relevant experience strategically.',
       price: 2800,
       visualTitle1: 'Resume & Networking',
-      visualTitle2: 'for Service Roles'
+      visualTitle2: 'for Service Roles',
+      subDescription:
+        "To land a service role in North America, hands-on experience alone isn't enough. Understanding job postings and what companies are truly looking for is just as important. As employers prioritize customer-facing communication, roles have become more competitive than ever.\n\nIf North American job postings feel unfamiliar, this guide walks you through how to read them effectively. Using real English resumes from Pacemaker candidates hired into Canadian service roles, you'll learn how to analyze job postings and reflect those insights directly in your resume."
     }
   ];
 
@@ -571,6 +583,7 @@ async function main() {
         ),
         isPublic: true,
         subTitle: ebook.subTitle,
+        subDescription: ebook.subDescription,
         isMain: i < 4,
         orderKey: ebookOrderKeys[i],
         visualTitle1: ebook.visualTitle1,

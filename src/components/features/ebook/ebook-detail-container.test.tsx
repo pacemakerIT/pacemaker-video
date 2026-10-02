@@ -6,6 +6,9 @@ import EbookDetailContainer from './ebook-detail-container';
 const mocks = vi.hoisted(() => ({
   addToCart: vi.fn(),
   cart: [] as Array<{ itemId: string; itemType: unknown }>,
+  addFavorite: vi.fn(),
+  removeFavorite: vi.fn(),
+  favorites: [] as Array<{ itemId: string; itemType: unknown }>,
   push: vi.fn(),
   useUser: vi.fn()
 }));
@@ -27,14 +30,37 @@ vi.mock('@/app/context/cart-context', () => ({
   })
 }));
 
+vi.mock('@/app/context/favorite-context', () => ({
+  useFavoriteContext: () => ({
+    favorites: mocks.favorites,
+    addFavorite: mocks.addFavorite,
+    removeFavorite: mocks.removeFavorite
+  })
+}));
+
 vi.mock('../../common/detail-hero-section', () => ({
   default: ({
     buttonText,
-    onAddToCart
+    onAddToCart,
+    onToggleLike,
+    isLiked
   }: {
     buttonText: string;
     onAddToCart?: () => void;
-  }) => <button onClick={onAddToCart}>{buttonText}</button>
+    onToggleLike?: (next: boolean) => void;
+    isLiked?: boolean;
+  }) => (
+    <>
+      <button onClick={onAddToCart}>{buttonText}</button>
+      <button
+        aria-label="like"
+        aria-pressed={isLiked}
+        onClick={() => onToggleLike?.(!isLiked)}
+      >
+        favorite
+      </button>
+    </>
+  )
 }));
 
 vi.mock('@/components/common/confirm-modal', () => ({
@@ -63,7 +89,9 @@ vi.mock('../../common/section-header', () => ({
 }));
 
 vi.mock('../../common/expandable-cards', () => ({
-  default: () => <div data-testid="expandable-cards" />
+  default: ({ className }: { className?: string }) => (
+    <div data-testid="expandable-cards" className={className} />
+  )
 }));
 
 vi.mock('../../common/detail-reviews-section', () => ({
@@ -83,6 +111,11 @@ describe('EbookDetailContainer', () => {
     mocks.addToCart.mockReset();
     mocks.addToCart.mockResolvedValue(undefined);
     mocks.cart.length = 0;
+    mocks.addFavorite.mockReset();
+    mocks.addFavorite.mockResolvedValue(undefined);
+    mocks.removeFavorite.mockReset();
+    mocks.removeFavorite.mockResolvedValue(undefined);
+    mocks.favorites.length = 0;
     mocks.push.mockReset();
     mocks.useUser.mockReset();
     mocks.useUser.mockReturnValue({ isSignedIn: true });
@@ -140,5 +173,86 @@ describe('EbookDetailContainer', () => {
 
     expect(screen.getByText('이미 구매한 콘텐츠')).toBeInTheDocument();
     expect(mocks.addToCart).not.toHaveBeenCalled();
+  });
+
+  it('adds the ebook to favorites for signed-in users', async () => {
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    const likeButton = screen.getByRole('button', { name: 'like' });
+    expect(likeButton).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(likeButton);
+
+    await waitFor(() => {
+      expect(mocks.addFavorite).toHaveBeenCalledWith('ebook-1', ItemType.EBOOK);
+    });
+    expect(mocks.removeFavorite).not.toHaveBeenCalled();
+  });
+
+  it('removes the ebook from favorites when it is already favorited', async () => {
+    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.EBOOK });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    const likeButton = screen.getByRole('button', { name: 'like' });
+    expect(likeButton).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(likeButton);
+
+    await waitFor(() => {
+      expect(mocks.removeFavorite).toHaveBeenCalledWith(
+        'ebook-1',
+        ItemType.EBOOK
+      );
+    });
+    expect(mocks.addFavorite).not.toHaveBeenCalled();
+  });
+
+  it('ignores favorites of other item types with the same id', () => {
+    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.COURSE });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    expect(screen.getByRole('button', { name: 'like' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
+  });
+
+  it('renders the sub description and keeps the toc in the side column', () => {
+    render(
+      <EbookDetailContainer id="ebook-1" subDescription="자세한 설명입니다." />
+    );
+
+    expect(screen.getByText('자세한 설명입니다.')).toBeInTheDocument();
+    expect(screen.getByTestId('expandable-cards').className).toContain(
+      'lg:w-[480px]'
+    );
+  });
+
+  it('drops the empty sub description block so the toc spans full width', () => {
+    const { container } = render(
+      <EbookDetailContainer id="ebook-1" subDescription="   " />
+    );
+
+    expect(container.querySelector('p')).toBeNull();
+    expect(screen.getByTestId('expandable-cards').className).toContain(
+      'lg:w-full'
+    );
+  });
+
+  it('asks signed-out users to log in before favoriting', () => {
+    mocks.useUser.mockReturnValue({ isSignedIn: false });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'like' }));
+
+    expect(screen.getByText('Login Required')).toBeInTheDocument();
+    expect(mocks.addFavorite).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: '확인' }));
+
+    expect(mocks.push).toHaveBeenCalledWith('/sign-in');
   });
 });
