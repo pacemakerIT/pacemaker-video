@@ -30,7 +30,7 @@ export default function ReviewCard({
       )}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4 min-w-0">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 shrink-0">
             <Image
               src={profileImageSrc}
@@ -40,9 +40,9 @@ export default function ReviewCard({
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-bold text-orange">{profileName}</span>
+          <span className="font-bold text-orange truncate">{profileName}</span>
         </div>
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-end shrink-0 ml-3">
           <div className="flex items-center mb-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
