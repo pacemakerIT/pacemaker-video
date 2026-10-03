@@ -128,8 +128,8 @@ describe('Card', () => {
   it('renders card with all props', () => {
     render(<Card {...mockCard} />);
 
-    // Check if title is rendered
-    expect(screen.getByText('Test Course')).toBeDefined();
+    // Check if title is rendered (prefers title over visualTitle2)
+    expect(screen.getByText('Test Course Title')).toBeDefined();
 
     // Check if price is rendered
     expect(screen.getByText('$49.99')).toBeDefined();
@@ -197,7 +197,7 @@ describe('Card', () => {
       expect(image).toHaveClass('object-cover');
 
       // Check title styles
-      const title = screen.getByText('Test Course');
+      const title = screen.getByText('Test Course Title');
       expect(title).toHaveClass('text-lg');
       expect(title).toHaveClass('font-bold');
       expect(title).toHaveClass('text-navy');

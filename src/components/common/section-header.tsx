@@ -16,7 +16,7 @@ export default function SectionHeader({
           {subtitle}
         </p>
       )}
-      <h2 className="text-[32px] font-extrabold font-headline text-navy tracking-tight">
+      <h2 className="text-[26px] md:text-[32px] font-extrabold font-headline text-navy tracking-tight break-words">
         {title}
       </h2>
     </div>
