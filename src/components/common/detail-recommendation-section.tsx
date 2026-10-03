@@ -23,7 +23,7 @@ export default function DetailRecommendationSection({
   itemClassName
 }: DetailRecommendationSectionProps) {
   return (
-    <div className="flex flex-col w-full gap-8">
+    <div className="flex flex-col w-full gap-4 sm:gap-6">
       <SectionHeader title={title} className={headerClassName} />
       <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-8">
         {items.map((item, index) => (

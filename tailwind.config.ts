@@ -17,6 +17,7 @@ const config: Config = {
         orange: '#ff4f02',
         'orange-hover': '#e04400',
         'gray-soft': '#f2f4f7',
+        'surface-border': '#f2f4f6',
         'on-error': '#ffffff',
         'surface-container-high': '#e6e8eb',
         'inverse-surface': '#2d3133',
@@ -65,6 +66,8 @@ const config: Config = {
         'on-secondary-container': '#006974',
         error: '#ba1a1a',
         'body-text': '#475467',
+        'sub-text': '#667085',
+        subtext: '#667085',
 
         // ebook/course category palette (used by src/lib/category-colors.ts)
         category: {

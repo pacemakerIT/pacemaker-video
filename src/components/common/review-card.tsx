@@ -25,7 +25,7 @@ export default function ReviewCard({
   return (
     <div
       className={cn(
-        'w-full max-w-[1200px] border border-gray-200 p-6 md:p-8',
+        'w-full max-w-[1200px] border border-gray-200 p-4 sm:p-8',
         className
       )}
     >

@@ -52,7 +52,7 @@ export default function ExpandableCards({
   return (
     <div
       className={cn(
-        isAdmin ? 'w-full' : 'w-[40%]',
+        isAdmin ? 'w-full' : 'w-full lg:w-[40%]',
         'max-w-4xl mx-auto',
         className
       )}
@@ -62,7 +62,7 @@ export default function ExpandableCards({
           <div
             key={item.id}
             className={cn(
-              'bg-[#f8f9fa] rounded-none border border-gray-200 overflow-hidden',
+              'bg-gray-50 rounded-none border border-gray-200 overflow-hidden',
               itemClassName
             )}
           >
@@ -82,17 +82,21 @@ export default function ExpandableCards({
                 </span>
                 <div
                   className={cn(
-                    'flex items-center gap-2 text-gray-500 shrink-0',
+                    'flex items-center gap-1.5 text-gray-500 shrink-0 whitespace-nowrap',
                     labelClassName
                   )}
                 >
-                  <span className="text-sm">
+                  <span className="text-xs sm:text-sm">
                     {expandedItems.has(item.id) ? collapseLabel : expandLabel}
                   </span>
                   {expandedItems.has(item.id) ? (
-                    <ChevronUp className={cn('w-5 h-5', iconClassName)} />
+                    <ChevronUp
+                      className={cn('w-4 h-4 sm:w-5 sm:h-5', iconClassName)}
+                    />
                   ) : (
-                    <ChevronDown className={cn('w-5 h-5', iconClassName)} />
+                    <ChevronDown
+                      className={cn('w-4 h-4 sm:w-5 sm:h-5', iconClassName)}
+                    />
                   )}
                 </div>
               </button>
@@ -103,7 +107,7 @@ export default function ExpandableCards({
                     e.stopPropagation();
                     onDelete(item.id);
                   }}
-                  className="text-pace-sm text-pace-orange-500 hover:text-pace-orange-700 font-medium px-2 py-1"
+                  className="text-pace-sm text-pace-orange-500 hover:text-pace-orange-700 font-medium px-2 py-1 shrink-0"
                 >
                   삭제
                 </button>
@@ -112,7 +116,7 @@ export default function ExpandableCards({
             {expandedItems.has(item.id) && (
               <div
                 className={cn(
-                  'bg-white border-t border-gray-200 px-4 pb-4 pt-3 md:px-6 md:pb-6 md:pt-4',
+                  'bg-white border-t border-gray-200 px-3.5 sm:px-6 pb-4 sm:pb-6 pt-3 sm:pt-4',
                   contentClassName
                 )}
               >
