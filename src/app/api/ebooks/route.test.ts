@@ -8,6 +8,12 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
 }));
 
+const getSignedUrlMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: getSignedUrlMock
+}));
+
 const prismaMock = vi.hoisted(() => ({
   ebook: {
     findUnique: vi.fn()
@@ -58,6 +64,8 @@ describe('GET /api/ebooks/[ebookId]', () => {
       id: 'order-item-123'
     });
 
+    getSignedUrlMock.mockResolvedValue('https://storage.example/signed-ebook');
+
     GET = createGetHandler(mockS3ClientInstance as unknown as S3Client);
   });
 
@@ -70,34 +78,24 @@ describe('GET /api/ebooks/[ebookId]', () => {
     });
   };
 
-  it('should return PDF stream with correct headers', async () => {
+  it('should return a signed URL instead of the file bytes', async () => {
     const req = createMockRequest();
-    const encoder = new TextEncoder();
-    const uint8Array = encoder.encode('Test PDF content');
-
-    const webStream = new ReadableStream({
-      start(controller) {
-        controller.enqueue(uint8Array);
-        controller.close();
-      }
-    });
-
-    mockS3ClientInstance.send.mockResolvedValue({
-      Body: webStream
-    });
 
     const result = await GET(req, {
       params: Promise.resolve({ ebookId: ebookId })
     });
 
-    expect(mockS3ClientInstance.send).toHaveBeenCalledWith(
-      expect.any(GetObjectCommand)
+    expect(getSignedUrlMock).toHaveBeenCalledWith(
+      mockS3ClientInstance,
+      expect.any(GetObjectCommand),
+      { expiresIn: 600 }
     );
 
-    expect(result.headers.get('Content-Type')).toBe('application/pdf');
-
-    const text = await result.text();
-    expect(text).toContain('Test PDF content');
+    expect(result.headers.get('Cache-Control')).toBe('no-store');
+    expect(await result.json()).toEqual({
+      url: 'https://storage.example/signed-ebook',
+      expiresIn: 600
+    });
   });
 
   it('should return 401 if the user is not authenticated', async () => {
@@ -129,10 +127,10 @@ describe('GET /api/ebooks/[ebookId]', () => {
     expect(json).toEqual({ error: 'Missing ebookId' });
   });
 
-  it('should return 500 if S3 throws an error', async () => {
+  it('should return 500 if signing throws an error', async () => {
     const req = createMockRequest();
 
-    mockS3ClientInstance.send.mockRejectedValue(new Error('S3 error'));
+    getSignedUrlMock.mockRejectedValue(new Error('S3 error'));
 
     const result = await GET(req, {
       params: Promise.resolve({ ebookId: ebookId })

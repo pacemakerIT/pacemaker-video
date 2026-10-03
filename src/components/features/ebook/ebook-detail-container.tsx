@@ -1,8 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
+import EbookPurchasedHero from './ebook-purchased-hero';
 import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
@@ -14,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
+import EbookPdfModal from './ebook-pdf-modal';
 
 export interface TOCItem {
   id: string;
@@ -71,6 +73,12 @@ export default function EbookDetailContainer({
   const isLiked = favorites.some(
     (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
+
+  const [isReaderOpen, setIsReaderOpen] = useState(false);
+  const [readingProgress, setReadingProgress] = useState({
+    currentPage: 0,
+    totalPages: 0
+  });
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -240,26 +248,62 @@ export default function EbookDetailContainer({
       ? 'Go to Cart'
       : 'Add to Cart';
 
+  const handleContinueReading = () => {
+    if (canAccessEbook) {
+      setIsReaderOpen(true);
+      return;
+    }
+
+    document
+      .getElementById('ebook-content')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleReaderPageChange = useCallback(
+    (currentPage: number, totalPages: number) => {
+      setReadingProgress({ currentPage, totalPages });
+    },
+    []
+  );
+
+  const progressPercent = readingProgress.totalPages
+    ? Math.round(
+        (readingProgress.currentPage / readingProgress.totalPages) * 100
+      )
+    : 0;
+
   return (
-    <div className="w-full flex flex-col justify-between items-center gap-12 md:gap-20">
-      <DetailHeroSection
-        backgroundImage={backgroundImage}
-        visualTitle={visualTitle}
-        visualTitle2={visualTitle2}
-        title={courseTitle || title.replace('\n', ' ')}
-        instructor={instructor}
-        description={description}
-        price={price}
-        onAddToCart={handleAddToCart}
-        onToggleLike={handleToggleLike}
-        isLiked={isLiked}
-        buttonText={heroButtonText}
-        instructorLabel="Instructor"
-        priceLabel="Price"
-        itemType={ItemType.EBOOK}
-      />
-      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] px-4 md:px-8 lg:px-0 gap-12 md:gap-20 pb-20 md:pb-40">
-        <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col justify-between items-center gap-20">
+      {canAccessEbook ? (
+        <EbookPurchasedHero
+          title={title.replace('\n', ' ')}
+          subtitle={subtitle}
+          onContinueReading={handleContinueReading}
+          progressPercent={progressPercent}
+          currentPage={readingProgress.currentPage}
+          totalPages={readingProgress.totalPages}
+        />
+      ) : (
+        <DetailHeroSection
+          backgroundImage={backgroundImage}
+          visualTitle={visualTitle}
+          visualTitle2={visualTitle2}
+          title={courseTitle || title.replace('\n', ' ')}
+          instructor={instructor}
+          description={description}
+          price={price}
+          onAddToCart={handleAddToCart}
+          buttonText={heroButtonText}
+          instructorLabel="Instructor"
+          priceLabel="Price"
+          itemType={ItemType.EBOOK}
+        />
+      )}
+      <div
+        id="ebook-content"
+        className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
+      >
+        <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title={sectionTitle ?? title ?? ''}
@@ -300,6 +344,15 @@ export default function EbookDetailContainer({
           reviewCount={reviewCount}
         />
       </div>
+      {canAccessEbook && (
+        <EbookPdfModal
+          ebookId={id}
+          title={title.replace('\n', ' ')}
+          isOpen={isReaderOpen}
+          onOpenChange={setIsReaderOpen}
+          onPageChange={handleReaderPageChange}
+        />
+      )}
       <ConfirmModal
         isOpen={modalConfig.isOpen}
         onOpenChange={(open) =>

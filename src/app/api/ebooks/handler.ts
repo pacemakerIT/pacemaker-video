@@ -1,31 +1,17 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Readable } from 'stream';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { bucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
 import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
 import { getAdminAccessForClerkUserId } from '@/lib/admin-auth';
 
-function nodeReadableToWebReadable(
-  nodeStream: Readable
-): ReadableStream<Uint8Array> {
-  const reader = nodeStream[Symbol.asyncIterator]();
-
-  return new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const { value, done } = await reader.next();
-      if (done) {
-        controller.close();
-      } else {
-        controller.enqueue(new Uint8Array(value));
-      }
-    },
-    cancel() {
-      nodeStream.destroy();
-    }
-  });
-}
+/**
+ * How long a reader's signed download link stays valid. The link is a bearer
+ * token for a paid file, so it is deliberately short lived.
+ */
+const SIGNED_URL_TTL_SECONDS = 600;
 
 export function createGetHandler(s3Client: S3Client) {
   return async function GET(
@@ -86,16 +72,16 @@ export function createGetHandler(s3Client: S3Client) {
         Key: ebook.ebookId
       });
 
-      const response = await s3Client.send(command);
-      const stream = response.Body as Readable;
-
-      const webStream = nodeReadableToWebReadable(stream);
-
-      return new NextResponse(webStream, {
-        headers: {
-          'Content-Type': 'application/pdf'
-        }
+      const url = await getSignedUrl(s3Client, command, {
+        expiresIn: SIGNED_URL_TTL_SECONDS
       });
+
+      // The browser downloads straight from storage, so this response must
+      // never be cached or shared.
+      return NextResponse.json(
+        { url, expiresIn: SIGNED_URL_TTL_SECONDS },
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
     } catch (error) {
       return NextResponse.json(
         { error: 'Failed to fetch file ' + error },
