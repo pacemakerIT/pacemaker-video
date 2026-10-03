@@ -36,8 +36,8 @@ export default function PurchaseDetailsPopup({
       <DialogTrigger className="inline-flex w-full items-center justify-center rounded-2xl bg-orange px-6 py-2.5 font-headline text-[13px] font-bold text-white transition-colors hover:bg-orange-hover md:w-auto">
         View details
       </DialogTrigger>
-      <DialogContent className="top-[calc(50%+44px)] max-h-[calc(100dvh-136px)] max-w-[600px] gap-0 overflow-y-auto rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16">
-        <DialogHeader className="mb-8">
+      <DialogContent className="top-[50%] w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] max-w-3xl gap-0 overflow-y-auto rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16">
+        <DialogHeader className="mb-8 pr-12">
           <DialogTitle className="font-headline text-2xl font-bold tracking-tight text-navy">
             Order Details
           </DialogTitle>
@@ -65,12 +65,12 @@ export default function PurchaseDetailsPopup({
               {items.map((item) => (
                 <li
                   key={item.id}
-                  className="flex items-start justify-between gap-4"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 sm:grid-cols-[96px_minmax(0,1fr)_auto]"
                 >
-                  <span className="w-16 shrink-0 text-body-text sm:w-24">
+                  <span className="col-span-2 text-body-text sm:col-span-1">
                     {item.type}
                   </span>
-                  <span className="min-w-0 flex-1">{item.title}</span>
+                  <span className="min-w-0 break-words">{item.title}</span>
                   <span className="text-right font-headline font-bold">
                     {formatMoneyFromCents(item.priceCents, payment.currency)}
                   </span>

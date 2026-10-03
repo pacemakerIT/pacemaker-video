@@ -17,6 +17,7 @@ async function getCurrentUserOrders() {
 
   return getOrderDisplaysForUser(currentUser.id, [
     OrderStatus.COMPLETED,
+    OrderStatus.REFUND_PROCESSING,
     OrderStatus.REFUNDED
   ]);
 }
@@ -52,7 +53,11 @@ export default async function Purchases() {
               amountCents={order.totalAmountCents}
               status={order.status}
               statusLabel={
-                order.status === OrderStatus.REFUNDED ? 'Refunded' : 'Paid'
+                order.status === OrderStatus.REFUND_PROCESSING
+                  ? 'Refund processing'
+                  : order.status === OrderStatus.REFUNDED
+                    ? 'Refunded'
+                    : 'Paid'
               }
               date={order.orderedAt.toISOString().split('T')[0]}
               currency={order.currency}

@@ -911,6 +911,34 @@ async function main() {
     }
   });
 
+  // Order history fixtures for the seeded USER account.
+  // Separate items keep refund fixtures from overlapping active purchases.
+  for (const [index, status] of [
+    OrderStatus.REFUND_PROCESSING,
+    OrderStatus.REFUNDED
+  ].entries()) {
+    await prisma.order.create({
+      data: {
+        userId: dashboardUserId,
+        status,
+        subtotalAmountCents: 2800,
+        totalAmountCents: 2800,
+        discountAmountCents: 0,
+        taxAmountCents: 0,
+        currency: 'cad',
+        orderedAt: addDays(new Date(), -(31 + index)),
+        items: {
+          create: {
+            itemId: courseIds[4 + index],
+            itemType: ItemType.COURSE,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          }
+        }
+      }
+    });
+  }
+
   await prisma.userWorkshop.createMany({
     data: dashboardWorkshopIds.map((workshopId, index) => ({
       userId: dashboardUserId,

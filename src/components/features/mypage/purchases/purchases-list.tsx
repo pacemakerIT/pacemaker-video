@@ -51,9 +51,12 @@ export default function PurchasesList({
   const [isExpanded, setIsExpanded] = useState(false);
   const isRefunded = status === 'REFUNDED';
   const firstTitle = items[0]?.title ?? 'Purchased item';
-  const statusClass = isRefunded
-    ? 'border-red-100 bg-red-50 text-red-700'
-    : 'border-emerald-100 bg-emerald-50 text-emerald-700';
+  const statusClass =
+    status === 'REFUND_PROCESSING'
+      ? 'border-amber-100 bg-amber-50 text-amber-700'
+      : isRefunded
+        ? 'border-rose-100 bg-rose-50 text-rose-400'
+        : 'border-emerald-100 bg-emerald-50 text-emerald-700';
 
   return (
     <article className="flex flex-col justify-between gap-4 border-b border-gray-soft py-5 last:border-b-0 md:flex-row md:items-center">
