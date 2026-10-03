@@ -9,6 +9,7 @@ import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUserContext } from '@/app/context/user-context';
 import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
+import { getCategoryColors } from '@/lib/category-colors';
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType;
@@ -76,66 +77,7 @@ export default function Card({
 
   const displayTitle = title || visualTitle2 || '';
 
-  const colorMap: Record<string, { bg: string; badge: string; text: string }> =
-    {
-      MARKETING: {
-        bg: 'bg-category-marketing-bg',
-        badge: 'bg-category-marketing-badge',
-        text: 'text-category-marketing'
-      },
-      DESIGN: {
-        bg: 'bg-category-design-bg',
-        badge: 'bg-category-design-badge',
-        text: 'text-category-design'
-      },
-      GOV: {
-        bg: 'bg-category-gov-bg',
-        badge: 'bg-category-gov-badge',
-        text: 'text-category-gov'
-      },
-      PUBLIC: {
-        bg: 'bg-category-public-bg',
-        badge: 'bg-category-public',
-        text: 'text-category-public'
-      },
-      ACCOUNTING: {
-        bg: 'bg-category-accounting-bg',
-        badge: 'bg-category-accounting',
-        text: 'text-category-accounting'
-      },
-      SERVICE: {
-        bg: 'bg-category-service-bg',
-        badge: 'bg-category-service',
-        text: 'text-category-service'
-      },
-      IT: {
-        bg: 'bg-category-it-bg',
-        badge: 'bg-category-it',
-        text: 'text-category-it'
-      },
-      RESUME: {
-        bg: 'bg-white',
-        badge: 'bg-category-resume-badge',
-        text: 'text-navy'
-      },
-      INTERVIEW: {
-        bg: 'bg-white',
-        badge: 'bg-category-interview-badge',
-        text: 'text-navy'
-      },
-      NETWORKING: {
-        bg: 'bg-white',
-        badge: 'bg-category-networking-badge',
-        text: 'text-navy'
-      },
-      DEFAULT: {
-        bg: 'bg-white',
-        badge: 'bg-category-default-badge',
-        text: 'text-category-default'
-      }
-    };
-
-  const colors = colorMap[category?.toUpperCase() || ''] || colorMap.DEFAULT;
+  const colors = getCategoryColors(category);
 
   return (
     <div className="cursor-pointer group">
