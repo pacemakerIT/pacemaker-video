@@ -46,21 +46,37 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
     price: ebook.price
   });
 
+  const relatedSelect = {
+    id: true,
+    title: true,
+    price: true,
+    category: true,
+    thumbnail: true,
+    subTitle: true
+  } as const;
+
   const relatedDocs = await prisma.ebook.findMany({
     where: {
       isPublic: true,
       category: ebook.category,
       NOT: { id: ebookId }
     },
-    select: {
-      id: true,
-      title: true,
-      price: true,
-      category: true,
-      thumbnail: true
-    },
+    select: relatedSelect,
     take: 3
   });
+
+  if (relatedDocs.length < 3) {
+    const excludeIds = [ebookId, ...relatedDocs.map((doc) => doc.id)];
+    const fillDocs = await prisma.ebook.findMany({
+      where: {
+        isPublic: true,
+        id: { notIn: excludeIds }
+      },
+      select: relatedSelect,
+      take: 3 - relatedDocs.length
+    });
+    relatedDocs.push(...fillDocs);
+  }
 
   const relatedItems: RelatedContentItem[] = relatedDocs.map((doc) => ({
     id: doc.id,
@@ -69,7 +85,8 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
     price: doc.price ?? 0,
     category: doc.category ?? '',
     type: 'ebook',
-    thumbnail: doc.thumbnail ?? null
+    thumbnail: doc.thumbnail ?? null,
+    tagline: doc.subTitle ?? undefined
   }));
 
   return (

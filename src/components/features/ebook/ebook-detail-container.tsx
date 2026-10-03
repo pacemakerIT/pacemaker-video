@@ -8,11 +8,12 @@ import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
 import { ItemType, TargetAudienceType } from '@prisma/client';
-import { CodeSquare, FileEdit } from 'lucide-react';
+import { Code, FileText } from 'lucide-react';
 import { RelatedContentItem } from '@/types/video-detail';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
 import EbookPdfModal from './ebook-pdf-modal';
 
@@ -65,8 +66,12 @@ export default function EbookDetailContainer({
   const { isSignedIn } = useUser();
   const router = useRouter();
   const { cart, addToCart } = useCartContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const isInCart = cart.some(
     (item) => item.itemId === id && item.itemType === ItemType.EBOOK
+  );
+  const isLiked = favorites.some(
+    (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
 
   const [isReaderOpen, setIsReaderOpen] = useState(false);
@@ -111,6 +116,29 @@ export default function EbookDetailContainer({
       onConfirm,
       showCancel: true
     });
+  };
+
+  const handleToggleLike = async (nextLiked: boolean) => {
+    if (!isSignedIn) {
+      showConfirm(
+        'Login Required',
+        'You need to log in to use the favorite feature. Would you like to log in now?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
+      return;
+    }
+
+    try {
+      if (nextLiked) {
+        await addFavorite(id, ItemType.EBOOK);
+      } else {
+        await removeFavorite(id, ItemType.EBOOK);
+      }
+    } catch {
+      showAlert('Error occurred', 'An error occurred. Please try again.');
+    }
   };
 
   const handleAddToCart = async () => {
@@ -201,16 +229,18 @@ export default function EbookDetailContainer({
 
   const recommendationItems = [
     {
-      icon: CodeSquare,
+      icon: Code,
       label: 'IT Specialist',
       text: 'For those interested in North American tech careers'
     },
     {
-      icon: FileEdit,
+      icon: FileText,
       label: 'Resume Prep',
       text: 'For those who need help with North American resumes'
     }
   ];
+
+  const hasSubDescription = Boolean(subDescription?.trim());
 
   const heroButtonText = canAccessEbook
     ? 'Purchased'
@@ -277,19 +307,23 @@ export default function EbookDetailContainer({
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title={sectionTitle ?? title ?? ''}
+            className="mb-8 md:mb-12"
           />
-          <div className="w-full flex gap-8">
-            <div className="w-[60%]">
-              <p className="text-pace-stone-500 leading-relaxed">
+          <div className="flex flex-col lg:flex-row lg:justify-between gap-10 lg:gap-16">
+            {hasSubDescription && (
+              <p className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-line break-words">
                 {subDescription}
               </p>
-            </div>
+            )}
             <ExpandableCards
               items={
                 tableOfContents && Array.isArray(tableOfContents)
                   ? tableOfContents
                   : []
               }
+              className={`w-full max-w-none mx-0 ${
+                hasSubDescription ? 'lg:w-[480px]' : 'lg:w-full'
+              }`}
             />
           </div>
         </div>
@@ -301,6 +335,7 @@ export default function EbookDetailContainer({
         <DetailRelatedContentSection
           title="Recommended E-books"
           items={relatedItems}
+          itemType={ItemType.EBOOK}
         />
         <DetailReviewsSection
           title="Reader Reviews"

@@ -38,13 +38,15 @@ export default function ExpandableCards({
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const toggleItem = (id: string) => {
-    const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id);
-    } else {
-      newExpanded.add(id);
-    }
-    setExpandedItems(newExpanded);
+    setExpandedItems((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(id)) {
+        newExpanded.delete(id);
+      } else {
+        newExpanded.add(id);
+      }
+      return newExpanded;
+    });
   };
 
   return (
@@ -64,15 +66,15 @@ export default function ExpandableCards({
               itemClassName
             )}
           >
-            <div className="w-full p-6 flex items-center justify-between transition-colors hover:bg-gray-100 cursor-pointer">
+            <div className="w-full p-4 md:p-6 flex items-center justify-between transition-colors hover:bg-gray-100 cursor-pointer">
               <button
                 type="button"
                 onClick={() => toggleItem(item.id)}
-                className="flex-1 text-left flex items-center justify-between mr-4"
+                className="flex-1 min-w-0 text-left flex items-center justify-between gap-3 mr-4"
               >
                 <span
                   className={cn(
-                    'text-lg font-bold text-[#00263b]',
+                    'text-base md:text-lg font-bold text-navy min-w-0 break-words',
                     titleClassName
                   )}
                 >
@@ -80,7 +82,7 @@ export default function ExpandableCards({
                 </span>
                 <div
                   className={cn(
-                    'flex items-center gap-2 text-gray-500',
+                    'flex items-center gap-2 text-gray-500 shrink-0',
                     labelClassName
                   )}
                 >
@@ -110,7 +112,7 @@ export default function ExpandableCards({
             {expandedItems.has(item.id) && (
               <div
                 className={cn(
-                  'bg-white border-t border-gray-200 px-6 pb-6 pt-4',
+                  'bg-white border-t border-gray-200 px-4 pb-4 pt-3 md:px-6 md:pb-6 md:pt-4',
                   contentClassName
                 )}
               >
