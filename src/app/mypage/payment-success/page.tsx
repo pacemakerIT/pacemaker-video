@@ -1,12 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
-import { CustomBadge } from '@/components/common/custom-badge';
+import { Check, Clock3, CircleAlert } from 'lucide-react';
+import {
+  CartCategory,
+  cartTypeLabel
+} from '@/components/features/mypage/cart/cart-product';
 import { itemCategoryLabel } from '@/constants/labels';
 import { getOrderDisplayBySessionId, OrderDisplay } from '@/lib/order-display';
 import { formatMoneyFromCents } from '@/lib/money';
 import prisma from '@/lib/prisma';
-import { resolveImageSrc } from '@/lib/utils';
+import { cn, resolveImageSrc } from '@/lib/utils';
 
 type PaymentSuccessProps = {
   searchParams: Promise<{
@@ -34,36 +38,59 @@ async function getOrder(sessionId: string | undefined) {
   return getOrderDisplayBySessionId(sessionId, currentUser.id);
 }
 
+const primaryButton =
+  'inline-flex w-full items-center justify-center rounded-full bg-orange px-6 py-2.5 font-headline text-xs font-bold text-white shadow-[0_4px_14px_rgba(255,79,2,0.25)] transition-colors hover:bg-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:w-auto sm:text-sm';
+const secondaryButton =
+  'inline-flex w-full items-center justify-center rounded-full border border-orange bg-white px-6 py-2.5 font-headline text-xs font-bold text-orange transition-colors hover:bg-orange/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange sm:w-auto sm:text-sm';
+const summaryClass =
+  'mb-6 flex w-full flex-col items-center border border-gray-100 bg-white p-5 text-center shadow-card sm:mb-8 sm:p-12';
+
+function PageTitle() {
+  return (
+    <h1 className="mb-4 font-headline text-2xl font-extrabold text-navy sm:mb-6 sm:text-3xl">
+      Cart
+    </h1>
+  );
+}
+
 function EmptyState({ hasSessionId }: { hasSessionId: boolean }) {
   return (
-    <section className="flex-1 p-10 pt-20">
-      <h1 className="mb-20 text-pace-xl font-bold text-pace-gray-700">
-        장바구니
-      </h1>
-      <div className="flex flex-col gap-4 items-center justify-center text-center">
-        <h2 className="text-[20px] font-medium text-pace-gray-700">
-          결제 정보를 찾을 수 없습니다.
+    <section className="min-w-0 flex-1 font-body text-body-text">
+      <PageTitle />
+      <div className={summaryClass}>
+        <CircleAlert aria-hidden="true" className="mb-4 h-12 w-12 text-navy" />
+        <h2 className="mb-3 font-headline text-lg font-bold text-navy sm:text-2xl">
+          Payment information unavailable
         </h2>
-        <p className="text-pace-stone-500">
+        <p className="mb-6 max-w-md text-sm leading-relaxed text-gray-500">
           {hasSessionId
-            ? '현재 계정에서 확인할 수 있는 주문이 없습니다.'
-            : 'Stripe 결제 세션 정보가 없습니다.'}
+            ? 'We could not find an order for your account. If you just paid, refresh this page in a moment or check your order history.'
+            : 'No payment session was provided. You can check your purchases in your order history.'}
         </p>
-        <Link
-          href="/mypage/cart"
-          className="mt-4 bg-pace-orange-800 px-10 py-4 rounded-full text-pace-white-500 hover:bg-pace-orange-600"
-        >
-          장바구니로 돌아가기
-        </Link>
+        <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:gap-3">
+          <Link href="/mypage/cart" className={primaryButton}>
+            Back to cart
+          </Link>
+          <Link href="/mypage/purchases" className={secondaryButton}>
+            View order history
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
 function OrderItems({ order }: { order: OrderDisplay }) {
+  const actionLabels = {
+    COURSE: 'Start course',
+    VIDEO: 'Start course',
+    EBOOK: 'Read e-book',
+    WORKSHOP: 'View workshop'
+  };
+
   return (
-    <div className="mt-20 space-y-4 text-[20px] text-pace-gray-500">
-      {order.items.map((item, index) => {
+    <ul aria-label="Purchased items" className="space-y-3 sm:space-y-4">
+      {order.items.map((item) => {
         const imageSrc =
           resolveImageSrc({
             thumbnail: item.thumbnail,
@@ -74,50 +101,66 @@ function OrderItems({ order }: { order: OrderDisplay }) {
           (itemCategoryLabel.en[item.category] ?? item.category);
 
         return (
-          <div
+          <li
             key={item.id}
-            className={`flex items-center border-b p-4 !m-0 ${index === 0 ? 'border-t' : ''}`}
+            className="flex flex-col gap-3 border border-gray-100 bg-white p-3.5 shadow-card sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-5"
           >
-            <div className="w-20 h-4 text-pace-sm text-center text-pace-stone-500 mx-6">
-              {item.typeLabel}
-            </div>
-            <Image
-              src={imageSrc}
-              alt={item.title}
-              width={160}
-              height={106}
-              className="w-40 h-[106px] rounded-lg object-cover"
-            />
-            <div className="ml-6">
-              {category && (
-                <CustomBadge
-                  variant={category}
-                  className="w-fit flex justify-center items-center py-2 px-3"
-                >
-                  {category}
-                </CustomBadge>
-              )}
-              {item.startsAt && (
-                <div className="text-pace-sm">
-                  {item.startsAt.toISOString().slice(0, 10).replace(/-/g, '.')}
-                </div>
-              )}
-
-              <div className="mt-2">{item.title}</div>
-              <div className="mt-2 font-bold text-pace-gray-500 text-pace-lg">
-                {formatMoneyFromCents(item.priceCents, order.currency)}
+            <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+              <span className="w-[50px] shrink-0 text-center text-[9px] font-medium leading-tight text-gray-400 sm:w-16 sm:text-xs">
+                {cartTypeLabel(item.itemType)}
+              </span>
+              <Image
+                src={imageSrc}
+                alt={item.title}
+                width={112}
+                height={72}
+                sizes="(min-width: 640px) 112px, 64px"
+                className="h-12 w-16 shrink-0 border border-gray-100 object-cover sm:h-[72px] sm:w-28"
+              />
+              <div className="min-w-0 flex-1">
+                {item.startsAt ? (
+                  <p className="mb-1 text-[9px] font-semibold text-gray-400 sm:text-[11px]">
+                    {item.startsAt
+                      .toISOString()
+                      .slice(0, 10)
+                      .replace(/-/g, '.')}
+                  </p>
+                ) : category ? (
+                  <div className="mb-1">
+                    <CartCategory category={category} />
+                  </div>
+                ) : null}
+                <h3 className="line-clamp-2 font-headline text-xs font-bold leading-snug text-navy sm:text-base">
+                  {item.title}
+                </h3>
+                {item.quantity > 1 && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Quantity: {item.quantity}
+                  </p>
+                )}
               </div>
             </div>
-            <Link
-              href={item.actionHref}
-              className="min-w-[120px] p-4 text-center ml-auto bg-pace-orange-500 rounded-full text-pace-base text-pace-white-500 font-regular"
-            >
-              {item.actionLabel}
-            </Link>
-          </div>
+            <div className="flex w-full shrink-0 items-center justify-between gap-3 border-t border-gray-100 pt-2.5 sm:w-auto sm:flex-col sm:items-end sm:justify-center sm:border-0 sm:pt-0 xl:flex-row xl:items-center xl:gap-6">
+              <span className="text-sm font-extrabold text-navy sm:text-lg">
+                {formatMoneyFromCents(
+                  item.priceCents * item.quantity,
+                  order.currency
+                )}
+              </span>
+              <Link
+                href={item.actionHref}
+                className={cn(primaryButton, 'w-auto shrink-0 px-4 sm:px-6')}
+              >
+                {order.status === 'COMPLETED' &&
+                item.actionHref !== '/mypage/purchases'
+                  ? actionLabels[item.itemType]
+                  : 'View details'}
+              </Link>
+            </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }
 
@@ -133,57 +176,75 @@ export default async function PaymentSuccess({
   }
 
   const isFinalizedOrder = order.status === 'COMPLETED';
-  const amountLabel = isFinalizedOrder ? '총 결제 금액' : '주문 기준 금액';
+  const statusTitles = {
+    COMPLETED: 'Payment Complete',
+    PENDING: 'Payment confirmation pending',
+    FAILED: 'Payment unsuccessful',
+    CANCELLED: 'Payment cancelled',
+    REFUND_PROCESSING: 'Refund processing',
+    REFUNDED: 'Payment refunded'
+  };
+  const statusDescriptions = {
+    COMPLETED: 'Your payment has been completed.',
+    PENDING:
+      'We are confirming your payment. Please check your order history shortly.',
+    FAILED:
+      'Your payment could not be completed. Please return to your cart to try again.',
+    CANCELLED: 'This payment was cancelled.',
+    REFUND_PROCESSING: 'Your refund is being processed.',
+    REFUNDED: 'This order has been refunded.'
+  };
+  const StatusIcon = isFinalizedOrder
+    ? Check
+    : order.status === 'PENDING'
+      ? Clock3
+      : CircleAlert;
 
   return (
-    <section className="flex-1 p-10 pt-20">
-      <h1 className="mb-20 text-pace-xl font-bold text-pace-gray-700">
-        장바구니
-      </h1>
-      <div className="flex flex-col gap-4 items-center justify-center text-center">
-        <Image
-          src="/icons/check-icon.svg"
-          alt="check icon"
-          width={32}
-          height={32}
-        />
-        <h2 className="text-[20px] font-medium text-pace-gray-700">
-          {order.status === 'COMPLETED' ? '결제완료' : order.statusLabel}
+    <section className="min-w-0 flex-1 font-body text-body-text">
+      <PageTitle />
+      <div className={summaryClass}>
+        <div className="mb-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-navy text-navy sm:mb-4 sm:h-12 sm:w-12">
+          <StatusIcon
+            aria-hidden="true"
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            strokeWidth={2.5}
+          />
+        </div>
+        <h2 className="mb-2 font-headline text-lg font-bold text-navy sm:mb-3 sm:text-2xl">
+          {statusTitles[order.status]}
         </h2>
-        <p className="text-pace-stone-500">
-          주문 정보가 접수되었습니다.
+        <p className="max-w-md text-xs font-medium leading-relaxed text-gray-500 sm:text-sm">
+          {statusDescriptions[order.status]}
           <br />
-          주문번호는 <span className="font-semibold">
-            {order.orderNumber}
-          </span>{' '}
-          입니다.
+          Your order number is{' '}
+          <span className="break-all font-bold text-navy">
+            {order.orderNumber.replace(/^No\.\s*/, '')}
+          </span>
+          .
         </p>
-        <p className="text-pace-base font-semibold text-pace-gray-700">
-          {amountLabel}:{' '}
+        <p className="mt-3 text-sm font-semibold text-navy">
+          {isFinalizedOrder ? 'Total paid' : 'Order total'}:{' '}
           {formatMoneyFromCents(order.totalAmountCents, order.currency)}
         </p>
-        {!isFinalizedOrder && (
-          <p className="text-pace-sm text-pace-stone-500">
-            프로모션 할인 및 최종 청구 금액은 Stripe 결제 내역에서 확인됩니다.
+        {order.status === 'PENDING' && (
+          <p className="mt-2 max-w-md text-xs text-gray-500">
+            Discounts and the final charged amount will appear once your payment
+            is confirmed.
           </p>
         )}
+        <div className="mt-5 flex w-full flex-col items-center justify-center gap-2.5 sm:mt-6 sm:w-auto sm:flex-row sm:gap-3">
+          <Link
+            href={isFinalizedOrder ? '/mypage' : '/mypage/cart'}
+            className={primaryButton}
+          >
+            {isFinalizedOrder ? 'View my courses' : 'Back to cart'}
+          </Link>
+          <Link href="/mypage/purchases" className={secondaryButton}>
+            View order history
+          </Link>
+        </div>
       </div>
-
-      <div className="flex mt-6 gap-4 items-center justify-center text-center">
-        <Link
-          href="/mypage"
-          className="bg-pace-orange-800 px-10 py-4 rounded-full text-pace-white-500 hover:bg-pace-orange-600"
-        >
-          강의 현황 보러가기
-        </Link>
-        <Link
-          href="/mypage/purchases"
-          className="border-2 border-pace-orange-600 px-10 py-4 rounded-full text-pace-orange-600 hover:bg-pace-ivory-500"
-        >
-          구매내역 보러가기
-        </Link>
-      </div>
-
       <OrderItems order={order} />
     </section>
   );
