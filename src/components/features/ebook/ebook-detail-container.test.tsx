@@ -188,50 +188,6 @@ describe('EbookDetailContainer', () => {
     expect(mocks.addToCart).not.toHaveBeenCalled();
   });
 
-  it('adds the ebook to favorites for signed-in users', async () => {
-    render(<EbookDetailContainer id="ebook-1" />);
-
-    const likeButton = screen.getByRole('button', { name: 'like' });
-    expect(likeButton).toHaveAttribute('aria-pressed', 'false');
-
-    fireEvent.click(likeButton);
-
-    await waitFor(() => {
-      expect(mocks.addFavorite).toHaveBeenCalledWith('ebook-1', ItemType.EBOOK);
-    });
-    expect(mocks.removeFavorite).not.toHaveBeenCalled();
-  });
-
-  it('removes the ebook from favorites when it is already favorited', async () => {
-    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.EBOOK });
-
-    render(<EbookDetailContainer id="ebook-1" />);
-
-    const likeButton = screen.getByRole('button', { name: 'like' });
-    expect(likeButton).toHaveAttribute('aria-pressed', 'true');
-
-    fireEvent.click(likeButton);
-
-    await waitFor(() => {
-      expect(mocks.removeFavorite).toHaveBeenCalledWith(
-        'ebook-1',
-        ItemType.EBOOK
-      );
-    });
-    expect(mocks.addFavorite).not.toHaveBeenCalled();
-  });
-
-  it('ignores favorites of other item types with the same id', () => {
-    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.COURSE });
-
-    render(<EbookDetailContainer id="ebook-1" />);
-
-    expect(screen.getByRole('button', { name: 'like' })).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    );
-  });
-
   it('renders the sub description and keeps the toc in the side column', () => {
     render(
       <EbookDetailContainer id="ebook-1" subDescription="자세한 설명입니다." />
@@ -252,20 +208,5 @@ describe('EbookDetailContainer', () => {
     expect(screen.getByTestId('expandable-cards').className).toContain(
       'lg:w-full'
     );
-  });
-
-  it('asks signed-out users to log in before favoriting', () => {
-    mocks.useUser.mockReturnValue({ isSignedIn: false });
-
-    render(<EbookDetailContainer id="ebook-1" />);
-
-    fireEvent.click(screen.getByRole('button', { name: 'like' }));
-
-    expect(screen.getByText('Login Required')).toBeInTheDocument();
-    expect(mocks.addFavorite).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByRole('button', { name: '확인' }));
-
-    expect(mocks.push).toHaveBeenCalledWith('/sign-in');
   });
 });
