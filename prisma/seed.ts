@@ -934,6 +934,47 @@ async function main() {
     }))
   });
 
+  // Preview with the seeded USER account at:
+  // /mypage/payment-success?session_id=cs_test_seed_payment_success
+  // This is a local fixture identifier, not a real Stripe checkout session.
+  const paymentSuccessItems = [
+    ...dashboardCourseIds.slice(0, 2).map((itemId) => ({
+      itemId,
+      itemType: ItemType.COURSE,
+      priceAtPurchaseCents: 2800,
+      quantity: 1
+    })),
+    {
+      itemId: dashboardEbookIds[0],
+      itemType: ItemType.EBOOK,
+      priceAtPurchaseCents: 2800,
+      quantity: 1
+    },
+    {
+      itemId: dashboardWorkshopIds[1],
+      itemType: ItemType.WORKSHOP,
+      priceAtPurchaseCents: Math.round(workshopData[5].price * 100),
+      quantity: 1
+    }
+  ];
+  const paymentSuccessTotal = paymentSuccessItems.reduce(
+    (total, item) => total + item.priceAtPurchaseCents * item.quantity,
+    0
+  );
+  await prisma.order.create({
+    data: {
+      userId: dashboardUserId,
+      status: OrderStatus.COMPLETED,
+      stripeCheckoutSessionId: 'cs_test_seed_payment_success',
+      subtotalAmountCents: paymentSuccessTotal,
+      totalAmountCents: paymentSuccessTotal,
+      discountAmountCents: 0,
+      taxAmountCents: 0,
+      currency: 'cad',
+      items: { create: paymentSuccessItems }
+    }
+  });
+
   const dashboardVideos = await prisma.video.findMany({
     where: { courseId: { in: dashboardCourseIds.slice(0, 3) } },
     select: { id: true, courseId: true },
