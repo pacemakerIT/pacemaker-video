@@ -12,6 +12,7 @@ import { formatMoneyFromCents } from '@/lib/money';
 import RefundPopup from './refund-popup';
 import SaveReceiptPopup from './save-receipt-popup';
 import type { PurchaseListItem, PurchasePaymentInfo } from './purchases-list';
+import styles from './purchase-details-popup.module.css';
 
 type DetailPopupProps = {
   orderNumber: string;
@@ -36,7 +37,9 @@ export default function PurchaseDetailsPopup({
       <DialogTrigger className="inline-flex w-full items-center justify-center rounded-2xl bg-orange px-6 py-2.5 font-headline text-[13px] font-bold text-white transition-colors hover:bg-orange-hover md:w-auto">
         View details
       </DialogTrigger>
-      <DialogContent className="top-[50%] w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] max-w-3xl gap-0 overflow-y-auto rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16">
+      <DialogContent
+        className={`${styles.content} gap-0 rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16`}
+      >
         <DialogHeader className="mb-8 pr-12">
           <DialogTitle className="font-headline text-2xl font-bold tracking-tight text-navy">
             Order Details

@@ -33,7 +33,13 @@ export default function RootLayoutWrapper({
                 <FavoriteProvider>
                   {!isAdmin && <Header />}
 
-                  <main>{children}</main>
+                  <main
+                    className={
+                      isAdmin ? undefined : 'pt-[var(--site-header-height)]'
+                    }
+                  >
+                    {children}
+                  </main>
                   <Toaster />
 
                   {!isAdmin && <Footer />}
