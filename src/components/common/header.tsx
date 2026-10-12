@@ -39,8 +39,8 @@ export function Header() {
   }, [isMobileMenuOpen]);
 
   return (
-    <nav className="w-screen sticky top-0 z-[100] bg-white border-b border-[#f2f4f6]">
-      <div className="nav-inner relative z-[110] bg-white flex items-center justify-between p-4">
+    <nav className="fixed inset-x-0 top-0 z-40 h-[var(--site-header-height)] bg-white border-b border-[#f2f4f6]">
+      <div className="nav-inner relative z-[110] h-full bg-white flex items-center justify-between p-4">
         {/* Logo - Stays fixed on the left */}
         <Link href="/" className="block">
           <Image
@@ -120,7 +120,7 @@ export function Header() {
 
       {/* Mobile Navigation Panel - Positioned absolutely below the header */}
       <div
-        className={`absolute left-0 right-0 z-[90] md:hidden bg-white border-b border-gray-100 shadow-2xl transition-all duration-300 ease-in-out origin-top ${
+        className={`absolute top-full left-0 right-0 z-[90] md:hidden bg-white border-b border-gray-100 shadow-2xl transition-all duration-300 ease-in-out origin-top ${
           isMobileMenuOpen
             ? 'opacity-100 translate-y-0 scale-y-100'
             : 'opacity-0 -translate-y-2 scale-y-95 pointer-events-none'
