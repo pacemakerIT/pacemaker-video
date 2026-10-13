@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ItemType } from '@prisma/client';
+import { resolveImageProxyPath } from './image-url';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,6 +32,6 @@ export function resolveImageSrc({
     return primaryImage;
   }
 
-  // 3. Default fallback to proxy using url parameter
-  return `/api/images/proxy?url=${encodeURIComponent(primaryImage)}`;
+  // 3. Proxy remote URLs and legacy storage object keys through the image API.
+  return resolveImageProxyPath(primaryImage);
 }
