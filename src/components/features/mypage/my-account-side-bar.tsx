@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 import {
-  CircleHelp,
   Heart,
   History,
   Settings,
@@ -17,8 +16,7 @@ const menuItems = [
   { label: 'My Account', href: '/mypage', icon: UserRound },
   { label: 'Cart', href: '/mypage/cart', icon: ShoppingCart },
   { label: 'Wish list', href: '/mypage/favorites', icon: Heart },
-  { label: 'Order History', href: '/mypage/purchases', icon: History },
-  { label: 'Contact Us', href: '/mypage/inquiries', icon: CircleHelp }
+  { label: 'Order History', href: '/mypage/purchases', icon: History }
 ];
 
 export default function MyPageSidebar() {
@@ -54,7 +52,9 @@ export default function MyPageSidebar() {
 
         <nav className="flex w-full flex-col gap-1 border-t border-gray-100 pt-4">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              pathname === item.href ||
+              (item.href === '/mypage' && pathname === '/mypage/setting');
             const Icon = item.icon;
 
             return (
