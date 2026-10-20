@@ -141,7 +141,7 @@ export default function Card({
               </span>
             </div>
 
-            <p className="line-clamp-2 font-body text-sm leading-relaxed text-gray-500">
+            <p className="line-clamp-2 font-body text-sm leading-relaxed text-sub-text">
               {description}
             </p>
 
