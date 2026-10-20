@@ -35,7 +35,7 @@ export default function DetailRelatedContentSection({
   };
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="flex w-full flex-col gap-4 sm:gap-6">
       <SectionHeader title={title} className={headerClassName} />
       <div className={`grid ${getGridClass()} gap-6`}>
         {items.map((item, index) => (
