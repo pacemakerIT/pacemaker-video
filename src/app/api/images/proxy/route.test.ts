@@ -12,10 +12,12 @@ vi.mock('@/lib/supabase', () => ({
 const { GET } = await import('./route');
 const { readImageResponse } = await import('@/lib/image-response');
 const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
+const { GetObjectCommand } = await import('@aws-sdk/client-s3');
 const { default: prisma } = await import('@/lib/prisma');
 
 describe('GET /api/images/proxy', () => {
   afterEach(() => {
+    vi.clearAllMocks();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
     vi.unstubAllEnvs();
@@ -82,16 +84,49 @@ describe('GET /api/images/proxy', () => {
     expect(getSignedUrl).not.toHaveBeenCalled();
   });
 
-  it('requires file names to match a known image record', async () => {
-    const response = await GET(
-      new Request('http://localhost/api/images/proxy?fileName=guessed.png')
+  it('proxies safe storage keys when no image database record exists', async () => {
+    vi.mocked(prisma.image.findFirst).mockResolvedValue(null);
+    vi.mocked(getSignedUrl).mockResolvedValue(
+      'https://storage.example/signed-image'
+    );
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(new Uint8Array([1, 2, 3]), {
+          headers: { 'Content-Type': 'image/png' }
+        })
+      )
     );
 
-    expect(response.status).toBe(404);
-    expect(getSignedUrl).not.toHaveBeenCalled();
+    const response = await GET(
+      new Request(
+        'http://localhost/api/images/proxy?fileName=502be9ee-af7f-4f83-9560-0a3acf911f08.png'
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
     expect(prisma.image.findFirst).toHaveBeenCalledWith({
-      where: { fileName: 'guessed.png' }
+      where: { fileName: '502be9ee-af7f-4f83-9560-0a3acf911f08.png' }
     });
+    expect(GetObjectCommand).toHaveBeenCalledWith({
+      Bucket: 'image',
+      Key: '502be9ee-af7f-4f83-9560-0a3acf911f08.png'
+    });
+    expect(await response.arrayBuffer()).toEqual(
+      new Uint8Array([1, 2, 3]).buffer
+    );
+  });
+
+  it('rejects unsafe file names when no image record exists', async () => {
+    vi.mocked(prisma.image.findFirst).mockResolvedValue(null);
+
+    const response = await GET(
+      new Request('http://localhost/api/images/proxy?fileName=..%2Fprivate.png')
+    );
+
+    expect(response.status).toBe(400);
+    expect(getSignedUrl).not.toHaveBeenCalled();
   });
 });
 

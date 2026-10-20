@@ -23,13 +23,9 @@ export async function GET(req: Request) {
         where: { fileName }
       });
 
-      if (!image) {
-        return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-      }
-
-      // Image records created by older uploads may contain either a public URL
-      // or only the storage object key. Keep both formats working for known rows.
-      rawUrl = image.url || fileName;
+      // Some content stores only the storage key, without an Image row.
+      // The storage-key validator below keeps this fallback within the image bucket.
+      rawUrl = image?.url || fileName;
     }
 
     if (!rawUrl) {
