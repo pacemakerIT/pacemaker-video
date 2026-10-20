@@ -3,9 +3,10 @@ import EbookDetailContainer, {
 } from '@/components/features/ebook/ebook-detail-container';
 import prisma from '@/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
-import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
+import { getEbookAccessForClerkUserId } from '@/lib/entitlements';
 import { notFound } from 'next/navigation';
 import { RelatedContentItem } from '@/types/video-detail';
+import type { Metadata } from 'next';
 
 interface EbookPageProps {
   params: Promise<{
@@ -13,10 +14,8 @@ interface EbookPageProps {
   }>;
 }
 
-export default async function EbookDetailPage({ params }: EbookPageProps) {
-  const { ebookId } = await params;
-
-  const ebook = await prisma.ebook.findFirst({
+const getPublicEbook = (ebookId: string) =>
+  prisma.ebook.findFirst({
     where: { id: ebookId, isPublic: true },
     select: {
       id: true,
@@ -33,18 +32,33 @@ export default async function EbookDetailPage({ params }: EbookPageProps) {
     }
   });
 
+export async function generateMetadata({
+  params
+}: EbookPageProps): Promise<Metadata> {
+  const { ebookId } = await params;
+  const ebook = await getPublicEbook(ebookId);
+
+  return {
+    title: ebook?.title || 'Career Resource',
+    description: ebook?.description || ebook?.subTitle || undefined
+  };
+}
+
+export default async function EbookDetailPage({ params }: EbookPageProps) {
+  const { ebookId } = await params;
+
+  const ebook = await getPublicEbook(ebookId);
+
   if (!ebook) {
     notFound();
   }
 
   const { userId: clerkUserId } = await auth();
-  const userId = clerkUserId
-    ? await findUserIdByClerkId(prisma, clerkUserId)
-    : null;
-  const canAccessEbook = await userCanAccessEbook(prisma, userId, {
-    id: ebook.id,
-    price: ebook.price
-  });
+  const { allowed: canAccessEbook } = await getEbookAccessForClerkUserId(
+    prisma,
+    clerkUserId,
+    { id: ebook.id, price: ebook.price, isPublic: true }
+  );
 
   const relatedSelect = {
     id: true,

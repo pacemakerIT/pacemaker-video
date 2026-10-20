@@ -2,23 +2,34 @@ import { NextResponse } from 'next/server';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import prisma from '@/lib/prisma';
-import { bucketName, imgBucketName, s3clientSupabase } from '@/lib/supabase';
+import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { isStorageObjectKey } from '@/lib/image-url';
+import { readImageResponse } from '@/lib/image-response';
+
+const ALLOWED_EXTERNAL_IMAGE_HOSTS = new Set([
+  'fast.wistia.net',
+  'embedwistia-a.akamaihd.net'
+]);
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     let rawUrl = searchParams.get('url');
     const fileName = searchParams.get('fileName');
+    const lookedUpByFileName = !rawUrl && Boolean(fileName);
 
     if (!rawUrl && fileName) {
       const image = await prisma.image.findFirst({
         where: { fileName }
       });
 
+      if (!image) {
+        return NextResponse.json({ error: 'Image not found' }, { status: 404 });
+      }
+
       // Image records created by older uploads may contain either a public URL
-      // or only the storage object key. Keep both formats working.
-      rawUrl = image?.url || fileName;
+      // or only the storage object key. Keep both formats working for known rows.
+      rawUrl = image.url || fileName;
     }
 
     if (!rawUrl) {
@@ -35,39 +46,115 @@ export async function GET(req: Request) {
       decodedUrl = rawUrl;
     }
 
-    const isExternalUrl = /^https?:\/\//i.test(decodedUrl);
-
-    // Parse Supabase public URL: .../object/public/[bucket]/[path]
-    const match = decodedUrl.match(/\/object\/public\/([^/]+)\/(.+)/);
-    let targetBucket = bucketName || imgBucketName;
+    const isUrl = /^[a-z][a-z0-9+.-]*:/i.test(decodedUrl);
+    const imageBucket = imgBucketName;
+    const allowedBuckets = new Set([imageBucket].filter(Boolean));
+    let targetBucket = imageBucket;
     let filePath = decodedUrl;
 
-    if (match) {
-      targetBucket = match[1];
-      filePath = match[2];
-    } else if (isExternalUrl) {
-      const response = await fetch(decodedUrl);
-
-      if (!response.ok) {
+    if (isUrl) {
+      let imageUrl: URL;
+      try {
+        imageUrl = new URL(decodedUrl);
+      } catch {
         return NextResponse.json(
-          { error: 'Failed to fetch external image' },
-          { status: 404 }
+          { error: 'Invalid image URL' },
+          { status: 400 }
+        );
+      }
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : '';
+      const isSupabaseUrl = imageUrl.hostname === supabaseHost;
+
+      if (
+        imageUrl.protocol !== 'https:' ||
+        imageUrl.username ||
+        imageUrl.password ||
+        imageUrl.port
+      ) {
+        return NextResponse.json(
+          { error: 'Unsupported image URL' },
+          { status: 400 }
         );
       }
 
-      const imageBuffer = await response.arrayBuffer();
-
-      return new NextResponse(imageBuffer, {
-        headers: {
-          'Content-Type': response.headers.get('Content-Type') || 'image/png',
-          'Cache-Control': 'public, max-age=3600, immutable'
+      if (!isSupabaseUrl) {
+        if (!ALLOWED_EXTERNAL_IMAGE_HOSTS.has(imageUrl.hostname)) {
+          return NextResponse.json(
+            { error: 'Unsupported image URL' },
+            { status: 400 }
+          );
         }
-      });
-    } else if (isStorageObjectKey(decodedUrl)) {
+
+        const externalResponse = await fetch(imageUrl, {
+          signal: AbortSignal.timeout(8000),
+          redirect: 'error'
+        });
+        if (!externalResponse.ok) {
+          return NextResponse.json(
+            { error: 'Failed to fetch external image' },
+            { status: 404 }
+          );
+        }
+
+        const imageResult = await readImageResponse(externalResponse);
+        if (!imageResult.ok) {
+          return NextResponse.json(
+            {
+              error:
+                imageResult.status === 413
+                  ? 'Image is too large'
+                  : 'Invalid image response'
+            },
+            { status: imageResult.status }
+          );
+        }
+
+        return new NextResponse(Buffer.from(imageResult.body), {
+          headers: {
+            'Content-Type': imageResult.contentType,
+            'X-Content-Type-Options': 'nosniff',
+            'Cache-Control': 'public, max-age=3600, immutable'
+          }
+        });
+      }
+
+      const storagePath = imageUrl.pathname.match(
+        /^\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/
+      );
+
+      if (!storagePath || !allowedBuckets.has(storagePath[1])) {
+        return NextResponse.json(
+          { error: 'Unsupported image URL' },
+          { status: 400 }
+        );
+      }
+
+      targetBucket = storagePath[1];
+      filePath = decodeURIComponent(storagePath[2]);
+      if (!isStorageObjectKey(filePath)) {
+        return NextResponse.json(
+          { error: 'Invalid image path' },
+          { status: 400 }
+        );
+      }
+    } else if (isStorageObjectKey(decodedUrl) && lookedUpByFileName) {
       // Legacy records pass only the object key. These files belong in the
       // image bucket, while full Supabase public URLs are handled above.
-      targetBucket = imgBucketName || bucketName;
+      targetBucket = imageBucket;
       filePath = decodedUrl;
+    } else {
+      return NextResponse.json(
+        { error: 'Invalid image path' },
+        { status: 400 }
+      );
+    }
+
+    if (!targetBucket) {
+      return NextResponse.json(
+        { error: 'Image storage bucket is not configured' },
+        { status: 503 }
+      );
     }
 
     // S3 GetObject 커맨드 생성
@@ -80,7 +167,10 @@ export async function GET(req: Request) {
       expiresIn: 3600
     });
 
-    const response = await fetch(signedUrl);
+    const response = await fetch(signedUrl, {
+      signal: AbortSignal.timeout(8000),
+      redirect: 'error'
+    });
 
     if (!response.ok) {
       // eslint-disable-next-line no-console
@@ -99,11 +189,23 @@ export async function GET(req: Request) {
       );
     }
 
-    const imageBuffer = await response.arrayBuffer();
+    const imageResult = await readImageResponse(response);
+    if (!imageResult.ok) {
+      return NextResponse.json(
+        {
+          error:
+            imageResult.status === 413
+              ? 'Image is too large'
+              : 'Invalid image response'
+        },
+        { status: imageResult.status }
+      );
+    }
 
-    return new NextResponse(imageBuffer, {
+    return new NextResponse(Buffer.from(imageResult.body), {
       headers: {
-        'Content-Type': response.headers.get('Content-Type') || 'image/png',
+        'Content-Type': imageResult.contentType,
+        'X-Content-Type-Options': 'nosniff',
         'Cache-Control': 'public, max-age=3600, immutable'
       }
     });

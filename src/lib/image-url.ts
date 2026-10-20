@@ -1,4 +1,5 @@
-const STORAGE_OBJECT_KEY_PATTERN = /^[^/?#]+(?:\/[^/?#]+)*\.[a-z0-9]+$/i;
+const STORAGE_OBJECT_KEY_PATTERN =
+  /^(?!.*(?:^|\/)\.{1,2}(?:\/|$))[^/?#]+(?:\/[^/?#]+)*\.[a-z0-9]+$/i;
 
 export function isStorageObjectKey(value: string) {
   return (
