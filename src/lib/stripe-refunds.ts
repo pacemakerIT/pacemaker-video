@@ -1,7 +1,8 @@
 import { OrderStatus } from '@prisma/client';
 import type Stripe from 'stripe';
+import { isUuid } from './checkout-items';
 import prisma from './prisma';
-import { stripeObjectId } from './stripe-fulfillment';
+import { lockOrderStatus, stripeObjectId } from './stripe-fulfillment';
 
 export type ChargeRefundResult = {
   orderId: string | null;
@@ -37,8 +38,15 @@ async function findOrderIdForPaymentIntent(
     limit: 1
   });
   const session = sessions.data[0];
+  const candidates = [session?.metadata?.orderId, session?.client_reference_id];
 
-  return session?.metadata?.orderId || session?.client_reference_id || null;
+  // Other integrations on the same Stripe account may use these fields for
+  // their own references; only an app order id (a UUID) is looked up.
+  return (
+    candidates.find(
+      (value): value is string => typeof value === 'string' && isUuid(value)
+    ) ?? null
+  );
 }
 
 export async function refundOrderForCharge(
@@ -70,14 +78,16 @@ export async function refundOrderForCharge(
   }
 
   return prisma.$transaction(async (tx): Promise<ChargeRefundResult> => {
-    const order = await tx.order.findUnique({
+    // Wait for any in-flight checkout fulfillment of this order; its workshop
+    // seats are then committed and removed below.
+    if (!(await lockOrderStatus(tx, orderId))) {
+      return { orderId: null, status: 'ignored' };
+    }
+
+    const order = await tx.order.findUniqueOrThrow({
       where: { id: orderId },
       select: { id: true, status: true, stripePaymentIntentId: true }
     });
-
-    if (!order) {
-      return { orderId: null, status: 'ignored' };
-    }
 
     if (
       order.stripePaymentIntentId &&

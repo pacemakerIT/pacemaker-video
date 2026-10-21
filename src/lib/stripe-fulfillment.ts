@@ -19,6 +19,23 @@ export function stripeObjectId(
   return typeof value.id === 'string' ? value.id : null;
 }
 
+// Locks the order row for the rest of the transaction and returns its latest
+// committed status (null when the row does not exist). Checkout fulfillment and
+// refunds both take this lock first, so concurrent webhooks for the same order
+// run one after the other instead of overwriting each other. Prisma's
+// updateMany selects ids before updating, so a status condition on it is not
+// re-checked after a concurrent commit and cannot replace this lock.
+export async function lockOrderStatus(
+  tx: Prisma.TransactionClient,
+  orderId: string
+) {
+  const rows = await tx.$queryRaw<{ status: OrderStatus }[]>`
+    SELECT "status" FROM "Order" WHERE "id" = ${orderId}::uuid FOR UPDATE
+  `;
+
+  return rows[0]?.status ?? null;
+}
+
 function isPaidCheckoutSession(session: Stripe.Checkout.Session) {
   return (
     session.payment_status === 'paid' ||
@@ -246,16 +263,20 @@ export async function fulfillCheckoutSession(
       throw new Error('Stripe checkout session does not match the order');
     }
 
+    // Re-read the status under the row lock: a refund may have committed since
+    // the lookup above.
+    const status = await lockOrderStatus(tx, order.id);
+
     // A refund is terminal: a retried or late checkout.session.completed must
     // not re-grant access that charge.refunded already revoked.
-    if (order.status === OrderStatus.REFUNDED) {
+    if (status === OrderStatus.REFUNDED) {
       return {
         orderId: order.id,
         status: 'already_refunded'
       };
     }
 
-    if (order.status === OrderStatus.COMPLETED) {
+    if (status === OrderStatus.COMPLETED) {
       const missingStripeData =
         (!order.stripeReceiptUrl && stripeReferences.receiptUrl) ||
         (!order.stripeInvoiceUrl && stripeReferences.invoiceUrl);

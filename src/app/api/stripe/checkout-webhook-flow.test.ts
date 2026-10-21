@@ -79,6 +79,7 @@ const db: {
 };
 
 const tx = {
+  $queryRaw: vi.fn(),
   cart: {
     findMany: vi.fn(),
     deleteMany: vi.fn()
@@ -103,6 +104,7 @@ const tx = {
   order: {
     findFirst: vi.fn(),
     findUnique: vi.fn(),
+    findUniqueOrThrow: vi.fn(),
     create: vi.fn(),
     update: vi.fn()
   },
@@ -466,6 +468,14 @@ function installPrismaBehavior() {
     return Promise.resolve({ id: order.id });
   });
   tx.order.findUnique.mockImplementation(findOrderByUniqueField);
+  tx.order.findUniqueOrThrow.mockImplementation(findOrderByUniqueField);
+  tx.$queryRaw.mockImplementation((_sql: TemplateStringsArray, id: string) =>
+    Promise.resolve(
+      db.orders
+        .filter((order) => order.id === id)
+        .map((order) => ({ status: order.status }))
+    )
+  );
   tx.order.update.mockImplementation(updateOrder);
   tx.userWorkshop.upsert.mockResolvedValue({});
   tx.userWorkshop.deleteMany.mockResolvedValue({ count: 0 });

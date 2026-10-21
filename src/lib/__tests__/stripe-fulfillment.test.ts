@@ -3,6 +3,7 @@ import { ItemType, OrderStatus } from '@prisma/client';
 import type Stripe from 'stripe';
 
 const tx = {
+  $queryRaw: vi.fn(),
   order: {
     findFirst: vi.fn(),
     update: vi.fn()
@@ -108,6 +109,7 @@ describe('fulfillCheckoutSession', () => {
       callback(tx)
     );
     tx.order.findFirst.mockResolvedValue(pendingOrder());
+    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.PENDING }]);
     tx.order.update.mockResolvedValue({});
     tx.userWorkshop.upsert.mockResolvedValue({});
     tx.cart.deleteMany.mockResolvedValue({ count: 3 });
@@ -232,6 +234,7 @@ describe('fulfillCheckoutSession', () => {
       stripeReceiptUrl: 'https://stripe.test/receipt',
       stripeInvoiceUrl: 'https://stripe.test/invoice'
     });
+    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.COMPLETED }]);
 
     const result = await fulfillCheckoutSession(
       stripeMock(),
@@ -252,6 +255,7 @@ describe('fulfillCheckoutSession', () => {
       ...pendingOrder(),
       status: OrderStatus.REFUNDED
     });
+    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.REFUNDED }]);
 
     const result = await fulfillCheckoutSession(
       stripeMock(),
@@ -265,6 +269,34 @@ describe('fulfillCheckoutSession', () => {
     expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
     expect(tx.cart.deleteMany).not.toHaveBeenCalled();
     expect(tx.order.update).not.toHaveBeenCalled();
+  });
+
+  it('uses the locked status when a refund committed after the lookup', async () => {
+    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.REFUNDED }]);
+
+    const result = await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession()
+    );
+
+    expect(result).toEqual({
+      orderId: '22222222-2222-4222-8222-222222222222',
+      status: 'already_refunded'
+    });
+    expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
+    expect(tx.cart.deleteMany).not.toHaveBeenCalled();
+    expect(tx.order.update).not.toHaveBeenCalled();
+  });
+
+  it('locks the order row before granting access', async () => {
+    await fulfillCheckoutSession(stripeMock(), checkoutSession());
+
+    const [sql, lockedOrderId] = tx.$queryRaw.mock.calls[0];
+    expect(sql.join('?')).toContain('FOR UPDATE');
+    expect(lockedOrderId).toBe('22222222-2222-4222-8222-222222222222');
+    expect(tx.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      tx.userWorkshop.upsert.mock.invocationCallOrder[0]
+    );
   });
 
   it('completes fulfillment when receipt and invoice lookups fail', async () => {

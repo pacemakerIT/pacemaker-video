@@ -5,8 +5,9 @@ import type Stripe from 'stripe';
 const orderId = '22222222-2222-4222-8222-222222222222';
 
 const tx = {
+  $queryRaw: vi.fn(),
   order: {
-    findUnique: vi.fn(),
+    findUniqueOrThrow: vi.fn(),
     update: vi.fn()
   },
   userWorkshop: {
@@ -65,7 +66,8 @@ describe('refundOrderForCharge', () => {
       callback(tx)
     );
     prismaMock.order.findUnique.mockResolvedValue({ id: orderId });
-    tx.order.findUnique.mockResolvedValue(completedOrder());
+    tx.order.findUniqueOrThrow.mockResolvedValue(completedOrder());
+    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.COMPLETED }]);
     tx.order.update.mockResolvedValue({});
     tx.userWorkshop.deleteMany.mockResolvedValue({ count: 1 });
     sessionsListMock.mockResolvedValue({ data: [] });
@@ -93,7 +95,7 @@ describe('refundOrderForCharge', () => {
   });
 
   it('does not repeat side effects when the refund event is retried', async () => {
-    tx.order.findUnique.mockResolvedValue({
+    tx.order.findUniqueOrThrow.mockResolvedValue({
       ...completedOrder(),
       status: OrderStatus.REFUNDED
     });
@@ -137,7 +139,7 @@ describe('refundOrderForCharge', () => {
     sessionsListMock.mockResolvedValue({
       data: [{ id: 'cs_test_123', metadata: { orderId } }]
     });
-    tx.order.findUnique.mockResolvedValue({
+    tx.order.findUniqueOrThrow.mockResolvedValue({
       ...completedOrder(),
       status: OrderStatus.PENDING,
       stripePaymentIntentId: null
@@ -183,7 +185,7 @@ describe('refundOrderForCharge', () => {
     sessionsListMock.mockResolvedValue({
       data: [{ id: 'cs_test_123', client_reference_id: orderId }]
     });
-    tx.order.findUnique.mockResolvedValue({
+    tx.order.findUniqueOrThrow.mockResolvedValue({
       ...completedOrder(),
       stripePaymentIntentId: 'pi_other'
     });
@@ -192,5 +194,66 @@ describe('refundOrderForCharge', () => {
       'Stripe payment intent does not match the order'
     );
     expect(tx.order.update).not.toHaveBeenCalled();
+  });
+
+  it('locks the order row before reading its status', async () => {
+    await refundOrderForCharge(stripeMock(), charge());
+
+    const [sql, lockedOrderId] = tx.$queryRaw.mock.calls[0];
+    expect(sql.join('?')).toContain('FOR UPDATE');
+    expect(lockedOrderId).toBe(orderId);
+    expect(tx.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      tx.order.findUniqueOrThrow.mock.invocationCallOrder[0]
+    );
+  });
+
+  it('ignores a session order id that matches no order row', async () => {
+    prismaMock.order.findUnique.mockResolvedValue(null);
+    sessionsListMock.mockResolvedValue({
+      data: [{ id: 'cs_test_123', metadata: { orderId } }]
+    });
+    tx.$queryRaw.mockResolvedValue([]);
+
+    const result = await refundOrderForCharge(stripeMock(), charge());
+
+    expect(result).toEqual({ orderId: null, status: 'ignored' });
+    expect(tx.order.findUniqueOrThrow).not.toHaveBeenCalled();
+    expect(tx.order.update).not.toHaveBeenCalled();
+  });
+
+  it('ignores sessions from other integrations whose order id is not a UUID', async () => {
+    prismaMock.order.findUnique.mockResolvedValue(null);
+    sessionsListMock.mockResolvedValue({
+      data: [
+        {
+          id: 'cs_foreign',
+          metadata: { orderId: 'INV-2026-0042' },
+          client_reference_id: 'customer-77'
+        }
+      ]
+    });
+
+    const result = await refundOrderForCharge(stripeMock(), charge());
+
+    expect(result).toEqual({ orderId: null, status: 'ignored' });
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('uses client_reference_id when metadata.orderId is not a UUID', async () => {
+    prismaMock.order.findUnique.mockResolvedValue(null);
+    sessionsListMock.mockResolvedValue({
+      data: [
+        {
+          id: 'cs_test_123',
+          metadata: { orderId: 'INV-2026-0042' },
+          client_reference_id: orderId
+        }
+      ]
+    });
+
+    const result = await refundOrderForCharge(stripeMock(), charge());
+
+    expect(result).toEqual({ orderId, status: 'refunded' });
+    expect(tx.$queryRaw.mock.calls[0][1]).toBe(orderId);
   });
 });
