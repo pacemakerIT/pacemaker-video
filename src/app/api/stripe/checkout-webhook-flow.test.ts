@@ -684,4 +684,33 @@ describe('checkout to Stripe webhook flow', () => {
       consoleWarnSpy.mockRestore();
     }
   });
+
+  it('acknowledges a paid checkout from another integration', async () => {
+    const consoleWarnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+    const event = checkoutSessionEvent('paid');
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    session.id = 'cs_other_app';
+    session.metadata = { orderId: 'INV-2026-0042' };
+    session.client_reference_id = null;
+    stripeConstructEventMock.mockReturnValue(event);
+
+    try {
+      const response = await receiveStripeWebhook(createWebhookRequest());
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({
+        received: true,
+        fulfillment: {
+          orderId: null,
+          status: 'ignored'
+        }
+      });
+      expect(tx.order.update).not.toHaveBeenCalled();
+    } finally {
+      consoleWarnSpy.mockRestore();
+    }
+  });
 });

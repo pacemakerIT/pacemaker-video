@@ -1,5 +1,6 @@
 import { ItemType, OrderStatus, Prisma } from '@prisma/client';
 import type Stripe from 'stripe';
+import { isUuid } from './checkout-items';
 import prisma from './prisma';
 
 type OrderWithItems = Prisma.OrderGetPayload<{
@@ -43,8 +44,17 @@ function isPaidCheckoutSession(session: Stripe.Checkout.Session) {
   );
 }
 
-function sessionOrderId(session: Stripe.Checkout.Session) {
-  return session.metadata?.orderId || session.client_reference_id || null;
+// Other integrations on the same Stripe account may use these fields for their
+// own references; only an app order id (a UUID) is used, because anything else
+// would be rejected by the uuid column and fail the webhook on every retry.
+export function checkoutSessionOrderId(
+  session: Pick<Stripe.Checkout.Session, 'metadata' | 'client_reference_id'>
+) {
+  return (
+    [session.metadata?.orderId, session.client_reference_id].find(
+      (value): value is string => typeof value === 'string' && isUuid(value)
+    ) ?? null
+  );
 }
 
 function compactUpdateData<T extends Record<string, unknown>>(data: T) {
@@ -111,7 +121,7 @@ async function resolveStripeReferences(
 
 function orderLookupWhere(session: Stripe.Checkout.Session) {
   const conditions: Prisma.OrderWhereInput[] = [];
-  const orderId = sessionOrderId(session);
+  const orderId = checkoutSessionOrderId(session);
 
   if (orderId) {
     conditions.push({ id: orderId });
@@ -239,7 +249,7 @@ export async function fulfillCheckoutSession(
 ): Promise<CheckoutFulfillmentResult> {
   if (!isPaidCheckoutSession(session)) {
     return {
-      orderId: sessionOrderId(session),
+      orderId: checkoutSessionOrderId(session),
       status: 'ignored'
     };
   }
@@ -252,8 +262,21 @@ export async function fulfillCheckoutSession(
       include: { items: true }
     });
 
+    // Sessions created by another integration, or by another app environment
+    // sharing this Stripe account, have no order here. Acknowledge them so
+    // Stripe does not retry; the warning keeps a paid but unmatched session
+    // visible in the logs.
     if (!order) {
-      throw new Error('Order not found for Stripe checkout session');
+      // eslint-disable-next-line no-console
+      console.warn('[STRIPE] Checkout session matched no order', {
+        sessionId: session.id,
+        orderId: checkoutSessionOrderId(session)
+      });
+
+      return {
+        orderId: null,
+        status: 'ignored'
+      };
     }
 
     if (

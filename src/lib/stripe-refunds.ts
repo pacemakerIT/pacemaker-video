@@ -1,8 +1,11 @@
 import { OrderStatus } from '@prisma/client';
 import type Stripe from 'stripe';
-import { isUuid } from './checkout-items';
 import prisma from './prisma';
-import { lockOrderStatus, stripeObjectId } from './stripe-fulfillment';
+import {
+  checkoutSessionOrderId,
+  lockOrderStatus,
+  stripeObjectId
+} from './stripe-fulfillment';
 
 export type ChargeRefundResult = {
   orderId: string | null;
@@ -38,15 +41,8 @@ async function findOrderIdForPaymentIntent(
     limit: 1
   });
   const session = sessions.data[0];
-  const candidates = [session?.metadata?.orderId, session?.client_reference_id];
 
-  // Other integrations on the same Stripe account may use these fields for
-  // their own references; only an app order id (a UUID) is looked up.
-  return (
-    candidates.find(
-      (value): value is string => typeof value === 'string' && isUuid(value)
-    ) ?? null
-  );
+  return session ? checkoutSessionOrderId(session) : null;
 }
 
 export async function refundOrderForCharge(

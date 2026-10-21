@@ -407,4 +407,86 @@ describe('fulfillCheckoutSession', () => {
       }
     });
   });
+
+  it('acknowledges sessions from other integrations without an app order', async () => {
+    tx.order.findFirst.mockResolvedValue(null);
+    const consoleWarnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+
+    try {
+      const result = await fulfillCheckoutSession(
+        stripeMock(),
+        checkoutSession({
+          id: 'cs_foreign',
+          metadata: { orderId: 'INV-2026-0042' },
+          client_reference_id: 'customer-77'
+        })
+      );
+
+      expect(result).toEqual({ orderId: null, status: 'ignored' });
+      expect(tx.order.findFirst).toHaveBeenCalledWith({
+        where: { OR: [{ stripeCheckoutSessionId: 'cs_foreign' }] },
+        include: { items: true }
+      });
+      expect(tx.$queryRaw).not.toHaveBeenCalled();
+      expect(tx.order.update).not.toHaveBeenCalled();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        '[STRIPE] Checkout session matched no order',
+        { sessionId: 'cs_foreign', orderId: null }
+      );
+    } finally {
+      consoleWarnSpy.mockRestore();
+    }
+  });
+
+  it('acknowledges a UUID order id that matches no order', async () => {
+    tx.order.findFirst.mockResolvedValue(null);
+    const consoleWarnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+
+    try {
+      const result = await fulfillCheckoutSession(
+        stripeMock(),
+        checkoutSession()
+      );
+
+      expect(result).toEqual({ orderId: null, status: 'ignored' });
+      expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
+      expect(tx.order.update).not.toHaveBeenCalled();
+    } finally {
+      consoleWarnSpy.mockRestore();
+    }
+  });
+
+  it('uses client_reference_id when metadata.orderId is not a UUID', async () => {
+    await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession({ metadata: { orderId: 'INV-2026-0042' } })
+    );
+
+    expect(tx.order.findFirst).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { id: '22222222-2222-4222-8222-222222222222' },
+          { stripeCheckoutSessionId: 'cs_test_123' }
+        ]
+      },
+      include: { items: true }
+    });
+  });
+
+  it('reports no order id for unpaid sessions from other integrations', async () => {
+    const result = await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession({
+        payment_status: 'unpaid',
+        metadata: { orderId: 'INV-2026-0042' },
+        client_reference_id: null
+      })
+    );
+
+    expect(result).toEqual({ orderId: null, status: 'ignored' });
+  });
 });
