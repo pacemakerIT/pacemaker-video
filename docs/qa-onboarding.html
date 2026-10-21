@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pacemaker Video QA Onboarding</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky table of contents on the left, one reading column on the right; stacks on phones. */
+:root {
+  --bg: #ffffff;
+  --surface: #f2f4f7;
+  --fg: #00263b;
+  --muted: #475467;
+  --line: rgba(0, 38, 59, 0.14);
+  --accent: #00adbd;
+  --accent-ink: #00798a;
+  --accent-soft: rgba(0, 173, 189, 0.1);
+  --cta: #ff4f02;
+  --warn-bg: rgba(255, 79, 2, 0.08);
+  --warn-line: rgba(255, 79, 2, 0.45);
+  --warn-ink: #b33600;
+  --ok-ink: #067647;
+  --ok-bg: rgba(6, 118, 71, 0.09);
+  --code-bg: #00263b;
+  --code-fg: #e6f4f6;
+  --font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #04151f;
+    --surface: #0b2433;
+    --fg: #e8f1f5;
+    --muted: #a3b6c2;
+    --line: rgba(232, 241, 245, 0.14);
+    --accent: #2cc7d5;
+    --accent-ink: #5fd8e3;
+    --accent-soft: rgba(44, 199, 213, 0.12);
+    --cta: #ff6a2b;
+    --warn-bg: rgba(255, 106, 43, 0.1);
+    --warn-line: rgba(255, 106, 43, 0.5);
+    --warn-ink: #ff9a6b;
+    --ok-ink: #5fd39a;
+    --ok-bg: rgba(95, 211, 154, 0.1);
+    --code-bg: #0e2c3d;
+    --code-fg: #e6f4f6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #04151f;
+  --surface: #0b2433;
+  --fg: #e8f1f5;
+  --muted: #a3b6c2;
+  --line: rgba(232, 241, 245, 0.14);
+  --accent: #2cc7d5;
+  --accent-ink: #5fd8e3;
+  --accent-soft: rgba(44, 199, 213, 0.12);
+  --cta: #ff6a2b;
+  --warn-bg: rgba(255, 106, 43, 0.1);
+  --warn-line: rgba(255, 106, 43, 0.5);
+  --warn-ink: #ff9a6b;
+  --ok-ink: #5fd39a;
+  --ok-bg: rgba(95, 211, 154, 0.1);
+  --code-bg: #0e2c3d;
+  --code-fg: #e6f4f6;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 56px;
+  padding-block: 40px 96px;
+}
+
+/* Table of contents */
+.toc { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; }
+.toc summary { display: none; }
+.toc .brand { font-family: var(--font-display); font-weight: 700; font-size: 15px; margin: 0 0 4px; }
+.toc .brand span { color: var(--accent-ink); }
+.toc .sub { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a {
+  display: block; padding: 5px 10px; border-radius: 6px;
+  color: var(--muted); text-decoration: none; font-size: 15px; line-height: 1.35;
+  border-left: 2px solid transparent;
+}
+.toc a:hover { color: var(--fg); background: var(--surface); }
+.toc a[aria-current="true"] { color: var(--fg); border-left-color: var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; }
+
+main { min-width: 0; max-width: 780px; }
+
+/* Type */
+h1, h2, h3 { font-family: var(--font-display); color: var(--fg); text-wrap: balance; line-height: 1.2; }
+h1 { font-size: clamp(30px, 4.4vw, 42px); font-weight: 700; margin: 8px 0 16px; letter-spacing: -0.01em; }
+h2 { font-size: 26px; font-weight: 700; margin: 0 0 14px; }
+h3 { font-size: 19px; font-weight: 600; margin: 32px 0 10px; }
+p { margin: 0 0 14px; }
+.lede { font-size: 19px; color: var(--muted); max-width: 64ch; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); }
+a { color: var(--accent-ink); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+strong { font-weight: 700; }
+ul, ol { padding-left: 22px; margin: 0 0 14px; }
+li { margin: 4px 0; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface); border: 1px solid var(--line); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+section { padding-top: 56px; border-top: 1px solid var(--line); margin-top: 56px; }
+section:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 15px; margin: 0 0 8px; }
+.meta b { color: var(--fg); font-weight: 600; }
+
+/* Callouts */
+.callout { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 16px 18px; margin: 18px 0; }
+.callout > :last-child { margin-bottom: 0; }
+.callout .label { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.callout.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+.callout.warn .label { color: var(--warn-ink); }
+.callout.info .label { color: var(--accent-ink); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; margin: 16px 0 20px; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; line-height: 1.45; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { background: var(--surface); font-weight: 700; font-size: 14px; white-space: nowrap; }
+tbody th { font-weight: 600; white-space: nowrap; }
+td code, th code { white-space: nowrap; }
+
+.pill { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.03em; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.yes { color: var(--ok-ink); background: var(--ok-bg); }
+.pill.no { color: var(--warn-ink); background: var(--warn-bg); }
+.pill.limited { color: var(--accent-ink); background: var(--accent-soft); }
+
+/* Code blocks */
+.code { position: relative; margin: 12px 0 18px; }
+.code pre {
+  margin: 0; background: var(--code-bg); color: var(--code-fg);
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.6;
+  padding: 14px 16px; padding-right: 76px; border-radius: 10px; overflow-x: auto;
+}
+.code .cm { color: #7fa3b5; }
+.copy {
+  position: absolute; top: 8px; right: 8px;
+  font: 600 12.5px var(--font-body); color: var(--code-fg);
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px; padding: 3px 10px; cursor: pointer;
+}
+.copy:hover { background: rgba(255, 255, 255, 0.18); }
+
+/* First-week checklist */
+.week { display: grid; gap: 14px; margin: 18px 0; }
+.day { border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }
+.day h3 { margin: 0 0 8px; font-size: 16px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.day h3 small { font-family: var(--font-body); font-weight: 400; color: var(--muted); font-size: 15px; }
+.check { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; }
+.check input { margin-top: 5px; width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+.check label { cursor: pointer; }
+.check input:checked + label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.progress { font-size: 14px; color: var(--muted); }
+
+/* Release pipeline */
+.pipeline { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 0; counter-reset: step; }
+.pipeline li { position: relative; padding: 0 0 18px 44px; margin: 0; counter-increment: step; }
+.pipeline li::before {
+  content: counter(step); position: absolute; left: 0; top: 0;
+  width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+  font: 700 13px var(--font-display); color: var(--fg); background: var(--surface); border: 1px solid var(--line);
+}
+.pipeline li::after { content: ""; position: absolute; left: 14px; top: 30px; bottom: 2px; width: 1px; background: var(--line); }
+.pipeline li:last-child::after { display: none; }
+.pipeline li.qa::before { background: var(--accent); border-color: var(--accent); color: #00263b; }
+.pipeline b { display: block; }
+.pipeline span { color: var(--muted); font-size: 15.5px; }
+.pipeline .tag { color: var(--accent-ink); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; margin-left: 6px; }
+
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 16px 0; }
+.two > div { border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; min-width: 0; }
+.two h3 { margin-top: 0; font-size: 16px; }
+.two ul { margin-bottom: 0; }
+
+dl.glossary { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 20px; margin: 16px 0; }
+dl.glossary dt { font-weight: 700; }
+dl.glossary dd { margin: 0; color: var(--muted); }
+
+.todo { color: var(--warn-ink); font-weight: 700; }
+footer { margin-top: 64px; color: var(--muted); font-size: 14px; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 20px 72px; }
+  .toc { position: static; max-height: none; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .toc summary { display: block; cursor: pointer; font-family: var(--font-display); font-weight: 600; }
+  .toc .brand, .toc .sub { display: none; }
+  .toc ol { margin-top: 10px; }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  dl.glossary { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  dl.glossary dd { margin-bottom: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="toc" aria-label="Table of contents">
+  <details id="toc-details" open>
+    <summary>Contents</summary>
+    <p class="brand">Pacemaker Video <span>QA</span></p>
+    <p class="sub">Onboarding guide</p>
+    <ol>
+      <li><a href="#start">Start here</a></li>
+      <li><a href="#product">The product</a></li>
+      <li><a href="#environments">Environments</a></li>
+      <li><a href="#setup">Local setup</a></li>
+      <li><a href="#screens">Screen map</a></li>
+      <li><a href="#flows">Critical flows</a></li>
+      <li><a href="#payments">Payment QA policy</a></li>
+      <li><a href="#testing">How we test</a></li>
+      <li><a href="#automation">Automation</a></li>
+      <li><a href="#workflow">Team workflow</a></li>
+      <li><a href="#process">QA process</a></li>
+      <li><a href="#bugs">Reporting bugs</a></li>
+      <li><a href="#pitfalls">Known pitfalls</a></li>
+      <li><a href="#glossary">Glossary</a></li>
+      <li><a href="#open">Open questions</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+
+<section id="start" aria-labelledby="start-h">
+  <p class="eyebrow">QA onboarding · Draft</p>
+  <h1 id="start-h">Pacemaker Video QA Onboarding</h1>
+  <p class="meta"><span><b>Repo</b> pacemakerIT/pacemaker-video</span><span><b>Last updated</b> 2026-10-21</span><span><b>Owner</b> <span class="todo">TBD</span></span></p>
+  <p class="lede">This guide gets a new QA engineer from zero to running manual and automated checks on Pacemaker Video. It covers what the product does, where it is safe to test, how the team ships, and what to automate first.</p>
+
+  <div class="callout warn">
+    <span class="label">Read this first</span>
+    <p>Production runs on a <strong>live Stripe key</strong>, and Vercel preview deployments share the <strong>production database</strong>. Functional QA happens on your machine. Deployed environments get short, controlled checks only. See <a href="#environments">Environments</a> and <a href="#payments">Payment QA policy</a> before you open any deployed URL.</p>
+  </div>
+
+  <h3>Your first week</h3>
+  <p class="progress" id="progress" aria-live="polite">0 of 0 done</p>
+  <p class="progress">Ticks are saved in this browser only.</p>
+  <div class="week" id="week">
+    <div class="day">
+      <h3>Day 1 <small>Access and local setup</small></h3>
+      <div class="check"><input type="checkbox" id="c-access-gh"><label for="c-access-gh">Get access to the GitHub repo, the Jira <code>PACE</code> board, and the team chat.</label></div>
+      <div class="check"><input type="checkbox" id="c-access-dash"><label for="c-access-dash">Get read access to the Stripe dashboard (test mode first), Clerk, and Vercel.</label></div>
+      <div class="check"><input type="checkbox" id="c-setup"><label for="c-setup">Run the app locally with a seeded database. Follow <a href="#setup">Local setup</a>.</label></div>
+      <div class="check"><input type="checkbox" id="c-gate"><label for="c-gate">Run the four automated checks once and confirm they pass on <code>main</code>.</label></div>
+    </div>
+    <div class="day">
+      <h3>Day 2 <small>Learn the product</small></h3>
+      <div class="check"><input type="checkbox" id="c-walk"><label for="c-walk">Walk every page in the <a href="#screens">Screen map</a> as a visitor, a member, and an admin.</label></div>
+      <div class="check"><input type="checkbox" id="c-routine"><label for="c-routine">Read <code>.agent/testing-routine.md</code>. It is the team's commit gate.</label></div>
+    </div>
+    <div class="day">
+      <h3>Day 3 <small>Payments, locally</small></h3>
+      <div class="check"><input type="checkbox" id="c-stripe-cli"><label for="c-stripe-cli">Install the Stripe CLI and forward webhooks to your local app.</label></div>
+      <div class="check"><input type="checkbox" id="c-checkout"><label for="c-checkout">Buy one course, one ebook, and one workshop with test cards. Then clean up.</label></div>
+    </div>
+    <div class="day">
+      <h3>Day 4 <small>Test a real PR</small></h3>
+      <div class="check"><input type="checkbox" id="c-pr"><label for="c-pr">Pick an open PR, check out its branch, and follow its "How to Test" section.</label></div>
+      <div class="check"><input type="checkbox" id="c-report"><label for="c-report">File one bug or one "verified" comment using the <a href="#bugs">report template</a>.</label></div>
+    </div>
+    <div class="day">
+      <h3>Day 5 <small>First automation</small></h3>
+      <div class="check"><input type="checkbox" id="c-unit"><label for="c-unit">Write one Vitest test for an uncovered edge case and open a PR.</label></div>
+      <div class="check"><input type="checkbox" id="c-plan"><label for="c-plan">Propose your browser e2e plan to the team. See <a href="#automation">Automation</a>.</label></div>
+    </div>
+  </div>
+</section>
+
+<section id="product" aria-labelledby="product-h">
+  <h2 id="product-h">The product</h2>
+  <p>Pacemaker Video sells career-development content to job seekers: resume, interview, and networking skills, plus industry-specific material. Members browse, save favorites, buy through a cart, and then watch, read, or attend what they bought. Admins manage the catalog.</p>
+
+  <h3>What is for sale</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Product</th><th>What the member gets</th><th>Public URL</th><th>DB <code>ItemType</code></th></tr></thead>
+    <tbody>
+      <tr><th>Course</th><td>A video course split into sections and lessons, played with Wistia. Watch progress is tracked.</td><td><code>/courses</code></td><td><code>COURSE</code>, <code>VIDEO</code></td></tr>
+      <tr><th>Ebook</th><td>A PDF read in the in-app viewer. Some ebooks are public, others need a purchase.</td><td><code>/ebooks</code></td><td><code>EBOOK</code></td></tr>
+      <tr><th>Workshop</th><td>A live session. Status is Open, Closed, Completed, or Hidden. Buying one enrolls the member.</td><td><code>/workshops</code></td><td><code>WORKSHOP</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Prices are charged in <strong>Canadian dollars (CAD)</strong>.</p>
+
+  <h3>Who uses it</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>User</th><th>How they are identified</th><th>What they can do</th></tr></thead>
+    <tbody>
+      <tr><th>Visitor</th><td>Not signed in</td><td>Browse catalog and detail pages. Buying prompts sign-in.</td></tr>
+      <tr><th>Member</th><td>Signed in with Clerk; <code>User.roleId = USER</code></td><td>Favorites, cart, checkout, purchases, reviews, profile and settings.</td></tr>
+      <tr><th>Instructor</th><td><code>User.roleId = INSTRUCTOR</code></td><td>Role exists in the data model. Confirm current use with the team.</td></tr>
+      <tr><th>Admin</th><td><code>User.roleId = ADMIN</code></td><td>Everything under <code>/admin</code>. Can also see non-public ebooks.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Tech at a glance</h3>
+  <p>You do not need to read the code to test, but these names show up in bugs and logs.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Concern</th><th>Tool</th><th>Why QA cares</th></tr></thead>
+    <tbody>
+      <tr><th>Web app</th><td>Next.js 15 (App Router), React, Tailwind</td><td>Pages live in <code>src/app</code>; API routes in <code>src/app/api</code>.</td></tr>
+      <tr><th>Sign-in</th><td>Clerk</td><td>Sign-in, sign-up, and SSO. Local dev uses a Clerk test instance.</td></tr>
+      <tr><th>Database</th><td>PostgreSQL via Prisma</td><td>Schema in <code>prisma/schema.prisma</code>. Seed data in <code>prisma/seed.ts</code>.</td></tr>
+      <tr><th>Payments</th><td>Stripe Checkout</td><td>Hosted payment page. Orders complete only when Stripe's webhook reaches the app.</td></tr>
+      <tr><th>Files</th><td>Supabase Storage</td><td>Images and ebook PDFs. Shared across all environments.</td></tr>
+      <tr><th>Video</th><td>Wistia</td><td>Course lesson playback.</td></tr>
+      <tr><th>Hosting</th><td>Vercel</td><td>Production deploy from <code>main</code>, plus a preview URL per push.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="environments" aria-labelledby="env-h">
+  <h2 id="env-h">Environments</h2>
+  <p>There is no isolated staging server today. This table shows what each environment is really connected to.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th></th><th>Local</th><th>Vercel preview</th><th>Vercel production</th></tr></thead>
+    <tbody>
+      <tr><th>Database</th><td>Your Docker Postgres</td><td><strong>Production DB</strong></td><td>Production DB</td></tr>
+      <tr><th>Clerk</th><td>Test instance</td><td>Same as production</td><td>Production config</td></tr>
+      <tr><th>Stripe</th><td>Test key</td><td>Not configured</td><td><strong>Live key</strong></td></tr>
+      <tr><th>Stripe webhook</th><td>Via Stripe CLI (you set it up)</td><td>None</td><td>Configured</td></tr>
+      <tr><th>File storage</th><td><strong>Shared</strong> Supabase project</td><td>Shared</td><td>Shared</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Where each kind of testing happens</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th></th><th>Local</th><th>Preview</th><th>Production</th></tr></thead>
+    <tbody>
+      <tr><th>Feature and regression QA</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Visual check of a PR</th><td><span class="pill yes">Yes</span></td><td><span class="pill limited">Read-only</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Full payment testing</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Automated suite</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill limited">Read-only smoke</span></td></tr>
+      <tr><th>Post-release smoke</th><td></td><td></td><td><span class="pill limited">Controlled</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn">
+    <span class="label">Rules for deployed URLs</span>
+    <ul>
+      <li>On preview URLs, do not add to cart, favorite, review, or edit anything. Every write lands in the production database.</li>
+      <li>On production, sign in only with the dedicated QA account. Never use a personal card.</li>
+      <li>Anything you create on production gets cleaned up the same day, and you confirm the cleanup.</li>
+      <li>Admin uploads go to shared storage even from local. Delete test images and PDFs after use.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="setup" aria-labelledby="setup-h">
+  <h2 id="setup-h">Local setup</h2>
+  <p>You need nvm, Docker, and the Stripe CLI. Node version comes from <code>.nvmrc</code> (22.22).</p>
+
+  <h3>1. Install and configure</h3>
+  <div class="code"><pre>nvm install && nvm use
+npm install
+cp .env.local.example .env.local   <span class="cm"># ask the team for local values</span></pre></div>
+  <p>Use <strong>test</strong> keys only in <code>.env.local</code>: Clerk <code>pk_test_…</code> / <code>sk_test_…</code> and Stripe <code>sk_test_…</code>. Never copy production values into your machine.</p>
+
+  <h3>2. Start the database and seed it</h3>
+  <div class="code"><pre>docker compose up -d          <span class="cm"># Postgres on localhost:5433</span>
+npx prisma migrate dev
+npx prisma db seed            <span class="cm"># sample courses, ebooks, workshops, banners, roles</span></pre></div>
+  <p>To reset to a clean state, run <code>npx prisma migrate reset</code>. It drops all local data and re-seeds.</p>
+
+  <h3>3. Run the app</h3>
+  <div class="code"><pre>npm run dev                   <span class="cm"># http://localhost:3000</span>
+npm run dev -- -p 3001        <span class="cm"># or 3001, the port the team's Aside session uses</span></pre></div>
+  <p>Open the app at <code>localhost</code>, not <code>127.0.0.1</code>. Clerk sessions break on the IP address. Keep <code>NEXT_PUBLIC_APP_URL</code> in sync with the port, because Stripe redirects back to it.</p>
+
+  <h3>4. Make yourself an admin</h3>
+  <p>Sign up once in the local app. Your user row is created on first sign-in. Then open Prisma Studio and set your <code>roleId</code> to <code>ADMIN</code>.</p>
+  <div class="code"><pre>npx prisma studio             <span class="cm"># User table → your row → roleId = ADMIN</span></pre></div>
+
+  <h3>5. Connect Stripe webhooks</h3>
+  <p>Without this step, every local checkout stays at "Payment confirmation pending", because the order is only marked complete when Stripe calls the webhook.</p>
+  <div class="code"><pre>stripe login
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+<span class="cm"># copy the printed whsec_… into .env.local as STRIPE_WEBHOOK_SECRET, then restart npm run dev</span></pre></div>
+</section>
+
+<section id="screens" aria-labelledby="screens-h">
+  <h2 id="screens-h">Screen map</h2>
+  <p>Every page you are expected to know, grouped by who sees it.</p>
+
+  <h3>Public</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Path</th><th>Page</th><th>Check for</th></tr></thead>
+    <tbody>
+      <tr><td><code>/</code></td><td>Home with main visual banners</td><td>Banner order matches admin order; links work.</td></tr>
+      <tr><td><code>/courses</code>, <code>/courses/[id]</code></td><td>Course list and detail</td><td>Price, curriculum, instructors, reviews, buy button state.</td></tr>
+      <tr><td><code>/ebooks</code>, <code>/ebooks/[ebookId]</code></td><td>Ebook list, detail, viewer</td><td>Preview vs full access; cart button state.</td></tr>
+      <tr><td><code>/workshops</code>, <code>/workshops/[workshopId]</code></td><td>Workshop list and detail</td><td>Status (Open/Closed/Completed); Hidden ones never appear.</td></tr>
+      <tr><td><code>/sign-in</code>, <code>/sign-up</code>, <code>/sso-callback</code></td><td>Clerk sign-in</td><td>Return to the page you came from.</td></tr>
+      <tr><td><code>/legal/*</code></td><td>Terms, privacy, refund policy</td><td>Content present; footer links.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Member (signed in)</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Path</th><th>Page</th><th>Check for</th></tr></thead>
+    <tbody>
+      <tr><td><code>/mypage/cart</code></td><td>Cart and checkout start</td><td>Totals, promo code, removing items, owned items blocked.</td></tr>
+      <tr><td><code>/mypage/payment-success</code></td><td>Result after Stripe</td><td>Status title: Complete, Pending, Failed, Cancelled, Refunded.</td></tr>
+      <tr><td><code>/payment/cancel</code></td><td>Result after cancelling on Stripe</td><td>Shows the order; cart is unchanged.</td></tr>
+      <tr><td><code>/mypage/purchases</code>, <code>/mypage/purchases/[videoId]</code></td><td>Purchase history and course player</td><td>Only paid items; player loads; progress saves.</td></tr>
+      <tr><td><code>/mypage/favorites</code></td><td>Saved items</td><td>Add and remove from detail pages reflect here.</td></tr>
+      <tr><td><code>/mypage/profile</code>, <code>/mypage/setting</code></td><td>Profile and interests</td><td>Edits persist after reload.</td></tr>
+      <tr><td><code>/mypage/inquiries</code></td><td>Member inquiries</td><td>Confirm current scope with the team.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Admin</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Path</th><th>Page</th><th>Check for</th></tr></thead>
+    <tbody>
+      <tr><td><code>/admin/dashboard</code></td><td>Overview</td><td>Numbers match the database.</td></tr>
+      <tr><td><code>/admin/courses</code></td><td>Create, edit, upload course videos</td><td>New course appears publicly with correct sections.</td></tr>
+      <tr><td><code>/admin/ebooks</code></td><td>Create and edit ebooks</td><td>PDF upload, public flag, category.</td></tr>
+      <tr><td><code>/admin/workshops</code></td><td>Create, edit, manage workshops</td><td>Status changes reflect on the public page.</td></tr>
+      <tr><td><code>/admin/main-visual</code></td><td>Home banners</td><td>Drag-and-drop order persists.</td></tr>
+      <tr><td><code>/admin/users</code></td><td>Member list and orders</td><td>Order statuses display correctly.</td></tr>
+    </tbody>
+  </table></div>
+  <p>A non-admin who opens <code>/admin</code> must be blocked, both on the page and on the admin API calls behind it.</p>
+</section>
+
+<section id="flows" aria-labelledby="flows-h">
+  <h2 id="flows-h">Critical flows</h2>
+  <p>These are the flows that cost money or trust when they break. Each one lists the normal path and the edge cases that have broken before or are easy to miss. Run them locally.</p>
+
+  <h3>Add to cart</h3>
+  <p>The ebook version below comes from the team's testing routine. Use the same four states for courses and workshops.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>State</th><th>Action</th><th>Expected</th></tr></thead>
+    <tbody>
+      <tr><th>Signed out</th><td>Click "Add to Cart"</td><td>Sign-in required modal; confirm goes to <code>/sign-in</code>.</td></tr>
+      <tr><th>Signed in</th><td>Click "Add to Cart"</td><td>Item added with the right type; confirmation modal.</td></tr>
+      <tr><th>Already in cart</th><td>Open detail page</td><td>Button reads "Go to Cart" and opens <code>/mypage/cart</code>.</td></tr>
+      <tr><th>Already owned</th><td>Click the button</td><td>Button reads "Purchased"; modal says it is already owned; cart unchanged.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Checkout</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Scenario</th><th>Expected</th></tr></thead>
+    <tbody>
+      <tr><th>Card succeeds</th><td>Redirect to payment success; status Complete; cart emptied; item appears in purchases.</td></tr>
+      <tr><th>Card declined</th><td>Stripe shows the error; no completed order; cart intact.</td></tr>
+      <tr><th>3-D Secure required</th><td>Challenge appears; passing it completes the order; failing it does not.</td></tr>
+      <tr><th>Cancel on Stripe</th><td>Return to <code>/payment/cancel</code>; cart intact. A <code>PENDING</code> order remains in the DB by design.</td></tr>
+      <tr><th>Webhook not received</th><td>Success page shows "Payment confirmation pending" and does not grant access.</td></tr>
+      <tr><th>Item already owned</th><td>Checkout refuses to charge for it again.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Promotion codes</h3>
+  <p>The app validates the code before sending the member to Stripe. Each rule below has its own error message.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Case</th><th>Expected message</th></tr></thead>
+    <tbody>
+      <tr><td>Unknown or inactive code, or a code restricted to one customer</td><td>Invalid promotion code</td></tr>
+      <tr><td>Past its expiry</td><td>Promotion code has expired</td></tr>
+      <tr><td>Redemption limit reached</td><td>Promotion code has already been redeemed</td></tr>
+      <tr><td>First-time-only code, member already has a completed order</td><td>Promotion code is only available for first-time customers</td></tr>
+      <tr><td>Minimum amount set in another currency</td><td>Promotion code is not valid for this currency</td></tr>
+      <tr><td>100% off code</td><td>Stripe asks for no payment; order completes as normal.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>After purchase</h3>
+  <ul>
+    <li><strong>Course:</strong> the player in <code>/mypage/purchases/[videoId]</code> loads every lesson; watch progress survives a reload.</li>
+    <li><strong>Ebook:</strong> the full PDF opens; a non-buyer still sees only what is public.</li>
+    <li><strong>Workshop:</strong> the member is enrolled and the purchase shows in history.</li>
+    <li><strong>Access gating:</strong> sign in as a different member and confirm the same URLs are refused.</li>
+  </ul>
+
+  <h3>Test cards (local only)</h3>
+  <p>Stripe's published test numbers. Any future expiry date and any CVC work.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Card number</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td><code>4242 4242 4242 4242</code></td><td>Succeeds</td></tr>
+      <tr><td><code>4000 0000 0000 0002</code></td><td>Declined</td></tr>
+      <tr><td><code>4000 0000 0000 9995</code></td><td>Declined, insufficient funds</td></tr>
+      <tr><td><code>4000 0025 0000 3155</code></td><td>Requires 3-D Secure authentication</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="payments" aria-labelledby="pay-h">
+  <h2 id="pay-h">Payment QA policy</h2>
+  <p>Production charges real cards. This is how far you may go in each place.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Where</th><th>Allowed</th><th>How</th><th>Cleanup</th></tr></thead>
+    <tbody>
+      <tr><th>Local</th><td>Everything</td><td>Test key, test cards, Stripe CLI webhooks. Automated tests run here.</td><td>Reset the local DB.</td></tr>
+      <tr><th>Preview</th><td>Nothing</td><td>No Stripe key is configured, and writes hit the production DB.</td><td>None needed.</td></tr>
+      <tr><th>Production, every release</th><td>Open checkout, then cancel</td><td>Confirms the live Stripe page opens and the cancel page returns.</td><td>Delete the <code>PENDING</code> order.</td></tr>
+      <tr><th>Production, every release</th><td>One free purchase</td><td>QA account plus a one-time 100% promo code. See below.</td><td>Delete the order, order items, and any workshop enrollment.</td></tr>
+      <tr><th>Production, exceptional</th><td>One real card payment</td><td>Only for a first launch or a large payment change, with sign-off from the owner. Smallest price, company card, refund right away.</td><td>Refund in Stripe, then fix the DB by hand. Refunds are not synced yet.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Rules for the QA promo code</h3>
+  <p>The app accepts only public promotion codes, and the Stripe account is shared with <code>pacemaker-apply</code>. A leaked 100% code would work on both sites. So every QA code must:</p>
+  <ul>
+    <li>be a long random string, never a word like <code>QATEST</code>;</li>
+    <li>have a redemption limit of 1;</li>
+    <li>expire within one hour;</li>
+    <li>be deactivated right after the test, even if it went unused.</li>
+  </ul>
+
+  <div class="callout info">
+    <span class="label">Known gap</span>
+    <p>The Stripe webhook handles only completed checkouts. A refund in the Stripe dashboard does not change the order status and does not remove access. A fix is in progress. Until it ships, every refund needs a manual DB correction.</p>
+  </div>
+</section>
+
+<section id="testing" aria-labelledby="testing-h">
+  <h2 id="testing-h">How we test</h2>
+  <p>No change is called ready until it passes the commit gate in <code>.agent/testing-routine.md</code>.</p>
+  <div class="code"><pre>npm test -- --run
+npm run typecheck
+npm run build
+npm run lint</pre></div>
+
+  <h3>What each layer catches</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Layer</th><th>Tool</th><th>Catches</th><th>Misses</th></tr></thead>
+    <tbody>
+      <tr><th>Unit and component tests</th><td>Vitest, Testing Library, happy-dom</td><td>Logic errors, API route rules, component states</td><td>Real browser, real Clerk, real Stripe</td></tr>
+      <tr><th>Type check</th><td><code>tsc</code></td><td>Mismatched data shapes</td><td>Wrong values with the right shape</td></tr>
+      <tr><th>Lint</th><td>ESLint, Prettier</td><td>Risky patterns, style drift</td><td>Behavior</td></tr>
+      <tr><th>Build</th><td><code>next build</code></td><td>Broken imports, server/client mistakes</td><td>Behavior</td></tr>
+      <tr><th>Browser e2e</th><td>Aside, then Playwright, then Chrome</td><td>Real user flows, signed-in state</td><td>Nothing automated yet in the repo</td></tr>
+      <tr><th>Component catalog</th><td>Storybook, <code>npm run storybook</code></td><td>Visual states of shared components</td><td>Page-level flows</td></tr>
+    </tbody>
+  </table></div>
+  <p>CI (<code>.github/workflows/integration.yml</code>) runs on every PR: lint, a Prisma schema and migration sync check, build, then tests.</p>
+
+  <h3>Browser testing rules</h3>
+  <ul>
+    <li>Aside is the default browser for local e2e. Keep a signed-in session on <code>localhost:3001</code>.</li>
+    <li>Use Chrome only when you need a real profile, cookies, or SSO state.</li>
+    <li>Before a signed-in test, note what is already in the account's cart, orders, and favorites.</li>
+    <li>After the test, remove what you created and confirm the account is back to where it started.</li>
+    <li>If you could not run a check, say so and name the risk. Never report it as passed.</li>
+  </ul>
+</section>
+
+<section id="automation" aria-labelledby="automation-h">
+  <h2 id="automation-h">Automation</h2>
+  <p>You own test automation. Today the repo has about 40 Vitest files and no browser e2e suite. The biggest gains are in the flows above.</p>
+
+  <h3>Unit and component tests</h3>
+  <p>Tests sit next to the code they cover as <code>*.test.ts</code> or <code>*.test.tsx</code>, or in a nearby <code>__tests__</code> folder. Good examples to read first:</p>
+  <ul>
+    <li><code>src/app/api/stripe/webhook/checkout-webhook-flow.test.ts</code> for payment logic</li>
+    <li><code>src/app/ebooks/[ebookId]/page.test.tsx</code> for page states</li>
+    <li><code>src/app/admin/admin-actions-auth.test.ts</code> for permission checks</li>
+  </ul>
+  <div class="code"><pre>npx vitest run src/lib/__tests__/stripe-fulfillment.test.ts   <span class="cm"># one file</span>
+npx vitest                                                     <span class="cm"># watch mode</span></pre></div>
+
+  <h3>Browser e2e: proposed direction</h3>
+  <p>This is a proposal. Agree on it with the team before adding dependencies.</p>
+  <div class="two">
+    <div>
+      <h3>Local suite</h3>
+      <ul>
+        <li>Playwright in an <code>e2e/</code> folder</li>
+        <li>Runs against <code>localhost</code> with a freshly seeded DB</li>
+        <li>Clerk test users for signed-in flows</li>
+        <li>Stripe test cards and Stripe CLI webhooks</li>
+        <li>Covers every flow in <a href="#flows">Critical flows</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Production smoke</h3>
+      <ul>
+        <li>Read-only: pages load, catalog renders, sign-in page opens</li>
+        <li>No cart, checkout, favorites, or reviews</li>
+        <li>No credentials stored in the repo</li>
+        <li>Free-purchase check stays manual</li>
+      </ul>
+    </div>
+  </div>
+  <p>Suggested order: checkout with webhook, cart states, access gating after purchase, admin permission checks, then admin content editing.</p>
+</section>
+
+<section id="workflow" aria-labelledby="workflow-h">
+  <h2 id="workflow-h">Team workflow</h2>
+  <p>How a change moves from ticket to production, and where QA steps in.</p>
+  <ol class="pipeline">
+    <li><b>Jira ticket</b><span>Work starts from a <code>PACE-</code> ticket. <code>npm run jira</code> is a local CLI for it.</span></li>
+    <li><b>Branch</b><span>Named <code>PACE-123/short-description</code>, or <code>chore/…</code> and <code>hotfix/…</code>. A pre-commit hook rejects other names and runs type check and lint on staged files.</span></li>
+    <li><b>Pull request</b><span>The template asks for Why, Changes, and How to Test.</span></li>
+    <li class="qa"><b>QA on the branch <em class="tag">QA</em></b><span>Check out the branch, run it locally, follow How to Test, then probe the edge cases it does not mention.</span></li>
+    <li><b>CI and review</b><span>Lint, schema sync, build, tests. A reviewer approves.</span></li>
+    <li><b>Merge to main</b><span>CI applies database migrations to production, and Vercel deploys production.</span></li>
+    <li class="qa"><b>Production smoke <em class="tag">QA</em></b><span>Short controlled checks from the <a href="#payments">payment policy</a>, with same-day cleanup.</span></li>
+  </ol>
+  <div class="callout warn">
+    <span class="label">Migrations</span>
+    <p>Merging a PR that changes <code>prisma/schema.prisma</code> changes the production database immediately. Test those PRs locally with <code>npx prisma migrate reset</code> and real-looking data before approving.</p>
+  </div>
+</section>
+
+<section id="process" aria-labelledby="process-h">
+  <h2 id="process-h">QA process</h2>
+  <p>How QA runs once you are set up. There is no single mandatory standard, but most teams share four habits: test the riskiest areas first, join work at the ticket stage, automate in a pyramid, and repeat the same checklist at every release.</p>
+
+  <div class="callout warn">
+    <span class="label">Merge is release</span>
+    <p>A merge to <code>main</code> deploys production and runs migrations right away. There is no step between merge and release where QA can stop a change. QA sign-off therefore happens <strong>before</strong> merge, never after.</p>
+  </div>
+
+  <h3>First two weeks: map the risk</h3>
+  <ul>
+    <li><strong>Build a risk map.</strong> Score each feature on impact if it breaks and on how often it changes. Payments, post-purchase access, and admin permissions start at the top.</li>
+    <li><strong>Map existing coverage.</strong> Mark which risks the current Vitest files already guard. High risk with no test is your first automation target.</li>
+    <li><strong>Write regression checklist v1.</strong> Start from <a href="#flows">Critical flows</a>. This is the list you rerun before risky releases.</li>
+  </ul>
+
+  <h3>Every ticket: the core loop</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>When</th><th>What QA does</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><th>Ticket is written</th><td>Co-write acceptance criteria in Given / When / Then form.</td><td>Criteria on the Jira ticket</td></tr>
+      <tr><th>PR is opened</th><td>Run the branch locally. Follow "How to Test", then probe the edge cases it does not mention.</td><td>A "Verified" PR comment listing what was and was not checked</td></tr>
+      <tr><th>A problem is found</th><td>Report it with the template and set severity.</td><td>Jira bug</td></tr>
+      <tr><th>Right after merge</th><td>Run the production smoke from the <a href="#payments">payment policy</a>.</td><td>Smoke result and cleanup confirmation</td></tr>
+    </tbody>
+  </table></div>
+  <p>Example acceptance criteria:</p>
+  <div class="code"><pre>Given a signed-in member who already owns the ebook
+When they open the ebook detail page
+Then the button reads "Purchased"
+And clicking it shows the already-owned modal without adding to cart</pre></div>
+
+  <h3>Recurring work</h3>
+  <ul>
+    <li><strong>Before risky releases:</strong> if a PR touches payments, access rules, or the schema, run the full regression checklist. For small UI changes, check only the affected flow.</li>
+    <li><strong>One escaped bug, one new test:</strong> every bug found in production gets an automated test that would have caught it.</li>
+    <li><strong>Exploratory sessions:</strong> once or twice a week, spend 30 to 60 minutes on one focused goal without a script, for example "break promo codes". Write down what you tried and what you found.</li>
+    <li><strong>Monthly review:</strong> for each bug that reached production, note why QA missed it and adjust the checklist.</li>
+  </ul>
+
+  <h3>Industry practices and how far we use them</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Practice</th><th>Meaning</th><th>Here</th></tr></thead>
+    <tbody>
+      <tr><th>Risk-based testing</th><td>Spend test time where failure costs the most.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Shift-left</th><td>QA joins at the requirement stage, not after the code is done.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Given / When / Then</th><td>Requirements written as testable statements.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Definition of Done</th><td>A shared bar for "finished".</td><td><span class="pill yes">Adopt</span> user-facing PRs include QA sign-off</td></tr>
+      <tr><th>Test pyramid</th><td>Many fast unit tests, few slow browser tests on key flows.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Exploratory testing</th><td>Time-boxed, unscripted testing with one goal.</td><td><span class="pill yes">Adopt</span> weekly</td></tr>
+      <tr><th>Regression and smoke tests</th><td>Re-check existing features; quick check right after deploy.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Severity vs priority</th><td>Severity is impact, set by QA. Priority is when to fix, set by the team.</td><td><span class="pill yes">Adopt</span></td></tr>
+      <tr><th>Test management tools</th><td>TestRail, Qase, Xray and similar.</td><td><span class="pill limited">Later</span> when the checklist passes about 100 cases</td></tr>
+      <tr><th>ISTQB, ISO/IEC/IEEE 29119</th><td>Formal test process and document templates.</td><td><span class="pill limited">Reference</span> too heavy for this team size</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Process changes to agree on</h3>
+  <ul>
+    <li><strong>Require QA approval before merge</strong> for PRs that change screens, payments, or access. GitHub branch protection can enforce a required reviewer.</li>
+    <li><strong>Create a real staging environment.</strong> Point preview deployments at their own database and a Stripe test key. Pre-release checks then move off production.</li>
+  </ul>
+</section>
+
+<section id="bugs" aria-labelledby="bugs-h">
+  <h2 id="bugs-h">Reporting bugs</h2>
+  <p>File bugs in Jira under <code>PACE</code>. Paste this template and fill every line.</p>
+  <div class="code"><pre id="bug-template">Title: [Area] What is wrong, in one line
+
+Environment: local / production · branch or commit · browser
+Account: visitor / member / admin (never paste passwords)
+Severity: S1 / S2 / S3 / S4
+
+Steps to reproduce:
+1.
+2.
+3.
+
+Expected:
+Actual:
+
+Evidence: screenshot or recording, console errors, network response
+Data created during the test, and whether it was cleaned up:</pre></div>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Severity</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><th>S1</th><td>Money or access is wrong, or the site is down</td><td>Charged but no access; access without paying</td></tr>
+      <tr><th>S2</th><td>A main flow is blocked with no workaround</td><td>Cannot add to cart</td></tr>
+      <tr><th>S3</th><td>A flow works but is wrong or confusing</td><td>Wrong status text after payment</td></tr>
+      <tr><th>S4</th><td>Cosmetic</td><td>Misaligned card, typo</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="pitfalls" aria-labelledby="pitfalls-h">
+  <h2 id="pitfalls-h">Known pitfalls</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Symptom</th><th>Cause</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td>Signed in, but pages act signed out</td><td>App opened on <code>127.0.0.1</code></td><td>Use <code>localhost</code>.</td></tr>
+      <tr><td>Local payment stuck on "pending"</td><td>Stripe CLI not forwarding, or wrong <code>STRIPE_WEBHOOK_SECRET</code></td><td>Restart <code>stripe listen</code>, copy the new secret, restart the app.</td></tr>
+      <tr><td>Stripe redirects to the wrong port</td><td><code>NEXT_PUBLIC_APP_URL</code> does not match</td><td>Set it to the port you run on.</td></tr>
+      <tr><td>Test data shows up on the live site</td><td>Writes made on a preview URL</td><td>Previews use the production DB. Clean up and report it.</td></tr>
+      <tr><td>Leftover <code>PENDING</code> orders</td><td>Checkout cancelled or abandoned</td><td>Expected. Clean up the ones you created.</td></tr>
+      <tr><td>Refunded order still grants access</td><td>Refund events not handled yet</td><td>Correct the DB by hand. Fix in progress.</td></tr>
+      <tr><td>README naming table looks wrong</td><td>It lists <code>DOCUMENT</code>; the schema now uses <code>EBOOK</code> and <code>COURSE</code></td><td>Trust <code>prisma/schema.prisma</code>.</td></tr>
+      <tr><td>Clerk profile changes do not reach the local DB</td><td>Clerk webhooks cannot reach your machine</td><td>Expected locally. The user row is created on sign-in.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="glossary" aria-labelledby="glossary-h">
+  <h2 id="glossary-h">Glossary</h2>
+  <dl class="glossary">
+    <dt>Webhook</dt><dd>A call Stripe or Clerk makes to our app when something happens on their side, such as a completed payment.</dd>
+    <dt>Stripe Checkout</dt><dd>Stripe's hosted payment page. The member leaves our site to pay and is sent back afterwards.</dd>
+    <dt>Live key / test key</dt><dd>Stripe credentials. A live key charges real money; a test key accepts only test cards.</dd>
+    <dt>Promotion code</dt><dd>A discount code a member types at checkout, backed by a Stripe coupon.</dd>
+    <dt>Preview deployment</dt><dd>A temporary Vercel URL built for a branch or PR. Here it shares production data.</dd>
+    <dt>Migration</dt><dd>A versioned change to the database structure, stored in <code>prisma/migrations</code>.</dd>
+    <dt>Seed</dt><dd>Sample data loaded into a fresh local database by <code>prisma/seed.ts</code>.</dd>
+    <dt>Entitlement</dt><dd>The rule that decides whether a member may open a course, ebook, or workshop. See <code>src/lib/entitlements.ts</code>.</dd>
+    <dt>Commit gate</dt><dd>The four checks every change must pass before it is called ready.</dd>
+    <dt>Aside</dt><dd>The browser automation tool the team uses for local e2e with a saved sign-in.</dd>
+  </dl>
+</section>
+
+<section id="open" aria-labelledby="open-h">
+  <h2 id="open-h">Open questions</h2>
+  <p>These need an answer from the team before this guide is final.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td>Who is the QA point of contact and who approves releases?</td><td class="todo">TBD</td></tr>
+      <tr><td>Who cleans up production data: QA with DB access, or a developer on request?</td><td class="todo">TBD</td></tr>
+      <tr><td>Who creates the one-time promo codes in Stripe?</td><td class="todo">TBD</td></tr>
+      <tr><td>Where are the QA account and Clerk test users stored? (Use the team password manager, never this doc.)</td><td class="todo">TBD</td></tr>
+      <tr><td>Will preview deployments get their own database and Stripe test key?</td><td class="todo">TBD</td></tr>
+      <tr><td>Is the Instructor role in use, and what can it do?</td><td class="todo">TBD</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>Source of truth for testing rules: <code>.agent/testing-routine.md</code>. If this guide and the code disagree, the code wins. Update this page in the same PR.</footer>
+</main>
+</div>
+
+<script>
+(function () {
+  // First-week checklist: progress text and per-browser persistence.
+  var KEY = 'pm-qa-onboarding-checks';
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('#week input[type="checkbox"]'));
+  var progress = document.getElementById('progress');
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  function render() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    progress.textContent = done + ' of ' + boxes.length + ' done';
+  }
+  boxes.forEach(function (b) {
+    if (saved[b.id]) b.checked = true;
+    b.addEventListener('change', function () {
+      saved[b.id] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+      render();
+    });
+  });
+  render();
+
+  // Copy buttons on code blocks.
+  document.querySelectorAll('.code').forEach(function (block) {
+    var pre = block.querySelector('pre');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code');
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      function done(label) { btn.textContent = label; setTimeout(function () { btn.textContent = 'Copy'; }, 1500); }
+      function selectFallback() {
+        var range = document.createRange();
+        range.selectNodeContents(pre);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        done('Selected');
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done('Copied'); }, selectFallback);
+      } else {
+        selectFallback();
+      }
+    });
+    block.appendChild(btn);
+  });
+
+  // Highlight the current section in the table of contents.
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        links.forEach(function (a) { a.removeAttribute('aria-current'); });
+        var link = byId[entry.target.id];
+        if (link) link.setAttribute('aria-current', 'true');
+      });
+    }, { rootMargin: '0px 0px -70% 0px' });
+    document.querySelectorAll('main section').forEach(function (s) { observer.observe(s); });
+  }
+
+  // Collapse the contents list on phones, keep it open on desktop.
+  var details = document.getElementById('toc-details');
+  var mq = window.matchMedia('(max-width: 900px)');
+  function syncToc() { details.open = !mq.matches; }
+  syncToc();
+  if (mq.addEventListener) mq.addEventListener('change', syncToc);
+  links.forEach(function (a) { a.addEventListener('click', function () { if (mq.matches) details.open = false; }); });
+})();
+</script>
+</body>
+</html>
