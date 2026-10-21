@@ -11,6 +11,12 @@ import Link from 'next/link';
 
 import { MainVisual } from '@prisma/client';
 
+export const metadata = {
+  title: 'Career Courses, Workshops & Resources',
+  description:
+    'Explore practical career courses, expert workshops, and resources to support your next step.'
+};
+
 export const revalidate = 0; // Ensure fresh data on every request
 
 export default async function Home() {

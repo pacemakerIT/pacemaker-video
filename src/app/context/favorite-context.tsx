@@ -14,6 +14,7 @@ export type Favorite = {
   description: string;
   category: VideoCategory | null;
   startDate: Date | undefined;
+  thumbnail?: string | null;
   like: boolean;
 };
 

@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const ebookList = await prisma.ebook.findMany({
       where: {
+        isPublic: true,
         ...(isMainParam === 'true' ? { isMain: true } : {})
       },
       orderBy: {

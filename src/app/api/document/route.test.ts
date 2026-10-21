@@ -8,15 +8,12 @@ vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
 }));
 
-vi.mock('@/lib/prisma', () => {
-  return {
-    default: {
-      ebook: {
-        findUnique: vi.fn()
-      }
-    }
-  };
-});
+const prismaMock = vi.hoisted(() => ({
+  ebook: { findUnique: vi.fn() },
+  user: { findUnique: vi.fn() },
+  orderItem: { findFirst: vi.fn() }
+}));
+vi.mock('@/lib/prisma', () => ({ default: prismaMock }));
 
 const { auth } = await import('@clerk/nextjs/server');
 const { GetObjectCommand } = await import('@aws-sdk/client-s3');
@@ -37,6 +34,14 @@ describe('GET /api/document/[docId]', () => {
     (auth as unknown as Mock).mockResolvedValue({
       userId: 'user_123'
     });
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: docId,
+      ebookId: 'ebook-file.pdf',
+      price: 25,
+      isPublic: true
+    });
+    prismaMock.user.findUnique.mockResolvedValue({ id: 'app-user-123' });
+    prismaMock.orderItem.findFirst.mockResolvedValue({ id: 'purchase-1' });
 
     GET = createGetHandler(mockS3ClientInstance as unknown as S3Client);
   });
@@ -93,6 +98,63 @@ describe('GET /api/document/[docId]', () => {
     expect(result.status).toBe(401);
     const json = await result.json();
     expect(json).toEqual({ error: 'Unauthorized' });
+  });
+
+  it('should deny a signed-in user without a completed purchase', async () => {
+    prismaMock.orderItem.findFirst.mockResolvedValue(null);
+
+    const result = await GET(createMockRequest(), {
+      params: Promise.resolve({ docId })
+    });
+
+    expect(result.status).toBe(403);
+    expect(mockS3ClientInstance.send).not.toHaveBeenCalled();
+  });
+
+  it('should hide non-public ebooks from non-admin users', async () => {
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: docId,
+      ebookId: 'ebook-file.pdf',
+      price: 0,
+      isPublic: false
+    });
+
+    const result = await GET(createMockRequest(), {
+      params: Promise.resolve({ docId })
+    });
+
+    expect(result.status).toBe(404);
+    expect(mockS3ClientInstance.send).not.toHaveBeenCalled();
+  });
+
+  it('allows an admin to read a non-public ebook', async () => {
+    prismaMock.ebook.findUnique.mockResolvedValue({
+      id: docId,
+      ebookId: 'ebook-file.pdf',
+      price: 25,
+      isPublic: false
+    });
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: 'admin-user',
+      roleId: 'ADMIN'
+    });
+    mockS3ClientInstance.send.mockResolvedValue({
+      Body: new ReadableStream({
+        start(controller) {
+          controller.close();
+        }
+      })
+    });
+
+    const result = await GET(createMockRequest(), {
+      params: Promise.resolve({ docId })
+    });
+
+    expect(result.status).toBe(200);
+    expect(mockS3ClientInstance.send).toHaveBeenCalledWith(
+      expect.any(GetObjectCommand)
+    );
+    expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
   });
 
   it('should return 400 if docId is missing', async () => {

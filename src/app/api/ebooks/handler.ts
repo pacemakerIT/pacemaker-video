@@ -4,8 +4,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ebookBucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
-import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
-import { getAdminAccessForClerkUserId } from '@/lib/admin-auth';
+import { getEbookAccessForClerkUserId } from '@/lib/entitlements';
 
 /**
  * How long a reader's signed download link stays valid. The link is a bearer
@@ -47,20 +46,17 @@ export function createGetHandler(s3Client: S3Client) {
         return NextResponse.json({ error: 'Ebook not found' }, { status: 404 });
       }
 
-      const adminAccess = await getAdminAccessForClerkUserId(session.userId);
-      const isAdmin = adminAccess.ok;
+      const access = await getEbookAccessForClerkUserId(
+        prisma,
+        session.userId,
+        ebook
+      );
 
-      if (!ebook.isPublic && !isAdmin) {
+      if (!access.visible) {
         return NextResponse.json({ error: 'Ebook not found' }, { status: 404 });
       }
 
-      const userId = isAdmin
-        ? null
-        : await findUserIdByClerkId(prisma, session.userId);
-      const canAccessEbook =
-        isAdmin || (await userCanAccessEbook(prisma, userId, ebook));
-
-      if (!canAccessEbook) {
+      if (!access.allowed) {
         return NextResponse.json(
           { error: 'Purchase required to view this ebook' },
           { status: 403 }
