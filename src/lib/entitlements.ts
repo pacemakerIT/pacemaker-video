@@ -111,6 +111,30 @@ export async function userCanAccessEbook(
   return hasCompletedPurchase(client, userId, ItemType.EBOOK, ebook.id);
 }
 
+export async function getEbookAccessForClerkUserId(
+  client: EntitlementClient,
+  clerkUserId: string | null,
+  ebook: {
+    id: string;
+    price: number | null;
+    isPublic: boolean;
+  }
+) {
+  const user = clerkUserId
+    ? await client.user.findUnique({
+        where: { clerkId: clerkUserId },
+        select: { id: true, roleId: true }
+      })
+    : null;
+  const isAdmin = user?.roleId === 'ADMIN';
+  const visible = ebook.isPublic || isAdmin;
+  const allowed =
+    visible &&
+    (isAdmin || (await userCanAccessEbook(client, user?.id ?? null, ebook)));
+
+  return { visible, allowed };
+}
+
 export async function userCanAccessVideo(
   client: EntitlementClient,
   userId: string | null,

@@ -1,54 +1,26 @@
-'use client';
-
-import { usePathname } from 'next/navigation';
-import { ClerkProvider } from '@clerk/nextjs';
-import { UserProvider } from '@/app/context/user-context';
-import { PurchaseProvider } from '@/app/context/purchase-context';
-import { FavoriteProvider } from '@/app/context/favorite-context';
-import { CartProvider } from '@/app/context/cart-context';
-import { Header } from '@/components/common/header';
-import { Footer } from '@/components/common/footer';
-import { Toaster } from '@/components/ui/sonner';
+import type { Metadata } from 'next';
+import Providers from './providers';
 import './globals.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '@/components/features/workshops/calendar-custom.css';
 
-export default function RootLayoutWrapper({
+export const metadata: Metadata = {
+  title: {
+    default: 'PaceUp Career | Career Development',
+    template: '%s | PaceUp Career'
+  },
+  description:
+    'Build your career with practical courses, workshops, and resources from PaceUp Career.'
+};
+
+export default function RootLayout({
   children
-}: {
-  children: React.ReactNode;
-}) {
-  const pathname = usePathname();
-  const isAdmin = pathname.startsWith('/admin');
-
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-    >
-      <html lang="en" style={{ colorScheme: 'light' }}>
-        <body suppressHydrationWarning={true}>
-          <UserProvider>
-            <PurchaseProvider>
-              <CartProvider>
-                <FavoriteProvider>
-                  {!isAdmin && <Header />}
-
-                  <main
-                    className={
-                      isAdmin ? undefined : 'pt-[var(--site-header-height)]'
-                    }
-                  >
-                    {children}
-                  </main>
-                  <Toaster />
-
-                  {!isAdmin && <Footer />}
-                </FavoriteProvider>
-              </CartProvider>
-            </PurchaseProvider>
-          </UserProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" style={{ colorScheme: 'light' }}>
+      <body suppressHydrationWarning>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
