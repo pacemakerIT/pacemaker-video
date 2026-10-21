@@ -18,7 +18,7 @@ const categoryMap: Record<string, string> = {
   NETWORKING: 'Networking'
 };
 
-const FILTER_INACTIVE_BASE = 'border-gray-200 bg-white text-gray-500';
+const FILTER_INACTIVE_BASE = 'border-gray-300 bg-white text-subtext';
 
 const FILTER_HOVER_CLASSES: Record<string, string> = {
   INTERVIEW:
@@ -93,7 +93,7 @@ export default function CourseHeader({
             id="courseSortSelect"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="h-[38px] w-full appearance-none rounded-[12px] border border-gray-200 bg-white pl-4 pr-10 font-headline text-sm font-medium leading-none text-gray-500 shadow-card focus:outline-none focus:ring-2 focus:ring-teal md:h-12 md:rounded-2xl md:pl-5 md:pr-12 md:text-base cursor-pointer"
+            className="h-[38px] w-full appearance-none rounded-[12px] border border-gray-200 bg-white py-3 pl-5 pr-12 font-headline text-sm font-medium leading-none text-gray-500 shadow-card focus:outline-none focus:ring-2 focus:ring-teal md:h-12 md:rounded-2xl md:py-3 md:pl-5 md:pr-12 md:text-base cursor-pointer"
             aria-label="Sort courses"
           >
             <option value="Total">Total</option>

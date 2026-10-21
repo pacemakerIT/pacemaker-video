@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useUserContext } from '@/app/context/user-context';
+import MyAccountLayout from './my-account-layout';
 import MyPageSidebar from './my-page-side-bar';
 
 export default function MyPage({ children }: { children: React.ReactNode }) {
@@ -35,10 +36,5 @@ export default function MyPage({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return (
-    <div className="w-screen grid grid-cols-[320px_1fr]">
-      <MyPageSidebar />
-      <main>{children}</main>
-    </div>
-  );
+  return <MyAccountLayout>{children}</MyAccountLayout>;
 }
