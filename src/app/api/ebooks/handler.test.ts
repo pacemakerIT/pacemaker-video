@@ -21,7 +21,7 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 vi.mock('@/lib/supabase', () => ({
-  bucketName: 'ebooks',
+  ebookBucketName: 'document',
   s3clientSupabase: {}
 }));
 
@@ -97,7 +97,7 @@ describe('ebook file handler', () => {
       s3Client,
       expect.objectContaining({
         input: expect.objectContaining({
-          Bucket: 'ebooks',
+          Bucket: 'document',
           Key: 'ebook-file.pdf'
         })
       }),
@@ -138,7 +138,7 @@ describe('ebook file handler', () => {
       s3Client,
       expect.objectContaining({
         input: expect.objectContaining({
-          Bucket: 'ebooks',
+          Bucket: 'document',
           Key: 'private-ebook-file.pdf'
         })
       }),

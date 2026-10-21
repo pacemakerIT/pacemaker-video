@@ -3,7 +3,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { format } from 'date-fns';
 import prisma from '@/lib/prisma';
-import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { ebookBucketName, s3clientSupabase } from '@/lib/supabase';
 import { requireAdminUser } from '@/lib/admin-auth';
 
 // Get all documents
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     const putCommand = new PutObjectCommand({
-      Bucket: bucketName,
+      Bucket: ebookBucketName,
       Key: titleWithTimestamp,
       Body: buffer,
       ContentType: file.type

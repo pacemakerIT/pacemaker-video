@@ -82,19 +82,36 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
       try {
         setLoading(true);
         setError(null);
+        setPdfUrl(null);
 
         const response = await fetch(`/api/ebooks/${ebookId}`, {
           signal: controller.signal
         });
-        const data = await response.json().catch(() => null);
 
-        if (!response.ok || !data?.url) {
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
           throw new Error(
             data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
           );
         }
 
-        setPdfUrl(data.url as string);
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await response.json().catch(() => null);
+          if (!data?.url) {
+            throw new Error(
+              data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
+            );
+          }
+          setPdfUrl(data.url as string);
+        } else if (
+          contentType.includes('application/pdf') ||
+          contentType.includes('application/octet-stream')
+        ) {
+          setPdfUrl(URL.createObjectURL(await response.blob()));
+        } else {
+          throw new Error('PDF 응답 형식을 확인할 수 없습니다.');
+        }
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(
@@ -109,6 +126,11 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
 
     return () => controller.abort();
   }, [ebookId, isSignedIn, retryCount]);
+
+  useEffect(() => {
+    if (!pdfUrl?.startsWith('blob:')) return;
+    return () => URL.revokeObjectURL(pdfUrl);
+  }, [pdfUrl]);
 
   useEffect(() => {
     if (numPages > 0) onPageChange?.(pageNumber, numPages);

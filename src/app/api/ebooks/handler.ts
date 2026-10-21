@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { bucketName } from '@/lib/supabase';
+import { ebookBucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
 import { findUserIdByClerkId, userCanAccessEbook } from '@/lib/entitlements';
 import { getAdminAccessForClerkUserId } from '@/lib/admin-auth';
@@ -68,7 +68,7 @@ export function createGetHandler(s3Client: S3Client) {
       }
 
       const command = new GetObjectCommand({
-        Bucket: bucketName,
+        Bucket: ebookBucketName,
         Key: ebook.ebookId
       });
 
