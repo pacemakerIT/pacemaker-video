@@ -8,10 +8,10 @@ type OrderWithItems = Prisma.OrderGetPayload<{
 
 export type CheckoutFulfillmentResult = {
   orderId: string | null;
-  status: 'completed' | 'already_completed' | 'ignored';
+  status: 'completed' | 'already_completed' | 'already_refunded' | 'ignored';
 };
 
-function stripeObjectId(
+export function stripeObjectId(
   value: string | { id?: string } | null | undefined
 ): string | null {
   if (!value) return null;
@@ -244,6 +244,15 @@ export async function fulfillCheckoutSession(
       order.stripeCheckoutSessionId !== session.id
     ) {
       throw new Error('Stripe checkout session does not match the order');
+    }
+
+    // A refund is terminal: a retried or late checkout.session.completed must
+    // not re-grant access that charge.refunded already revoked.
+    if (order.status === OrderStatus.REFUNDED) {
+      return {
+        orderId: order.id,
+        status: 'already_refunded'
+      };
     }
 
     if (order.status === OrderStatus.COMPLETED) {

@@ -3,6 +3,7 @@ import type Stripe from 'stripe';
 
 const constructEventMock = vi.fn();
 const fulfillCheckoutSessionMock = vi.fn();
+const refundOrderForChargeMock = vi.fn();
 const stripeClientMock = {
   webhooks: {
     constructEvent: constructEventMock
@@ -17,7 +18,24 @@ vi.mock('@/lib/stripe-fulfillment', () => ({
   fulfillCheckoutSession: fulfillCheckoutSessionMock
 }));
 
+vi.mock('@/lib/stripe-refunds', () => ({
+  refundOrderForCharge: refundOrderForChargeMock
+}));
+
 const { POST } = await import('./route');
+
+function chargeRefundedEvent() {
+  return {
+    id: 'evt_refund_123',
+    type: 'charge.refunded',
+    data: {
+      object: {
+        id: 'ch_test_123',
+        payment_intent: 'pi_test_123'
+      }
+    }
+  } as unknown as Stripe.Event;
+}
 
 function request(headers: Record<string, string> = {}) {
   return new Request('http://localhost:3000/api/stripe/webhook', {
@@ -34,6 +52,10 @@ describe('POST /api/stripe/webhook', () => {
     fulfillCheckoutSessionMock.mockResolvedValue({
       orderId: 'order-123',
       status: 'completed'
+    });
+    refundOrderForChargeMock.mockResolvedValue({
+      orderId: 'order-123',
+      status: 'refunded'
     });
     constructEventMock.mockReturnValue({
       id: 'evt_test_123',
@@ -145,6 +167,58 @@ describe('POST /api/stripe/webhook', () => {
         {
           eventId: 'evt_test_123',
           eventType: 'checkout.session.completed',
+          error
+        }
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  it('revokes the order for refunded charges', async () => {
+    constructEventMock.mockReturnValue(chargeRefundedEvent());
+
+    const response = await POST(
+      request({ 'stripe-signature': 'valid-signature' })
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      received: true,
+      refund: {
+        orderId: 'order-123',
+        status: 'refunded'
+      }
+    });
+    expect(refundOrderForChargeMock).toHaveBeenCalledWith(stripeClientMock, {
+      id: 'ch_test_123',
+      payment_intent: 'pi_test_123'
+    });
+    expect(fulfillCheckoutSessionMock).not.toHaveBeenCalled();
+  });
+
+  it('logs refund failures so Stripe retries the event', async () => {
+    const error = new Error('Refund failed');
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    constructEventMock.mockReturnValue(chargeRefundedEvent());
+    refundOrderForChargeMock.mockRejectedValue(error);
+
+    try {
+      const response = await POST(
+        request({ 'stripe-signature': 'valid-signature' })
+      );
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toEqual({
+        error: 'Refund failed'
+      });
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        '[API ERROR] POST /api/stripe/webhook: refund failed',
+        {
+          eventId: 'evt_refund_123',
+          eventType: 'charge.refunded',
           error
         }
       );

@@ -247,6 +247,26 @@ describe('fulfillCheckoutSession', () => {
     expect(tx.order.update).not.toHaveBeenCalled();
   });
 
+  it('does not re-grant access when a late webhook hits a refunded order', async () => {
+    tx.order.findFirst.mockResolvedValue({
+      ...pendingOrder(),
+      status: OrderStatus.REFUNDED
+    });
+
+    const result = await fulfillCheckoutSession(
+      stripeMock(),
+      checkoutSession()
+    );
+
+    expect(result).toEqual({
+      orderId: '22222222-2222-4222-8222-222222222222',
+      status: 'already_refunded'
+    });
+    expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
+    expect(tx.cart.deleteMany).not.toHaveBeenCalled();
+    expect(tx.order.update).not.toHaveBeenCalled();
+  });
+
   it('completes fulfillment when receipt and invoice lookups fail', async () => {
     const stripe = stripeMock() as Stripe & {
       paymentIntents: {
