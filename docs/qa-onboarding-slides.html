@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pacemaker Video QA Onboarding Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed 1280x720 slides scaled to fit the window, one visible at a time. Single light look on purpose, for screen sharing. */
+:root {
+  --navy: #00263b;
+  --navy-deep: #001a29;
+  --teal: #00adbd;
+  --teal-ink: #00798a;
+  --teal-soft: rgba(0, 173, 189, 0.1);
+  --orange: #ff4f02;
+  --warn-ink: #b33600;
+  --warn-bg: rgba(255, 79, 2, 0.08);
+  --warn-line: rgba(255, 79, 2, 0.45);
+  --ok-ink: #067647;
+  --ok-bg: rgba(6, 118, 71, 0.09);
+  --paper: #ffffff;
+  --soft: #f2f4f7;
+  --ink: #00263b;
+  --muted: #475467;
+  --line: rgba(0, 38, 59, 0.14);
+  --code-fg: #e6f4f6;
+  --code-cm: #7fa3b5;
+  --font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--navy-deep);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow: hidden;
+}
+
+.viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+.deck { width: 1280px; height: 720px; position: relative; transform-origin: center center; flex: none; }
+
+.slide {
+  position: absolute; inset: 0;
+  background: var(--paper);
+  padding: 52px 72px 64px;
+  display: none;
+  flex-direction: column;
+  font-size: 24px; line-height: 1.45;
+  overflow: hidden;
+}
+.slide.active { display: flex; }
+
+.eyebrow { font-size: 15px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal-ink); margin: 0 0 10px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; line-height: 1.15; color: inherit; }
+h2 { font-size: 40px; font-weight: 700; margin-bottom: 26px; }
+h3 { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
+p { margin: 0 0 14px; }
+.lead { font-size: 26px; color: var(--muted); max-width: 60ch; }
+ul { margin: 0; padding-left: 26px; }
+li { margin: 0 0 10px; }
+li::marker { color: var(--teal); }
+strong { font-weight: 700; }
+code { font-family: var(--font-mono); font-size: 0.82em; background: var(--soft); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+
+.body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 18px; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cols > * { min-width: 0; }
+.box { border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+.box.soft { background: var(--soft); border-color: transparent; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+.small { font-size: 20px; }
+.note { font-size: 19px; color: var(--muted); margin-top: auto; }
+
+table { border-collapse: collapse; width: 100%; font-size: 20px; line-height: 1.35; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+thead th { font-size: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--line); }
+tbody th { font-weight: 600; white-space: nowrap; }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+table.tight { font-size: 18px; }
+table.tight th, table.tight td { padding: 7px 10px; }
+
+.pill { display: inline-block; font-size: 16px; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.yes { color: var(--ok-ink); background: var(--ok-bg); }
+.pill.no { color: var(--warn-ink); background: var(--warn-bg); }
+.pill.limited { color: var(--teal-ink); background: var(--teal-soft); }
+
+pre {
+  margin: 0; background: var(--navy); color: var(--code-fg);
+  font-family: var(--font-mono); font-size: 17px; line-height: 1.6;
+  padding: 18px 22px; border-radius: 12px; white-space: pre; overflow: hidden;
+}
+pre .cm { color: var(--code-cm); }
+
+.warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 12px; padding: 20px 24px; }
+.warn .label, .info .label { display: block; font-size: 15px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.warn .label { color: var(--warn-ink); }
+.info { background: var(--teal-soft); border-radius: 12px; padding: 20px 24px; }
+.info .label { color: var(--teal-ink); }
+
+/* Dark slides: title, key statements, closing */
+.slide.dark { background: var(--navy); color: #ffffff; }
+.slide.dark .eyebrow { color: var(--teal); }
+.slide.dark .lead { color: rgba(255, 255, 255, 0.72); }
+.slide.dark code { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #ffffff; }
+.slide.title { justify-content: center; }
+.slide.title h1 { font-size: 66px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 22px; }
+.slide.title h1 span { color: var(--teal); }
+.slide.title .meta { margin-top: 40px; font-size: 19px; color: rgba(255, 255, 255, 0.6); display: flex; gap: 32px; }
+.slide.statement { justify-content: center; }
+.slide.statement h2 { font-size: 54px; margin-bottom: 26px; max-width: 18ch; }
+.slide.statement .accent { color: var(--teal); }
+.slide.statement .hot { color: #ff7a3d; }
+
+/* Agenda */
+.agenda { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.agenda .box { display: flex; flex-direction: column; gap: 6px; }
+.agenda .part { font-family: var(--font-display); font-weight: 700; color: var(--teal-ink); font-size: 18px; }
+.agenda h3 { font-size: 26px; margin: 0; }
+.agenda p { font-size: 20px; color: var(--muted); margin: 0; }
+
+/* Product cards */
+.product h3 { font-size: 26px; }
+.product .path { font-family: var(--font-mono); font-size: 17px; color: var(--teal-ink); }
+.product p { font-size: 21px; color: var(--muted); }
+
+/* Pipeline */
+.pipeline { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 10px 0 0; counter-reset: s; }
+.pipeline li { margin: 0; counter-increment: s; border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; min-height: 260px; font-size: 20px; line-height: 1.35; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.pipeline li::before { content: counter(s); font: 700 17px var(--font-display); width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--soft); color: var(--ink); }
+.pipeline li b { font-family: var(--font-display); font-size: 21px; }
+.pipeline li span { color: var(--muted); }
+.pipeline li.qa { border-color: var(--teal); background: var(--teal-soft); }
+.pipeline li.qa::before { background: var(--teal); color: var(--navy); }
+.pipeline li.release { border-color: var(--warn-line); background: var(--warn-bg); }
+
+/* Steps */
+.steps { display: grid; gap: 16px; }
+.step { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 18px; align-items: start; }
+.step .n { width: 46px; height: 46px; border-radius: 50%; background: var(--teal); color: var(--navy); font: 700 20px var(--font-display); display: grid; place-items: center; }
+.step h3 { margin: 6px 0 4px; }
+.step p { margin: 0; color: var(--muted); font-size: 21px; }
+
+/* First week */
+.week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.week .box { padding: 18px 16px; min-height: 380px; }
+.week .d { font: 700 16px var(--font-display); color: var(--teal-ink); letter-spacing: 0.06em; text-transform: uppercase; }
+.week h3 { font-size: 22px; margin: 6px 0 14px; }
+.week ul { font-size: 19px; line-height: 1.4; padding-left: 18px; }
+.week li { margin-bottom: 10px; }
+
+/* Practice chips */
+.practices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 36px; }
+.practice { display: flex; flex-direction: column; gap: 4px; font-size: 21px; line-height: 1.35; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.practice b { font-weight: 700; }
+.practice span { color: var(--muted); }
+
+/* Chrome around the deck */
+.bar {
+  position: absolute; left: 72px; right: 72px; bottom: 22px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 15px; color: var(--muted); pointer-events: none;
+}
+.slide.dark + .bar { color: rgba(255, 255, 255, 0.55); }
+.bar .count { font-variant-numeric: tabular-nums; }
+.progress { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--teal); transition: width 0.25s ease; }
+
+.controls {
+  position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); top: max(16px, env(safe-area-inset-top, 0px));
+  display: flex; gap: 8px; opacity: 0.85; transition: opacity 0.2s;
+}
+.controls:hover, .controls:focus-within { opacity: 1; }
+body.idle .controls:not(:focus-within), body.idle .hint { opacity: 0; pointer-events: none; }
+/* ?export in the URL: no on-screen buttons, for image capture */
+body.export .controls, body.export .hint { display: none; }
+.hint { transition: opacity 0.2s; }
+.controls button { background: rgba(0, 38, 59, 0.75); }
+.controls button {
+  font: 600 14px var(--font-body); color: #ffffff; background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px; padding: 8px 12px; cursor: pointer;
+}
+.controls button:hover { background: rgba(255, 255, 255, 0.22); }
+.controls button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.hint { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); top: max(16px, env(safe-area-inset-top, 0px)); font-size: 13px; color: #ffffff; background: rgba(0, 38, 59, 0.75); padding: 6px 10px; border-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) { .progress, .controls { transition: none; } }
+
+@media print {
+  @page { size: 1280px 720px; margin: 0; }
+  body { background: #ffffff; overflow: visible; }
+  .viewport { position: static; display: block; }
+  .deck { transform: none !important; width: auto; height: auto; }
+  .slide { position: relative; display: flex !important; width: 1280px; height: 720px; break-after: page; }
+  .bar, .progress, .controls, .hint { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="viewport">
+<div class="deck" id="deck" role="region" aria-roledescription="slide deck" aria-label="Pacemaker Video QA onboarding">
+
+<!-- 1 -->
+<section class="slide dark title" data-part="Welcome">
+  <p class="eyebrow">QA onboarding</p>
+  <h1>Pacemaker Video <span>QA</span> Onboarding</h1>
+  <p class="lead">What we ship, where it is safe to test, and how QA runs from ticket to production.</p>
+  <div class="meta"><span>pacemakerIT/pacemaker-video</span><span>Full guide: docs/qa-onboarding.html</span><span>2026-10-22</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-part="Welcome">
+  <p class="eyebrow">Agenda</p>
+  <h2>Four parts, about an hour</h2>
+  <div class="agenda">
+    <div class="box"><span class="part">Part 1</span><h3>Product and environments</h3><p>What we sell, who uses it, and what each environment is connected to.</p></div>
+    <div class="box"><span class="part">Part 2</span><h3>Setup and critical flows</h3><p>Running locally, the screens, and the flows that cost money when they break.</p></div>
+    <div class="box"><span class="part">Part 3</span><h3>Testing and QA process</h3><p>Our checks, automation plan, team workflow, and how QA runs day to day.</p></div>
+    <div class="box"><span class="part">Part 4</span><h3>Your first week</h3><p>Checklist, open questions, and Q&amp;A.</p></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide dark statement" data-part="Welcome">
+  <p class="eyebrow">Two facts before anything else</p>
+  <h2>Production charges <span class="hot">real cards</span>. Previews write to the <span class="hot">production database</span>.</h2>
+  <p class="lead">So functional QA happens on your machine. Deployed URLs get short, controlled checks only.</p>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · The product</p>
+  <h2>What Pacemaker Video sells</h2>
+  <div class="body">
+    <div class="cols three">
+      <div class="box product"><h3>Courses</h3><p class="path">/courses</p><p>Video lessons in sections, played with Wistia. Watch progress is saved.</p></div>
+      <div class="box product"><h3>Ebooks</h3><p class="path">/ebooks</p><p>PDFs in an in-app viewer. Some are public, the rest need a purchase.</p></div>
+      <div class="box product"><h3>Workshops</h3><p class="path">/workshops</p><p>Live sessions: Open, Closed, Completed, or Hidden. Buying enrolls the member.</p></div>
+    </div>
+    <p class="small">Audience: job seekers building resume, interview, and networking skills. Prices are in <strong>CAD</strong>, paid through <strong>Stripe Checkout</strong>.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · Users</p>
+  <h2>Who uses it</h2>
+  <table>
+    <thead><tr><th>User</th><th>Identified by</th><th>Can do</th></tr></thead>
+    <tbody>
+      <tr><th>Visitor</th><td>Not signed in</td><td>Browse catalog and detail pages. Buying prompts sign-in.</td></tr>
+      <tr><th>Member</th><td><code>roleId = USER</code></td><td>Favorites, cart, checkout, purchases, reviews, profile</td></tr>
+      <tr><th>Instructor</th><td><code>roleId = INSTRUCTOR</code></td><td>Role exists in the data model. Current use to be confirmed.</td></tr>
+      <tr><th>Admin</th><td><code>roleId = ADMIN</code></td><td>Everything under <code>/admin</code>, plus non-public ebooks</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · Tech you will see in bug reports</p>
+  <h2>Seven names worth knowing</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Why QA cares</th></tr></thead>
+    <tbody>
+      <tr><th>Next.js</th><td>Web app</td><td>Pages in <code>src/app</code>, APIs in <code>src/app/api</code></td></tr>
+      <tr><th>Clerk</th><td>Sign-in</td><td>Local dev uses a separate test instance</td></tr>
+      <tr><th>Prisma + Postgres</th><td>Database</td><td>Schema and seed data live in <code>prisma/</code></td></tr>
+      <tr><th>Stripe</th><td>Payments</td><td>Orders complete only when the webhook arrives</td></tr>
+      <tr><th>Supabase Storage</th><td>Files</td><td>Images and PDFs, shared by every environment</td></tr>
+      <tr><th>Wistia</th><td>Video</td><td>Course lesson playback</td></tr>
+      <tr><th>Vercel</th><td>Hosting</td><td>Production from <code>main</code>, preview URL per push</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · Environments</p>
+  <h2>What each environment is really connected to</h2>
+  <table>
+    <thead><tr><th></th><th>Local</th><th>Vercel preview</th><th>Vercel production</th></tr></thead>
+    <tbody>
+      <tr><th>URL</th><td><code>localhost:3000</code></td><td><code>*.vercel.app</code></td><td><code>www.paceupcareer.com</code></td></tr>
+      <tr><th>Database</th><td>Your Docker Postgres</td><td><strong>Production DB</strong></td><td>Production DB</td></tr>
+      <tr><th>Clerk</th><td>Test instance</td><td>Same as production</td><td>Production</td></tr>
+      <tr><th>Stripe</th><td>Test key</td><td>Not configured</td><td><strong>Live key</strong></td></tr>
+      <tr><th>Stripe webhook</th><td>Stripe CLI, set up by you</td><td>None</td><td>Configured</td></tr>
+      <tr><th>File storage</th><td><strong>Shared</strong></td><td>Shared</td><td>Shared</td></tr>
+    </tbody>
+  </table>
+  <p class="note">There is no isolated staging server today.</p>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · Environments</p>
+  <h2>Where each kind of testing happens</h2>
+  <table>
+    <thead><tr><th></th><th>Local</th><th>Preview</th><th>Production</th></tr></thead>
+    <tbody>
+      <tr><th>Feature and regression QA</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Visual check of a PR</th><td><span class="pill yes">Yes</span></td><td><span class="pill limited">Read-only</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Full payment testing</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill no">No</span></td></tr>
+      <tr><th>Automated suite</th><td><span class="pill yes">Yes</span></td><td><span class="pill no">No</span></td><td><span class="pill limited">Read-only smoke</span></td></tr>
+      <tr><th>Post-release smoke</th><td></td><td></td><td><span class="pill limited">Controlled</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-part="Part 1 · Product and environments">
+  <p class="eyebrow">Part 1 · Environments</p>
+  <h2>Rules for deployed URLs</h2>
+  <div class="warn">
+    <span class="label">Always</span>
+    <ul>
+      <li>On preview URLs, do not add to cart, favorite, review, or edit anything. Every write lands in production.</li>
+      <li>On production, sign in only with the dedicated QA account. Never use a personal card.</li>
+      <li>Clean up anything you create on production the same day, and confirm the cleanup.</li>
+      <li>Admin uploads hit shared storage even from local. Delete test images and PDFs after use.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Local setup</p>
+  <h2>From clone to running app</h2>
+  <div class="cols">
+    <pre>nvm install &amp;&amp; nvm use
+npm install
+cp .env.local.example .env.local
+
+docker compose up -d   <span class="cm"># :5433</span>
+npx prisma migrate dev
+npx prisma db seed
+
+npm run dev            <span class="cm"># :3000</span>
+npm run dev -- -p 3001 <span class="cm"># Aside port</span></pre>
+    <div class="body">
+      <div class="box soft small"><strong>Test keys only.</strong> Clerk and Stripe values in <code>.env.local</code> start with <code>pk_test</code> or <code>sk_test</code>.</div>
+      <div class="box soft small"><strong>Open <code>localhost</code>,</strong> never <code>127.0.0.1</code>. Clerk sessions break on the IP.</div>
+      <div class="box soft small"><strong>Match the port.</strong> <code>NEXT_PUBLIC_APP_URL</code> is where Stripe sends members back.</div>
+      <div class="box soft small"><strong>Reset anytime</strong> with <code>npx prisma migrate reset</code>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Local setup</p>
+  <h2>Two extra steps most people miss</h2>
+  <div class="cols">
+    <div class="body">
+      <h3>Make yourself an admin</h3>
+      <p class="small">Sign up once locally, then set your <code>roleId</code> to <code>ADMIN</code>.</p>
+      <pre>npx prisma studio
+<span class="cm"># User → your row → roleId = ADMIN</span></pre>
+    </div>
+    <div class="body">
+      <h3>Forward Stripe webhooks</h3>
+      <p class="small">Without this, every local checkout stays "pending".</p>
+      <pre>stripe login
+stripe listen --forward-to \
+  localhost:3000/api/stripe/webhook
+<span class="cm"># whsec_… → STRIPE_WEBHOOK_SECRET</span>
+<span class="cm"># then restart npm run dev</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Screen map</p>
+  <h2>Every page, grouped by who sees it</h2>
+  <div class="cols three">
+    <div class="box"><h3>Public</h3><ul class="small"><li><code>/</code> home banners</li><li><code>/courses/[id]</code></li><li><code>/ebooks/[ebookId]</code></li><li><code>/workshops/[workshopId]</code></li><li><code>/sign-in</code>, <code>/sign-up</code></li><li><code>/legal/*</code></li></ul></div>
+    <div class="box"><h3>Member</h3><ul class="small"><li><code>/mypage/cart</code></li><li><code>/mypage/payment-success</code></li><li><code>/payment/cancel</code></li><li><code>/mypage/purchases</code></li><li><code>/mypage/favorites</code></li><li><code>/mypage/profile</code>, <code>/setting</code></li></ul></div>
+    <div class="box"><h3>Admin</h3><ul class="small"><li><code>/admin/dashboard</code></li><li><code>/admin/courses</code></li><li><code>/admin/ebooks</code></li><li><code>/admin/workshops</code></li><li><code>/admin/main-visual</code></li><li><code>/admin/users</code></li></ul></div>
+  </div>
+  <p class="note">A non-admin must be blocked from <code>/admin</code> on the page and on the API behind it.</p>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Critical flow</p>
+  <h2>Add to cart has four states</h2>
+  <table>
+    <thead><tr><th>State</th><th>Action</th><th>Expected</th></tr></thead>
+    <tbody>
+      <tr><th>Signed out</th><td>Click "Add to Cart"</td><td>Sign-in modal, then <code>/sign-in</code></td></tr>
+      <tr><th>Signed in</th><td>Click "Add to Cart"</td><td>Added with the right item type; confirmation modal</td></tr>
+      <tr><th>Already in cart</th><td>Open detail page</td><td>Button reads "Go to Cart", opens <code>/mypage/cart</code></td></tr>
+      <tr><th>Already owned</th><td>Click the button</td><td>"Purchased"; already-owned modal; cart unchanged</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Same four states for courses, ebooks, and workshops.</p>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Critical flow</p>
+  <h2>Checkout and refund scenarios</h2>
+  <table class="tight">
+    <thead><tr><th>Scenario</th><th>Expected</th></tr></thead>
+    <tbody>
+      <tr><th>Card succeeds</th><td>Status Complete, cart emptied, item in purchases</td></tr>
+      <tr><th>Card declined</th><td>Stripe shows the error; no completed order; cart intact</td></tr>
+      <tr><th>3-D Secure</th><td>Pass completes the order; fail does not</td></tr>
+      <tr><th>Cancel on Stripe</th><td><code>/payment/cancel</code>, cart intact, a <code>PENDING</code> order stays by design</td></tr>
+      <tr><th>Webhook missing</th><td>"Payment confirmation pending", no access granted</td></tr>
+      <tr><th>Already owned</th><td>Checkout refuses to charge again</td></tr>
+      <tr><th>Full refund</th><td>Order Refunded, access removed, can buy again</td></tr>
+      <tr><th>Partial refund</th><td>No change; logged for manual follow-up</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Critical flow</p>
+  <h2>Promotion codes</h2>
+  <table>
+    <thead><tr><th>Case</th><th>Expected message</th></tr></thead>
+    <tbody>
+      <tr><td>Unknown, inactive, or customer-restricted</td><td>Invalid promotion code</td></tr>
+      <tr><td>Past expiry</td><td>Promotion code has expired</td></tr>
+      <tr><td>Redemption limit reached</td><td>Promotion code has already been redeemed</td></tr>
+      <tr><td>First-time only, member has an order</td><td>Only available for first-time customers</td></tr>
+      <tr><td>Minimum set in another currency</td><td>Not valid for this currency</td></tr>
+      <tr><td>100% off</td><td>No payment asked; order completes</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Critical flow</p>
+  <h2>After purchase, and the test cards</h2>
+  <div class="cols">
+    <div>
+      <h3>Check access</h3>
+      <ul class="small">
+        <li><strong>Course:</strong> every lesson plays; progress survives reload.</li>
+        <li><strong>Ebook:</strong> full PDF opens for the buyer only.</li>
+        <li><strong>Workshop:</strong> member is enrolled; shows in history.</li>
+        <li><strong>Gating:</strong> another member gets refused on the same URLs.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Stripe test cards, local only</h3>
+      <table class="tight">
+        <tbody>
+          <tr><td><code>4242 4242 4242 4242</code></td><td>Succeeds</td></tr>
+          <tr><td><code>4000 0000 0000 0002</code></td><td>Declined</td></tr>
+          <tr><td><code>4000 0000 0000 9995</code></td><td>Insufficient funds</td></tr>
+          <tr><td><code>4000 0025 0000 3155</code></td><td>Needs 3-D Secure</td></tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:12px">Any future expiry, any CVC.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Payment QA policy</p>
+  <h2>How far you may go, by environment</h2>
+  <table class="tight">
+    <thead><tr><th>Where</th><th>Allowed</th><th>Cleanup</th></tr></thead>
+    <tbody>
+      <tr><th>Local</th><td>Everything, with test cards and CLI webhooks</td><td>Reset the local DB</td></tr>
+      <tr><th>Preview</th><td>Nothing. No Stripe key, and writes hit production</td><td>None</td></tr>
+      <tr><th>Production, each release</th><td>Open checkout, then cancel</td><td>Delete the <code>PENDING</code> order</td></tr>
+      <tr><th>Production, each release</th><td>One free purchase: QA account plus a one-time 100% code</td><td>Delete order, items, enrollment</td></tr>
+      <tr><th>Production, exceptional</th><td>One real payment, with owner sign-off, company card, smallest price, refunded at once</td><td>Refund, then verify DB</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 18 -->
+<section class="slide" data-part="Part 2 · Setup and critical flows">
+  <p class="eyebrow">Part 2 · Payment QA policy</p>
+  <h2>The QA promo code must be safe to leak</h2>
+  <div class="cols">
+    <div>
+      <p class="small">The app accepts only public codes, and the Stripe account is shared with <code>pacemaker-apply</code>. Every QA code must:</p>
+      <ul>
+        <li>be a long random string</li>
+        <li>allow 1 redemption</li>
+        <li>expire within an hour</li>
+        <li>be deactivated right after the test</li>
+      </ul>
+    </div>
+    <div class="info">
+      <span class="label">Refunds</span>
+      <p class="small">A full refund in Stripe marks the order Refunded and removes access automatically. A partial refund changes nothing and is logged for manual follow-up.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · How we test</p>
+  <h2>The commit gate and what each check misses</h2>
+  <div class="cols" style="grid-template-columns: 320px minmax(0, 1fr)">
+    <pre>npm test -- --run
+npm run typecheck
+npm run build
+npm run lint
+<span class="cm"># + browser e2e for</span>
+<span class="cm">#   user-facing changes</span></pre>
+    <table class="tight">
+      <thead><tr><th>Check</th><th>Catches</th><th>Misses</th></tr></thead>
+      <tbody>
+        <tr><th>Vitest</th><td>Logic, API rules, component states</td><td>Real browser, Clerk, Stripe</td></tr>
+        <tr><th>Type check</th><td>Wrong data shapes</td><td>Wrong values</td></tr>
+        <tr><th>Lint</th><td>Risky patterns</td><td>Behavior</td></tr>
+        <tr><th>Build</th><td>Broken imports</td><td>Behavior</td></tr>
+        <tr><th>Browser e2e</th><td>Real signed-in flows</td><td>Nothing automated yet</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Browser order of preference: Aside, then Playwright, then Chrome. If you could not run a check, say so. Never report it as passed.</p>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · Automation</p>
+  <h2>You own automation</h2>
+  <div class="cols">
+    <div class="box">
+      <h3>Today</h3>
+      <ul class="small">
+        <li>About 40 Vitest files next to the code</li>
+        <li>Start with <code>checkout-webhook-flow.test.ts</code></li>
+        <li>No browser e2e suite yet</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Proposed</h3>
+      <ul class="small">
+        <li>Playwright in <code>e2e/</code>, local only, seeded DB</li>
+        <li>Clerk test users, Stripe test cards</li>
+        <li>Production: read-only smoke, no checkout</li>
+        <li>Order: checkout, cart states, access, admin</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">The Playwright setup is a proposal. Agree on it with the team before adding dependencies.</p>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · Team workflow</p>
+  <h2>From ticket to production</h2>
+  <ol class="pipeline">
+    <li><b>Ticket</b><span>Jira <code>PACE-</code></span></li>
+    <li><b>Branch</b><span><code>PACE-123/name</code>, hooks check name and types</span></li>
+    <li><b>PR</b><span>Why, Changes, How to Test</span></li>
+    <li class="qa"><b>QA</b><span>Run locally, probe edge cases</span></li>
+    <li><b>CI + review</b><span>Lint, schema sync, build, tests</span></li>
+    <li class="release"><b>Merge</b><span>Migrates prod DB and deploys</span></li>
+    <li class="qa"><b>Smoke</b><span>Controlled prod checks</span></li>
+  </ol>
+  <p class="note">Teal steps are QA's. Step 6 is the release itself.</p>
+</section>
+
+<!-- 22 -->
+<section class="slide dark statement" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · The rule that shapes our process</p>
+  <h2>Merge <span class="accent">is</span> release.</h2>
+  <p class="lead">Nothing sits between a merge to <code>main</code> and production. QA sign-off happens before merge, never after.</p>
+</section>
+
+<!-- 23 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · QA process</p>
+  <h2>First two weeks: map the risk</h2>
+  <div class="steps">
+    <div class="step"><span class="n">1</span><div><h3>Build a risk map</h3><p>Score each feature on impact if broken and how often it changes. Payments, access, and admin permissions start on top.</p></div></div>
+    <div class="step"><span class="n">2</span><div><h3>Map existing coverage</h3><p>Mark which risks the Vitest files already guard. High risk with no test is your first automation target.</p></div></div>
+    <div class="step"><span class="n">3</span><div><h3>Write regression checklist v1</h3><p>Start from the critical flows in the guide. This is what you rerun before risky releases.</p></div></div>
+  </div>
+</section>
+
+<!-- 24 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · QA process</p>
+  <h2>Every ticket: the core loop</h2>
+  <table>
+    <thead><tr><th>When</th><th>QA does</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><th>Ticket written</th><td>Co-write acceptance criteria</td><td>Given / When / Then on the ticket</td></tr>
+      <tr><th>PR opened</th><td>Run locally, follow How to Test, probe what it skips</td><td>"Verified" comment: checked and not checked</td></tr>
+      <tr><th>Problem found</th><td>Report with the template, set severity</td><td>Jira bug</td></tr>
+      <tr><th>Right after merge</th><td>Production smoke per the payment policy</td><td>Result and cleanup confirmed</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 25 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · QA process</p>
+  <h2>Acceptance criteria you can test</h2>
+  <pre style="font-size:22px; padding:28px 32px">Given a signed-in member who already owns the ebook
+When they open the ebook detail page
+Then the button reads "Purchased"
+And clicking it shows the already-owned modal
+    without adding to cart</pre>
+  <p class="note">The same sentences become the names of automated tests.</p>
+</section>
+
+<!-- 26 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · QA process</p>
+  <h2>Recurring work</h2>
+  <div class="cols">
+    <div class="box"><h3>Before risky releases</h3><p class="small">Payments, access rules, or schema changed: run the full regression checklist. Small UI change: check the affected flow.</p></div>
+    <div class="box"><h3>One escaped bug, one new test</h3><p class="small">Every bug found in production gets an automated test that would have caught it.</p></div>
+    <div class="box"><h3>Exploratory sessions</h3><p class="small">Weekly, 30 to 60 minutes, one goal, no script. Example: "break promo codes". Log what you tried.</p></div>
+    <div class="box"><h3>Monthly review</h3><p class="small">For each bug that reached production, note why QA missed it and update the checklist.</p></div>
+  </div>
+</section>
+
+<!-- 27 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · Industry practices</p>
+  <h2>What we adopt, and what waits</h2>
+  <div class="practices">
+    <div class="practice"><b>Risk-based testing <span class="pill yes">Adopt</span></b><span>Test where failure costs most</span></div>
+    <div class="practice"><b>Shift-left <span class="pill yes">Adopt</span></b><span>QA joins at the ticket</span></div>
+    <div class="practice"><b>Given / When / Then <span class="pill yes">Adopt</span></b><span>Testable requirements</span></div>
+    <div class="practice"><b>Definition of Done <span class="pill yes">Adopt</span></b><span>User-facing PRs include QA sign-off</span></div>
+    <div class="practice"><b>Test pyramid <span class="pill yes">Adopt</span></b><span>Many unit tests, few browser tests</span></div>
+    <div class="practice"><b>Exploratory testing <span class="pill yes">Adopt</span></b><span>Weekly, time-boxed</span></div>
+    <div class="practice"><b>Regression and smoke <span class="pill yes">Adopt</span></b><span>Before release, after deploy</span></div>
+    <div class="practice"><b>Severity vs priority <span class="pill yes">Adopt</span></b><span>QA sets impact, team sets timing</span></div>
+    <div class="practice"><b>Test management tools <span class="pill limited">Later</span></b><span>When the checklist nears 100 cases</span></div>
+    <div class="practice"><b>ISTQB, ISO 29119 <span class="pill limited">Reference</span></b><span>Too heavy for this team size</span></div>
+  </div>
+</section>
+
+<!-- 28 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · For the team to decide</p>
+  <h2>Two process changes to agree on</h2>
+  <div class="cols">
+    <div class="box"><h3>Require QA approval before merge</h3><p class="small">For PRs that change screens, payments, or access. GitHub branch protection can enforce a required reviewer.</p></div>
+    <div class="box"><h3>Create a real staging environment</h3><p class="small">Give preview deployments their own database and a Stripe test key. Pre-release checks then move off production.</p></div>
+  </div>
+</section>
+
+<!-- 29 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · Reporting bugs</p>
+  <h2>Every bug, the same shape</h2>
+  <div class="cols" style="grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr)">
+    <pre style="font-size:15.5px">Title: [Area] What is wrong
+
+Environment: local / production
+  branch or commit · browser
+Account: visitor / member / admin
+Severity: S1 / S2 / S3 / S4
+
+Steps to reproduce: 1. 2. 3.
+Expected:
+Actual:
+Evidence: screenshot, console, network
+Test data created, cleaned up?</pre>
+    <table class="tight">
+      <thead><tr><th>Sev</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><th>S1</th><td>Money or access wrong, or site down</td></tr>
+        <tr><th>S2</th><td>Main flow blocked, no workaround</td></tr>
+        <tr><th>S3</th><td>Works but wrong or confusing</td></tr>
+        <tr><th>S4</th><td>Cosmetic</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">File in Jira under <code>PACE</code>. Never paste passwords.</p>
+</section>
+
+<!-- 30 -->
+<section class="slide" data-part="Part 3 · Testing and QA process">
+  <p class="eyebrow">Part 3 · Known pitfalls</p>
+  <h2>Things that will confuse you once</h2>
+  <table class="tight">
+    <thead><tr><th>Symptom</th><th>Cause and fix</th></tr></thead>
+    <tbody>
+      <tr><td>Signed in, but pages act signed out</td><td>Opened on <code>127.0.0.1</code>. Use <code>localhost</code>.</td></tr>
+      <tr><td>Local payment stuck on pending</td><td>Stripe CLI not forwarding, or stale webhook secret</td></tr>
+      <tr><td>Stripe sends you to the wrong port</td><td><code>NEXT_PUBLIC_APP_URL</code> does not match</td></tr>
+      <tr><td>Test data visible on the live site</td><td>Writes made on a preview URL. Clean up and report.</td></tr>
+      <tr><td>Leftover <code>PENDING</code> orders</td><td>Cancelled checkouts. Expected; clean up yours.</td></tr>
+      <tr><td>README naming table looks wrong</td><td>Trust <code>prisma/schema.prisma</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 31 -->
+<section class="slide" data-part="Part 4 · Your first week">
+  <p class="eyebrow">Part 4 · Your first week</p>
+  <h2>Five days to your first PR</h2>
+  <div class="week">
+    <div class="box"><span class="d">Day 1</span><h3>Access and setup</h3><ul><li>GitHub, Jira, chat</li><li>Stripe test, Clerk, Vercel read access</li><li>App running, seeded</li><li>Commit gate passes</li></ul></div>
+    <div class="box"><span class="d">Day 2</span><h3>Learn the product</h3><ul><li>Walk every page as visitor, member, admin</li><li>Read <code>testing-routine.md</code></li></ul></div>
+    <div class="box"><span class="d">Day 3</span><h3>Payments, locally</h3><ul><li>Stripe CLI webhooks</li><li>Buy one of each product</li><li>Clean up</li></ul></div>
+    <div class="box"><span class="d">Day 4</span><h3>Test a real PR</h3><ul><li>Follow its How to Test</li><li>File one bug or one "Verified"</li></ul></div>
+    <div class="box"><span class="d">Day 5</span><h3>First automation</h3><ul><li>One Vitest test for an uncovered case</li><li>Propose the e2e plan</li></ul></div>
+  </div>
+</section>
+
+<!-- 32 -->
+<section class="slide" data-part="Part 4 · Your first week">
+  <p class="eyebrow">Part 4 · Open questions</p>
+  <h2>Answers we owe you</h2>
+  <ul>
+    <li>Who is the QA point of contact, and who approves releases?</li>
+    <li>Who cleans up production data: QA with DB access, or a developer?</li>
+    <li>Who creates the one-time promo codes in Stripe?</li>
+    <li>Where are the QA account and Clerk test users stored?</li>
+    <li>Will preview deployments get their own database and Stripe test key?</li>
+    <li>Is the Instructor role in use?</li>
+  </ul>
+</section>
+
+<!-- 33 -->
+<section class="slide dark title" data-part="Q&amp;A">
+  <p class="eyebrow">Questions</p>
+  <h1>Welcome to the team.</h1>
+  <p class="lead">Everything in this deck, with more detail, lives in <code>docs/qa-onboarding.html</code>. When the guide and the code disagree, the code wins. Fix the guide in the same PR.</p>
+</section>
+
+<div class="bar" aria-hidden="true"><span id="part"></span><span class="count" id="count"></span></div>
+<div class="progress" id="progressbar"></div>
+</div>
+</div>
+
+<div class="hint">← → to move · F fullscreen</div>
+<div class="controls">
+  <button type="button" id="prev" aria-label="Previous slide">← Prev</button>
+  <button type="button" id="next" aria-label="Next slide">Next →</button>
+  <button type="button" id="fs" aria-label="Toggle fullscreen">Fullscreen</button>
+</div>
+
+<script>
+(function () {
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var bar = deck.querySelector('.bar');
+  var partEl = document.getElementById('part');
+  var countEl = document.getElementById('count');
+  var progress = document.getElementById('progressbar');
+  var total = slides.length;
+  var current = 0;
+
+  function fit() {
+    var scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    deck.style.transform = 'scale(' + scale + ')';
+  }
+
+  function show(index) {
+    current = Math.max(0, Math.min(total - 1, index));
+    slides.forEach(function (s, i) {
+      var on = i === current;
+      s.classList.toggle('active', on);
+      s.setAttribute('aria-hidden', on ? 'false' : 'true');
+    });
+    var active = slides[current];
+    // Move the bar right after the active slide so the dark-slide colour rule applies.
+    active.after(bar);
+    partEl.textContent = active.getAttribute('data-part') || '';
+    countEl.textContent = (current + 1) + ' / ' + total;
+    progress.style.width = ((current + 1) / total * 100) + '%';
+    if (location.hash !== '#' + (current + 1)) {
+      try { history.replaceState(null, '', '#' + (current + 1)); } catch (e) {}
+    }
+  }
+
+  function fromHash() {
+    var n = parseInt(location.hash.slice(1), 10);
+    return isNaN(n) ? 0 : n - 1;
+  }
+
+  function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+    } catch (e) {}
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { e.preventDefault(); show(current + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); show(current - 1); }
+    else if (k === 'Home') { e.preventDefault(); show(0); }
+    else if (k === 'End') { e.preventDefault(); show(total - 1); }
+    else if (k === 'f' || k === 'F') { toggleFullscreen(); }
+  });
+  document.getElementById('prev').addEventListener('click', function () { show(current - 1); });
+  document.getElementById('next').addEventListener('click', function () { show(current + 1); });
+  document.getElementById('fs').addEventListener('click', toggleFullscreen);
+
+  var touchX = null;
+  document.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
+
+  // Hide the on-screen buttons while presenting; any mouse movement brings them back.
+  if (/[?&]export\b/.test(location.search)) document.body.classList.add('export');
+  var idleTimer = null;
+  function wake() {
+    document.body.classList.remove('idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () { document.body.classList.add('idle'); }, 2500);
+  }
+  document.addEventListener('mousemove', wake);
+  wake();
+
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', function () { show(fromHash()); });
+  fit();
+  show(fromHash());
+})();
+</script>
+</body>
+</html>
