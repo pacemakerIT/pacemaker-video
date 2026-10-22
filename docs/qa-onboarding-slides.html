@@ -211,7 +211,7 @@ body.export .controls, body.export .hint { display: none; }
   <p class="eyebrow">QA onboarding</p>
   <h1>Pacemaker Video <span>QA</span> Onboarding</h1>
   <p class="lead">What we ship, where it is safe to test, and how QA runs from ticket to production.</p>
-  <div class="meta"><span>pacemakerIT/pacemaker-video</span><span>Full guide: docs/qa-onboarding.html</span><span>2026-10-21</span></div>
+  <div class="meta"><span>pacemakerIT/pacemaker-video</span><span>Full guide: docs/qa-onboarding.html</span><span>2026-10-22</span></div>
 </section>
 
 <!-- 2 -->
@@ -287,6 +287,7 @@ body.export .controls, body.export .hint { display: none; }
   <table>
     <thead><tr><th></th><th>Local</th><th>Vercel preview</th><th>Vercel production</th></tr></thead>
     <tbody>
+      <tr><th>URL</th><td><code>localhost:3000</code></td><td><code>*.vercel.app</code></td><td><code>www.paceupcareer.com</code></td></tr>
       <tr><th>Database</th><td>Your Docker Postgres</td><td><strong>Production DB</strong></td><td>Production DB</td></tr>
       <tr><th>Clerk</th><td>Test instance</td><td>Same as production</td><td>Production</td></tr>
       <tr><th>Stripe</th><td>Test key</td><td>Not configured</td><td><strong>Live key</strong></td></tr>
@@ -406,8 +407,8 @@ stripe listen --forward-to \
 <!-- 14 -->
 <section class="slide" data-part="Part 2 · Setup and critical flows">
   <p class="eyebrow">Part 2 · Critical flow</p>
-  <h2>Checkout scenarios</h2>
-  <table>
+  <h2>Checkout and refund scenarios</h2>
+  <table class="tight">
     <thead><tr><th>Scenario</th><th>Expected</th></tr></thead>
     <tbody>
       <tr><th>Card succeeds</th><td>Status Complete, cart emptied, item in purchases</td></tr>
@@ -416,6 +417,8 @@ stripe listen --forward-to \
       <tr><th>Cancel on Stripe</th><td><code>/payment/cancel</code>, cart intact, a <code>PENDING</code> order stays by design</td></tr>
       <tr><th>Webhook missing</th><td>"Payment confirmation pending", no access granted</td></tr>
       <tr><th>Already owned</th><td>Checkout refuses to charge again</td></tr>
+      <tr><th>Full refund</th><td>Order Refunded, access removed, can buy again</td></tr>
+      <tr><th>Partial refund</th><td>No change; logged for manual follow-up</td></tr>
     </tbody>
   </table>
 </section>
@@ -498,7 +501,7 @@ stripe listen --forward-to \
     </div>
     <div class="info">
       <span class="label">Refunds</span>
-      <p class="small">Today a Stripe refund does not change the order or remove access. A fix is open in PR #1162. Until it ships, every refund needs a manual DB correction.</p>
+      <p class="small">A full refund in Stripe marks the order Refunded and removes access automatically. A partial refund changes nothing and is logged for manual follow-up.</p>
     </div>
   </div>
 </section>

@@ -255,7 +255,7 @@ footer { margin-top: 64px; color: var(--muted); font-size: 14px; }
 <section id="start" aria-labelledby="start-h">
   <p class="eyebrow">QA onboarding · Draft</p>
   <h1 id="start-h">Pacemaker Video QA Onboarding</h1>
-  <p class="meta"><span><b>Repo</b> pacemakerIT/pacemaker-video</span><span><b>Last updated</b> 2026-10-21</span><span><b>Owner</b> <span class="todo">TBD</span></span></p>
+  <p class="meta"><span><b>Repo</b> pacemakerIT/pacemaker-video</span><span><b>Last updated</b> 2026-10-22</span><span><b>Owner</b> <span class="todo">TBD</span></span></p>
   <p class="lede">This guide gets a new QA engineer from zero to running manual and automated checks on Pacemaker Video. It covers what the product does, where it is safe to test, how the team ships, and what to automate first.</p>
 
   <div class="callout warn">
@@ -345,6 +345,7 @@ footer { margin-top: 64px; color: var(--muted); font-size: 14px; }
   <div class="table-wrap"><table>
     <thead><tr><th></th><th>Local</th><th>Vercel preview</th><th>Vercel production</th></tr></thead>
     <tbody>
+      <tr><th>URL</th><td><code>localhost:3000</code></td><td>Per-branch <code>*.vercel.app</code></td><td><code>www.paceupcareer.com</code></td></tr>
       <tr><th>Database</th><td>Your Docker Postgres</td><td><strong>Production DB</strong></td><td>Production DB</td></tr>
       <tr><th>Clerk</th><td>Test instance</td><td>Same as production</td><td>Production config</td></tr>
       <tr><th>Stripe</th><td>Test key</td><td>Not configured</td><td><strong>Live key</strong></td></tr>
@@ -404,8 +405,11 @@ npm run dev -- -p 3001        <span class="cm"># or 3001, the port the team's As
   <h3>5. Connect Stripe webhooks</h3>
   <p>Without this step, every local checkout stays at "Payment confirmation pending", because the order is only marked complete when Stripe calls the webhook.</p>
   <div class="code"><pre>stripe login
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-<span class="cm"># copy the printed whsec_… into .env.local as STRIPE_WEBHOOK_SECRET, then restart npm run dev</span></pre></div>
+stripe listen --print-secret   <span class="cm"># put this whsec_… in .env.local as STRIPE_WEBHOOK_SECRET (once per machine)</span>
+stripe listen --forward-to localhost:3000/api/stripe/webhook \
+  --events checkout.session.completed,charge.refunded
+<span class="cm"># restart npm run dev after changing .env.local; use :3001 if you run there</span></pre></div>
+  <p>The Stripe checkout page shows a <strong>Sandbox</strong> label in test mode. If it is missing, stop: your local key is a live key.</p>
 </section>
 
 <section id="screens" aria-labelledby="screens-h">
@@ -480,8 +484,12 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
       <tr><th>Cancel on Stripe</th><td>Return to <code>/payment/cancel</code>; cart intact. A <code>PENDING</code> order remains in the DB by design.</td></tr>
       <tr><th>Webhook not received</th><td>Success page shows "Payment confirmation pending" and does not grant access.</td></tr>
       <tr><th>Item already owned</th><td>Checkout refuses to charge for it again.</td></tr>
+      <tr><th>Full refund</th><td>Order becomes <code>REFUNDED</code>; course and ebook access is gone; workshop seat is removed; the member can buy again.</td></tr>
+      <tr><th>Partial refund</th><td>Nothing changes for the member. The order stays <code>COMPLETED</code> and the server logs it for manual follow-up.</td></tr>
+      <tr><th>Repeated refund event</th><td>No change on the second delivery.</td></tr>
     </tbody>
   </table></div>
+  <p>Trigger a local refund from the Stripe test dashboard, or with <code>stripe refunds create --payment-intent pi_…</code>.</p>
 
   <h3>Promotion codes</h3>
   <p>The app validates the code before sending the member to Stripe. Each rule below has its own error message.</p>
@@ -528,7 +536,7 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
       <tr><th>Preview</th><td>Nothing</td><td>No Stripe key is configured, and writes hit the production DB.</td><td>None needed.</td></tr>
       <tr><th>Production, every release</th><td>Open checkout, then cancel</td><td>Confirms the live Stripe page opens and the cancel page returns.</td><td>Delete the <code>PENDING</code> order.</td></tr>
       <tr><th>Production, every release</th><td>One free purchase</td><td>QA account plus a one-time 100% promo code. See below.</td><td>Delete the order, order items, and any workshop enrollment.</td></tr>
-      <tr><th>Production, exceptional</th><td>One real card payment</td><td>Only for a first launch or a large payment change, with sign-off from the owner. Smallest price, company card, refund right away.</td><td>Refund in Stripe, then fix the DB by hand. Refunds are not synced yet.</td></tr>
+      <tr><th>Production, exceptional</th><td>One real card payment</td><td>Only for a first launch or a large payment change, with sign-off from the owner. Smallest price, company card, refund right away.</td><td>Full refund in Stripe, then confirm the order shows Refunded and access is gone.</td></tr>
     </tbody>
   </table></div>
 
@@ -542,8 +550,8 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
   </ul>
 
   <div class="callout info">
-    <span class="label">Known gap</span>
-    <p>The Stripe webhook handles only completed checkouts. A refund in the Stripe dashboard does not change the order status and does not remove access. A fix is in progress. Until it ships, every refund needs a manual DB correction.</p>
+    <span class="label">Refunds</span>
+    <p>The webhook handles <code>checkout.session.completed</code> and <code>charge.refunded</code>. A full refund marks the order Refunded and removes access. A partial refund changes nothing in the app; it is logged and needs manual follow-up. Events from other apps on the shared Stripe account are acknowledged and ignored.</p>
   </div>
 </section>
 
@@ -742,7 +750,7 @@ Data created during the test, and whether it was cleaned up:</pre></div>
       <tr><td>Stripe redirects to the wrong port</td><td><code>NEXT_PUBLIC_APP_URL</code> does not match</td><td>Set it to the port you run on.</td></tr>
       <tr><td>Test data shows up on the live site</td><td>Writes made on a preview URL</td><td>Previews use the production DB. Clean up and report it.</td></tr>
       <tr><td>Leftover <code>PENDING</code> orders</td><td>Checkout cancelled or abandoned</td><td>Expected. Clean up the ones you created.</td></tr>
-      <tr><td>Refunded order still grants access</td><td>Refund events not handled yet</td><td>Correct the DB by hand. Fix in progress.</td></tr>
+      <tr><td>Refunded order still grants access</td><td>It was a partial refund, which is ignored by design</td><td>Check the refund amount in Stripe. Only a full refund revokes access.</td></tr>
       <tr><td>README naming table looks wrong</td><td>It lists <code>DOCUMENT</code>; the schema now uses <code>EBOOK</code> and <code>COURSE</code></td><td>Trust <code>prisma/schema.prisma</code>.</td></tr>
       <tr><td>Clerk profile changes do not reach the local DB</td><td>Clerk webhooks cannot reach your machine</td><td>Expected locally. The user row is created on sign-in.</td></tr>
     </tbody>
