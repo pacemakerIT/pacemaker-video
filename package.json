@@ -2,7 +2,10 @@
   "name": "pacemaker-video",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm@10.9.4",
+  "packageManager": "npm@11.19.1",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "prisma:generate": "prisma generate",
