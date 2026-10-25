@@ -4,7 +4,7 @@ vi.mock('@aws-sdk/client-s3', () => ({ GetObjectCommand: vi.fn() }));
 vi.mock('@aws-sdk/s3-request-presigner', () => ({ getSignedUrl: vi.fn() }));
 vi.mock('@/lib/prisma', () => ({ default: { image: { findFirst: vi.fn() } } }));
 vi.mock('@/lib/supabase', () => ({
-  bucketName: 'document',
+  ebookBucketName: 'document',
   imgBucketName: 'image',
   s3clientSupabase: {}
 }));
