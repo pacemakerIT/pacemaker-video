@@ -37,6 +37,14 @@ const cartItems: CartItem[] = [
   }
 ];
 
+function acceptPurchaseTerms() {
+  fireEvent.click(
+    screen.getByRole('checkbox', {
+      name: /^I agree to the Terms of Use/
+    })
+  );
+}
+
 describe('PaymentSummary', () => {
   const locationAssignMock = vi.fn();
 
@@ -64,6 +72,7 @@ describe('PaymentSummary', () => {
     render(<PaymentSummary cartItems={cartItems} />);
     fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
+    acceptPurchaseTerms();
     fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     await waitFor(() => {
@@ -165,6 +174,7 @@ describe('PaymentSummary', () => {
     ).toBeGreaterThan(0);
     expect(mocks.toastSuccessMock).toHaveBeenCalledWith('Promo code applied.');
 
+    acceptPurchaseTerms();
     fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     await waitFor(() => {
@@ -197,6 +207,7 @@ describe('PaymentSummary', () => {
     fireEvent.change(screen.getAllByPlaceholderText('Enter promo code')[0], {
       target: { value: 'SAVE10' }
     });
+    acceptPurchaseTerms();
     fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     expect(mocks.toastErrorMock).toHaveBeenCalledWith(
@@ -204,6 +215,39 @@ describe('PaymentSummary', () => {
     );
     expect(fetch).not.toHaveBeenCalled();
     expect(locationAssignMock).not.toHaveBeenCalled();
+  });
+
+  it('requires agreeing to the purchase terms before checkout', () => {
+    render(<PaymentSummary cartItems={cartItems} />);
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: /^I agree to the Terms of Use/
+    });
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
+
+    expect(mocks.toastErrorMock).toHaveBeenCalledWith(
+      'Please agree to the Terms of Use and Refund Policy before checkout.'
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Please agree to the Terms of Use and Refund Policy before checkout.'
+    );
+    expect(checkbox).toHaveFocus();
+    expect(fetch).not.toHaveBeenCalled();
+    expect(locationAssignMock).not.toHaveBeenCalled();
+  });
+
+  it('links the purchase terms to the legal pages in a new tab', () => {
+    render(<PaymentSummary cartItems={cartItems} />);
+
+    const termsLink = screen.getByRole('link', { name: /Terms of Use/ });
+    const refundLink = screen.getByRole('link', { name: /Refund Policy/ });
+
+    expect(termsLink).toHaveAttribute('href', '/legal/terms-of-use');
+    expect(refundLink).toHaveAttribute('href', '/legal/refund-policy');
+    expect(termsLink).toHaveAttribute('target', '_blank');
+    expect(refundLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('shows API errors without redirecting', async () => {
@@ -217,6 +261,7 @@ describe('PaymentSummary', () => {
     render(<PaymentSummary cartItems={cartItems} />);
     fireEvent.click(screen.getByRole('button', { name: 'View details' }));
 
+    acceptPurchaseTerms();
     fireEvent.click(screen.getAllByRole('button', { name: 'Checkout' })[0]);
 
     expect(
