@@ -1,19 +1,26 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useClerk, useUser } from '@clerk/nextjs';
+import { useReverification, useUser } from '@clerk/nextjs';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { accountErrorMessage } from '@/lib/account-errors';
 
 export default function UpdatePasswordForm() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const currentRef = useRef<HTMLInputElement | null>(null);
   const newRef = useRef<HTMLInputElement | null>(null);
   const confirmRef = useRef<HTMLInputElement | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-  const { signOut } = useClerk();
+  const [saving, setSaving] = useState(false);
+  const updatePassword = useReverification(
+    (params: { currentPassword?: string; newPassword: string }) => {
+      if (!user) throw new Error('Please sign in to update your password.');
+      return user.updatePassword({ ...params, signOutOfOtherSessions: true });
+    }
+  );
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -21,35 +28,40 @@ export default function UpdatePasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || saving) return;
+    setStatus(null);
 
-    const currentPassword = currentRef.current?.value?.trim() ?? '';
-    const newPassword = newRef.current?.value?.trim() ?? '';
-    const confirmPassword = confirmRef.current?.value?.trim() ?? '';
+    const currentPassword = currentRef.current?.value ?? '';
+    const newPassword = newRef.current?.value ?? '';
+    const confirmPassword = confirmRef.current?.value ?? '';
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if (
+      (user.passwordEnabled && !currentPassword) ||
+      !newPassword ||
+      !confirmPassword
+    ) {
       return setStatus('Please fill out all password fields.');
     }
     if (newPassword !== confirmPassword) {
       return setStatus('New passwords do not match.');
     }
 
+    setSaving(true);
     try {
-      await user.updatePassword({
-        currentPassword: currentPassword,
-        newPassword: newPassword
+      const updated = await updatePassword({
+        ...(user.passwordEnabled && { currentPassword }),
+        newPassword
       });
+      if (!updated) return;
       setStatus('');
-      toast('Password updated successfully. Please sign in again.');
-      signOut();
-    } catch (err) {
-      setStatus(
-        err instanceof Error ? err.message : 'Failed to update password.'
-      );
-    } finally {
+      toast.success('Password updated successfully.');
       if (currentRef.current) currentRef.current.value = '';
       if (newRef.current) newRef.current.value = '';
       if (confirmRef.current) confirmRef.current.value = '';
+    } catch (err) {
+      setStatus(accountErrorMessage(err, 'Failed to update password.'));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -60,32 +72,34 @@ export default function UpdatePasswordForm() {
       autoComplete="off"
     >
       <p className="mb-1 text-center text-base font-bold text-navy">
-        Change password
+        {user?.passwordEnabled ? 'Change password' : 'Set password'}
       </p>
 
       <div className="flex w-full flex-col gap-3">
-        <div className="relative">
-          <Input
-            type={showCurrentPassword ? 'text' : 'password'}
-            autoComplete="current-password"
-            placeholder="Current password"
-            aria-label="Current password"
-            ref={currentRef}
-            className="h-12 rounded-xl border-gray-200 px-10 text-center text-sm text-navy focus-visible:ring-orange"
-          />
-          <button
-            type="button"
-            aria-label={
-              showCurrentPassword
-                ? 'Hide current password'
-                : 'Show current password'
-            }
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-body-text hover:text-navy"
-          >
-            {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
+        {user?.passwordEnabled && (
+          <div className="relative">
+            <Input
+              type={showCurrentPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder="Current password"
+              aria-label="Current password"
+              ref={currentRef}
+              className="h-12 rounded-xl border-gray-200 px-10 text-center text-sm text-navy focus-visible:ring-orange"
+            />
+            <button
+              type="button"
+              aria-label={
+                showCurrentPassword
+                  ? 'Hide current password'
+                  : 'Show current password'
+              }
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-body-text hover:text-navy"
+            >
+              {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+        )}
 
         <div className="relative">
           <Input
@@ -134,9 +148,14 @@ export default function UpdatePasswordForm() {
 
       <Button
         type="submit"
+        disabled={!isLoaded || !user || saving}
         className="h-auto rounded-2xl bg-orange px-6 py-2.5 font-headline text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] hover:bg-orange-hover"
       >
-        Update password
+        {saving
+          ? 'Saving...'
+          : user?.passwordEnabled
+            ? 'Update password'
+            : 'Set password'}
       </Button>
 
       {status && (

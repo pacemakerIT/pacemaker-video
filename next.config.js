@@ -9,6 +9,7 @@ const nextConfig = {
     // domains: ['fast.wistia.net', 'embedwistia-a.akamaihd.net']
 
     remotePatterns: [
+      { protocol: 'https', hostname: 'img.clerk.com' },
       { protocol: 'https', hostname: 'fast.wistia.net' },
       { protocol: 'https', hostname: 'embedwistia-a.akamaihd.net' },
       { protocol: 'https', hostname: '**.supabase.co' }

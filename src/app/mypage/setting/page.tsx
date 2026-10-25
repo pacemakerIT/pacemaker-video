@@ -2,8 +2,6 @@
 
 import { Interest } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { useClerk } from '@clerk/nextjs';
-import { Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
@@ -11,27 +9,28 @@ import { itemCategoryLabel } from '@/constants/labels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import UpdatePasswordForm from '@/components/features/mypage/setting/update-password-form';
+import UpdateProfilePhoto from '@/components/features/mypage/setting/update-profile-photo';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { openUserProfile } = useClerk();
   const { user, isLoading, error, updateUser } = useUserContext();
 
   const [nickname, setNickname] = useState('');
   const [loadingNickname, setLoadingNickname] = useState(false);
+  const [nicknameError, setNicknameError] = useState<string | null>(null);
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [loadingInterest, setLoadingInterest] = useState(false);
+
+  useEffect(() => {
+    setNickname(user?.nickname ?? '');
+  }, [user?.nickname]);
 
   useEffect(() => {
     if (!user && !isLoading) {
       toast('Please sign in');
       router.push('/');
       return;
-    }
-
-    if (user && user.nickname) {
-      setNickname(user.nickname);
     }
 
     const fetchInterests = async () => {
@@ -70,6 +69,7 @@ export default function SettingsPage() {
     }
 
     setLoadingNickname(true);
+    setNicknameError(null);
     try {
       const res = await fetch('/api/user', {
         method: 'PATCH',
@@ -79,14 +79,18 @@ export default function SettingsPage() {
         })
       });
 
-      if (!res.ok) throw new Error('Failed to update');
-
       const newNickName = await res.json();
+      if (!res.ok) {
+        throw new Error(newNickName.error || 'Failed to update nickname.');
+      }
       updateUser(newNickName);
 
       toast.success('Your nickname has been updated successfully!');
     } catch (err) {
-      toast.error(`Failed to update nickname: ${err}`);
+      const message =
+        err instanceof Error ? err.message : 'Failed to update nickname.';
+      setNicknameError(message);
+      toast.error(message);
     } finally {
       setLoadingNickname(false);
     }
@@ -147,14 +151,7 @@ export default function SettingsPage() {
             Joined on {joinedLabel}
           </p>
         )}
-        <button
-          type="button"
-          onClick={() => openUserProfile()}
-          className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-5 py-2.5 font-headline text-xs font-semibold text-body-text transition-colors hover:bg-gray-soft"
-        >
-          <Camera className="h-4 w-4" />
-          Change profile photo
-        </button>
+        <UpdateProfilePhoto />
       </div>
 
       <div className="mx-auto mb-12 flex w-full max-w-md flex-col items-center">
@@ -184,6 +181,11 @@ export default function SettingsPage() {
             {loadingNickname ? 'Saving...' : 'Save changes'}
           </Button>
         </form>
+        {nicknameError && (
+          <p role="alert" className="mt-3 text-sm text-red-600">
+            {nicknameError}
+          </p>
+        )}
       </div>
 
       <div className="mx-auto mb-12 flex w-full max-w-xl flex-col items-center">
