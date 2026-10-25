@@ -54,7 +54,8 @@ export default function MyPageSidebar() {
           {menuItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href === '/mypage' && pathname === '/mypage/setting');
+              (item.href === '/mypage/cart' &&
+                pathname === '/mypage/payment-success');
             const Icon = item.icon;
 
             return (

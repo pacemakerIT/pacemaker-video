@@ -2,7 +2,10 @@
   "name": "pacemaker-video",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "npm@10.9.4",
+  "packageManager": "npm@11.19.1",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "prisma:generate": "prisma generate",
@@ -10,6 +13,7 @@
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
+    "db:normalize-thumbnail-urls": "node scripts/normalize-thumbnail-urls.mjs",
     "test": "vitest",
     "jira": "node scripts/jira-cli.mjs",
     "git-cm": "node scripts/git-cm.js",
@@ -23,7 +27,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1080.0",
+    "@aws-sdk/client-s3": "^3.1152.0",
     "@aws-sdk/s3-request-presigner": "^3.1149.0",
     "@clerk/backend": "^3.20.1",
     "@clerk/nextjs": "^6.39.5",
@@ -37,7 +41,7 @@
     "@radix-ui/react-checkbox": "^1.3.11",
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-label": "^2.1.16",
-    "@radix-ui/react-progress": "^1.1.13",
+    "@radix-ui/react-progress": "^1.2.1",
     "@radix-ui/react-select": "^2.3.3",
     "@radix-ui/react-separator": "^1.1.15",
     "@radix-ui/react-slot": "^1.3.3",
@@ -52,7 +56,7 @@
     "filepond-plugin-image-preview": "^4.6.12",
     "fractional-indexing": "^4.0.0",
     "lucide-react": "^1.40.0",
-    "next": "15.5.27",
+    "next": "15.5.28",
     "next-themes": "^0.4.6",
     "pdfjs-dist": "6.3.289",
     "pg": "^8.22.0",
@@ -63,12 +67,12 @@
     "react-filepond": "^7.1.3",
     "react-hook-form": "^7.86.0",
     "react-pdf": "^10.4.0",
-    "sonner": "^2.0.7",
+    "sonner": "^2.0.8",
     "stripe": "^22.3.0",
     "svix": "^1.99.1",
     "tailwind-merge": "^3.6.0",
     "uuid": "^14.0.2",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.3",
@@ -78,7 +82,7 @@
     "@storybook/addon-designs": "^10.0.2",
     "@storybook/addon-docs": "^9.1.13",
     "@storybook/nextjs-vite": "^9.1.19",
-    "@testing-library/dom": "^10.4.1",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^26.1.1",
@@ -96,7 +100,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-storybook": "^10.6.1",
-    "happy-dom": "^20.14.5",
+    "happy-dom": "^21.0.4",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.2.0",

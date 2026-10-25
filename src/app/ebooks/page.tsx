@@ -4,6 +4,11 @@ import EbookHero from '@/components/features/ebook/ebook-hero';
 import EbookListGrid from '@/components/features/ebook/ebook-list-grid';
 import prisma from '@/lib/prisma';
 
+export const metadata = {
+  title: 'Career Resources',
+  description: 'Browse career guides and learning resources from PaceUp Career.'
+};
+
 export const revalidate = 0;
 
 export default async function EBooksPage() {
