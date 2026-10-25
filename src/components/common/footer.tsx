@@ -1,6 +1,8 @@
 import { MouseEvent } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { LEGAL_DOCUMENTS, getLegalDocumentHref } from '@/lib/legal-documents';
 
 interface FooterProps {
   onLinkClick?: (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
@@ -157,9 +159,30 @@ export function Footer({ onLinkClick }: FooterProps) {
           </div>
         </div>
 
-        <p className="text-[0.9rem] text-[#98a2b3]">
-          &copy; 2026 Pacemaker. All rights reserved.
-        </p>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <p className="text-[0.9rem] text-[#98a2b3]">
+            &copy; 2026 Pacemaker. All rights reserved.
+          </p>
+          <nav aria-label="Legal">
+            <ul className="flex list-none flex-wrap gap-x-6 gap-y-2">
+              {LEGAL_DOCUMENTS.map((legalDocument) => {
+                const href = getLegalDocumentHref(legalDocument.slug);
+
+                return (
+                  <li key={legalDocument.slug}>
+                    <Link
+                      href={href}
+                      onClick={(e) => onLinkClick?.(e, href)}
+                      className="text-[0.9rem] text-[#667085] no-underline transition-colors hover:text-navy"
+                    >
+                      {legalDocument.title}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
       </div>
     </footer>
   );
