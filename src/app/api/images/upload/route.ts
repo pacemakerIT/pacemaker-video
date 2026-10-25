@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '@/lib/prisma';
-import { bucketName, s3clientSupabase } from '@/lib/supabase';
+import { bucketName, imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { requireAdminUser } from '@/lib/admin-auth';
 
 export async function POST(req: Request) {
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     const putCommand = new PutObjectCommand({
-      Bucket: bucketName,
+      Bucket: imgBucketName || bucketName,
       Key: fileName,
       Body: buffer,
       ContentType: file.type
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     // Supabase Storage URL 생성
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
+    const imageUrl = `${supabaseUrl}/storage/v1/object/public/${imgBucketName || bucketName}/${fileName}`;
 
     const urlOnlyUploadTypes = new Set([
       'COURSE_THUMBNAIL',

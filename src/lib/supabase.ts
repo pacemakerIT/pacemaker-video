@@ -34,6 +34,11 @@ export const s3clientSupabase = new S3Client({
 export const bucketName =
   cleanEnv('SUPABASE_S3_BUCKET') || cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
 export const imgBucketName = cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
+// Ebook files live in their own private bucket. Keep this separate from the
+// image bucket so a missing generic bucket setting cannot send PDF requests to
+// Supabase Storage's image bucket.
+export const ebookBucketName =
+  cleanEnv('SUPABASE_S3_EBOOK_BUCKET') || 'document';
 
 // 서버 사이드 Supabase 클라이언트 (서비스 롤 키로 더 많은 권한)
 // export const createServerSupabase = () => {

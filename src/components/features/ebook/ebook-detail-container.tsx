@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
+import EbookPdfModal from './ebook-pdf-modal';
 
 export interface TOCItem {
   id: string;
@@ -72,6 +73,12 @@ export default function EbookDetailContainer({
   const isLiked = favorites.some(
     (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
+
+  const [isReaderOpen, setIsReaderOpen] = useState(false);
+  const [readingProgress, setReadingProgress] = useState({
+    currentPage: 0,
+    totalPages: 0
+  });
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -242,10 +249,28 @@ export default function EbookDetailContainer({
       : 'Add to Cart';
 
   const handleContinueReading = () => {
+    if (canAccessEbook) {
+      setIsReaderOpen(true);
+      return;
+    }
+
     document
       .getElementById('ebook-content')
       ?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const handleReaderPageChange = useCallback(
+    (currentPage: number, totalPages: number) => {
+      setReadingProgress({ currentPage, totalPages });
+    },
+    []
+  );
+
+  const progressPercent = readingProgress.totalPages
+    ? Math.round(
+        (readingProgress.currentPage / readingProgress.totalPages) * 100
+      )
+    : 0;
 
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
@@ -254,6 +279,9 @@ export default function EbookDetailContainer({
           title={title.replace('\n', ' ')}
           subtitle={subtitle}
           onContinueReading={handleContinueReading}
+          progressPercent={progressPercent}
+          currentPage={readingProgress.currentPage}
+          totalPages={readingProgress.totalPages}
         />
       ) : (
         <DetailHeroSection
@@ -316,6 +344,15 @@ export default function EbookDetailContainer({
           reviewCount={reviewCount}
         />
       </div>
+      {canAccessEbook && (
+        <EbookPdfModal
+          ebookId={id}
+          title={title.replace('\n', ' ')}
+          isOpen={isReaderOpen}
+          onOpenChange={setIsReaderOpen}
+          onPageChange={handleReaderPageChange}
+        />
+      )}
       <ConfirmModal
         isOpen={modalConfig.isOpen}
         onOpenChange={(open) =>

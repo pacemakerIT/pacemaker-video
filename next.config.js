@@ -3,6 +3,12 @@ const nextConfig = {
   serverExternalPackages: ['@prisma/adapter-pg'],
   webpack: (config) => {
     config.resolve.alias.canvas = false;
+    // pdfjs-dist's readable ESM bundle declares its own `var __webpack_exports__`,
+    // which collides with the module wrapper Next uses in dev and throws
+    // "Object.defineProperty called on non-object" as soon as react-pdf imports
+    // it. The minified build carries no such identifier.
+    config.resolve.alias['pdfjs-dist$'] =
+      require.resolve('pdfjs-dist/build/pdf.min.mjs');
     return config;
   },
   images: {
