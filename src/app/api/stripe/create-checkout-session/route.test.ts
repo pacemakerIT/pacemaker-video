@@ -368,4 +368,52 @@ describe('POST /api/stripe/create-checkout-session', () => {
       data: { status: OrderStatus.FAILED }
     });
   });
+
+  it('logs the Stripe error reason when session creation is rejected', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    stripeSessionCreateMock.mockRejectedValue(
+      Object.assign(new Error('Invalid API Key provided: sk_live_****1234'), {
+        type: 'StripeAuthenticationError',
+        statusCode: 401,
+        requestId: 'req_123'
+      })
+    );
+
+    const response = await POST(
+      createRequest({
+        selectedItems: [{ itemId: courseId, itemType: ItemType.COURSE }]
+      })
+    );
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      error: 'Failed to create checkout session'
+    });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      '[API ERROR] POST /api/stripe/create-checkout-session:',
+      expect.objectContaining({
+        orderId,
+        message: 'Invalid API Key provided: sk_live_****1234',
+        type: 'StripeAuthenticationError',
+        statusCode: 401,
+        requestId: 'req_123'
+      })
+    );
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('does not log expected checkout validation errors', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    const response = await POST(createRequest({ selectedItems: [] }));
+
+    expect(response.status).toBeGreaterThanOrEqual(400);
+    expect(response.status).toBeLessThan(500);
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
 });
