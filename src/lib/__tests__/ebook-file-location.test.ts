@@ -22,6 +22,18 @@ describe('resolveEbookFileLocation', () => {
     ).toEqual({ bucket: 'document', key: 'abc.pdf' });
   });
 
+  it('accepts ebook bucket keys without a file extension', () => {
+    expect(
+      resolveEbookFileLocation(
+        {
+          ebookId: 'ebook-3',
+          bucketUrl: `${supabaseUrl}/storage/v1/object/public/document/ebook-1`
+        },
+        options
+      )
+    ).toEqual({ bucket: 'document', key: 'ebook-1' });
+  });
+
   it('never reads from another bucket, even when bucketUrl points there', () => {
     for (const bucket of ['image', 'videos']) {
       expect(

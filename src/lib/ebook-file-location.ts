@@ -1,4 +1,3 @@
-import { isStorageObjectKey } from '@/lib/image-url';
 import { ebookBucketName } from '@/lib/supabase';
 
 export type EbookFileLocation = {
@@ -10,6 +9,11 @@ type EbookFileRecord = {
   ebookId: string;
   bucketUrl: string | null;
 };
+
+// Like isStorageObjectKey in src/lib/image-url.ts, but without requiring a
+// file extension: existing ebook objects are named like `ebook-1`.
+const SAFE_OBJECT_KEY_PATTERN =
+  /^(?!.*(?:^|\/)\.{1,2}(?:\/|$))[^/?#]+(?:\/[^/?#]+)*$/;
 
 type ResolveOptions = {
   supabaseUrl: string;
@@ -46,7 +50,7 @@ function parseEbookBucketUrl(
     return null;
   }
 
-  return isStorageObjectKey(key) ? key : null;
+  return SAFE_OBJECT_KEY_PATTERN.test(key) ? key : null;
 }
 
 // Ebooks created in the admin form store the uploaded PDF's public URL in
