@@ -48,6 +48,12 @@ export async function POST(req: Request) {
     // /api/images/proxy only serves the image bucket, and /api/document reads
     // ebook PDFs from the ebook bucket.
     const bucketName = isEbookDocument ? ebookBucketName : imgBucketName;
+    if (!bucketName) {
+      return NextResponse.json(
+        { error: 'Storage bucket is not configured' },
+        { status: 503 }
+      );
+    }
 
     const ext = file.name.split('.').pop() || 'png';
     const uuid = uuidv4();
