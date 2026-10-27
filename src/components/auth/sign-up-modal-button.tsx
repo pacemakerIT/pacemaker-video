@@ -29,20 +29,14 @@ export default function SignUpModalButton({
         className="relative z-50 font-sans"
       >
         {/* 배경 */}
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+          aria-hidden="true"
+        />
 
         {/* 모달 */}
-        <div className="fixed inset-0 flex items-center justify-center">
-          <Dialog.Panel
-            className="
-              w-full max-w-[480px]
-              bg-white rounded-lg shadow-xl
-              px-6 py-10
-              sm:px-10 sm:py-16
-              md:px-[40px] md:py-[80px]
-              flex flex-col gap-6
-            "
-          >
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="w-full max-w-[480px] flex items-center justify-center">
             {/* Wrapper에서 로그인/회원가입 전환 관리 */}
             <CustomAuthWrapper
               isPage={false}
