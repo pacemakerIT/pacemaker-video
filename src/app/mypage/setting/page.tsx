@@ -2,7 +2,6 @@
 
 import { Interest } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
@@ -10,6 +9,7 @@ import { itemCategoryLabel } from '@/constants/labels';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import UpdatePasswordForm from '@/components/features/mypage/setting/update-password-form';
+import UpdateProfilePhoto from '@/components/features/mypage/setting/update-profile-photo';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -17,19 +17,20 @@ export default function SettingsPage() {
 
   const [nickname, setNickname] = useState('');
   const [loadingNickname, setLoadingNickname] = useState(false);
+  const [nicknameError, setNicknameError] = useState<string | null>(null);
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [loadingInterest, setLoadingInterest] = useState(false);
+
+  useEffect(() => {
+    setNickname(user?.nickname ?? '');
+  }, [user?.nickname]);
 
   useEffect(() => {
     if (!user && !isLoading) {
       toast('Please sign in');
       router.push('/');
       return;
-    }
-
-    if (user && user.nickname) {
-      setNickname(user.nickname);
     }
 
     const fetchInterests = async () => {
@@ -68,6 +69,7 @@ export default function SettingsPage() {
     }
 
     setLoadingNickname(true);
+    setNicknameError(null);
     try {
       const res = await fetch('/api/user', {
         method: 'PATCH',
@@ -77,14 +79,18 @@ export default function SettingsPage() {
         })
       });
 
-      if (!res.ok) throw new Error('Failed to update');
-
       const newNickName = await res.json();
+      if (!res.ok) {
+        throw new Error(newNickName.error || 'Failed to update nickname.');
+      }
       updateUser(newNickName);
 
       toast.success('Your nickname has been updated successfully!');
     } catch (err) {
-      toast.error(`Failed to update nickname: ${err}`);
+      const message =
+        err instanceof Error ? err.message : 'Failed to update nickname.';
+      setNicknameError(message);
+      toast.error(message);
     } finally {
       setLoadingNickname(false);
     }
@@ -118,93 +124,98 @@ export default function SettingsPage() {
     }
   };
 
+  const joinedDate = new Date(user.createdAt);
+  const joinedLabel = Number.isNaN(joinedDate.getTime())
+    ? null
+    : joinedDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC'
+      });
+
   return (
-    <section className="p-10 pt-20">
-      <h1 className="text-pace-xl font-bold mb-6 text-pace-gray-700">설정</h1>
+    <section className="border border-gray-100 bg-white p-6 shadow-card md:p-10">
+      <div className="mb-6 border-b border-gray-100 pb-4">
+        <h1 className="font-headline text-[1.85rem] font-bold tracking-tight text-navy">
+          Settings
+        </h1>
+      </div>
 
-      <div className="flex flex-col justify-center items-center text-center gap-10">
-        <div>
-          <p className="text-pace-3xl text-pace-gray-500">
-            <span className="font-extrabold">{getUserDisplayName(user)}</span>{' '}
-            님 안녕하세요!
+      <div className="mb-10 mt-6 flex flex-col items-center border-b border-gray-100 pb-8 text-center">
+        <h2 className="mb-1 text-2xl font-bold text-navy">
+          Hi, {getUserDisplayName(user)}!
+        </h2>
+        {joinedLabel && (
+          <p className="mb-5 text-sm text-body-text/60">
+            Joined on {joinedLabel}
           </p>
-          <p className="text-pace-stone-600 font-medium">
-            <span>2025-01-01 </span>
-            <span>구글 계정으로 가입</span>
-          </p>
-        </div>
+        )}
+        <UpdateProfilePhoto />
+      </div>
 
-        {/* 프로필 */}
-        <div>
-          <Image
-            src="/img/course_image3.png"
-            alt="profile"
-            width={240}
-            height={240}
-            className="rounded-full"
-          />
-          <Button
-            variant="outline"
-            className="border border-pace-pace-stone-550 rounded-full mt-4 text-pace-sm text-pace-gray-700"
-          >
-            프로필 사진 수정
-          </Button>
-        </div>
-
-        {/* 닉네임 변경 */}
-        <div className="flex flex-col w-[300px] gap-4">
-          <p className="font-medium text-pace-gray-500 text-[20px]">
-            닉네임 변경
-          </p>
+      <div className="mx-auto mb-12 flex w-full max-w-md flex-col items-center">
+        <h3 className="mb-4 text-center text-base font-bold text-navy">
+          Edit nickname
+        </h3>
+        <form
+          className="flex w-full flex-col items-center gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void handleSaveNickname();
+          }}
+        >
           <Input
             type="text"
-            placeholder="닉네임"
+            placeholder="Nickname"
+            aria-label="Nickname"
             value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            className="rounded-full border border-[#777777]"
+            onChange={(event) => setNickname(event.target.value)}
+            className="h-12 w-full rounded-xl border-gray-200 px-4 text-center text-sm text-navy focus-visible:ring-orange"
           />
-
           <Button
-            className="bg-pace-orange-800 rounded-full text-pace-base text-pace-white-500 font-normal"
-            onClick={handleSaveNickname}
+            type="submit"
+            className="h-auto rounded-2xl bg-orange px-6 py-2.5 font-headline text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] hover:bg-orange-hover"
             disabled={loadingNickname}
           >
-            {loadingNickname ? '저장중...' : '변경'}
+            {loadingNickname ? 'Saving...' : 'Save changes'}
           </Button>
-        </div>
-
-        {/* 관심분야 변경 */}
-        <div className="flex flex-col gap-4 items-center">
-          <p className="font-medium text-pace-gray-500 text-[20px]">
-            관심분야 변경
+        </form>
+        {nicknameError && (
+          <p role="alert" className="mt-3 text-sm text-red-600">
+            {nicknameError}
           </p>
-          <div className="w-[800px] flex flex-wrap gap-2 justify-center">
-            {Object.values(Interest).map((interest) => (
-              <button
-                key={interest}
-                onClick={() => toggleInterest(interest)}
-                className={`w-[120px] px-4 py-2 rounded-full border transition ${
-                  selectedInterests.includes(interest)
-                    ? 'border-2 border-pace-orange-600 text-pace-orange-600'
-                    : 'border-pace-stone-600 text-pace-stone-600'
-                }`}
-              >
-                {itemCategoryLabel.ko[interest] ?? interest}
-              </button>
-            ))}
-          </div>
-          <Button
-            className="w-[300px] bg-pace-orange-800 text-white rounded-full font-normal"
-            onClick={handleSaveInterest}
-            disabled={loadingInterest}
-          >
-            {loadingInterest ? '저장중...' : '변경'}
-          </Button>
-        </div>
-
-        {/* 비밀번호 변경 */}
-        <UpdatePasswordForm />
+        )}
       </div>
+
+      <div className="mx-auto mb-12 flex w-full max-w-xl flex-col items-center">
+        <h3 className="mb-4 text-center text-base font-bold text-navy">
+          Update interests
+        </h3>
+        <div className="mb-6 flex flex-wrap justify-center gap-3">
+          {Object.values(Interest).map((interest) => (
+            <button
+              type="button"
+              key={interest}
+              aria-pressed={selectedInterests.includes(interest)}
+              disabled={loadingInterest}
+              onClick={() => toggleInterest(interest)}
+              className={`inline-flex min-h-11 items-center justify-center rounded-full border px-4 font-headline text-xs transition-colors md:px-6 md:text-sm ${selectedInterests.includes(interest) ? 'border-orange bg-orange/5 font-semibold text-orange' : 'border-gray-200 bg-white font-medium text-body-text hover:border-gray-300'}`}
+            >
+              {itemCategoryLabel.en[interest] ?? interest}
+            </button>
+          ))}
+        </div>
+        <Button
+          className="h-auto rounded-2xl bg-orange px-6 py-2.5 font-headline text-sm font-bold text-white shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] hover:bg-orange-hover"
+          onClick={handleSaveInterest}
+          disabled={loadingInterest}
+        >
+          {loadingInterest ? 'Saving...' : 'Save changes'}
+        </Button>
+      </div>
+
+      <UpdatePasswordForm />
     </section>
   );
 }
