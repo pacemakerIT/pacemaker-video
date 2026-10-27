@@ -27,22 +27,22 @@ export default function SaveReceiptPopup({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger
         disabled={!hasReceipt}
-        className="flex-1 border border-orange-500 text-orange-500 rounded-full px-10 py-4 hover:bg-orange-50 disabled:cursor-not-allowed disabled:border-pace-stone-300 disabled:text-pace-stone-500 disabled:hover:bg-transparent"
+        className="min-h-11 flex-1 rounded-2xl bg-orange py-4 font-headline text-base font-bold text-white shadow-md transition-all hover:scale-[1.02] hover:bg-orange-hover disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none disabled:hover:scale-100"
       >
-        {hasReceipt ? '영수증 저장' : '영수증 준비중'}
+        {hasReceipt ? 'Download receipt' : 'Receipt unavailable'}
       </DialogTrigger>
       <DialogContent
         showCloseButton={false}
-        className="w-auto flex flex-col items-center gap-6 p-8"
+        className="flex w-full max-w-[360px] flex-col items-center gap-6 rounded-none border border-gray-100 p-8 text-navy shadow-card"
       >
         <DialogHeader className="flex flex-col items-center gap-2">
-          <DialogTitle className="text-[20px] font-medium text-pace-gray-500">
-            영수증 저장
+          <DialogTitle className="font-headline text-[22px] font-bold tracking-tight text-navy">
+            Save receipt
           </DialogTitle>
-          <DialogDescription className="text-center font-light !text-pace-base text-pace-gray-700">
+          <DialogDescription className="text-center text-sm leading-relaxed text-body-text">
             {hasReceipt
-              ? 'Stripe 영수증을 새 창에서 여시겠습니까?'
-              : '아직 연결된 영수증이 없습니다.'}
+              ? 'Would you like to open and save the receipt?'
+              : 'A receipt is not available for this order.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -53,20 +53,20 @@ export default function SaveReceiptPopup({
                 href={receiptUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-10 py-4 rounded-full bg-pace-orange-800 text-white"
+                className="min-h-11 rounded-2xl bg-orange px-8 py-3.5 font-headline font-bold text-white hover:bg-orange-hover"
               >
-                확인
+                Confirm
               </a>
             ) : (
               <DialogClose asChild>
-                <button className="px-10 py-4 rounded-full bg-pace-orange-800 text-white">
-                  확인
+                <button className="min-h-11 rounded-2xl bg-orange px-8 py-3.5 font-headline font-bold text-white hover:bg-orange-hover">
+                  Confirm
                 </button>
               </DialogClose>
             )}
             <DialogClose asChild>
-              <button className="px-10 py-4 rounded-full border-2 border-pace-stone-800 text-pace-stone-800">
-                취소
+              <button className="min-h-11 rounded-2xl border border-gray-300 px-8 py-3.5 font-headline font-semibold text-gray-500 hover:bg-gray-50">
+                Cancel
               </button>
             </DialogClose>
           </div>
