@@ -52,6 +52,35 @@ function buildItemSummary(items: CheckoutCartItem[]) {
     .slice(0, 500);
 }
 
+type StripeErrorFields = {
+  type?: string;
+  code?: string;
+  param?: string;
+  statusCode?: number;
+  requestId?: string;
+};
+
+// Stripe errors carry the reason and request id; keep them so a failed
+// checkout can be traced in the Vercel and Stripe request logs.
+function describeCheckoutFailure(error: unknown) {
+  if (!(error instanceof Error)) {
+    return { error };
+  }
+
+  const { type, code, param, statusCode, requestId } = error as Error &
+    StripeErrorFields;
+
+  return {
+    name: error.name,
+    message: error.message,
+    type,
+    code,
+    param,
+    statusCode,
+    requestId
+  };
+}
+
 function errorResponse(error: unknown) {
   if (error instanceof CheckoutError) {
     return NextResponse.json(
@@ -201,6 +230,14 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
+    if (!(error instanceof CheckoutError)) {
+      // eslint-disable-next-line no-console
+      console.error('[API ERROR] POST /api/stripe/create-checkout-session:', {
+        orderId: pendingOrderId,
+        ...describeCheckoutFailure(error)
+      });
+    }
+
     if (pendingOrderId && !(error instanceof CheckoutError)) {
       await prisma.order
         .update({

@@ -13,6 +13,15 @@ import { generateNKeysBetween } from 'fractional-indexing';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { randomUUID } from 'crypto';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import {
+  createCyclicPicker,
+  isLocalSeedDatabase,
+  maskConnectionString,
+  publicObjectUrl,
+  selectSeedEbookKeys,
+  selectSeedImageKeys,
+  type StorageObject
+} from './seed-helpers';
 
 const connectionString =
   process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim() || '';
@@ -40,23 +49,38 @@ const s3Client = new S3Client({
   }
 });
 
-const BUCKET =
-  cleanEnv('SUPABASE_S3_BUCKET') || cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
+// Same bucket rules as src/lib/supabase.ts: thumbnails must be in the image
+// bucket that /api/images/proxy serves, and ebook PDFs in the ebook bucket.
+const IMAGE_BUCKET = cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
+const EBOOK_BUCKET =
+  cleanEnv('SUPABASE_S3_EBOOK_BUCKET') ||
+  cleanEnv('SUPABASE_S3_BUCKET') ||
+  IMAGE_BUCKET;
 
-async function getRemoteImages() {
-  if (!BUCKET) return [];
+async function listBucketObjects(bucket: string): Promise<StorageObject[]> {
+  if (!bucket) return [];
+
+  const objects: StorageObject[] = [];
   try {
-    const command = new ListObjectsV2Command({ Bucket: BUCKET });
-    const response = await s3Client.send(command);
-    return (
-      (response.Contents?.map((item) => item.Key).filter(
-        (key) => key && /\.(png|jpg|jpeg|webp)$/i.test(key)
-      ) as string[]) || []
-    );
+    let continuationToken: string | undefined;
+    do {
+      const response = await s3Client.send(
+        new ListObjectsV2Command({
+          Bucket: bucket,
+          ContinuationToken: continuationToken
+        })
+      );
+      for (const item of response.Contents ?? []) {
+        if (item.Key) objects.push({ key: item.Key, size: item.Size ?? 0 });
+      }
+      continuationToken = response.NextContinuationToken;
+    } while (continuationToken);
   } catch (err) {
-    console.error('Failed to fetch images from S3:', err);
+    console.error(`Failed to list objects in bucket ${bucket}:`, err);
     return [];
   }
+
+  return objects;
 }
 
 const TITLE = 'Resume + Interview Prep (All-in-One)';
@@ -144,14 +168,6 @@ const WORKSHOP_STATUS = {
   completed: WorkshopStatus.COMPLETED
 };
 
-function isRemoteSupabaseUrl(url: string) {
-  return (
-    url.includes('supabase.com') ||
-    url.includes('pooler.supabase.com') ||
-    url.includes('supabase.co')
-  );
-}
-
 function addDays(date: Date, days: number) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -214,33 +230,48 @@ async function resetLocalSeedData() {
 }
 
 async function main() {
-  if (isRemoteSupabaseUrl(connectionString)) {
-    // Masking credentials for security in logs
-    const maskedUrl = connectionString.replace(
-      /:\/\/([^:]+):([^@]+)@/,
-      '://$1:****@'
+  if (!isLocalSeedDatabase(connectionString)) {
+    console.error(
+      '❌ Refusing to seed a non-local database:',
+      maskConnectionString(connectionString)
     );
-    console.error('❌ Remote Supabase database detected:', maskedUrl);
     throw new Error(
-      'Remote Supabase database detected. Refusing to run destructive local seed on production/remote DB.'
+      'Seed only runs against a local database (localhost or the dev Docker container). It deletes content tables, so it refuses remote and production databases.'
     );
   }
 
   const supabaseUrl = cleanEnv('NEXT_PUBLIC_SUPABASE_URL');
-  const remoteImages = await getRemoteImages();
+  const imageKeys = selectSeedImageKeys(await listBucketObjects(IMAGE_BUCKET));
+  const ebookKeys = selectSeedEbookKeys(await listBucketObjects(EBOOK_BUCKET));
   console.log(
-    `📸 Found ${remoteImages.length} images in Supabase bucket: ${BUCKET}`
+    `📸 Found ${imageKeys.length} usable images in bucket: ${IMAGE_BUCKET || '(not set)'}`
   );
+  console.log(
+    `📚 Found ${ebookKeys.length} ebook files in bucket: ${EBOOK_BUCKET || '(not set)'}`
+  );
+  if (ebookKeys.length === 0) {
+    console.warn(
+      '⚠️ No ebook files found; seeded ebooks will have no readable PDF.'
+    );
+  }
 
-  const getRandomImage = (fallback: string) => {
-    if (remoteImages.length > 0) {
-      const key = remoteImages[Math.floor(Math.random() * remoteImages.length)];
-      if (supabaseUrl && BUCKET) {
-        return `${supabaseUrl}/storage/v1/object/public/${BUCKET}/${key}`;
-      }
-      return key; // Fallback to raw key if URL/Bucket missing, resolver will handle it
-    }
-    return fallback;
+  const nextImageKey = createCyclicPicker(imageKeys);
+  const nextEbookKey = createCyclicPicker(ebookKeys);
+
+  const pickSeedImage = (fallback: string) => {
+    const key = nextImageKey();
+    return key && supabaseUrl
+      ? publicObjectUrl(supabaseUrl, IMAGE_BUCKET, key)
+      : fallback;
+  };
+
+  // Matches ebooks created in the admin form: ebookId is a unique label and
+  // bucketUrl points at the PDF in the ebook bucket.
+  const pickSeedEbookUrl = () => {
+    const key = nextEbookKey();
+    return key && supabaseUrl
+      ? publicObjectUrl(supabaseUrl, EBOOK_BUCKET, key)
+      : '';
   };
 
   await resetLocalSeedData();
@@ -328,7 +359,7 @@ async function main() {
     where: { id: instructorId2 },
     update: {
       name: 'Sujin Ku',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: pickSeedImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -339,7 +370,7 @@ async function main() {
     create: {
       id: instructorId2,
       name: 'Sujin Ku',
-      profileImage: getRandomImage('/img/instructor-image.png'),
+      profileImage: pickSeedImage('/img/instructor-image.png'),
       description:
         'Employer Strategy & Engagement Specialist at University of Toronto / Career Coach',
       careers: [
@@ -382,7 +413,7 @@ async function main() {
 
   for (let i = 1; i <= 6; i++) {
     const courseId = courseIds[i - 1];
-    const thumbnail = getRandomImage(
+    const thumbnail = pickSeedImage(
       COURSE_THUMBNAILS[(i - 1) % COURSE_THUMBNAILS.length]
     );
     const categories = Object.values(CourseCategory);
@@ -576,11 +607,9 @@ async function main() {
         title: ebook.title,
         description: ebook.description,
         price: ebook.price,
-        bucketUrl: `https://example-bucket.s3.amazonaws.com/ebooks/guide-${i + 1}.pdf`,
+        bucketUrl: pickSeedEbookUrl(),
         category: ebook.category,
-        thumbnail: getRandomImage(
-          EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length]
-        ),
+        thumbnail: pickSeedImage(EBOOK_THUMBNAILS[i % EBOOK_THUMBNAILS.length]),
         isPublic: true,
         subTitle: ebook.subTitle,
         subDescription: ebook.subDescription,
@@ -876,7 +905,7 @@ async function main() {
         sectionsRel: {
           create: createWorkshopCurriculum(ws.title)
         },
-        thumbnail: getRandomImage(
+        thumbnail: pickSeedImage(
           WORKSHOP_THUMBNAILS[ws.thumbnailIndex % WORKSHOP_THUMBNAILS.length]
         )
       }
@@ -932,6 +961,47 @@ async function main() {
       attended: index === 0,
       registeredAt: addDays(new Date(), -(20 - index * 4))
     }))
+  });
+
+  // Preview with the seeded USER account at:
+  // /mypage/payment-success?session_id=cs_test_seed_payment_success
+  // This is a local fixture identifier, not a real Stripe checkout session.
+  const paymentSuccessItems = [
+    ...dashboardCourseIds.slice(0, 2).map((itemId) => ({
+      itemId,
+      itemType: ItemType.COURSE,
+      priceAtPurchaseCents: 2800,
+      quantity: 1
+    })),
+    {
+      itemId: dashboardEbookIds[0],
+      itemType: ItemType.EBOOK,
+      priceAtPurchaseCents: 2800,
+      quantity: 1
+    },
+    {
+      itemId: dashboardWorkshopIds[1],
+      itemType: ItemType.WORKSHOP,
+      priceAtPurchaseCents: Math.round(workshopData[5].price * 100),
+      quantity: 1
+    }
+  ];
+  const paymentSuccessTotal = paymentSuccessItems.reduce(
+    (total, item) => total + item.priceAtPurchaseCents * item.quantity,
+    0
+  );
+  await prisma.order.create({
+    data: {
+      userId: dashboardUserId,
+      status: OrderStatus.COMPLETED,
+      stripeCheckoutSessionId: 'cs_test_seed_payment_success',
+      subtotalAmountCents: paymentSuccessTotal,
+      totalAmountCents: paymentSuccessTotal,
+      discountAmountCents: 0,
+      taxAmountCents: 0,
+      currency: 'cad',
+      items: { create: paymentSuccessItems }
+    }
   });
 
   const dashboardVideos = await prisma.video.findMany({

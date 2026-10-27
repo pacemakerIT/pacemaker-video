@@ -26,6 +26,12 @@ vi.mock('@/lib/prisma', () => {
   };
 });
 
+vi.mock('@/lib/supabase', () => ({
+  ebookBucketName: 'document',
+  imgBucketName: 'image',
+  s3clientSupabase: {}
+}));
+
 const { auth } = await import('@clerk/nextjs/server');
 const { GetObjectCommand } = await import('@aws-sdk/client-s3');
 

@@ -1,5 +1,9 @@
 'use client';
 import React, { useState } from 'react';
+import {
+  IMAGE_UPLOAD_TOO_LARGE_MESSAGE,
+  isImageUploadTooLarge
+} from '@/lib/image-upload-limits';
 import ImageDownload from './image-download';
 
 const ImageUpload = () => {
@@ -12,6 +16,13 @@ const ImageUpload = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      if (isImageUploadTooLarge(e.target.files[0])) {
+        setFile(null);
+        setError(IMAGE_UPLOAD_TOO_LARGE_MESSAGE);
+        e.target.value = '';
+        return;
+      }
+
       setFile(e.target.files[0]);
       setError(null);
     }
