@@ -109,7 +109,7 @@
     "openai": "^7.19.0",
     "postcss": "8.5.29",
     "prettier": "^3.9.10",
-    "prisma": "^7.8.0",
+    "prisma": "^7.10.1",
     "storybook": "^9.1.19",
     "styled-jsx": "^5.1.6",
     "tailwindcss": "^3.3.0",
