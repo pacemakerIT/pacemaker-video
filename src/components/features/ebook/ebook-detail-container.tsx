@@ -1,4 +1,5 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
@@ -14,7 +15,15 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import ConfirmModal from '@/components/common/confirm-modal';
-import PdfViewer from './pdf-viewer';
+
+const PdfViewer = dynamic(() => import('./pdf-viewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[80vh] min-h-[560px] items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-600">
+      PDF 로딩 중...
+    </div>
+  )
+});
 
 export interface TOCItem {
   id: string;
@@ -251,7 +260,9 @@ export default function EbookDetailContainer({
         {canAccessEbook && (
           <section className="w-full" aria-label="전자책 PDF 뷰어">
             <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
-            <PdfViewer ebookId={id} />
+            <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
+              <PdfViewer ebookId={id} />
+            </div>
           </section>
         )}
         <div className="w-full flex flex-col gap-8">
