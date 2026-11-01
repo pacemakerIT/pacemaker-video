@@ -14,7 +14,6 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import ConfirmModal from '@/components/common/confirm-modal';
-import PdfViewer from './pdf-viewer';
 
 export interface TOCItem {
   id: string;
@@ -248,12 +247,6 @@ export default function EbookDetailContainer({
         id="ebook-content"
         className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
       >
-        {canAccessEbook && (
-          <section className="w-full" aria-label="전자책 PDF 뷰어">
-            <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
-            <PdfViewer ebookId={id} />
-          </section>
-        )}
         <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
