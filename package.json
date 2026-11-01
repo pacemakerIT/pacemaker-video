@@ -128,16 +128,16 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write .",
-      "eslint --fix ."
+      "prettier --write",
+      "eslint --fix"
     ],
     "*.{ts,tsx}": [
       "tsc-files --noEmit",
-      "prettier --write .",
-      "eslint --fix ."
+      "prettier --write",
+      "eslint --fix"
     ],
     "*.{json,md,yaml,yml}": [
-      "prettier --write ."
+      "prettier --write"
     ]
   },
   "validate-branch-name": {
