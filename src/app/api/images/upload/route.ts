@@ -2,8 +2,16 @@ import { NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import prisma from '@/lib/prisma';
-import { bucketName, imgBucketName, s3clientSupabase } from '@/lib/supabase';
+import {
+  ebookBucketName,
+  imgBucketName,
+  s3clientSupabase
+} from '@/lib/supabase';
 import { requireAdminUser } from '@/lib/admin-auth';
+import {
+  IMAGE_UPLOAD_TOO_LARGE_MESSAGE,
+  isImageUploadTooLarge
+} from '@/lib/image-upload-limits';
 
 export async function POST(req: Request) {
   const adminAccess = await requireAdminUser();
@@ -27,6 +35,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'File Not Found' }, { status: 400 });
     }
 
+    // Ebook documents are uploaded through this route too; the size limit
+    // is for images only.
+    const isEbookDocument = table === 'Ebook' && column === 'bucketUrl';
+    if (!isEbookDocument && isImageUploadTooLarge(file)) {
+      return NextResponse.json(
+        { error: IMAGE_UPLOAD_TOO_LARGE_MESSAGE },
+        { status: 413 }
+      );
+    }
+
+    // /api/images/proxy only serves the image bucket, and /api/document reads
+    // ebook PDFs from the ebook bucket.
+    const bucketName = isEbookDocument ? ebookBucketName : imgBucketName;
+    if (!bucketName) {
+      return NextResponse.json(
+        { error: 'Storage bucket is not configured' },
+        { status: 503 }
+      );
+    }
+
     const ext = file.name.split('.').pop() || 'png';
     const uuid = uuidv4();
     const fileName = `${uuid}.${ext}`;
@@ -35,7 +63,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     const putCommand = new PutObjectCommand({
-      Bucket: imgBucketName || bucketName,
+      Bucket: bucketName,
       Key: fileName,
       Body: buffer,
       ContentType: file.type
@@ -52,7 +80,7 @@ export async function POST(req: Request) {
 
     // Supabase Storage URL 생성
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const imageUrl = `${supabaseUrl}/storage/v1/object/public/${imgBucketName || bucketName}/${fileName}`;
+    const imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;
 
     const urlOnlyUploadTypes = new Set([
       'COURSE_THUMBNAIL',

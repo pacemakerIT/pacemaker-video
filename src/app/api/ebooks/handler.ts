@@ -1,16 +1,30 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { ebookBucketName } from '@/lib/supabase';
+import { Readable } from 'stream';
 import prisma from '@/lib/prisma';
+import { getEbookFileLocation } from '@/lib/ebook-file-location';
 import { getEbookAccessForClerkUserId } from '@/lib/entitlements';
 
-/**
- * How long a reader's signed download link stays valid. The link is a bearer
- * token for a paid file, so it is deliberately short lived.
- */
-const SIGNED_URL_TTL_SECONDS = 600;
+function nodeReadableToWebReadable(
+  nodeStream: Readable
+): ReadableStream<Uint8Array> {
+  const reader = nodeStream[Symbol.asyncIterator]();
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const { value, done } = await reader.next();
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(new Uint8Array(value));
+      }
+    },
+    cancel() {
+      nodeStream.destroy();
+    }
+  });
+}
 
 export function createGetHandler(s3Client: S3Client) {
   return async function GET(
@@ -38,6 +52,7 @@ export function createGetHandler(s3Client: S3Client) {
           id: true,
           price: true,
           ebookId: true,
+          bucketUrl: true,
           isPublic: true
         }
       });
@@ -63,22 +78,37 @@ export function createGetHandler(s3Client: S3Client) {
         );
       }
 
+      const location = getEbookFileLocation(ebook);
+      if (!location) {
+        return NextResponse.json(
+          { error: 'Ebook file not found' },
+          { status: 404 }
+        );
+      }
+
       const command = new GetObjectCommand({
-        Bucket: ebookBucketName,
-        Key: ebook.ebookId
+        Bucket: location.bucket,
+        Key: location.key
       });
 
-      const url = await getSignedUrl(s3Client, command, {
-        expiresIn: SIGNED_URL_TTL_SECONDS
-      });
+      const response = await s3Client.send(command);
+      const stream = response.Body as Readable;
 
-      // The browser downloads straight from storage, so this response must
-      // never be cached or shared.
-      return NextResponse.json(
-        { url, expiresIn: SIGNED_URL_TTL_SECONDS },
-        { headers: { 'Cache-Control': 'no-store' } }
-      );
+      const webStream = nodeReadableToWebReadable(stream);
+
+      return new NextResponse(webStream, {
+        headers: {
+          'Content-Type': 'application/pdf'
+        }
+      });
     } catch (error) {
+      if (error instanceof Error && error.name === 'NoSuchKey') {
+        return NextResponse.json(
+          { error: 'Ebook file not found' },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json(
         { error: 'Failed to fetch file ' + error },
         { status: 500 }

@@ -2,6 +2,11 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import {
+  IMAGE_UPLOAD_TOO_LARGE_MESSAGE,
+  isImageUploadTooLarge
+} from '@/lib/image-upload-limits';
 import { resolveImageSrc } from '@/lib/utils';
 
 type ImageUploadInputProps = {
@@ -48,6 +53,13 @@ export default function ImageUploadInput({
   // 파일 선택 시
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+
+    if (file && isImageUploadTooLarge(file)) {
+      toast.error(IMAGE_UPLOAD_TOO_LARGE_MESSAGE);
+      e.target.value = '';
+      return;
+    }
+
     onChange?.(file);
   };
 
