@@ -10,7 +10,6 @@ import {
   Coffee,
   Info,
   MapPin,
-  ShoppingCart,
   UserRound,
   UsersRound
 } from 'lucide-react';

@@ -1,94 +1,25 @@
 'use client';
 
-import '../../../lib/polyfills';
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-
 interface PdfViewerProps {
   ebookId: string;
-  bucketName: string;
 }
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url
-).toString();
-
-export default function PdfViewer({ ebookId, bucketName }: PdfViewerProps) {
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const { isSignedIn } = useAuth();
-
-  const [numPages, setNumPages] = useState<number>();
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
-  }
-
-  useEffect(() => {
-    const fetchSignedUrl = async () => {
-      if (!isSignedIn) {
-        setError('로그인이 필요합니다.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch(`/api/ebooks/${ebookId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/pdf'
-          }
-        });
-
-        if (!response.ok) {
-          const data = await response.json().catch(() => null);
-          throw new Error(
-            data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
-          );
-        }
-
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSignedUrl();
-  }, [ebookId, bucketName, isSignedIn]);
-
-  if (loading) return <div>PDF 로딩 중...</div>;
-  if (error) return <div>에러: {error}</div>;
-  if (!pdfUrl) return <div>PDF를 표시할 수 없습니다.</div>;
-
+export default function PdfViewer({ ebookId }: PdfViewerProps) {
+  const pdfUrl = `/api/ebooks/${encodeURIComponent(ebookId)}`;
   return (
-    <div className="max-h-[80vh] overflow-y-auto border border-solid border-gray-300 p-2.5 select-none">
-      <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
-        {Array.from(new Array(numPages), (_, index) => (
-          <div
-            key={`page_${index + 1}`}
-            className="border border-solid border-gray-200 mb-4 select-none"
-          >
-            <Page
-              pageNumber={index + 1}
-              width={window.innerWidth > 800 ? 800 : window.innerWidth - 40}
-            />
-          </div>
-        ))}
-      </Document>
+    <div className="w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+      <iframe
+        src={pdfUrl}
+        title="전자책 PDF 뷰어"
+        className="h-[80vh] min-h-[560px] w-full"
+      />
+      <p className="px-4 py-3 text-sm text-gray-600">
+        PDF가 표시되지 않으면{' '}
+        <a className="underline" href={pdfUrl} target="_blank" rel="noreferrer">
+          새 창에서 열기
+        </a>
+        를 선택하세요.
+      </p>
     </div>
   );
 }
