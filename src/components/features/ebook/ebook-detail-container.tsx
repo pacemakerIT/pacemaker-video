@@ -1,6 +1,5 @@
 'use client';
-import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -15,15 +14,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import ConfirmModal from '@/components/common/confirm-modal';
-
-const PdfViewer = dynamic(() => import('./pdf-viewer'), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[80vh] min-h-[560px] items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-600">
-      PDF 로딩 중...
-    </div>
-  )
-});
+import EbookPdfModal from './ebook-pdf-modal';
 
 export interface TOCItem {
   id: string;
@@ -77,6 +68,12 @@ export default function EbookDetailContainer({
   const isInCart = cart.some(
     (item) => item.itemId === id && item.itemType === ItemType.EBOOK
   );
+
+  const [isReaderOpen, setIsReaderOpen] = useState(false);
+  const [readingProgress, setReadingProgress] = useState({
+    currentPage: 0,
+    totalPages: 0
+  });
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -224,10 +221,28 @@ export default function EbookDetailContainer({
       : 'Add to Cart';
 
   const handleContinueReading = () => {
+    if (canAccessEbook) {
+      setIsReaderOpen(true);
+      return;
+    }
+
     document
       .getElementById('ebook-content')
       ?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const handleReaderPageChange = useCallback(
+    (currentPage: number, totalPages: number) => {
+      setReadingProgress({ currentPage, totalPages });
+    },
+    []
+  );
+
+  const progressPercent = readingProgress.totalPages
+    ? Math.round(
+        (readingProgress.currentPage / readingProgress.totalPages) * 100
+      )
+    : 0;
 
   return (
     <div className="w-full flex flex-col justify-between items-center gap-20">
@@ -236,6 +251,9 @@ export default function EbookDetailContainer({
           title={title.replace('\n', ' ')}
           subtitle={subtitle}
           onContinueReading={handleContinueReading}
+          progressPercent={progressPercent}
+          currentPage={readingProgress.currentPage}
+          totalPages={readingProgress.totalPages}
         />
       ) : (
         <DetailHeroSection
@@ -257,14 +275,6 @@ export default function EbookDetailContainer({
         id="ebook-content"
         className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
       >
-        {canAccessEbook && (
-          <section className="w-full" aria-label="전자책 PDF 뷰어">
-            <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
-            <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
-              <PdfViewer ebookId={id} />
-            </div>
-          </section>
-        )}
         <div className="w-full flex flex-col gap-8">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
@@ -306,6 +316,15 @@ export default function EbookDetailContainer({
           reviewCount={reviewCount}
         />
       </div>
+      {canAccessEbook && (
+        <EbookPdfModal
+          ebookId={id}
+          title={title.replace('\n', ' ')}
+          isOpen={isReaderOpen}
+          onOpenChange={setIsReaderOpen}
+          onPageChange={handleReaderPageChange}
+        />
+      )}
       <ConfirmModal
         isOpen={modalConfig.isOpen}
         onOpenChange={(open) =>
