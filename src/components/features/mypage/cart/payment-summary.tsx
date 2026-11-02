@@ -1,7 +1,8 @@
 'use client';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import LegalDocumentLink from '@/components/legal/legal-document-link';
 import { CartItem } from '@/types/my-card';
 import { amountToCents, formatMoneyFromCents } from '@/lib/money';
 import { toast } from 'sonner';
@@ -19,6 +20,9 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
   const [appliedPromotionCode, setAppliedPromotionCode] = useState<
     string | null
   >(null);
+  const [hasAcceptedPurchaseTerms, setHasAcceptedPurchaseTerms] =
+    useState(false);
+  const purchaseTermsCheckboxRef = useRef<HTMLInputElement>(null);
 
   const selectedItem = cartItems.filter((item) => item.selected);
   const selectedItemsPayload = selectedItem.map((item) => ({
@@ -116,6 +120,15 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
       const message = 'Please apply your promo code before checkout.';
       setCheckoutError(message);
       toast.error(message);
+      return;
+    }
+
+    if (!hasAcceptedPurchaseTerms) {
+      const message =
+        'Please agree to the Terms of Use and Refund Policy before checkout.';
+      setCheckoutError(message);
+      toast.error(message);
+      purchaseTermsCheckboxRef.current?.focus();
       return;
     }
 
@@ -248,6 +261,37 @@ export default function PaymentSummary({ cartItems }: PaymentSummaryProps) {
       )}
       <div className="border-t border-navy/10 bg-navy pb-[env(safe-area-inset-bottom)] text-white shadow-[0_-8px_30px_rgba(0,38,59,0.15)]">
         <div className="relative mx-auto flex max-w-[1248px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+          <div className="flex w-full items-center gap-2 text-xs text-white/80 lg:w-auto">
+            <input
+              ref={purchaseTermsCheckboxRef}
+              id="cart-purchase-terms"
+              type="checkbox"
+              checked={hasAcceptedPurchaseTerms}
+              onChange={(event) =>
+                setHasAcceptedPurchaseTerms(event.target.checked)
+              }
+              className="h-4 w-4 shrink-0 cursor-pointer accent-orange focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            />
+            <label htmlFor="cart-purchase-terms" className="cursor-pointer">
+              I agree to the{' '}
+              <LegalDocumentLink
+                slug="terms-of-use"
+                newTabLabel="opens in a new tab"
+                className="font-bold text-white underline underline-offset-2 hover:text-white/80"
+              >
+                Terms of Use
+              </LegalDocumentLink>{' '}
+              and{' '}
+              <LegalDocumentLink
+                slug="refund-policy"
+                newTabLabel="opens in a new tab"
+                className="font-bold text-white underline underline-offset-2 hover:text-white/80"
+              >
+                Refund Policy
+              </LegalDocumentLink>
+              .
+            </label>
+          </div>
           <button
             type="button"
             aria-expanded={showDetails}
