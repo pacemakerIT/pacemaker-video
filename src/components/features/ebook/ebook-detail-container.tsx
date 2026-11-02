@@ -1,4 +1,5 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
@@ -14,6 +15,15 @@ import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
+
+const PdfViewer = dynamic(() => import('./pdf-viewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[80vh] min-h-[560px] items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-600">
+      PDF 로딩 중...
+    </div>
+  )
+});
 
 export interface TOCItem {
   id: string;
@@ -259,6 +269,18 @@ export default function EbookDetailContainer({
         itemType={ItemType.EBOOK}
       />
       <div className="w-full flex flex-col justify-between items-center max-w-[1200px] px-4 md:px-8 lg:px-0 gap-12 md:gap-20 pb-20 md:pb-40">
+        {canAccessEbook && (
+          <section
+            id="ebook-reader"
+            className="w-full scroll-mt-28"
+            aria-label="전자책 PDF 뷰어"
+          >
+            <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
+            <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
+              <PdfViewer ebookId={id} />
+            </div>
+          </section>
+        )}
         <div className="w-full flex flex-col">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}

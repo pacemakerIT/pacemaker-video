@@ -2,8 +2,8 @@ import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
-import { bucketName } from '@/lib/supabase';
 import prisma from '@/lib/prisma';
+import { getEbookFileLocation } from '@/lib/ebook-file-location';
 import { getEbookAccessForClerkUserId } from '@/lib/entitlements';
 
 function nodeReadableToWebReadable(
@@ -51,6 +51,7 @@ export function createGetHandler(s3Client: S3Client) {
         select: {
           id: true,
           ebookId: true,
+          bucketUrl: true,
           price: true,
           isPublic: true
         }
@@ -77,9 +78,17 @@ export function createGetHandler(s3Client: S3Client) {
         );
       }
 
+      const location = getEbookFileLocation(ebook);
+      if (!location) {
+        return NextResponse.json(
+          { error: 'Ebook file not found' },
+          { status: 404 }
+        );
+      }
+
       const command = new GetObjectCommand({
-        Bucket: bucketName,
-        Key: ebook.ebookId
+        Bucket: location.bucket,
+        Key: location.key
       });
 
       const response = await s3Client.send(command);
@@ -94,6 +103,13 @@ export function createGetHandler(s3Client: S3Client) {
         }
       });
     } catch (error) {
+      if (error instanceof Error && error.name === 'NoSuchKey') {
+        return NextResponse.json(
+          { error: 'Ebook file not found' },
+          { status: 404 }
+        );
+      }
+
       return NextResponse.json(
         { error: 'Failed to fetch file ' + error },
         { status: 500 }

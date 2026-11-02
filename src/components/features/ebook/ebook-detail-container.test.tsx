@@ -3,6 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemType } from '@prisma/client';
 import EbookDetailContainer from './ebook-detail-container';
 
+vi.mock('next/dynamic', () => ({
+  default:
+    () =>
+    ({ ebookId }: { ebookId: string }) => (
+      <div data-testid="pdf-viewer">{ebookId}</div>
+    )
+}));
+
 const mocks = vi.hoisted(() => ({
   addToCart: vi.fn(),
   cart: [] as Array<{ itemId: string; itemType: unknown }>,
@@ -168,6 +176,10 @@ describe('EbookDetailContainer', () => {
 
   it('shows already-purchased behavior when the user can access the ebook', () => {
     render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
+
+    expect(
+      screen.getByRole('region', { name: '전자책 PDF 뷰어' })
+    ).toContainElement(screen.getByTestId('pdf-viewer'));
 
     fireEvent.click(screen.getByRole('button', { name: 'Purchased' }));
 

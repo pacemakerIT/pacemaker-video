@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import {
+  IMAGE_UPLOAD_TOO_LARGE_MESSAGE,
+  isImageUploadTooLarge
+} from '@/lib/image-upload-limits';
 import { imgBucketName, s3clientSupabase } from '@/lib/supabase';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { format } from 'date-fns';
@@ -48,6 +52,13 @@ export async function POST(req: Request) {
     const image = formData.get('image') as File;
     const link = formData.get('link') as string;
     const linkName = formData.get('linkName') as string;
+
+    if (image && typeof image === 'object' && isImageUploadTooLarge(image)) {
+      return NextResponse.json(
+        { error: IMAGE_UPLOAD_TOO_LARGE_MESSAGE },
+        { status: 413 }
+      );
+    }
 
     let imageUrl = '';
 
