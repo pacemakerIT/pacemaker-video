@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn()
@@ -21,7 +21,8 @@ vi.mock('@/lib/prisma', () => ({
 }));
 
 vi.mock('@/lib/supabase', () => ({
-  bucketName: 'ebooks',
+  ebookBucketName: 'ebooks',
+  imgBucketName: 'image',
   s3clientSupabase: {}
 }));
 
@@ -138,5 +139,46 @@ describe('ebook file handler', () => {
       })
     );
     expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
+  });
+
+  describe('file location', () => {
+    beforeEach(() => {
+      vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://project.supabase.co');
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('reads the PDF from the uploaded file URL instead of the ebookId label', async () => {
+      prismaMock.ebook.findUnique.mockResolvedValue({
+        id: 'ebook-123',
+        ebookId: 'ebook-1761400000000',
+        bucketUrl:
+          'https://project.supabase.co/storage/v1/object/public/ebooks/3f2a.pdf',
+        price: 25,
+        isPublic: true
+      });
+
+      const response = await GET(new Request('http://localhost'), context());
+
+      expect(response.status).toBe(200);
+      expect(s3Client.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          input: expect.objectContaining({ Bucket: 'ebooks', Key: '3f2a.pdf' })
+        })
+      );
+    });
+
+    it('returns 404 when the PDF is missing from storage', async () => {
+      s3Client.send.mockRejectedValue(
+        Object.assign(new Error('Object not found'), { name: 'NoSuchKey' })
+      );
+
+      const response = await GET(new Request('http://localhost'), context());
+
+      expect(response.status).toBe(404);
+      expect(await response.json()).toEqual({ error: 'Ebook file not found' });
+    });
   });
 });

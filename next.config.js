@@ -3,6 +3,8 @@ const nextConfig = {
   serverExternalPackages: ['@prisma/adapter-pg'],
   webpack: (config) => {
     config.resolve.alias.canvas = false;
+    config.resolve.alias['pdfjs-dist$'] =
+      require.resolve('pdfjs-dist/build/pdf.min.mjs');
     return config;
   },
   images: {
