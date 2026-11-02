@@ -1582,29 +1582,30 @@
     </script>
 
     <!-- ================= INLINE ORDER DETAIL MODAL ================= -->
-    <div id="order-detail-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden">
+    <div id="order-detail-modal" class="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-6 hidden">
       <!-- Backdrop -->
       <button onclick="closeOrderDetailModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close modal"></button>
       
       <!-- Modal Box (Elevated above backdrop) -->
-      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[600px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy">
-        <!-- Close Button -->
-        <button 
-          type="button"
-          onclick="closeOrderDetailModal()" 
-          class="absolute right-6 top-6 w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-navy hover:bg-gray-soft transition-colors cursor-pointer border-0 bg-transparent"
-          aria-label="Close details"
-        >
-          <span class="material-symbols-outlined text-lg">close</span>
-        </button>
+      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[600px] relative z-10 max-h-[92vh] sm:max-h-[90vh] flex flex-col text-navy overflow-hidden">
+        <!-- Fixed Header -->
+        <div class="flex items-center justify-between border-b border-gray-100 px-6 sm:px-10 py-5 shrink-0 bg-white">
+          <h2 class="text-xl sm:text-[24px] font-bold tracking-tight font-heading leading-tight text-navy whitespace-nowrap">
+            Order Details
+          </h2>
+          <!-- Close Button -->
+          <button 
+            type="button"
+            onclick="closeOrderDetailModal()" 
+            class="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-navy hover:bg-gray-soft transition-colors cursor-pointer border-0 bg-transparent -mr-2"
+            aria-label="Close details"
+          >
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
 
-        <!-- Modal Title -->
-        <h2 class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy mb-8 whitespace-nowrap">
-          Order Details
-        </h2>
-
-        <!-- Content sections with space-y-[23px] to match grid gaps -->
-        <div class="space-y-[23px]">
+        <!-- Scrollable Modal Body -->
+        <div class="overflow-y-auto px-6 sm:px-10 py-6 space-y-[23px] overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-navy/15 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-navy/30">
           <!-- Order info -->
           <div class="space-y-1">
             <div class="flex justify-between items-baseline">
@@ -1784,10 +1785,12 @@
     <script>
       function openOrderDetailModal() {
         document.getElementById('order-detail-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
       }
 
       function closeOrderDetailModal() {
         document.getElementById('order-detail-modal').classList.add('hidden');
+        document.body.style.overflow = '';
       }
 
       function showOrderDetailInlineAlert(type) {

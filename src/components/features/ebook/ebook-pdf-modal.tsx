@@ -37,25 +37,31 @@ export default function EbookPdfModal({
       <DialogContent
         showCloseButton={false}
         aria-describedby={undefined}
-        // The site header is sticky at z-[100], so the reader has to sit above it.
-        overlayClassName="z-[120]"
-        className="left-0 top-0 z-[120] grid h-[100dvh] w-screen max-w-none overflow-hidden translate-x-0 translate-y-0 grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-0 rounded-none border-0 bg-white p-0 sm:left-1/2 sm:top-1/2 sm:h-[90vh] sm:w-[calc(100vw-4rem)] sm:max-w-[1100px] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl sm:border"
+        // Design system: modal overlay must be z-[2000]
+        overlayClassName="z-[2000]"
+        className="left-0 top-0 z-[2000] grid h-[100dvh] w-screen max-w-none overflow-hidden translate-x-0 translate-y-0 grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-0 rounded-none border-0 bg-white p-0 sm:left-1/2 sm:top-1/2 sm:h-[90vh] sm:w-[calc(100vw-3rem)] sm:max-w-[1100px] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl sm:border sm:border-navy/10 sm:shadow-[0_20px_50px_rgba(0,38,59,0.2)]"
       >
-        <div className="flex min-w-0 items-center justify-between gap-3 border-b border-navy/10 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6 sm:pt-4">
-          <DialogTitle className="truncate font-heading text-pace-base font-bold text-navy sm:text-pace-lg">
-            {title}
-          </DialogTitle>
+        <div className="flex min-w-0 items-center justify-between gap-3 border-b border-navy/10 bg-white px-4 py-3 sm:px-6 sm:py-3.5">
+          <div className="flex min-w-0 items-center gap-2">
+            <span
+              className="hidden sm:inline-block h-2 w-2 rounded-full bg-teal"
+              aria-hidden
+            />
+            <DialogTitle className="truncate font-[family-name:var(--font-heading)] text-base sm:text-lg font-bold text-navy tracking-tight">
+              {title}
+            </DialogTitle>
+          </div>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
             aria-label="Close reader"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-navy transition-colors hover:bg-gray-soft"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-navy transition-all hover:bg-navy/10 hover:text-navy active:scale-95 focus-visible:outline-teal"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="min-h-0 min-w-0 overflow-hidden">
+        <div className="min-h-0 min-w-0 overflow-hidden bg-gray-soft">
           {isOpen && (
             <PdfViewer ebookId={ebookId} onPageChange={onPageChange} />
           )}
