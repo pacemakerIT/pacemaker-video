@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
@@ -14,12 +14,15 @@ import { RelatedContentItem } from '@/types/video-detail';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
-import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
 
 const PdfViewer = dynamic(() => import('./pdf-viewer'), {
   ssr: false,
-  loading: () => <p>PDF 로딩 중...</p>
+  loading: () => (
+    <div className="flex h-[80vh] min-h-[560px] items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-600">
+      PDF 로딩 중...
+    </div>
+  )
 });
 
 export interface TOCItem {
@@ -71,12 +74,8 @@ export default function EbookDetailContainer({
   const { isSignedIn } = useUser();
   const router = useRouter();
   const { cart, addToCart } = useCartContext();
-  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const isInCart = cart.some(
     (item) => item.itemId === id && item.itemType === ItemType.EBOOK
-  );
-  const isLiked = favorites.some(
-    (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
 
   const [modalConfig, setModalConfig] = useState<{
@@ -115,29 +114,6 @@ export default function EbookDetailContainer({
       onConfirm,
       showCancel: true
     });
-  };
-
-  const handleToggleLike = async (nextLiked: boolean) => {
-    if (!isSignedIn) {
-      showConfirm(
-        'Login Required',
-        'You need to log in to use the favorite feature. Would you like to log in now?',
-        () => {
-          router.push('/sign-in');
-        }
-      );
-      return;
-    }
-
-    try {
-      if (nextLiked) {
-        await addFavorite(id, ItemType.EBOOK);
-      } else {
-        await removeFavorite(id, ItemType.EBOOK);
-      }
-    } catch {
-      showAlert('Error occurred', 'An error occurred. Please try again.');
-    }
   };
 
   const handleAddToCart = async () => {
@@ -284,10 +260,13 @@ export default function EbookDetailContainer({
         {canAccessEbook && (
           <section
             id="ebook-reader"
-            aria-label="E-book reader"
             className="w-full scroll-mt-28"
+            aria-label="E-book reader"
           >
-            <PdfViewer ebookId={id} />
+            <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
+            <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
+              <PdfViewer ebookId={id} />
+            </div>
           </section>
         )}
         <div className="w-full flex flex-col gap-8">
