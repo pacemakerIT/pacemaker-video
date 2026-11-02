@@ -1,6 +1,5 @@
 import { ItemType, OrderStatus, Prisma } from '@prisma/client';
 import type Stripe from 'stripe';
-import { isUuid } from './checkout-items';
 import prisma from './prisma';
 
 type OrderWithItems = Prisma.OrderGetPayload<{
@@ -9,32 +8,15 @@ type OrderWithItems = Prisma.OrderGetPayload<{
 
 export type CheckoutFulfillmentResult = {
   orderId: string | null;
-  status: 'completed' | 'already_completed' | 'already_refunded' | 'ignored';
+  status: 'completed' | 'already_completed' | 'ignored';
 };
 
-export function stripeObjectId(
+function stripeObjectId(
   value: string | { id?: string } | null | undefined
 ): string | null {
   if (!value) return null;
   if (typeof value === 'string') return value;
   return typeof value.id === 'string' ? value.id : null;
-}
-
-// Locks the order row for the rest of the transaction and returns its latest
-// committed status (null when the row does not exist). Checkout fulfillment and
-// refunds both take this lock first, so concurrent webhooks for the same order
-// run one after the other instead of overwriting each other. Prisma's
-// updateMany selects ids before updating, so a status condition on it is not
-// re-checked after a concurrent commit and cannot replace this lock.
-export async function lockOrderStatus(
-  tx: Prisma.TransactionClient,
-  orderId: string
-) {
-  const rows = await tx.$queryRaw<{ status: OrderStatus }[]>`
-    SELECT "status" FROM "Order" WHERE "id" = ${orderId}::uuid FOR UPDATE
-  `;
-
-  return rows[0]?.status ?? null;
 }
 
 function isPaidCheckoutSession(session: Stripe.Checkout.Session) {
@@ -44,17 +26,8 @@ function isPaidCheckoutSession(session: Stripe.Checkout.Session) {
   );
 }
 
-// Other integrations on the same Stripe account may use these fields for their
-// own references; only an app order id (a UUID) is used, because anything else
-// would be rejected by the uuid column and fail the webhook on every retry.
-export function checkoutSessionOrderId(
-  session: Pick<Stripe.Checkout.Session, 'metadata' | 'client_reference_id'>
-) {
-  return (
-    [session.metadata?.orderId, session.client_reference_id].find(
-      (value): value is string => typeof value === 'string' && isUuid(value)
-    ) ?? null
-  );
+function sessionOrderId(session: Stripe.Checkout.Session) {
+  return session.metadata?.orderId || session.client_reference_id || null;
 }
 
 function compactUpdateData<T extends Record<string, unknown>>(data: T) {
@@ -121,7 +94,7 @@ async function resolveStripeReferences(
 
 function orderLookupWhere(session: Stripe.Checkout.Session) {
   const conditions: Prisma.OrderWhereInput[] = [];
-  const orderId = checkoutSessionOrderId(session);
+  const orderId = sessionOrderId(session);
 
   if (orderId) {
     conditions.push({ id: orderId });
@@ -249,7 +222,7 @@ export async function fulfillCheckoutSession(
 ): Promise<CheckoutFulfillmentResult> {
   if (!isPaidCheckoutSession(session)) {
     return {
-      orderId: checkoutSessionOrderId(session),
+      orderId: sessionOrderId(session),
       status: 'ignored'
     };
   }
@@ -262,21 +235,8 @@ export async function fulfillCheckoutSession(
       include: { items: true }
     });
 
-    // Sessions created by another integration, or by another app environment
-    // sharing this Stripe account, have no order here. Acknowledge them so
-    // Stripe does not retry; the warning keeps a paid but unmatched session
-    // visible in the logs.
     if (!order) {
-      // eslint-disable-next-line no-console
-      console.warn('[STRIPE] Checkout session matched no order', {
-        sessionId: session.id,
-        orderId: checkoutSessionOrderId(session)
-      });
-
-      return {
-        orderId: null,
-        status: 'ignored'
-      };
+      throw new Error('Order not found for Stripe checkout session');
     }
 
     if (
@@ -286,20 +246,7 @@ export async function fulfillCheckoutSession(
       throw new Error('Stripe checkout session does not match the order');
     }
 
-    // Re-read the status under the row lock: a refund may have committed since
-    // the lookup above.
-    const status = await lockOrderStatus(tx, order.id);
-
-    // A refund is terminal: a retried or late checkout.session.completed must
-    // not re-grant access that charge.refunded already revoked.
-    if (status === OrderStatus.REFUNDED) {
-      return {
-        orderId: order.id,
-        status: 'already_refunded'
-      };
-    }
-
-    if (status === OrderStatus.COMPLETED) {
+    if (order.status === OrderStatus.COMPLETED) {
       const missingStripeData =
         (!order.stripeReceiptUrl && stripeReferences.receiptUrl) ||
         (!order.stripeInvoiceUrl && stripeReferences.invoiceUrl);

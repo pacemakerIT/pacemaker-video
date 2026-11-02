@@ -953,6 +953,34 @@ async function main() {
     }
   });
 
+  // Order history fixtures for the seeded USER account.
+  // Separate items keep refund fixtures from overlapping active purchases.
+  for (const [index, status] of [
+    OrderStatus.REFUND_PROCESSING,
+    OrderStatus.REFUNDED
+  ].entries()) {
+    await prisma.order.create({
+      data: {
+        userId: dashboardUserId,
+        status,
+        subtotalAmountCents: 2800,
+        totalAmountCents: 2800,
+        discountAmountCents: 0,
+        taxAmountCents: 0,
+        currency: 'cad',
+        orderedAt: addDays(new Date(), -(31 + index)),
+        items: {
+          create: {
+            itemId: courseIds[4 + index],
+            itemType: ItemType.COURSE,
+            priceAtPurchaseCents: 2800,
+            quantity: 1
+          }
+        }
+      }
+    });
+  }
+
   await prisma.userWorkshop.createMany({
     data: dashboardWorkshopIds.map((workshopId, index) => ({
       userId: dashboardUserId,
@@ -961,47 +989,6 @@ async function main() {
       attended: index === 0,
       registeredAt: addDays(new Date(), -(20 - index * 4))
     }))
-  });
-
-  // Preview with the seeded USER account at:
-  // /mypage/payment-success?session_id=cs_test_seed_payment_success
-  // This is a local fixture identifier, not a real Stripe checkout session.
-  const paymentSuccessItems = [
-    ...dashboardCourseIds.slice(0, 2).map((itemId) => ({
-      itemId,
-      itemType: ItemType.COURSE,
-      priceAtPurchaseCents: 2800,
-      quantity: 1
-    })),
-    {
-      itemId: dashboardEbookIds[0],
-      itemType: ItemType.EBOOK,
-      priceAtPurchaseCents: 2800,
-      quantity: 1
-    },
-    {
-      itemId: dashboardWorkshopIds[1],
-      itemType: ItemType.WORKSHOP,
-      priceAtPurchaseCents: Math.round(workshopData[5].price * 100),
-      quantity: 1
-    }
-  ];
-  const paymentSuccessTotal = paymentSuccessItems.reduce(
-    (total, item) => total + item.priceAtPurchaseCents * item.quantity,
-    0
-  );
-  await prisma.order.create({
-    data: {
-      userId: dashboardUserId,
-      status: OrderStatus.COMPLETED,
-      stripeCheckoutSessionId: 'cs_test_seed_payment_success',
-      subtotalAmountCents: paymentSuccessTotal,
-      totalAmountCents: paymentSuccessTotal,
-      discountAmountCents: 0,
-      taxAmountCents: 0,
-      currency: 'cad',
-      items: { create: paymentSuccessItems }
-    }
   });
 
   const dashboardVideos = await prisma.video.findMany({

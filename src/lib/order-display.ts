@@ -43,6 +43,7 @@ export const orderStatusLabels: Record<OrderStatus, string> = {
   COMPLETED: '결제완료',
   FAILED: '결제실패',
   CANCELLED: '결제취소',
+  REFUND_PROCESSING: '환불 처리 중',
   REFUNDED: '환불완료'
 };
 

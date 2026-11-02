@@ -54,10 +54,7 @@ export default function MyPageSidebar() {
 
         <nav className="flex w-full flex-col gap-1 border-t border-gray-100 pt-4">
           {menuItems.map((item) => {
-            const isActive =
-              pathname === item.href ||
-              (item.href === '/mypage/cart' &&
-                pathname === '/mypage/payment-success');
+            const isActive = pathname === item.href;
             const Icon = item.icon;
 
             return (

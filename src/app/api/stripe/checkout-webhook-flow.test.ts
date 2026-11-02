@@ -79,7 +79,6 @@ const db: {
 };
 
 const tx = {
-  $queryRaw: vi.fn(),
   cart: {
     findMany: vi.fn(),
     deleteMany: vi.fn()
@@ -103,14 +102,11 @@ const tx = {
   },
   order: {
     findFirst: vi.fn(),
-    findUnique: vi.fn(),
-    findUniqueOrThrow: vi.fn(),
     create: vi.fn(),
     update: vi.fn()
   },
   userWorkshop: {
-    upsert: vi.fn(),
-    deleteMany: vi.fn()
+    upsert: vi.fn()
   }
 };
 
@@ -119,14 +115,12 @@ const prismaMock = {
     findUnique: vi.fn()
   },
   order: {
-    findUnique: vi.fn(),
     update: vi.fn()
   },
   $transaction: vi.fn()
 };
 
 const stripeSessionCreateMock = vi.fn();
-const stripeSessionListMock = vi.fn();
 const stripeConstructEventMock = vi.fn();
 const stripePaymentIntentRetrieveMock = vi.fn();
 const stripeInvoiceRetrieveMock = vi.fn();
@@ -134,8 +128,7 @@ const stripePromotionCodesListMock = vi.fn();
 const stripeClientMock = {
   checkout: {
     sessions: {
-      create: stripeSessionCreateMock,
-      list: stripeSessionListMock
+      create: stripeSessionCreateMock
     }
   },
   webhooks: {
@@ -228,39 +221,6 @@ function checkoutSessionEvent(
   } as Stripe.Event;
 }
 
-function chargeRefundedEvent(
-  overrides: Partial<Stripe.Charge> = {}
-): Stripe.Event {
-  return {
-    id: 'evt_flow_refund_123',
-    type: 'charge.refunded',
-    data: {
-      object: {
-        id: 'ch_flow_123',
-        payment_intent: 'pi_flow_123',
-        amount: 3050,
-        amount_refunded: 3050,
-        refunded: true,
-        ...overrides
-      } as Stripe.Charge
-    }
-  } as Stripe.Event;
-}
-
-function findOrderByUniqueField({
-  where
-}: {
-  where: { id?: string; stripePaymentIntentId?: string };
-}) {
-  const order = db.orders.find((row) =>
-    where.id
-      ? row.id === where.id
-      : row.stripePaymentIntentId === where.stripePaymentIntentId
-  );
-
-  return Promise.resolve(order ?? null);
-}
-
 function orderMatchesFilter(
   order: OrderRow,
   condition: Record<string, string>
@@ -328,7 +288,6 @@ function installPrismaBehavior() {
   });
   prismaMock.$transaction.mockImplementation(async (callback) => callback(tx));
   prismaMock.order.update.mockImplementation(updateOrder);
-  prismaMock.order.findUnique.mockImplementation(findOrderByUniqueField);
 
   tx.cart.findMany.mockImplementation(({ where }) =>
     Promise.resolve(
@@ -467,18 +426,8 @@ function installPrismaBehavior() {
     db.orders.push(order);
     return Promise.resolve({ id: order.id });
   });
-  tx.order.findUnique.mockImplementation(findOrderByUniqueField);
-  tx.order.findUniqueOrThrow.mockImplementation(findOrderByUniqueField);
-  tx.$queryRaw.mockImplementation((_sql: TemplateStringsArray, id: string) =>
-    Promise.resolve(
-      db.orders
-        .filter((order) => order.id === id)
-        .map((order) => ({ status: order.status }))
-    )
-  );
   tx.order.update.mockImplementation(updateOrder);
   tx.userWorkshop.upsert.mockResolvedValue({});
-  tx.userWorkshop.deleteMany.mockResolvedValue({ count: 0 });
 }
 
 async function createCheckoutThenWebhook(
@@ -515,7 +464,6 @@ describe('checkout to Stripe webhook flow', () => {
       hosted_invoice_url: 'https://stripe.test/flow-invoice'
     });
     stripePromotionCodesListMock.mockResolvedValue({ data: [] });
-    stripeSessionListMock.mockResolvedValue({ data: [] });
   });
 
   it('creates checkout and completes the order from a paid webhook', async () => {
@@ -605,112 +553,5 @@ describe('checkout to Stripe webhook flow', () => {
     expect(tx.cart.deleteMany).not.toHaveBeenCalled();
     expect(tx.video.findMany).not.toHaveBeenCalled();
     expect(tx.ebook.findMany).not.toHaveBeenCalled();
-  });
-
-  it('refunds a paid order and ignores a late checkout retry', async () => {
-    const paidResponse = await createCheckoutThenWebhook('paid');
-
-    expect(paidResponse.status).toBe(200);
-    expect(db.orders[0].status).toBe(OrderStatus.COMPLETED);
-
-    stripeConstructEventMock.mockReturnValue(chargeRefundedEvent());
-
-    const refundResponse = await receiveStripeWebhook(createWebhookRequest());
-
-    expect(refundResponse.status).toBe(200);
-    expect(await refundResponse.json()).toEqual({
-      received: true,
-      refund: {
-        orderId,
-        status: 'refunded'
-      }
-    });
-    expect(db.orders[0].status).toBe(OrderStatus.REFUNDED);
-    expect(tx.userWorkshop.deleteMany).toHaveBeenCalledWith({
-      where: { orderId }
-    });
-
-    const repeatedRefundResponse = await receiveStripeWebhook(
-      createWebhookRequest()
-    );
-
-    expect(await repeatedRefundResponse.json()).toEqual({
-      received: true,
-      refund: {
-        orderId,
-        status: 'already_refunded'
-      }
-    });
-
-    stripeConstructEventMock.mockReturnValue(checkoutSessionEvent('paid'));
-
-    const lateCheckoutResponse = await receiveStripeWebhook(
-      createWebhookRequest()
-    );
-
-    expect(await lateCheckoutResponse.json()).toEqual({
-      received: true,
-      fulfillment: {
-        orderId,
-        status: 'already_refunded'
-      }
-    });
-    expect(db.orders[0].status).toBe(OrderStatus.REFUNDED);
-  });
-
-  it('keeps a paid order completed after a partial refund', async () => {
-    const consoleWarnSpy = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
-
-    try {
-      await createCheckoutThenWebhook('paid');
-      stripeConstructEventMock.mockReturnValue(
-        chargeRefundedEvent({ refunded: false, amount_refunded: 1000 })
-      );
-
-      const refundResponse = await receiveStripeWebhook(createWebhookRequest());
-
-      expect(await refundResponse.json()).toEqual({
-        received: true,
-        refund: {
-          orderId,
-          status: 'partial_refund_ignored'
-        }
-      });
-      expect(db.orders[0].status).toBe(OrderStatus.COMPLETED);
-      expect(tx.userWorkshop.deleteMany).not.toHaveBeenCalled();
-    } finally {
-      consoleWarnSpy.mockRestore();
-    }
-  });
-
-  it('acknowledges a paid checkout from another integration', async () => {
-    const consoleWarnSpy = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
-    const event = checkoutSessionEvent('paid');
-    const session = event.data.object as Stripe.Checkout.Session;
-
-    session.id = 'cs_other_app';
-    session.metadata = { orderId: 'INV-2026-0042' };
-    session.client_reference_id = null;
-    stripeConstructEventMock.mockReturnValue(event);
-
-    try {
-      const response = await receiveStripeWebhook(createWebhookRequest());
-
-      expect(response.status).toBe(200);
-      expect(await response.json()).toEqual({
-        received: true,
-        fulfillment: {
-          orderId: null,
-          status: 'ignored'
-        }
-      });
-      expect(tx.order.update).not.toHaveBeenCalled();
-    } finally {
-      consoleWarnSpy.mockRestore();
-    }
   });
 });

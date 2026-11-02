@@ -4,7 +4,6 @@ import { useState } from 'react';
 import SectionHeader from '../../common/section-header';
 import ExpandableCards from '../../common/expandable-cards';
 import DetailHeroSection from '../../common/detail-hero-section';
-import EbookPurchasedHero from './ebook-purchased-hero';
 import DetailReviewsSection from '../../common/detail-reviews-section';
 import DetailRelatedContentSection from '../../common/detail-related-content-section';
 import DetailRecommendationSection from '../../common/detail-recommendation-section';
@@ -14,6 +13,7 @@ import { RelatedContentItem } from '@/types/video-detail';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useCartContext } from '@/app/context/cart-context';
+import { useFavoriteContext } from '@/app/context/favorite-context';
 import ConfirmModal from '@/components/common/confirm-modal';
 
 const PdfViewer = dynamic(() => import('./pdf-viewer'), {
@@ -74,8 +74,12 @@ export default function EbookDetailContainer({
   const { isSignedIn } = useUser();
   const router = useRouter();
   const { cart, addToCart } = useCartContext();
+  const { favorites, addFavorite, removeFavorite } = useFavoriteContext();
   const isInCart = cart.some(
     (item) => item.itemId === id && item.itemType === ItemType.EBOOK
+  );
+  const isLiked = favorites.some(
+    (favorite) => favorite.itemId === id && favorite.itemType === ItemType.EBOOK
   );
 
   const [modalConfig, setModalConfig] = useState<{
@@ -114,6 +118,29 @@ export default function EbookDetailContainer({
       onConfirm,
       showCancel: true
     });
+  };
+
+  const handleToggleLike = async (nextLiked: boolean) => {
+    if (!isSignedIn) {
+      showConfirm(
+        'Login Required',
+        'You need to log in to use the favorite feature. Would you like to log in now?',
+        () => {
+          router.push('/sign-in');
+        }
+      );
+      return;
+    }
+
+    try {
+      if (nextLiked) {
+        await addFavorite(id, ItemType.EBOOK);
+      } else {
+        await removeFavorite(id, ItemType.EBOOK);
+      }
+    } catch {
+      showAlert('Error occurred', 'An error occurred. Please try again.');
+    }
   };
 
   const handleAddToCart = async () => {
@@ -223,49 +250,38 @@ export default function EbookDetailContainer({
       ? 'Go to Cart'
       : 'Add to Cart';
 
-  const handleContinueReading = () => {
-    document
-      .getElementById('ebook-content')
-      ?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <div className="w-full flex flex-col justify-between items-center gap-20">
-      {canAccessEbook ? (
-        <EbookPurchasedHero
-          title={title.replace('\n', ' ')}
-          subtitle={subtitle}
-          onContinueReading={handleContinueReading}
-        />
-      ) : (
-        <DetailHeroSection
-          backgroundImage={backgroundImage}
-          visualTitle={visualTitle}
-          visualTitle2={visualTitle2}
-          title={courseTitle || title.replace('\n', ' ')}
-          instructor={instructor}
-          description={description}
-          price={price}
-          onAddToCart={handleAddToCart}
-          buttonText={heroButtonText}
-          instructorLabel="Instructor"
-          priceLabel="Price"
-          itemType={ItemType.EBOOK}
-        />
-      )}
-      <div
-        id="ebook-content"
-        className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
-      >
+    <div className="w-full flex flex-col justify-between items-center gap-12 md:gap-20">
+      <DetailHeroSection
+        backgroundImage={backgroundImage}
+        visualTitle={visualTitle}
+        visualTitle2={visualTitle2}
+        title={courseTitle || title.replace('\n', ' ')}
+        instructor={instructor}
+        description={description}
+        price={price}
+        onAddToCart={handleAddToCart}
+        onToggleLike={handleToggleLike}
+        isLiked={isLiked}
+        buttonText={heroButtonText}
+        instructorLabel="Instructor"
+        priceLabel="Price"
+        itemType={ItemType.EBOOK}
+      />
+      <div className="w-full flex flex-col justify-between items-center max-w-[1200px] px-4 md:px-8 lg:px-0 gap-12 md:gap-20 pb-20 md:pb-40">
         {canAccessEbook && (
-          <section className="w-full" aria-label="전자책 PDF 뷰어">
+          <section
+            id="ebook-reader"
+            className="w-full scroll-mt-28"
+            aria-label="전자책 PDF 뷰어"
+          >
             <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
             <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
               <PdfViewer ebookId={id} />
             </div>
           </section>
         )}
-        <div className="w-full flex flex-col gap-8">
+        <div className="w-full flex flex-col">
           <SectionHeader
             subtitle={subtitle || 'Chosen by Leading Canadian Tech Companies'}
             title={sectionTitle ?? title ?? ''}

@@ -107,6 +107,44 @@ describe('order display helpers', () => {
     );
   });
 
+  it.each([
+    [OrderStatus.REFUND_PROCESSING, '환불 처리 중'],
+    [OrderStatus.REFUNDED, '환불완료']
+  ])(
+    'preserves refund status %s in order history',
+    async (status, statusLabel) => {
+      prismaMock.order.findMany.mockResolvedValue([
+        {
+          id: 'refund-order',
+          status,
+          orderedAt: new Date('2026-10-01T12:00:00Z'),
+          currency: 'cad',
+          subtotalAmountCents: 2800,
+          discountAmountCents: 0,
+          taxAmountCents: 0,
+          totalAmountCents: 2800,
+          stripeCheckoutSessionId: null,
+          stripeReceiptUrl: null,
+          stripeInvoiceUrl: null,
+          items: []
+        }
+      ]);
+
+      const orders = await getOrderDisplaysForUser('user-id', [status]);
+
+      expect(prismaMock.order.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: 'user-id', status: { in: [status] } }
+        })
+      );
+      expect(orders[0]).toMatchObject({
+        status,
+        statusLabel,
+        totalAmountCents: 2800
+      });
+    }
+  );
+
   it('keeps fallback item data when catalog content is missing', async () => {
     prismaMock.order.findMany.mockResolvedValue([
       {

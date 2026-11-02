@@ -6,6 +6,7 @@
 @tailwind utilities;
 
 :root {
+  --site-header-height: 73px;
   --background: #ffffff;
   --foreground: #171717;
   color-scheme: light !important;
@@ -436,7 +437,7 @@ html {
     @apply font-sans;
     color: #475467;
     background-color: #ffffff;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 }
 
