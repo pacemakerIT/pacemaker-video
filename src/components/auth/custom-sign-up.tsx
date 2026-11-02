@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import SignUpWithGoogleButton from '@/components/auth/sign-up-google-button';
+import LegalDocumentLink from '@/components/legal/legal-document-link';
+import { createPortal } from 'react-dom'; // 포털로 렌더링
 
 type Props = {
   closeModal?: () => void;

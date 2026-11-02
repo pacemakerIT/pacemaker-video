@@ -1,5 +1,4 @@
 import LogoCarousel from '@/components/common/logo-marquee';
-import ReviewContainer from '@/components/common/review-container';
 import EbookHero from '@/components/features/ebook/ebook-hero';
 import EbookListGrid from '@/components/features/ebook/ebook-list-grid';
 import prisma from '@/lib/prisma';
