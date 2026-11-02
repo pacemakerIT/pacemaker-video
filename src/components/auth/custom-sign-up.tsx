@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import CustomAuthWrapper from '@/components/auth/custom-auth-wrapper';
 import SignUpWithGoogleButton from '@/components/auth/sign-up-google-button';
+import LegalDocumentLink from '@/components/legal/legal-document-link';
 import { createPortal } from 'react-dom'; // 포털로 렌더링
 
 type Props = {
@@ -160,6 +161,26 @@ export default function CustomSignUp({ closeModal, switchToSignIn }: Props) {
               가입하기
             </button>
           </form>
+
+          <p className="w-[400px] max-w-full break-keep text-sm font-normal text-pace-stone-500 text-center mb-6">
+            구글 계정이나 이메일로 가입하면 Pacemaker의{' '}
+            <LegalDocumentLink
+              slug="terms-of-use"
+              newTabLabel="새 탭에서 열림"
+              className="text-pace-gray-500 underline hover:text-pace-orange-800"
+            >
+              이용약관
+            </LegalDocumentLink>
+            과{' '}
+            <LegalDocumentLink
+              slug="privacy-policy"
+              newTabLabel="새 탭에서 열림"
+              className="text-pace-gray-500 underline hover:text-pace-orange-800"
+            >
+              개인정보 처리방침
+            </LegalDocumentLink>
+            에 동의하는 것으로 봅니다.
+          </p>
 
           <p className="text-pace-base font-normal text-pace-stone-500 text-center">
             이미 회원이신가요?{' '}
