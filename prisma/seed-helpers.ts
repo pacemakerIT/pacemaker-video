@@ -50,13 +50,18 @@ export function selectSeedImageKeys(objects: StorageObject[]) {
     .sort();
 }
 
-// Ebook files in the ebook bucket; existing keys have no extension, so only
-// folder markers and empty or hidden objects are skipped.
+// Keep PDFs and legacy keys without an extension. The document bucket also
+// contains images and other uploads, which must never become ebook files.
 export function selectSeedEbookKeys(objects: StorageObject[]) {
   return objects
     .filter(({ key, size }) => {
       const name = key.split('/').pop() ?? '';
-      return size > 0 && name.length > 0 && !name.startsWith('.');
+      return (
+        size > 0 &&
+        name.length > 0 &&
+        !name.startsWith('.') &&
+        (!/\.[a-z0-9]+$/i.test(name) || /\.pdf$/i.test(name))
+      );
     })
     .map(({ key }) => key)
     .sort();

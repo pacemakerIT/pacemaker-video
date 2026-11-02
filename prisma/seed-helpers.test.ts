@@ -108,6 +108,18 @@ describe('selectSeedEbookKeys', () => {
       ])
     ).toEqual(['ebook-1', 'ebook-2']);
   });
+  it('excludes images and unrelated documents from ebook file candidates', () => {
+    expect(
+      selectSeedEbookKeys([
+        { key: 'cover.png', size: 100 },
+        { key: 'cover.jpeg', size: 100 },
+        { key: 'slides.pptx', size: 100 },
+        { key: 'docker-compose.yml', size: 100 },
+        { key: 'ebooks/guide.PDF', size: 100 },
+        { key: 'ebook-1', size: 100 }
+      ])
+    ).toEqual(['ebook-1', 'ebooks/guide.PDF']);
+  });
 });
 
 describe('publicObjectUrl', () => {

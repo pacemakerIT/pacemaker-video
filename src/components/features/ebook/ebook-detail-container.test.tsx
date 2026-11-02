@@ -3,6 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemType } from '@prisma/client';
 import EbookDetailContainer from './ebook-detail-container';
 
+vi.mock('next/dynamic', () => ({
+  default:
+    () =>
+    ({ ebookId }: { ebookId: string }) => (
+      <div data-testid="pdf-viewer">{ebookId}</div>
+    )
+}));
+
 const mocks = vi.hoisted(() => ({
   addToCart: vi.fn(),
   cart: [] as Array<{ itemId: string; itemType: unknown }>,
@@ -182,6 +190,14 @@ describe('EbookDetailContainer', () => {
     expect(
       screen.getByRole('button', { name: 'Continue reading' })
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'E-book reader' })
+    ).toContainElement(screen.getByTestId('pdf-viewer'));
+    const scrollIntoView = vi.fn();
+    screen.getByRole('region', { name: 'E-book reader' }).scrollIntoView =
+      scrollIntoView;
+    fireEvent.click(screen.getByRole('button', { name: 'Continue reading' }));
+    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
     expect(
       screen.queryByRole('button', { name: 'Purchased' })
     ).not.toBeInTheDocument();
