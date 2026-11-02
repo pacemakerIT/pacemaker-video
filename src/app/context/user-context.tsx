@@ -56,7 +56,7 @@ export function getUserDisplayName(user: User | null | undefined): string {
 }
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user: clerkUser } = useUser();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +120,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <UserContext.Provider
       value={{
-        user,
+        user:
+          user && clerkUser?.id === user.clerkId
+            ? { ...user, image: clerkUser.hasImage ? clerkUser.imageUrl : null }
+            : user,
         isLoading,
         error,
         setUser,

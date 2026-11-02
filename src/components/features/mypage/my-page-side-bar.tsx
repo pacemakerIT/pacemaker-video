@@ -9,8 +9,7 @@ const menuItems = [
   { label: '마이페이지', href: '/mypage' },
   { label: '장바구니', href: '/mypage/cart' },
   { label: '찜목록', href: '/mypage/favorites' },
-  { label: '구매 내역', href: '/mypage/purchases' },
-  { label: '1:1문의', href: '/mypage/inquiries' }
+  { label: '구매 내역', href: '/mypage/purchases' }
 ];
 
 export default function MyPageSidebar({
@@ -23,20 +22,8 @@ export default function MyPageSidebar({
   const router = useRouter();
 
   if (cartDesign) {
-    const labels = [
-      'My Account',
-      'Cart',
-      'Wish list',
-      'Order History',
-      'Contact Us'
-    ];
-    const icons = [
-      'person',
-      'shopping_cart',
-      'favorite',
-      'receipt_long',
-      'support_agent'
-    ];
+    const labels = ['My Account', 'Cart', 'Wish list', 'Order History'];
+    const icons = ['person', 'shopping_cart', 'favorite', 'receipt_long'];
     return (
       <aside className="w-full shrink-0 lg:w-[320px]">
         <div className="relative flex flex-col items-center border border-gray-100 bg-white p-6 shadow-[0_10px_30px_rgba(0,38,59,0.08)] lg:sticky lg:top-28">
