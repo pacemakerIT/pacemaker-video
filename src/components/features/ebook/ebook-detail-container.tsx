@@ -225,7 +225,7 @@ export default function EbookDetailContainer({
 
   const handleContinueReading = () => {
     document
-      .getElementById('ebook-content')
+      .getElementById('ebook-reader')
       ?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -258,7 +258,11 @@ export default function EbookDetailContainer({
         className="w-full flex flex-col justify-between items-center max-w-[1200px] gap-20  pb-40"
       >
         {canAccessEbook && (
-          <section className="w-full" aria-label="전자책 PDF 뷰어">
+          <section
+            id="ebook-reader"
+            className="w-full scroll-mt-28"
+            aria-label="E-book reader"
+          >
             <SectionHeader subtitle="구매한 전자책" title="PDF 뷰어" />
             <div className="h-[80vh] min-h-[560px] overflow-hidden rounded-xl border border-gray-200">
               <PdfViewer ebookId={id} />

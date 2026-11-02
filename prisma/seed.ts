@@ -53,9 +53,7 @@ const s3Client = new S3Client({
 // bucket that /api/images/proxy serves, and ebook PDFs in the ebook bucket.
 const IMAGE_BUCKET = cleanEnv('SUPABASE_S3_IMG_BUCKET') || '';
 const EBOOK_BUCKET =
-  cleanEnv('SUPABASE_S3_EBOOK_BUCKET') ||
-  cleanEnv('SUPABASE_S3_BUCKET') ||
-  IMAGE_BUCKET;
+  cleanEnv('SUPABASE_S3_EBOOK_BUCKET') || cleanEnv('SUPABASE_S3_BUCKET');
 
 async function listBucketObjects(bucket: string): Promise<StorageObject[]> {
   if (!bucket) return [];
