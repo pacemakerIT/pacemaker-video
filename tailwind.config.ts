@@ -65,6 +65,7 @@ const config: Config = {
         'tertiary-container': '#470f00',
         'on-secondary-container': '#006974',
         error: '#ba1a1a',
+        body: '#475467',
         'body-text': '#475467',
         'sub-text': '#667085',
         subtext: '#667085',
