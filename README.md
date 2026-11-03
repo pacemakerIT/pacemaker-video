@@ -1,33 +1,41 @@
 # Pacemaker Video
 
-This is a [Next.js](https://nextjs.org) project using the App Router and TypeScript.
+The Pacemaker storefront for courses, ebooks and workshops
+([paceupcareer.com](https://www.paceupcareer.com)). It is a
+[Next.js](https://nextjs.org) project using the App Router and TypeScript.
 
 ## Tech Stack
 
-- [Next.js](https://nextjs.org) - React framework
+- [Next.js 15](https://nextjs.org) - React framework (App Router)
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Clerk](https://clerk.com/) - Authentication
+- [PostgreSQL](https://www.postgresql.org/) + [Prisma 7](https://www.prisma.io/) - Database and ORM
+- [Supabase Storage](https://supabase.com/docs/guides/storage) - Images and ebook PDFs (S3 API)
+- [Stripe](https://stripe.com/) - Checkout
 - [Wistia](https://wistia.com/) - Video player
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Vitest](https://vitest.dev/) + Testing Library - Tests
+- [Storybook](https://storybook.js.org/) - Component development
 
 ## Development Setup
 
 ### Prerequisites
 
 - [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
-- Node.js v24.22 (will be automatically set using nvm)
+- Node.js v24.22 (set from `.nvmrc` by nvm)
 - npm
+- Docker (for the local PostgreSQL database)
 
 ### Installation
 
-1. Set the correct Node.js version:
+1. Clone the repository.
+
+2. Set the correct Node.js version:
 
 ```bash
 nvm install
 nvm use
 ```
-
-2. Clone the repository
 
 3. Install dependencies:
 
@@ -42,12 +50,10 @@ cp .env.local.example .env.local
 # Fill in the required environment variables
 ```
 
-Prisma CLI loads `.env*` files with the same precedence as Next.js, so a local
-`.env.local` is enough for Prisma commands as well.
+5. Start the database, apply migrations and seed it (see
+   [Database](#database)).
 
-### Development
-
-Run the development server:
+6. Run the development server:
 
 ```bash
 npm run dev
@@ -55,42 +61,79 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Environment Variables
+
+`.env.local.example` lists every variable the app and scripts read.
+
+| Group               | Variables                                                                                        | Used for                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Clerk               | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `CLERK_WEBHOOK_SECRET`                  | Sign-in and the `/api/webhook/clerk` user sync                     |
+| Database            | `DATABASE_URL`, `DIRECT_URL`                                                                     | App queries; Prisma CLI prefers `DIRECT_URL`                       |
+| Supabase            | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`                                      | Public storage URLs and the Supabase client                        |
+| Supabase Storage S3 | `SUPABASE_S3_ENDPOINT`, `SUPABASE_S3_REGION`, `SUPABASE_S3_ACCESS_KEY`, `SUPABASE_S3_SECRET_KEY` | Uploads, the image proxy, seed and storage scripts                 |
+| Buckets             | `SUPABASE_S3_IMG_BUCKET`, `SUPABASE_S3_EBOOK_BUCKET`                                             | Image bucket and ebook PDF bucket                                  |
+| Stripe              | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_APP_URL`                              | Checkout and the `/api/stripe/webhook` endpoint                    |
+| Tooling             | `JIRA_*`, `OPENROUTER_API_KEY`                                                                   | [Jira CLI](#jira-cli) and [git-cm](#git-ai-auto-commit-cli-git-cm) |
+
+Local development uses the development buckets `image-dev` and
+`document-dev`. Production uses `image` and `document`; do not point a local
+`.env.local` at them.
+
+Next.js and the Prisma CLI load `.env*` files with the same precedence, so a
+local `.env.local` is enough for Prisma commands as well.
+
 ### Available Scripts
 
+Development:
+
 - `npm run dev` - Start development server
-- `npm run build` - Build production bundle
-- `npm run prisma:generate` - Generate Prisma Client
+- `npm run build` - Generate Prisma Client and build production bundle
 - `npm run start` - Start production server
+- `npm run storybook` - Start Storybook on port 6006
+- `npm run build-storybook` - Build static Storybook
+
+Checks:
+
+- `npm test` - Run Vitest in watch mode (`npm test -- --run` runs once)
+- `npm run typecheck` - Run TypeScript type checking
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Run ESLint and auto-fix formatting issues
-- `npm run typecheck` - Run TypeScript type checking
-- `npm run jira -- <command>` - Run the local Jira CLI
 - `npm run validate-branch-name` - Validate git branch name
 - `npm run precommit-tasks` - Run all pre-commit tasks
 
-## Docker Compose Setup
+Database and storage (see [Data Maintenance Scripts](#data-maintenance-scripts)):
 
-### Prerequisites
+- `npm run prisma:generate` - Generate Prisma Client
+- `npm run db:check-content` - Check that content rows point at existing files
+- `npm run db:cleanup-production-content` - Clean up production content data
+- `npm run db:move-legacy-thumbnails` - Copy legacy thumbnails into the image bucket
+- `npm run db:replace-ebook-thumbnail` - Replace one ebook's thumbnail
+- `npm run db:normalize-thumbnail-urls` - Normalize thumbnail URLs
+- `npm run storage:archive-unreferenced` - Archive unreferenced storage objects
+- `npm run check:public-pages` - Smoke check a deployed site's public pages
 
-- Docker
-- Docker Compose
+Tooling:
 
-### Configuration
+- `npm run jira -- <command>` - Run the local Jira CLI
+- `npm run git-cm` - Generate a commit message with AI
 
-The project uses Docker Compose to set up a local PostgreSQL database for development.
+## Database
 
-### Running the Database
+### Local Database (Docker Compose)
 
-To start the database:
+`docker-compose.yml` runs PostgreSQL 15 as the `pacemaker-dev-postgres`
+container on port `5433`.
 
 ```bash
-docker-compose up -d
+docker compose up -d   # start
+docker compose down    # stop
 ```
 
-To stop the database:
+Use these connection values in `.env.local`:
 
 ```bash
-docker-compose down
+DATABASE_URL=postgresql://pacemaker-video:postgres@localhost:5433/web
+DIRECT_URL=postgresql://pacemaker-video:postgres@localhost:5433/web
 ```
 
 ### Database Migrations
@@ -101,13 +144,41 @@ After starting the database, run Prisma migrations:
 npx prisma migrate dev
 ```
 
+CI checks that `prisma/schema.prisma` and `prisma/migrations` stay in sync, and
+runs `prisma migrate deploy` against production when a change is merged into
+`main`.
+
 ### Seeding the Database
 
-To populate your local database with initial video data (and potentially other sample data defined in prisma/seed.ts), run the following command:
+Prisma 7 does not run the seed after `migrate dev`, so run it yourself:
 
 ```bash
 npx prisma db seed
 ```
+
+- The seed only runs against a local database (localhost or the dev Docker
+  container). It deletes the content tables before inserting sample courses,
+  ebooks, workshops and instructors, so it refuses remote databases.
+- Thumbnails and ebook PDFs are picked from the buckets set in
+  `SUPABASE_S3_IMG_BUCKET` and `SUPABASE_S3_EBOOK_BUCKET`. When a bucket is empty
+  or unset, the seed falls back to images in `public/` and ebooks without a PDF.
+
+### Data Maintenance Scripts
+
+Scripts in `scripts/` that check or change content data and storage. The ones
+that write run as a dry run by default; pass `--apply` to make changes.
+
+```bash
+npm run db:check-content
+npm run check:public-pages -- --base-url=https://www.paceupcareer.com
+npm run db:cleanup-production-content            # dry run
+npm run db:cleanup-production-content -- --apply # write
+```
+
+They read `.env.local`, which points at local and development resources. To run
+them against production, set `DIRECT_URL`, `SUPABASE_S3_IMG_BUCKET` and
+`SUPABASE_S3_EBOOK_BUCKET` for that command. See
+`.agent/production-content-cleanup.md` for the production cleanup record.
 
 ### Naming Consistency (DB ↔ Code)
 
@@ -129,6 +200,20 @@ The names in the database and the code are different. Use this mapping to avoid 
 - Apply translations **only when displaying on the screen**
 - Use English values in APIs, queries, and conditions
 - Convert English values to the target language in the UI layer
+
+## Testing
+
+Run these before opening a pull request:
+
+```bash
+npm test -- --run
+npm run typecheck
+npm run build
+npm run lint
+```
+
+For user-facing changes, also check the affected flows in a browser, including
+signed-in flows. `.agent/testing-routine.md` has the full routine.
 
 ## Git Workflow
 
@@ -152,8 +237,16 @@ The project uses Husky for pre-commit hooks that run:
    - ESLint for `.js`, `.jsx`, `.ts`, `.tsx` files
    - Prettier for `.json`, `.md`, `.yaml`, `.yml` files
 
+Lint-staged reads `.lintstagedrc.js`.
+
 Run `npm run build` manually or in CI when you want the full Next.js production
 build validation with all required environment variables configured.
+
+### Continuous Integration
+
+`.github/workflows/integration.yml` runs on every pull request and on pushes to
+`main`: lint, Prisma schema/migration sync check, build and tests. On `main` it
+also deploys migrations to production.
 
 ## Code Style
 
@@ -187,7 +280,7 @@ To automatically format your code and resolve ESLint errors on save, you can con
 }
 ```
 
-If you prefer not to commit these workspace settings to Git, you can add `.vscode/` to your `.gitignore` or copy these values to your global VS Code User Settings.
+If you prefer not to use these workspace settings, copy the values you want to your global VS Code User Settings instead.
 
 ### Tailwind Color Usage
 
@@ -200,25 +293,9 @@ Tailwind updates often, so some colors may change or be removed.
 
 This repository includes a lightweight Jira CLI for common sprint workflows.
 
-### Required Environment Variables
+### Setup
 
-Add these values to `.env.local`:
-
-```bash
-JIRA_BASE_URL=https://your-domain.atlassian.net
-JIRA_EMAIL=you@example.com
-JIRA_API_TOKEN=your_api_token
-JIRA_PROJECT_KEY=PACE
-JIRA_BOARD_ID=123
-```
-
-`JIRA_BOARD_ID` is optional if the CLI can infer the board from the project.
-
-### Team Setup
-
-For team use, split Jira environment variables into shared values and personal values.
-
-Shared values for this project:
+`.env.local.example` already has the shared project values:
 
 ```bash
 JIRA_BASE_URL=https://pacemakerca.atlassian.net
@@ -226,27 +303,17 @@ JIRA_PROJECT_KEY=PACE
 JIRA_BOARD_ID=1
 ```
 
-Personal values that each contributor should set with their own Jira account:
+Each contributor adds their own Jira account values to `.env.local`:
 
 ```bash
 JIRA_EMAIL=your-email@example.com
 JIRA_API_TOKEN=your-own-api-token
 ```
 
-How to get each value:
+- `JIRA_EMAIL`: the Atlassian account email you log into Jira with
+- `JIRA_API_TOKEN`: a personal API token from Atlassian Account Settings at `https://id.atlassian.com/manage-profile/security/api-tokens`
 
-- `JIRA_BASE_URL`: use the shared project value above
-- `JIRA_PROJECT_KEY`: use the shared project value above
-- `JIRA_BOARD_ID`: use the shared board value above
-- `JIRA_EMAIL`: use the Atlassian account email you log into Jira with
-- `JIRA_API_TOKEN`: create a personal API token from Atlassian Account Settings at `https://id.atlassian.com/manage-profile/security/api-tokens`
-
-Recommended setup:
-
-1. Copy the shared values into your local `.env.local`.
-2. Add your own `JIRA_EMAIL`.
-3. Create your own `JIRA_API_TOKEN` and add it to `.env.local`.
-4. Run `npm run jira -- me` to confirm authentication works.
+Run `npm run jira -- me` to confirm authentication works.
 
 Do not commit `.env.local` or share your personal API token in chat, email, or the repository.
 
@@ -305,3 +372,9 @@ This repository includes an automated commit message generator using AI (Llama 3
   ```bash
   git cm -y
   ```
+
+## Project Docs
+
+- `.agent/` - Working notes: testing routine, design system, English copy guide,
+  seed plan, production cleanup record
+- `docs/` - QA onboarding and the Stripe payment implementation plan
