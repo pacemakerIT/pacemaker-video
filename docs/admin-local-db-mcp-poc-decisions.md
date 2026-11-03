@@ -231,8 +231,12 @@ Prisma 모델 정의와 실제 컬럼은 `prisma/schema.prisma` 및 로컬 DB를
 
 ## 다음 작업
 
-MCP 전용 API의 사용자별 인증 계약을 먼저 설계한다. 기존 GET은 공개 경로이므로 그대로 관리자 MCP에 연결하지 않는다. 인증 계약과 최소 조회 응답을 정한 뒤 로컬 읽기 전용 API를 구현하고, MCP의 API 클라이언트와 조회 도구를 만든다.
+1. **로컬 MCP 클라이언트와 읽기 도구 구현:** 고정된 local API origin만 호출하고 Clerk OAuth PKCE 로그인 → `POST /api/mcp/token` 교환 → 5분 Pacemaker JWT 갱신을 연결한다. 토큰은 Keychain에 보관하고 `list_main_visuals`, `get_main_visual`만 먼저 노출한다.
+2. **읽기 전용 MCP 흐름 검증:** Claude Desktop 등 실제 MCP host에서 로그인·토큰 갱신·MainVisual 조회를 확인한다. 비관리자, 취소/만료된 Clerk grant, API JWT 만료 상황에서 거부와 오류 복구도 점검한다.
+3. **쓰기 권한 계약 설계:** 허용 필드, 길이/타입 검증, 동시 수정 방지, 미리보기와 사용자 확인, 감사 로그, 복구 기준을 정한다. `mcp:main-visual:write`를 read scope와 분리한다.
+4. **승인된 로컬 쓰기 도구 구현:** API에서 관리자와 입력을 검증하고, MCP에는 제안과 명시적 적용을 분리한다. 로컬 DB에서 저장 결과와 audit log를 확인하고 테스트 데이터를 정리한다.
+5. **Production 적용 검증:** production Clerk 앱/client ID와 custom scopes, 서버 전용 signing key, issuer/audience를 별도로 설정한다. production에서 read-only 로그인·권한·환경 간 토큰 거부·취소 후 잔여 수명(최대 305초)·rate limit·감사 로그를 검증한 다음 기능을 활성화한다. production DB 직접 연결은 사용하지 않는다.
 
 ## 현재 상태
 
-로컬 PostgreSQL과 테이블 구조 확인, `MainVisual` 선정, API 경유 아키텍처 합의를 마쳤다. MCP 전용 인증/API POC 구현과 Clerk 개발 인스턴스의 custom scope 기반 실제 token exchange/read E2E를 완료했다. 로컬 검증 중 DB 레코드는 수정하지 않았다. MCP 클라이언트 도구 구현, 보완 negative-path 검증, production 환경 구성은 남아 있다.
+로컬 PostgreSQL과 테이블 구조 확인, `MainVisual` 선정, API 경유 아키텍처 합의를 마쳤다. PACE-333 브랜치에 MCP 전용 token exchange/read API POC와 테스트를 커밋했고, Clerk 개발 인스턴스에서 성공 흐름과 client/scope 거부를 실제 검증했다. 자체 JWT의 audience·client·scope·만료·서명·키 거부, 비관리자 차단도 확인했다. DB 레코드는 수정하지 않았다. MCP 클라이언트 도구 구현과 production 전용 인증 설정 및 production 교차환경 검증은 남아 있다.
