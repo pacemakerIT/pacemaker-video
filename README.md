@@ -15,7 +15,6 @@ The Pacemaker storefront for courses, ebooks and workshops
 - [Wistia](https://wistia.com/) - Video player
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Vitest](https://vitest.dev/) + Testing Library - Tests
-- [Storybook](https://storybook.js.org/) - Component development
 
 ## Development Setup
 
@@ -89,8 +88,6 @@ Development:
 - `npm run dev` - Start development server
 - `npm run build` - Generate Prisma Client and build production bundle
 - `npm run start` - Start production server
-- `npm run storybook` - Start Storybook on port 6006
-- `npm run build-storybook` - Build static Storybook
 
 Checks:
 
