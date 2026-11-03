@@ -1,6 +1,6 @@
 'use client';
 
-import { useSignIn } from '@clerk/nextjs';
+import { useSignIn } from '@clerk/nextjs/legacy';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SignInWithGoogleButton from '@/components/auth/sign-in-google-button';
@@ -15,7 +15,9 @@ type SignInAttemptResult = {
     | 'needs_identifier'
     | 'needs_first_factor'
     | 'needs_second_factor'
+    | 'needs_client_trust'
     | 'needs_new_password'
+    | 'needs_protect_check'
     | 'complete'
     | null;
   supportedSecondFactors?: Array<{
@@ -101,7 +103,11 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
 
       if (result.status === 'complete') {
         await finishSignIn(result.createdSessionId);
-      } else if (result.status === 'needs_second_factor') {
+      } else if (
+        result.status === 'needs_second_factor' ||
+        result.status === 'needs_client_trust'
+      ) {
+        // needs_client_trust: Device Trust asks for an email code on a new device
         await prepareEmailSecondFactor(signIn, result);
       } else if (result.status === 'needs_new_password') {
         setError('Please set a new password.');
