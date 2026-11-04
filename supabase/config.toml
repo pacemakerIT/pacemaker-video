@@ -111,6 +111,17 @@ enabled = true
 # The maximum file size allowed (e.g. "5MB", "500KB").
 file_size_limit = "50MiB"
 
+# Development buckets on the linked project, used by local environments and
+# the seed (prisma/seed-files.json). Recreate them with:
+#   supabase seed buckets --linked --project-ref apnbtkynvquutxdmmkre
+# Do not declare the production buckets here: seeding updates the settings
+# of every declared bucket.
+[storage.buckets.image-dev]
+public = false
+
+[storage.buckets.document-dev]
+public = false
+
 # Uncomment to configure local storage buckets
 # [storage.buckets.images]
 # public = false

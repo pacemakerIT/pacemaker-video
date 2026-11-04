@@ -147,18 +147,22 @@ runs `prisma migrate deploy` against production when a change is merged into
 
 ### Seeding the Database
 
-Prisma 7 does not run the seed after `migrate dev`, so run it yourself:
+Prisma 7 does not seed automatically after `migrate dev` or `migrate reset`, so run the seed yourself:
 
 ```bash
-npx prisma db seed
+npm run db:seed
 ```
 
-- The seed only runs against a local database (localhost or the dev Docker
-  container). It deletes the content tables before inserting sample courses,
-  ebooks, workshops and instructors, so it refuses remote databases.
-- Thumbnails and ebook PDFs are picked from the buckets set in
-  `SUPABASE_S3_IMG_BUCKET` and `SUPABASE_S3_EBOOK_BUCKET`. When a bucket is empty
-  or unset, the seed falls back to images in `public/` and ebooks without a PDF.
+- The seed only runs against a local database (localhost or the `pacemaker-dev-postgres` container). It deletes and recreates content, orders and My Page data.
+- Content is the set visible on production on 2026-11-03 (`prisma/seed-data.ts`): 3 courses, 6 e-books, 4 workshops, 3 hero slides and 2 instructors. Workshop dates are shifted at seed time so the last one is upcoming.
+- The test accounts are `admin@paceupcareer.com` and `user@paceupcareer.com`. The USER account has orders, course progress, workshop registrations and favorites, and a payment success page at `/mypage/payment-success?session_id=cs_test_seed_payment_success`.
+- The seed never reads or writes storage. With `SUPABASE_S3_IMG_BUCKET=image-dev` and `SUPABASE_S3_EBOOK_BUCKET=document-dev` it stores URLs of files in those buckets; otherwise it uses `/img` fallback images and no e-book files.
+- The files it points at are listed in `prisma/seed-files.json`. If the `-dev` buckets are new or empty, copy them once from production storage (dry run first):
+
+  ```bash
+  npm run storage:prepare-dev-seed-files
+  npm run storage:prepare-dev-seed-files -- --apply
+  ```
 
 ### Data Maintenance Scripts
 

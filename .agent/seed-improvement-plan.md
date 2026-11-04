@@ -1,184 +1,153 @@
 # Seed 수정 계획
 
-대상: `prisma/seed.ts`, `prisma/seed-helpers.ts` (+ 테스트), `prisma/seed-assets/`, `package.json`, `README.md`, `.env.local.example`, `supabase/config.toml`
+대상: `prisma/seed.ts`, `prisma/seed-helpers.ts` (+ 테스트), 새 `prisma/seed-data.ts`, 새 `prisma/seed-files.json`, 새 `scripts/prepare-dev-seed-files.mjs`, `package.json`, `README.md`, `.env.local.example`, `supabase/config.toml`
 
-작성일: 2026-11-02 (개발용 버킷 방식으로 개정)
+작성: 2026-11-02 · 개정: 2026-11-03 (운영 콘텐츠 고정 + 버킷 미접근) · 작업 브랜치: `chore/seed-production-content`
+
+## 목표
+
+로컬 시드 결과가 **2026-11-03 현재 운영 사이트(https://www.paceupcareer.com)에 보이는 콘텐츠와 같게** 한다. 운영에서 숨긴 항목, 운영에 없는 예시 콘텐츠는 넣지 않는다. 테스트 계정과 마이페이지용 주문·시청 기록·찜은 이 콘텐츠만 참조한다.
 
 ## 확정된 결정
 
-- 개발용 Supabase 프로젝트는 당장 분리하지 않는다. 대신 운영 프로젝트 안에 개발용 버킷 `image-dev`, `document-dev`를 두고 로컬은 이 버킷만 쓴다.
-- 로컬 환경 변수는 개발용 버킷을 가리킨다.
-
-  ```
-  SUPABASE_S3_IMG_BUCKET=image-dev
-  SUPABASE_S3_EBOOK_BUCKET=document-dev
-  ```
-
-- 시드는 운영 버킷(`image`, `document`)을 **읽지도 쓰지도 않는다.** 저장소 안의 고정 파일을 개발용 버킷에 올리고, 로컬 DB에는 그 URL만 저장한다.
-- 업로드는 두 버킷 이름이 모두 `-dev`로 끝날 때만 한다. 아니면 업로드하지 않고 `public/img` 대체 이미지를 쓴다. 별도 켜고 끄는 변수(`SEED_REMOTE_STORAGE`)는 두지 않는다.
-- 시드 상품 가격은 **28달러**로 맞춘다. 강의 `price: '28'`, 전자책 `price: 28`.
+- **문구는 시드 코드에 고정한다.** 2026-11-03 운영 값을 `prisma/seed-data.ts`에 한 번 옮겨 적는다. 운영에서 다시 가져오는 스냅샷이나 내보내기 스크립트는 만들지 않는다. 운영 콘텐츠가 바뀌어도 시드는 자동으로 따라가지 않는다.
+- **시드는 저장소 버킷에 접근하지 않는다.** 목록 조회, 업로드, 존재 확인 모두 하지 않는다(S3 클라이언트 자체를 만들지 않음). 개발용 버킷(`image-dev`, `document-dev`)에 있는 파일의 주소만 만들어 로컬 DB에 저장한다.
+  - 주소 형식: `{NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/{버킷}/{키}`. 관리자 업로드와 같은 형식이라 이미지 프록시와 전자책 뷰어가 그대로 읽는다.
+  - 버킷 이름은 `SUPABASE_S3_IMG_BUCKET`, `SUPABASE_S3_EBOOK_BUCKET`에서 읽는다. 둘 다 `-dev`로 끝나고 서로 다를 때만 저장소 주소를 쓴다. 아니면 `/img/...` 대체 이미지와 빈 `bucketUrl`을 쓰고 안내를 출력한다.
+  - 파일 키는 **운영과 같은 이름**으로 한다(예: `home/online-course-1.png`, `630537c5-….jpeg`, `ebook-1`). 개발용 버킷이 운영 파일을 같은 키로 갖고 있다는 전제다.
+- **개발용 버킷 준비는 시드와 분리한 1회 작업**이다(아래 0단계). 시드 실행 때마다 하지 않는다.
+- 가격은 **운영과 같은 2800**(화면 $2,800). 주문 금액은 `amountToCents(2800)` = 280000센트로 계산해 상품 가격과 일치시킨다.
+- 상품 id와 `ebookId`는 운영 값을 그대로 쓴다. 로컬과 운영의 상세 페이지 주소가 같아 비교하기 쉽다.
 - `ts-node` → `tsx` 전환은 이번 범위에서 제외한다.
 
-## 스토리지 구성 (2026-11-02 확인)
+## 운영에 보이는 콘텐츠 = 시드에 고정할 콘텐츠 (2026-11-03 확인)
 
-| 버킷           | 용도                                                         | 상태                                                                                                                            |
-| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `image`        | 운영 이미지. `/api/images/proxy`가 설정된 이미지 버킷만 서빙 | 57개. 비공개, 용량·MIME 제한 없음                                                                                               |
-| `document`     | 운영 전자책 PDF. 어드민 폼이 루트에 `<uuid>.pdf`로 업로드    | 119개. pdf 12개, 레거시 썸네일 이미지 92개, 확장자 없는 파일 12개(`ebook-1`, `ebook-2`, `test*` 등), pptx, `docker-compose.yml` |
-| `image-dev`    | 로컬 개발·시드 이미지                                        | **2026-11-02 생성.** 비공개, 파일당 50MiB 제한(CLI 기본값), MIME 제한 없음. 비어 있음                                           |
-| `document-dev` | 로컬 개발·시드 전자책 PDF                                    | **2026-11-02 생성.** 비공개, 파일당 50MiB 제한(CLI 기본값), MIME 제한 없음. 비어 있음                                           |
+운영 콘텐츠 테이블만 로컬 사본으로 복원해 읽었다(사용자·주문 제외, 사본은 삭제). 구현할 때 같은 방법으로 정확한 문구를 옮긴다.
 
-- 운영 버킷 설정은 Storage API(`GET /storage/v1/bucket`)로 읽어 확인했다. 공개 URL 접근은 400(비공개).
-- 개발용 버킷은 `supabase seed buckets --linked --project-ref apnbtkynvquutxdmmkre`로 만들었다. 이때 두 버킷만 선언한 임시 `config.toml`을 썼고 저장소의 `supabase/config.toml`은 바꾸지 않았다. 결과: `buckets_created: [image-dev, document-dev]`, 운영 버킷의 `updated_at`은 그대로.
-- 로컬 S3 키로 두 개발용 버킷 목록 조회가 되는 것을 확인했다.
-- Vercel `Production`에는 `SUPABASE_S3_IMG_BUCKET`, `SUPABASE_S3_EBOOK_BUCKET`이 있다(값 미조회, `image`/`document`로 추정). `Preview`/`Development`에는 없다.
-- Vercel `Preview`는 운영 DB(`DATABASE_URL`)를 쓴다. 따라서 Preview를 `-dev` 버킷으로 바꾸면 운영 데이터의 이미지가 깨진다. Preview는 개발용 버킷 대상이 아니다.
+| 종류           | 고정할 내용                                                                                                                                                                                                                                                                                              | 개발용 버킷 파일                                                                                                                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 메인 비주얼    | 3개. "Not sure where to start\nyour job search? Our Expertise" / "Get your resume\nreviewed by pros" / "Mock interviews\nwith local mentors"와 설명·버튼·링크. 썸네일 없음                                                                                                                               | 없음                                                                                                                                                                                            |
+| 강의           | 공개 3개: "Resume + Interview Prep (All-in-One) - Volume 1"(INTERVIEW)·2(RESUME)·3(NETWORKING). 설명, 과정 제목·내용, `visualTitle`/`visualTitle2`, "7 Hours", 가격 `'2800'`, 대상 `{IT, GOVERNMENT}`, `videoLink`, 강사 Raphael. Lee·Sujin Ku. 정렬 값은 Volume 순으로 `a0`·`a1`·`a2`(운영은 모두 `a0`) | `image-dev/home/online-course-1~3.png`                                                                                                                                                          |
+| 강의 섹션·영상 | 강의마다 섹션 3개 × 영상 4개(제목·순서·`videoId` 운영과 같음. 첫 영상만 실제 Wistia id `32ktrbrf3j`, 나머지 `vidx-…`). `Video.thumbnail`은 비움(화면에 안 나옴)                                                                                                                                          | 없음                                                                                                                                                                                            |
+| 강의 추천 링크 | 운영 값에서 **숨긴 강의로 가는 링크를 뺀다**: Volume 1의 "Bonus Material for 1"(→Volume 6), Volume 3의 "Recommended Course 4"(→Volume 4). Volume 2는 그대로                                                                                                                                              | 없음                                                                                                                                                                                            |
+| 강의 리뷰      | 공개 강의마다 3개, 총 9개. 운영 문구 3종과 별점                                                                                                                                                                                                                                                          | 없음                                                                                                                                                                                            |
+| 전자책         | 공개 6권 전부: 마케팅·디자인·공공·IT(`isMain`), 서비스·회계. 제목, 부제, `visualTitle1/2`, 설명, 상세 설명, 목차 3항목, 분류, 대상, 가격 2800, `ebookId`, 정렬 값 `a0`~`a5`                                                                                                                              | 썸네일 6장(운영 키) → `image-dev`, PDF 6개(운영 키: `ebook-1`, `ebook-2`, `ebooks/70ae8c6c….pdf`, `b16eceb6….pdf`, `TEST_2025052603 - 254926 16:49:24`, `Celpip_template.pdf`) → `document-dev` |
+| 워크숍         | 보이는 4개: Mind Training for Success, UX Design Workshop, Let's Connect!, Resume Workshop for International Opportunities. 설명, 분류, 가격 20, 장소 North York centre. 진행자·커리큘럼 없음                                                                                                            | `image-dev/home/workshop-1.png`, `workshop-4.jpg`, `workshop-image.jpg`, `workshop-3.jpg`                                                                                                       |
+| 강사           | 공개 콘텐츠에 연결된 2명: Raphael. Lee, Sujin Ku(소개, 경력). 사진은 운영처럼 파일 키만 저장                                                                                                                                                                                                             | 사진 2장(운영 키 `ebd0ba18….png`, `3bb482cb….png`) → `image-dev`                                                                                                                                |
 
-### 현재 시드가 운영 버킷에서 하는 일 (고칠 대상)
+넣지 않는 것: 숨긴 강의 Volume 4·5·6, 숨긴 워크숍 4개, 운영의 테스트 강사 "aa", 예전 시드의 Linda. Kim, `Image` 테이블, 운영 영상 썸네일 값.
 
-1. 전자책 버킷 전체를 조회해 키를 고른다. `selectSeedEbookKeys`가 확장자를 보지 않아, 운영 `document`의 **레거시 썸네일 이미지 6개**(`0489b5c7-….jpg`, `04e06b54-….png` 등)를 전자책 PDF로 고른다.
-2. 이미지 버킷 전체를 조회해 썸네일을 고른다. 결과가 운영 버킷 내용에 따라 달라진다.
-3. `bucketUrl`을 해석하지 못하면 앱은 `ebookId`를 오브젝트 키로 쓴다(`src/lib/ebook-file-location.ts`). 시드 `ebookId`가 `ebook-1`, `ebook-2`라서 전자책 버킷의 같은 이름 파일과 겹칠 수 있다.
+## 0단계 — 개발용 버킷 1회 준비 (시드와 별개) — 완료
+
+**2026-11-03 완료.** `prisma/seed-files.json`, `scripts/dev-seed-files.mjs`(+ 테스트 6개), `scripts/prepare-dev-seed-files.mjs`를 만들고 실행했다. 미리 보기 14개 → `--apply` 14개 복사(누락 0) → 재실행 0개. 결과 `image-dev` 15개, `document-dev` 6개. 운영 버킷은 그대로(`image` 30개, `document` 7개). 대상 버킷이 `-dev`가 아니거나 원본이 `-dev`면 스크립트가 멈춘다.
+
+준비 전 개발용 버킷 상태:
+
+| 버킷           | 있음                                                             | 없음(채워야 함)                  |
+| -------------- | ---------------------------------------------------------------- | -------------------------------- |
+| `image-dev`    | `home/` 7개(워크숍·강의 사진, 홈 화면 스크립트 리허설 때 올라감) | 전자책 썸네일 6장, 강사 사진 2장 |
+| `document-dev` | 없음                                                             | 전자책 PDF 6개                   |
+
+- 시드가 가리킬 파일 목록을 `prisma/seed-files.json`(이미지 키 15개, 문서 키 6개) 한 곳에 둔다. 시드(`seed-data.ts`)와 준비 스크립트가 같은 목록을 읽는다.
+- 새 스크립트 `scripts/prepare-dev-seed-files.mjs`(`npm run storage:prepare-dev-seed-files`)가 없는 파일만 운영 버킷에서 개발용 버킷으로 **같은 키로 서버 안에서 복사**한다(내려받기 없음). 기본은 미리 보기, `--apply`일 때만 복사. 운영 버킷에는 쓰지 않는다.
+- 개발용 버킷이 비워지거나 새로 만들어졌을 때만 다시 실행한다. Supabase 대시보드에서 직접 올려도 된다.
+- 전자책 PDF는 운영 파일을 그대로 복사한다. 두 버킷 모두 비공개이고 같은 프로젝트라 새로 노출되는 범위는 없다.
 
 ## 현재 시드의 문제 (요약)
 
-| 구분        | 문제                                                                                                                                                                            | 위치                                    |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| 데이터 오류 | 상품 가격 2800은 앱에서 2,800달러로 계산되는데, 시드 주문 항목은 2800센트(28달러)로 저장                                                                                        | `seed.ts:438`, `:942`, `:948`, `:974`   |
-| 데이터 오류 | 테스트 계정 upsert 결과가 아니라 고정 id로 주문·리뷰·시청 기록·찜을 연결. 계정이 이미 다른 id로 있으면 존재하지 않는 사용자에 붙음(`relationMode = "prisma"`라 FK 오류도 안 남) | `seed.ts:677`, `:743`, `:916`           |
-| 데이터 오류 | 전자책 PDF 자리에 이미지 파일을 고름 (위 1)                                                                                                                                     | `seed-helpers.ts` `selectSeedEbookKeys` |
-| 스토리지    | 운영 버킷 내용을 조회해서 씀. 결과가 운영 상태에 묶이고, 운영 저장소 키가 시드에 필요함                                                                                         | `seed.ts:42-84`, `:243-275`             |
-| 정합성      | 워크숍 등록 3건이 워크숍 항목이 없는 주문에 연결됨. 결제 완료 주문의 워크숍은 다른 주문의 등록을 가리킴                                                                         | `seed.ts:927-1005`                      |
-| 정합성      | 모든 전자책 목차가 개발자용, 강의 대상 분야가 분류와 무관하게 고정, `HIDDEN`·`isMain` 워크숍 없음, 사용자 화면에 안 나오는 가짜 Vimeo `videoLink`                               | `seed.ts:437`, `:446`, `:577`, `:760`   |
-| 운영        | 실행 스크립트 없음. Prisma 7은 `migrate dev`/`reset` 후 시드를 자동 실행하지 않음                                                                                               | `package.json`                          |
-| 운영        | 삭제와 생성이 트랜잭션 밖. 중간 실패 시 반쯤 빈 DB                                                                                                                              | `seed.ts:277` 이후                      |
-| 운영        | 워크숍 상태가 시드 시점·로컬 시간대로 고정되고 앱이 다시 계산하지 않음                                                                                                          | `seed.ts:177`, `:872`                   |
-| 정리        | 아래 4단계 목록                                                                                                                                                                 | —                                       |
+| 구분        | 문제                                                                                                                      | 위치                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 콘텐츠      | 운영과 다른 예시 콘텐츠: 강의 6개, 강사 3명, 워크숍 8개(예시 제목), 메인 비주얼 예전 문구                                 | `seed.ts` 전반                                 |
+| 데이터 오류 | 가격 2800인데 주문 항목은 2800센트(28달러)로 저장                                                                         | `seed.ts:438`, `:942`, `:948`, `:974`          |
+| 데이터 오류 | 테스트 계정 upsert 결과가 아니라 고정 id로 주문·리뷰·시청 기록·찜 연결(`relationMode = "prisma"`라 오류 없이 고아 데이터) | `seed.ts:677`, `:743`, `:916`                  |
+| 스토리지    | 시드가 버킷을 직접 조회해 썸네일·PDF를 고름. 확장자를 안 봐서 전자책 PDF 자리에 이미지를 고름                             | `seed.ts:42-84`, `:243-275`, `seed-helpers.ts` |
+| 정합성      | 워크숍 등록이 워크숍 항목이 없는 주문에 연결됨                                                                            | `seed.ts:927-1005`                             |
+| 운영        | 실행 스크립트 없음(Prisma 7은 마이그레이션 후 자동 시드 안 함), 삭제·생성이 트랜잭션 밖                                   | `package.json`, `seed.ts:277` 이후             |
 
 ## 작업 단계
 
-브랜치: `chore/seed-cleanup` (Jira 티켓이 있으면 `PACE-<번호>/seed-cleanup`). 커밋은 단계별로 나눈다.
+커밋은 단계별로 나눈다.
 
-### 1단계 — 시드 파일을 개발용 버킷에만 올리고, 로컬 DB는 그 URL만 가리킨다
+### 1단계 — 버킷 접근 제거와 주소 만들기
 
-**버킷 판단** (`seed-helpers.ts`의 순수 함수 + 단위 테스트)
+- `seed.ts`에서 S3 클라이언트, `listBucketObjects`, 버킷 조회 결과로 썸네일·PDF를 고르는 코드를 모두 지운다. `seed-helpers.ts`의 `selectSeedImageKeys`, `selectSeedEbookKeys`, `createCyclicPicker`와 테스트도 정리한다.
+- `seed-helpers.ts`에 순수 함수 두 개를 둔다(단위 테스트 포함).
+  - `resolveSeedStorage(env)`: 두 버킷이 `-dev`로 끝나고 다르면 `{ mode: 'dev', imageBucket, ebookBucket, supabaseUrl }`, 아니면 `{ mode: 'local', reason }`.
+  - `seedFileUrl(storage, bucketRole, key)`: `mode: 'dev'`면 공개 URL, 아니면 `null`(호출한 곳에서 `/img` 대체 경로 사용).
+- 시드 시작 때 모드와 이유를 출력한다. `mode: 'local'`이면 "썸네일은 /img 대체 이미지, 전자책 PDF 없음" 안내.
 
-- `resolveSeedStorage(env)`:
-  - `SUPABASE_S3_IMG_BUCKET`, `SUPABASE_S3_EBOOK_BUCKET`, `NEXT_PUBLIC_SUPABASE_URL`, S3 접속 변수가 모두 있고,
-  - 두 버킷 이름이 모두 `-dev`로 끝나며 서로 다를 때만 `{ mode: 'dev', imageBucket, ebookBucket }`.
-  - 그 밖에는 `{ mode: 'local', reason }`. `SUPABASE_S3_BUCKET`이나 다른 버킷으로 대체하지 않는다.
-- `mode: 'dev'`일 때 Supabase 호스트와 두 버킷 이름을 출력한다.
-- `mode: 'local'`일 때 이유와 "전자책 PDF는 열리지 않음. `.env`에 `-dev` 버킷을 설정하면 업로드함" 안내를 출력한다.
-- 저장소 클라이언트는 `mode: 'dev'`일 때만 만든다.
+### 2단계 — 운영 콘텐츠 고정
 
-**올릴 파일** (저장소 안의 고정 파일)
+- 새 파일 `prisma/seed-data.ts`에 위 표의 콘텐츠를 상수로 옮긴다(id, 문구, 분류, 가격, 정렬 값, 파일 키). 파일 키는 `seed-files.json`의 항목을 참조한다.
+- `seed.ts`의 예시 상수(`TITLE`, `PROCESS_CONTENT`, `SECTION_TITLES`, `ebooks` 배열, `ebookToc`, `workshopData`, `WORKSHOP_CURRICULUM`, 강사 upsert 3개, 메인 비주얼 3개)를 지우고 `seed-data.ts`를 쓴다.
+- **워크숍 날짜**: 운영 날짜 간격을 유지하되, 가장 늦은 워크숍이 시드 실행 7일 뒤가 되도록 전체를 같은 만큼 옮긴다. 상태는 날짜로 정한다(끝났으면 `COMPLETED`, 아니면 `OPEN`). 결과: 완료 3개 + 모집 중 1개(운영과 같음).
+- **강사 사진**은 운영처럼 파일 키만 저장한다(이미지 프록시가 설정된 이미지 버킷에서 찾음). `mode: 'local'`이면 `/img/raphael.png`, `/img/instructor-image.png`.
 
-| 원본                                                             | 개발용 버킷 키                       | 쓰는 곳                         |
-| ---------------------------------------------------------------- | ------------------------------------ | ------------------------------- |
-| `public/img/course_image1~3.png`                                 | `image-dev/seed/course_image<n>.png` | 강의·워크숍 썸네일, 영상 썸네일 |
-| `public/img/ebook_image1~6.png`                                  | `image-dev/seed/ebook_image<n>.png`  | 전자책 썸네일                   |
-| `public/img/raphael.png`, `linda.png`, `instructor-image.png`    | `image-dev/seed/<파일명>`            | 강사 사진                       |
-| `prisma/seed-assets/sample-ebook.pdf` (새로 추가, 작은 샘플 PDF) | `document-dev/seed/sample-ebook.pdf` | 전자책 6권 `bucketUrl`          |
+### 3단계 — 테스트 계정과 마이페이지 시나리오
 
-- 이미지 파일은 모두 4MB 이하(최대 `raphael.png` 0.62MB).
-- 메인 비주얼은 지금처럼 썸네일 없이 둔다.
-
-**업로드 규칙**
-
-- 키는 고정한다(`seed/…`). 업로드 전에 `HeadObject`로 확인해 같은 크기의 파일이 있으면 건너뛴다. 크기가 다르면 덮어쓴다. 시드를 반복해도 파일이 쌓이지 않는다.
-- `ContentType`을 지정한다(`image/png`, `application/pdf`).
-- 버킷은 시드가 만들지 않는다. 버킷이 없으면 생성 방법(5단계)을 안내하고 중단한다.
-- 업로드는 DB 트랜잭션 전에 끝낸다.
-- 운영 버킷 목록 조회(`listBucketObjects`)와 키 선택 함수(`selectSeedImageKeys`, `selectSeedEbookKeys`, `createCyclicPicker`)는 제거한다. 관련 테스트도 정리한다.
-
-**DB에 저장할 값**
-
-- URL 형식은 어드민 업로드와 같은 `{SUPABASE_URL}/storage/v1/object/public/{bucket}/{key}`. 앱의 이미지 프록시와 전자책 뷰어가 이 형식에서 버킷과 키를 읽는다.
-- 전자책 `ebookId`는 `seed-ebook-<n>`. 운영 키(`ebook-1`, `ebook-2`)와 겹치지 않게 한다.
-- `mode: 'local'`이면 썸네일·강사 사진은 `/img/...`, 전자책 `bucketUrl`은 빈 값.
-
-### 2단계 — 데이터 오류 수정
-
-- 강의 `price: '28'`, 전자책 `price: 28`.
-- 주문 항목 금액은 `amountToCents(상품 가격)`으로 계산한다. `src/lib/money.ts`는 import가 없어 `../src/lib/money`로 바로 가져올 수 있다.
-- 주문 합계(`subtotalAmountCents`, `totalAmountCents`)는 항목 합으로 계산한다. 하드코딩 `19600` 제거.
-- 테스트 계정 upsert 결과의 `id`를 이후 모든 데이터에 사용한다.
-
-### 3단계 — 정합성 보완
-
-- 워크숍 등록(`UserWorkshop.orderId`)은 그 워크숍을 항목으로 가진 주문에 연결한다.
-  - 완료된 워크숍(`workshopIds[0]`), 대면 워크숍(`workshopIds[6]`): 대시보드 주문에 `WORKSHOP` 항목 추가.
-  - 온라인 워크숍(`workshopIds[5]`): 결제 완료 주문(`cs_test_seed_payment_success`)에 이미 있으므로 등록을 그 주문에 연결.
-- 전자책 목차를 분류별로 작성한다(마케팅, 디자인, 공공, IT, 회계, 서비스).
-- 강의 `targetAudienceTypes`를 강의 분류에 맞춘다.
-- `HIDDEN` 상태 워크숍 1개 추가, 일부 워크숍 `isMain: true`.
-- 강의 `videoLink`는 빈 값.
-- 워크숍 상태가 시드 시점 기준으로 고정된다는 점을 주석과 README에 적는다.
+- 테스트 계정(`admin@paceupcareer.com`, `user@paceupcareer.com`)은 이메일로 upsert하고 **결과의 id**를 이후 모든 데이터에 쓴다.
+- 리뷰 9개: 공개 강의마다 3개, 두 테스트 계정이 번갈아 작성.
+- 대시보드 주문(완료): 강의 3개 + 메인 노출 전자책 3권 + 완료된 워크숍 1개(Mind Training) + 모집 중 워크숍 1개. 금액은 `amountToCents(상품 가격)` 합계.
+- 결제 완료 화면용 주문(`cs_test_seed_payment_success`): 강의 2개 + 전자책 1권 + Let's Connect!.
+- 워크숍 등록(`UserWorkshop`)은 그 워크숍을 항목으로 가진 주문에 연결한다. 완료된 워크숍은 `attended: true`.
+- 시청 기록: Volume 1 전체 완료, Volume 2 일부(마지막 영상 35%).
+- 찜: 강의 2개, 전자책 2권, 모집 중 워크숍 1개. 장바구니는 비움.
 
 ### 4단계 — 코드 정리
 
-- `main()`을 영역별 함수로 분리: 스토리지 준비, 초기화, 메인 비주얼, 강사, 강의, 전자책, 계정, 리뷰, 워크숍, 대시보드.
-- 긴 문구 데이터는 `prisma/seed-data.ts`로 이동.
+- `main()`을 영역별 함수로 분리: 저장소 모드 결정, 초기화, 메인 비주얼, 강사, 강의, 전자책, 워크숍, 계정, 리뷰, 대시보드.
 - 초기화와 생성을 `prisma.$transaction(async (tx) => …, { timeout: 60_000 })`로 묶는다.
-- `'OPEN' as unknown as WorkshopStatus` → `WorkshopStatus.OPEN`.
-- `resolveWorkshopStatus`의 미사용 `startDate` 인자 제거.
-- 강사 3명: 배열 하나 + `createMany` (직전에 전부 삭제하므로 upsert 불필요).
-- `UserRole` upsert 제거 (마이그레이션 `20250614005454`가 삽입).
-- `$executeRawUnsafe('DELETE FROM "_CourseToInstructor"')` → `tx.courseToInstructor.deleteMany()`.
-- 리뷰 중복 삭제(`seed.ts:738`) 제거.
-- 강의 생성 로그 문구 수정("Generating English e-books" → 강의).
-- 섹션 재조회 제거(생성 결과 사용), 영상은 `createMany`.
-- 종료 처리: `$disconnect()` 후 `process.exit(1)`.
+- 원시 SQL 삭제는 `tx.courseToInstructor.deleteMany()`로. `UserRole` upsert 제거(마이그레이션이 삽입), 리뷰 중복 삭제 제거, `'OPEN' as unknown as WorkshopStatus` 같은 강제 형변환 제거.
+- 섹션·영상은 `createMany`. 종료 처리는 `$disconnect()` 후 `process.exit(1)`.
 
-### 5단계 — 실행 방법과 버킷 선언 정리
+### 5단계 — 실행 방법과 버킷 선언
 
-- `package.json`: `"db:seed": "prisma db seed"`.
-- `supabase/config.toml`에 개발용 버킷을 선언해, 버킷이 지워져도 같은 설정으로 다시 만들 수 있게 한다.
-
-  ```toml
-  [storage.buckets.image-dev]
-  public = false
-
-  [storage.buckets.document-dev]
-  public = false
-  ```
-
-  재생성 명령: `supabase seed buckets --linked --project-ref apnbtkynvquutxdmmkre`. 이 파일에는 운영 버킷을 선언하지 않는다(명령이 선언된 버킷 설정을 덮어쓰므로).
-
-- `.env.local.example`에 `SUPABASE_S3_IMG_BUCKET=image-dev`, `SUPABASE_S3_EBOOK_BUCKET=document-dev` 추가.
-- `README.md` "Seeding the Database" 갱신:
-  - Prisma 7에서는 마이그레이션 후 `npm run db:seed`를 직접 실행
-  - 로컬 DB(localhost, `pacemaker-dev-postgres`)에서만 실행됨
-  - 로컬은 `-dev` 버킷을 쓰고, 시드는 `-dev` 버킷에만 업로드함
-  - 운영 DB 덤프를 로컬에서 쓰면 이미지가 깨짐(운영 데이터는 `image`를 가리킴)
-  - 워크숍 상태 때문에 주기적으로 재시드 필요
+- `package.json`: `"db:seed": "prisma db seed"`, `"storage:prepare-dev-seed-files": "node scripts/prepare-dev-seed-files.mjs"`.
+- `supabase/config.toml`에 `image-dev`, `document-dev` 선언(운영 버킷은 선언하지 않음). 재생성: `supabase seed buckets --linked --project-ref apnbtkynvquutxdmmkre`.
+- `.env.local.example`: `SUPABASE_S3_IMG_BUCKET=image-dev`, `SUPABASE_S3_EBOOK_BUCKET=document-dev`.
+- `README.md` "Seeding the Database": 처음 한 번 `storage:prepare-dev-seed-files`, 마이그레이션 후 `npm run db:seed` 직접 실행, 로컬 DB에서만 실행됨, 시드는 버킷에 접근하지 않고 `-dev` 버킷 주소만 저장함, 콘텐츠는 2026-11-03 운영 기준으로 고정됨, 워크숍 날짜는 실행 시점 기준으로 이동.
 
 ## 검증
 
 1. `npm test -- --run`, `npm run typecheck`, `npm run build`, `npm run lint`
-2. 시작 전 운영 버킷 파일 수 기록(`image` 57개, `document` 119개)
-3. 로컬 Docker DB에서 시드 2회 연속 실행
-   - DB 결과 동일
-   - `image-dev`/`document-dev` 파일 수가 두 번째 실행 후에도 그대로(중복 업로드 없음)
-4. 버킷 변수를 `image`/`document`로 바꿔 실행 → 업로드하지 않고 `/img/...` 대체, 안내 출력
-5. 끝난 뒤 운영 버킷 파일 수가 시작 전과 같은지 확인
-6. 테스트 계정을 다른 id로 미리 만든 뒤 시드 → 대시보드 데이터가 그 계정에 붙는지 확인
-7. Aside 브라우저
-   - 썸네일·강사 사진이 `image-dev`에서 프록시로 표시됨
-   - 전자책 뷰어에서 샘플 PDF가 열림
-   - 마이페이지 주문 금액 = 상품 가격(28달러)
-   - 대시보드 수강·워크숍 현황
-   - `/mypage/payment-success?session_id=cs_test_seed_payment_success`
-   - 워크숍 목록 상태 표시, 메인 노출 워크숍
+2. **버킷 미접근 확인**: S3 접속 변수(`SUPABASE_S3_ACCESS_KEY` 등)를 비운 채 시드를 실행해도 성공해야 한다.
+3. 로컬 Docker DB에서 시드 2회 연속 실행 → 결과 동일
+4. 0단계 이후 로컬 `npm run db:check-content`(버킷 `-dev`) 실패 0건 → 시드가 가리키는 파일이 모두 개발용 버킷에 있음
+5. 운영과 비교: 로컬 공개 API(`/api/courses`, `/api/ebooks`, `/api/workshops`)의 제목·분류·가격·순서가 운영과 같음(워크숍 날짜와 강의 순서만 다름). 로컬에서 `npm run check:public-pages -- --base-url=http://localhost:3001` 실패 0건
+6. 버킷 변수를 `image`/`document`로 바꿔 실행 → 저장소 주소 대신 `/img` 대체 이미지, 안내 출력
+7. 테스트 계정을 다른 id로 미리 만든 뒤 시드 → 대시보드 데이터가 그 계정에 붙음
+8. Aside 브라우저: 홈·목록·상세가 운영과 같은 구성, 마이페이지 주문 금액 $2,800, 결제 완료 화면, 전자책 뷰어에서 PDF 열림
 
-## 남는 한계
+## 운영에서 함께 발견한 점 (시드 범위 밖)
 
-- 로컬 S3 키는 운영 프로젝트의 키라서 운영 버킷에도 접근할 수 있다. 개발용 버킷은 파일이 섞이는 것을 막을 뿐, 키 유출 위험은 그대로다.
-- 개발용 버킷 제한(파일당 50MiB)은 운영 버킷(제한 없음)과 다르다. 프로젝트 전체 업로드 제한이 같다면 실제 차이는 없다.
+- 운영 Volume 1·3의 추천 링크가 숨긴 강의(Volume 6, 4)로 간다. 상세 화면에 해당 링크가 나오고 누르면 "오류: 코스를 찾을 수 없습니다."가 보인다. 운영 데이터도 같은 방식으로 고치는 것이 좋다.
+- 운영 강의 6개와 워크숍 8개의 `orderKey`가 모두 `a0`이라 표시 순서가 정해져 있지 않다(현재 강의는 Volume 2, 3, 1 순). 지금 순서로 괜찮다는 결정.
+- 운영 영상 36개의 `thumbnail`이 예전 강의 썸네일 파일을 가리킨다. 화면에는 안 보이지만 이 파일들이 저장소 정리 대상에서 빠진다.
+- 운영에 테스트 강사 "aa"가 있다(숨긴 워크숍에만 연결).
+- 숨긴 강의 상세 페이지는 응답 200에 한국어 오류 문구가 나온다. 워크숍처럼 404로 바꾸려면 코드 수정 필요.
 
-## 시드 범위 밖 발견 사항 (별도 작업)
+## 구현 결과 (2026-11-03)
 
-- 운영 스토리지에 파일 이름처럼 생긴 **빈 버킷 9개**가 있다(`2917bdb7-….png`, `76e2a42e-….jpeg` 등, 2026-04 생성). 과거 업로드 코드가 파일 이름을 버킷 이름으로 넘긴 흔적으로 보인다.
-- `document` 버킷에 테스트 파일(`test`, `TEST_2025052603 - …`, `Sample.pdf`), `docker-compose.yml`, pptx가 남아 있다. 버킷은 비공개다.
-- Vercel `Preview`/`Development` 환경에는 버킷 변수가 없어 이미지 업로드(`/api/images/upload`)가 503을 반환할 수 있다. Preview는 운영 DB를 쓰므로 값을 넣는다면 운영 버킷(`image`/`document`)이어야 한다.
-- 개발용 Supabase 프로젝트 분리는 팀 결정이 필요하다.
+- `prisma/seed-data.ts`: 운영 공개 콘텐츠를 로컬 사본에서 한 번 옮겨 적음(메인 비주얼 3, 강사 2, 강의 3, 섹션 9, 영상 36, 리뷰 9, 전자책 6, 워크숍 4). 날짜는 UTC. 강의 추천 링크 중 숨긴 강의로 가는 2개 제외. 생성에 쓴 스크립트는 저장소에 넣지 않음.
+- `prisma/seed-helpers.ts`: 버킷 조회 함수 제거, `resolveSeedStorage`·`seedFileUrl`·`workshopDayShift`·`shiftDays`·`seededWorkshopStatus` 추가(+ 테스트). `prisma/seed-data.test.ts`: 시드가 쓰는 파일 키와 `seed-files.json`이 정확히 같은지, 추천 링크·강사 연결, id·정렬 값 중복, 계정 데이터 없음 확인.
+- `prisma/seed.ts`: 다시 작성. S3 클라이언트 없음, 한 트랜잭션, 테스트 계정 upsert 결과 id 사용, 주문 금액 `amountToCents`, 워크숍 등록은 해당 워크숍을 산 주문에 연결.
+  - 대시보드 주문: 강의 3 + 메인 전자책 3 + 지난 워크숍 2(1개 참석) = 16,840달러(1684000센트)
+  - 결제 완료 주문(`cs_test_seed_payment_success`): 강의 2 + IT 전자책 + 모집 중 워크숍 = 8,420달러
+  - 시청 기록 17개(Volume 1 전부, Volume 2 5개), 찜 5개, 장바구니 0
+- `package.json`: `db:seed`, `storage:prepare-dev-seed-files`. `supabase/config.toml`: `image-dev`, `document-dev` 선언. `README.md` 시드 절 갱신.
+- `.env.local.example`은 권한 설정상 수정하지 못함 → `SUPABASE_S3_IMG_BUCKET=image-dev`, `SUPABASE_S3_EBOOK_BUCKET=document-dev`를 직접 추가해야 함.
+
+검증:
+
+| 항목                                            | 결과                                                                                                     |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 테스트·타입 검사·린트·빌드                      | 모두 통과                                                                                                |
+| 로컬 시드 2회                                   | 콘텐츠·주문 해시 동일, 실행 약 1.6초                                                                     |
+| S3 접속 변수 없이 실행                          | 성공, 결과 동일                                                                                          |
+| 버킷 변수를 `image`/`document`로 실행           | `/img` 대체 이미지, 전자책 PDF 비움, 안내 출력                                                           |
+| 테스트 계정을 다른 id로 바꾼 뒤 실행            | 주문 2·시청 기록 17이 그 id에 붙음                                                                       |
+| 로컬 `db:check-content`(`-dev` 버킷)            | 60개 값, 실패 0                                                                                          |
+| 로컬 공개 API vs 운영                           | 강의·전자책·메인 전자책·워크숍 목록 내용 같음. 강의 순서만 다름(로컬 1·2·3, 운영 2·3·1)                  |
+| 로컬 `check:public-pages`                       | 33개 요청, 실패 0                                                                                        |
+| 로컬 홈 화면                                    | 첫 화면·워크숍·강의·전자책 구성 운영과 같음, 깨진 이미지 0                                               |
+| 로그인 화면(마이페이지, 결제 완료, 전자책 뷰어) | **미확인.** 로컬 Aside 세션이 로그인되어 있지 않고, 로그인은 Clerk 계정 비밀번호가 필요해 직접 확인 필요 |
