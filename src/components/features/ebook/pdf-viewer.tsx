@@ -17,7 +17,7 @@ const MAX_ZOOM = 2.5;
 const ZOOM_STEP = 0.25;
 const SWIPE_DISTANCE = 60;
 const SWIPE_DRIFT = 80;
-const PAGE_GUTTER = 24;
+const PAGE_GUTTER = 48;
 
 interface PdfViewerProps {
   ebookId: string;
@@ -201,19 +201,19 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
           className="h-8 w-8 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
           aria-hidden
         />
-        <p className="font-body text-pace-sm text-[#475467]">Loading pages</p>
+        <p className="font-body text-sm text-body">Loading pages</p>
       </div>
     </div>
   ) : !isReady ? (
-    <div className="flex min-h-full items-center justify-center px-3">
+    <div className="flex min-h-full items-center justify-center px-4">
       <div className="flex flex-col items-center gap-4 text-center">
-        <p className="font-body text-pace-base text-[#475467]">
+        <p className="font-body text-base text-body">
           {error ?? 'PDF를 표시할 수 없습니다.'}
         </p>
         <button
           type="button"
           onClick={() => setRetryCount((count) => count + 1)}
-          className="min-h-11 rounded-full bg-orange px-6 font-heading text-pace-sm font-bold text-white transition-colors hover:bg-orange-hover"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-orange px-8 py-3.5 font-[family-name:var(--font-heading)] text-base font-bold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:bg-orange-hover hover:scale-[1.02] active:scale-95"
         >
           Try again
         </button>
@@ -233,7 +233,7 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
         </div>
       }
       error={
-        <p className="py-10 text-center font-body text-pace-sm text-[#475467]">
+        <p className="py-10 text-center font-body text-sm text-body">
           PDF 파일을 여는 중 문제가 발생했습니다.
         </p>
       }
@@ -245,10 +245,10 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
           width={pageWidth}
           renderTextLayer={false}
           renderAnnotationLayer={false}
-          className="overflow-hidden rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+          className="overflow-hidden bg-white shadow-card"
           loading={
             <div
-              className="rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+              className="bg-white shadow-card"
               style={{ width: pageWidth, height: pageWidth * 1.414 }}
             />
           }
@@ -266,14 +266,19 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
         ref={scrollRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="min-h-0 w-full min-w-0 flex-1 select-none overflow-auto overscroll-contain px-3 py-4"
+        className={`min-h-0 w-full min-w-0 flex-1 select-none overscroll-contain px-3 py-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-navy/15 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-navy/30 ${
+          zoom <= FIT_WIDTH_ZOOM
+            ? 'overflow-x-hidden overflow-y-auto'
+            : 'overflow-auto'
+        }`}
       >
         {content}
       </div>
 
       {isReady && (
-        <div className="flex items-center justify-between gap-2 border-t border-navy/10 bg-white px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-3 border-t border-navy/10 bg-white px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
+          {/* Zoom controls */}
+          <div className="flex items-center gap-1.5 rounded-xl bg-gray-soft/80 p-1">
             <button
               type="button"
               onClick={() =>
@@ -281,11 +286,11 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
               }
               disabled={zoom <= MIN_ZOOM}
               aria-label="Zoom out"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-gray-soft disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-navy transition-all hover:bg-white hover:text-teal hover:shadow-sm active:scale-95 disabled:pointer-events-none disabled:opacity-30"
             >
-              <Minus className="h-5 w-5" />
+              <Minus className="h-4 w-4" />
             </button>
-            <span className="w-10 text-center font-heading text-pace-xs font-bold text-navy">
+            <span className="w-12 select-none text-center font-[family-name:var(--font-heading)] text-xs font-bold text-navy">
               {Math.round(zoom * 100)}%
             </span>
             <button
@@ -295,34 +300,37 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
               }
               disabled={zoom >= MAX_ZOOM}
               aria-label="Zoom in"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-gray-soft disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-lg text-navy transition-all hover:bg-white hover:text-teal hover:shadow-sm active:scale-95 disabled:pointer-events-none disabled:opacity-30"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-4 w-4" />
             </button>
           </div>
 
-          <div className="flex items-center gap-1">
+          {/* Page navigation */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => goToPage(pageNumber - 1)}
               disabled={pageNumber <= 1}
               aria-label="Previous page"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-gray-soft disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-navy/10 bg-white text-navy transition-all hover:border-teal/30 hover:bg-teal/5 hover:text-teal active:scale-95 disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
-            <p
+            <div
               aria-live="polite"
-              className="min-w-[88px] text-center font-heading text-pace-sm font-bold text-navy"
+              className="flex min-w-[76px] select-none items-center justify-center gap-1 rounded-xl bg-gray-soft/80 px-3 py-1.5 font-[family-name:var(--font-heading)] text-sm font-bold text-navy"
             >
-              {pageNumber} / {numPages || '-'}
-            </p>
+              <span className="font-extrabold text-teal">{pageNumber}</span>
+              <span className="font-normal text-navy/30">/</span>
+              <span>{numPages || '-'}</span>
+            </div>
             <button
               type="button"
               onClick={() => goToPage(pageNumber + 1)}
               disabled={!numPages || pageNumber >= numPages}
               aria-label="Next page"
-              className="flex h-11 w-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-gray-soft disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-navy/10 bg-white text-navy transition-all hover:border-teal/30 hover:bg-teal/5 hover:text-teal active:scale-95 disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
