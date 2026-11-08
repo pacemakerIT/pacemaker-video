@@ -174,7 +174,8 @@ describe('MCP API access token', () => {
       scopes: [MCP_MAIN_VISUAL_READ_SCOPE]
     });
     const [header, payload, signature] = token.split('.');
-    const modifiedSignature = `${signature.slice(0, -1)}${signature.endsWith('a') ? 'b' : 'a'}`;
+    // The last base64url character carries padding bits, so tamper with the first.
+    const modifiedSignature = `${signature.startsWith('a') ? 'b' : 'a'}${signature.slice(1)}`;
 
     await expect(
       verifyMcpApiAccessToken(
