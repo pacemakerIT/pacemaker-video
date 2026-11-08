@@ -240,3 +240,11 @@ Prisma 모델 정의와 실제 컬럼은 `prisma/schema.prisma` 및 로컬 DB를
 ## 현재 상태
 
 로컬 PostgreSQL과 테이블 구조 확인, `MainVisual` 선정, API 경유 아키텍처 합의를 마쳤다. PACE-333 브랜치에 MCP 전용 token exchange/read API POC와 테스트를 커밋했고, Clerk 개발 인스턴스에서 성공 흐름과 client/scope 거부를 실제 검증했다. 자체 JWT의 audience·client·scope·만료·서명·키 거부, 비관리자 차단도 확인했다. DB 레코드는 수정하지 않았다. MCP 클라이언트 도구 구현과 production 전용 인증 설정 및 production 교차환경 검증은 남아 있다.
+
+### 2026-11-08 main 반영 후 재검증
+
+- 브랜치를 Clerk Core 3 업그레이드(`@clerk/nextjs` 7.9.23, `@clerk/backend` 3.26.5)가 포함된 main 위로 rebase했다. 충돌은 없었고 MCP 코드는 수정 없이 typecheck를 통과했다. `auth({ acceptsToken: 'oauth_token' })` 계약은 그대로 유효하다.
+- 서명 변조 단위 테스트가 간헐적으로 실패했다. RS256 서명(256바이트)의 base64url 마지막 글자는 하위 4비트가 채움 비트라서, 마지막 글자만 바꾸면 디코딩 결과가 같아 서명이 유효하게 남는 경우가 있었다. 검증 코드 결함이 아니라 테스트 결함이므로 첫 글자를 변조하도록 고쳤고 20회 연속 통과했다.
+- 전체 Vitest 372개 통과(4개 skip), typecheck, production build, lint를 통과했다.
+- 로컬 dev 서버에서 HTTP 경계를 다시 확인했다. 교환 endpoint는 인증 없음·가짜 Clerk 토큰·자체 JWT 제시를 모두 401로 거부했다. 조회 endpoint는 정상 관리자 토큰에 200과 MainVisual 3건(허용 필드 4개)을 반환했고, 일반 사용자는 403, audience·만료·scope·client ID·`typ`·서명 변조·같은 `kid`의 다른 키는 모두 401이었다. 모든 응답은 `Cache-Control: no-store`였다. DB는 변경하지 않았다.
+- 실제 Clerk PKCE 동의를 거친 성공 교환(200)은 Clerk 7 환경에서 다시 수행하지 않았다. 관리자 계정 로그인이 필요하므로 MCP 클라이언트 구현 단계에서 함께 확인한다.
