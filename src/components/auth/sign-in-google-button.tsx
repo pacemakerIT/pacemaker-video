@@ -1,6 +1,6 @@
 'use client';
 
-import { useSignIn } from '@clerk/nextjs';
+import { useSignIn } from '@clerk/nextjs/legacy';
 import { toast } from 'sonner';
 
 type Props = {

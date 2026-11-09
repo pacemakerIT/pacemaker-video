@@ -572,7 +572,6 @@ npm run lint</pre></div>
       <tr><th>Lint</th><td>ESLint, Prettier</td><td>Risky patterns, style drift</td><td>Behavior</td></tr>
       <tr><th>Build</th><td><code>next build</code></td><td>Broken imports, server/client mistakes</td><td>Behavior</td></tr>
       <tr><th>Browser e2e</th><td>Aside, then Playwright, then Chrome</td><td>Real user flows, signed-in state</td><td>Nothing automated yet in the repo</td></tr>
-      <tr><th>Component catalog</th><td>Storybook, <code>npm run storybook</code></td><td>Visual states of shared components</td><td>Page-level flows</td></tr>
     </tbody>
   </table></div>
   <p>CI (<code>.github/workflows/integration.yml</code>) runs on every PR: lint, a Prisma schema and migration sync check, build, then tests.</p>
