@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUserDisplayName, useUserContext } from '@/app/context/user-context';
 import {
-  CircleHelp,
   Heart,
   History,
   Settings,
@@ -17,8 +16,7 @@ const menuItems = [
   { label: 'My Account', href: '/mypage', icon: UserRound },
   { label: 'Cart', href: '/mypage/cart', icon: ShoppingCart },
   { label: 'Wish list', href: '/mypage/favorites', icon: Heart },
-  { label: 'Order History', href: '/mypage/purchases', icon: History },
-  { label: 'Contact Us', href: '/mypage/inquiries', icon: CircleHelp }
+  { label: 'Order History', href: '/mypage/purchases', icon: History }
 ];
 
 export default function MyPageSidebar() {
