@@ -248,3 +248,181 @@ Prisma 모델 정의와 실제 컬럼은 `prisma/schema.prisma` 및 로컬 DB를
 - 전체 Vitest 372개 통과(4개 skip), typecheck, production build, lint를 통과했다.
 - 로컬 dev 서버에서 HTTP 경계를 다시 확인했다. 교환 endpoint는 인증 없음·가짜 Clerk 토큰·자체 JWT 제시를 모두 401로 거부했다. 조회 endpoint는 정상 관리자 토큰에 200과 MainVisual 3건(허용 필드 4개)을 반환했고, 일반 사용자는 403, audience·만료·scope·client ID·`typ`·서명 변조·같은 `kid`의 다른 키는 모두 401이었다. 모든 응답은 `Cache-Control: no-store`였다. DB는 변경하지 않았다.
 - 실제 Clerk PKCE 동의를 거친 성공 교환(200)은 Clerk 7 환경에서 다시 수행하지 않았다. 관리자 계정 로그인이 필요하므로 MCP 클라이언트 구현 단계에서 함께 확인한다.
+
+### 2026-11-08 MCP 클라이언트 구현 전 결정
+
+- **대상:** POC 범위는 `MainVisual`로 한정한다. 강의(`Course`)는 POC 대상에서 제외한다.
+- **위치:** MCP 프로그램은 이 저장소 안의 별도 폴더에 자체 `package.json`을 두고, 웹앱 빌드와 분리한다.
+- **지원 환경:** macOS와 Windows를 지원한다. Claude Desktop뿐 아니라 Codex 등 로컬(stdio) MCP를 실행하는 다른 호스트에서도 같은 프로그램을 쓴다. 토큰 저장은 호스트가 아니라 MCP 프로세스가 담당하므로 호스트별 차이는 실행 설정에만 있다.
+- **토큰 저장(제안):** `@napi-rs/keyring`으로 OS 보안 저장소를 사용한다. macOS는 Keychain, Windows는 Credential Manager, Linux는 Secret Service다. `keytar`는 유지보수가 중단되어 사용하지 않는다. 저장 대상은 Clerk refresh token 하나뿐이며 Pacemaker JWT와 Clerk access token은 메모리에만 둔다. Windows Credential Manager의 값 크기 제한(2,560바이트)을 넘지 않도록 토큰 외 데이터를 함께 저장하지 않는다.
+- **보안 저장소가 없을 때:** 평문 파일로 대체하지 않는다. 토큰을 메모리에만 두고 프로세스 시작마다 브라우저 로그인을 요구한다.
+- **호스트별 별도 grant:** Clerk는 refresh 시 refresh token을 교체하고 이전 값 재사용을 거부한다. 여러 호스트가 같은 저장 항목을 공유하면 동시 갱신 시 한쪽이 `invalid_grant`로 실패할 수 있다. 저장 항목 이름에 호스트 식별자를 넣어 Claude Desktop, Codex 등이 각자 로그인하고 각자 refresh token을 갖게 한다.
+- **로그인을 기다리지 않는 도구 응답:** MCP 호스트는 도구 응답을 보통 60초 안팎까지만 기다린다. 로그인이 필요하면 브라우저를 열고 즉시 "로그인 후 다시 요청" 안내를 반환하며, MCP 프로세스가 백그라운드에서 최대 5분간 콜백을 기다린다.
+
+### 2026-11-08 읽기 전용 MCP 클라이언트 구현
+
+- `mcp/` 폴더에 stdio MCP 서버를 추가했다. 도구는 `list_main_visuals`, `get_main_visual`, `sign_in`, `sign_out`이다. 사용법은 `mcp/README.md`에 있다.
+- API에 `GET /api/mcp/main-visual/[id]`를 추가했다. 인증 후 UUID를 검증하고 `id`, `title`, `description`, `isPublic`, `orderIndex`만 반환한다. 목록 route와 함께 MCP 전용 인증 helper(`src/lib/mcp-request-auth.ts`)를 사용한다.
+- 루트 `tsconfig.json`, Vitest, `.gitignore`에서 `mcp/`를 분리했다. `mcp/`는 자체 lockfile, TypeScript 빌드, Node 내장 테스트 실행기를 쓴다.
+- 검증: 루트 Vitest 379개 통과(4개 skip), typecheck, build, lint 통과. `mcp/` typecheck, 단위 테스트 39개, build 통과.
+- 로컬 dev 서버와 빌드된 MCP를 stdio로 연결해 확인했다. 도구 4개가 노출됐고, 잘못된 UUID는 입력 검증에서 거부됐다. 로그인 전 조회는 Clerk 개발 인스턴스의 PKCE(S256) 로그인 주소와 `openid offline_access mcp:main-visual:read` scope를 반환했고, Clerk는 이 주소를 sign-in 화면으로 302 리다이렉트했다. 콜백 서버는 위조 state를 400으로 거부했고, 두 번째 요청은 "진행 중" 안내를 반환했다. macOS Keychain에 더미 값 저장·조회·삭제를 확인했고 남은 항목은 없었다.
+- 남은 확인: Claude Desktop·Codex 실제 등록, Windows에서 자격 증명 관리자 저장과 브라우저 열기.
+
+### 2026-11-08 실제 관리자 로그인 확인
+
+- 처음 로그인 시도는 Clerk가 `redirect_uri` 불일치로 거부했다. Clerk OAuth 앱(`PACE-333 Pacemaker MCP Local POC`)에는 이전 실험용 `http://localhost:8765/callback`만 등록돼 있었다.
+- 사용자 승인 후 Clerk Backend API로 `http://127.0.0.1:53134/callback`을 추가했다. 기존 주소는 유지했다. 공개 클라이언트, PKCE 필수, scope(`openid offline_access mcp:main-visual:read`)는 그대로다. `localhost` 대신 `127.0.0.1`을 쓰는 이유는 RFC 8252 권고와 이름 해석 차이를 피하기 위해서다.
+- 로컬 dev 서버(Clerk 7)와 빌드된 MCP를 stdio로 연결하고 관리자 계정으로 브라우저 로그인했다. 결과:
+  - 로그인 → `/api/mcp/token` 교환 → 목록 조회 3건(`id,title,isPublic,orderIndex`) → 한 건 조회(`description` 추가, id 일치) 성공.
+  - Keychain에 refresh token이 저장됐다(`development:login-check`).
+  - MCP 프로세스를 새로 띄운 뒤 브라우저 없이 저장된 로그인만으로 같은 조회가 성공했다. refresh token 회전 후 재저장도 동작한다.
+  - `sign_out`은 revoke 성공을 반환했고 Keychain 항목이 지워졌다.
+- 이로써 Clerk 7 업그레이드 후 OAuth 토큰 교환 경로의 실제 동작도 확인됐다.
+
+### 2026-11-08 개발자 테스트용 설치 단순화
+
+- 배경: 개발자는 이미 각자 `npm run dev`와 시드된 로컬 DB(관리자·일반 사용자 계정 포함)를 쓰고 있다. 남은 설치 부담은 서버 `MCP_*` 설정 6개, 서명 키 생성, MCP 등록 시 Clerk 주소·client ID·host 이름 입력이었다.
+- 서버: `src/lib/mcp-settings.ts`로 설정 읽기를 모았다. `NODE_ENV=development`에서 `MCP_*` 값이 비어 있으면 개발용 issuer/audience/kid와 개발 Clerk OAuth 앱의 공개 client ID를 쓴다. 키 쌍이 둘 다 없으면 서버 시작 후 메모리에 RS256 키 쌍을 만들고 `globalThis`에 두어 route 묶음들이 같은 키를 쓴다. 재시작하면 키가 바뀌고, MCP는 401을 받으면 Clerk 토큰으로 API 토큰을 다시 교환한다. 키 하나만 설정된 경우와 development 외 환경에서는 기본값을 쓰지 않고 기존처럼 설정 불완전으로 실패한다. 배포 환경은 모든 `MCP_*` 값을 명시해야 한다.
+- MCP: development profile에서 Clerk 개발 인스턴스 주소와 MCP OAuth client ID를 기본값으로 넣었다. 둘 다 공개값이다. `PACEMAKER_MCP_HOST`가 없으면 MCP host가 연결 시 보내는 이름(`claude-code`, `codex-mcp-client` 등)으로 Keychain 항목을 나눈다. 그래서 Keychain 항목은 첫 사용 시점에 정한다.
+- 결과: 개발자 설치는 `cd mcp && npm ci && npm run build`와 등록 한 줄(`claude mcp add pacemaker-admin -- node <절대 경로>/mcp/dist/index.js`)로 줄었다. 설정값은 모두 선택 사항이며 `mcp/README.md`에 정리했다.
+- 확인: 서버 `MCP_*` 값을 모두 비우고 dev 서버를 띄운 뒤, MCP도 API 주소 외 설정 없이 실행했다. 토큰 교환 route는 503이 아니라 401을 반환해 개발 기본값이 쓰였음을 확인했다. 관리자 브라우저 로그인 → 목록 3건·한 건 조회 성공, 연결한 MCP host 이름으로 Keychain 항목 생성, 재실행 후 저장된 로그인으로 조회 성공, `sign_out` 후 revoke 성공과 Keychain 항목 삭제까지 확인했다. 루트 테스트 385개(4개 skip), typecheck, lint, build 통과. `mcp/` typecheck, 테스트 43개, build 통과.
+
+### 2026-11-08 메인 배너 수정 기능 설계
+
+#### 사용자 결정
+
+- 첫 버전에서 바꿀 수 있는 필드는 `title`, `description`, `linkName`, `link`, `isPublic`이다. 한 배너 안에서 끝나는 변경만 다룬다. 순서(`orderIndex`), 노출 기간, 이미지, 추가, 삭제는 다음 버전으로 미룬다.
+- 변경 기록은 DB의 새 테이블에 남긴다.
+- `link`는 사이트 안 주소(`/`로 시작)만 허용한다.
+
+#### 흐름: 미리보기와 적용을 나눈다
+
+1. `propose_main_visual_update({ id, changes })` → `POST /api/mcp/main-visual/[id]/proposals`
+   - 쓰기 scope와 DB `ADMIN`을 확인하고 `changes`를 검증한다.
+   - 현재 행을 읽어 실제로 달라지는 필드만 골라 `before`/`after`를 만든다. 달라지는 필드가 없으면 400이다.
+   - 변경 확인 토큰(`changeToken`)을 발급한다. Pacemaker 키로 서명한 JWT이고 `typ=mcp-change+jwt`, `sub`(관리자), `client_id`, 배너 id, 변경 값, 미리보기 시점의 `updatedAt`, 10분 만료, `jti`를 담는다.
+   - 실제 화면 미리보기 주소(`previewUrl`)도 함께 돌려준다. 아래 "실제 화면 미리보기 페이지"를 본다.
+   - DB는 바꾸지 않는다. MCP 도구는 `readOnlyHint: true`이고, 결과에 전후 비교, 미리보기 링크, "사용자에게 보여 주고 확인을 받은 뒤에만 적용하라"는 안내를 넣는다.
+2. `apply_main_visual_update({ changeToken })` → `POST /api/mcp/main-visual/apply`
+   - 쓰기 scope와 DB `ADMIN`을 다시 확인하고, 토큰의 서명·`typ`·만료·`sub`가 요청자와 같은지·`client_id`를 검증한다. 변경 값도 다시 검증한다.
+   - 한 트랜잭션에서 `updateMany({ where: { id, updatedAt: 미리보기 시점 값 } })`로 바꾼다. 0건이면 409이다. 미리보기 뒤에 다른 사람이 고쳤다는 뜻이므로 다시 제안해야 한다.
+   - 같은 트랜잭션에서 변경 기록을 남기고, 기존 관리자 API처럼 `/`와 `/admin/main-visual`을 다시 그리게 한다.
+   - MCP 도구는 `destructiveHint: true`로 표시해 MCP host가 실행 전에 사용자 확인을 받게 한다.
+
+토큰 방식을 고른 이유:
+
+- 적용 단계는 미리보기에서 보여 준 값만 적용할 수 있다. 모델이 그사이 값을 바꿔 보낼 수 없다.
+- 적용하면 `updatedAt`이 바뀌므로 같은 토큰을 다시 보내도 409로 막힌다. 미리보기 저장용 테이블이 따로 필요 없다.
+- 한계: 서버는 사람이 실제로 승인했는지 증명할 수 없다. 사람의 확인은 MCP host의 도구 실행 확인과 도구 설명에 기댄다. MCP elicitation(서버가 host를 통해 사용자에게 직접 묻는 기능)은 host 지원 여부를 확인한 뒤 다음 버전에서 검토한다.
+
+#### 실제 화면 미리보기 페이지
+
+사용자 결정(2026-11-08): 글자 비교와 함께, 홈 화면 배너와 똑같이 그린 미리보기를 사이트 페이지로 제공한다. MCP host의 화면 띄우기 확장(MCP Apps)은 지원 host가 제한적이라 다음 버전에서 검토한다. 링크 방식은 Claude Code, Claude Desktop, Codex 모두에서 쓸 수 있다.
+
+- 주소: `/admin/main-visual/preview/[token]`. `/admin` 레이아웃이 이미 `requireAdminUser()`로 관리자가 아니면 로그인이나 홈으로 보낸다. 브라우저에서 관리자 계정으로 로그인해 있어야 열린다. 미리보기 토큰의 `sub`와 브라우저 사용자가 같을 필요는 없다.
+- 미리보기 토큰: 변경 확인 토큰과 별도로 발급하는 `typ=mcp-preview+jwt` JWT. 배너 id, 변경 값, 미리보기 시점의 `updatedAt`, 10분 만료를 담는다. 적용 route는 이 `typ`을 거부하므로 링크로는 볼 수만 있다. 배너 글자만 담기고 개인 정보는 없다.
+- 화면: 지금 모습과 바꾼 뒤 모습을 위아래로 나란히 그린다. 각각 홈 화면 배너 부품 `ListHeader`에 슬라이드 하나만 넘기고 자동 넘김은 끈다. 바뀌는 항목 목록과 링크 만료 시각을 함께 보여 준다.
+- 홈 화면과 같은 규칙을 쓰도록 `src/app/page.tsx`의 "배너 → 슬라이드" 변환(순서별 청록·주황 색, 35자 이상 제목 글자 크기, 버튼 문구·링크)과 공개·노출 기간 필터를 `src/lib/main-visual-slides.ts`로 떼어 내 홈 화면과 미리보기가 함께 쓴다.
+- 배너 색은 홈 화면에 보이는 배너들 사이의 순서로 정해진다. 그래서 변경 전후 각각 보이는 배너 목록을 계산해 순서를 구한다. 공개 여부 변경 등으로 홈 화면에 보이지 않게 되면 "홈 화면에 보이지 않음"을 표시한다.
+- 미리보기 뒤에 배너가 바뀌어 `updatedAt`이 다르면 "미리보기 이후 배너가 바뀌었다. 다시 제안하라"를 표시한다. 만료되거나 서명이 틀린 토큰은 404로 처리한다.
+- `previewUrl`의 origin은 요청을 받은 서버 origin이다(배포 환경은 `NEXT_PUBLIC_APP_URL`). MCP는 이 origin이 설정된 API origin과 같을 때만 링크를 보여 준다.
+
+#### 입력 검증 (서버 기준, 길이는 제안값)
+
+| 필드          | 규칙                                                                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `title`       | 앞뒤 공백 제거 후 1–120자. 줄바꿈은 허용하되 3줄까지. 그 밖의 제어 문자는 거부                                                                   |
+| `description` | 0–300자. 빈 값은 `null`로 저장                                                                                                                   |
+| `linkName`    | 0–40자. 빈 값은 `null`로 저장                                                                                                                    |
+| `link`        | 200자 이하. `/` 하나로 시작하고 `//`·`\`·공백·제어 문자를 거부. 임의 origin을 기준으로 해석해도 origin이 바뀌지 않아야 함. 빈 값은 `null`로 저장 |
+| `isPublic`    | boolean                                                                                                                                          |
+
+- 알 수 없는 필드는 거부한다(zod `strictObject`).
+- 변경 후 상태에서 `link`가 있으면 `linkName`도 있어야 한다.
+
+#### 권한 범위
+
+- Clerk 개발 인스턴스에 `mcp:main-visual:write` custom scope를 만들고 MCP OAuth 앱에 할당한다. Clerk 설정 변경이므로 구현 시 사용자 승인을 받는다.
+- MCP는 로그인할 때 읽기·쓰기 scope를 함께 요청한다.
+- `/api/mcp/token`은 Clerk 토큰에 실제로 부여된 scope 중 읽기·쓰기만 골라 API JWT에 담는다. 읽기 scope는 계속 필수다.
+- 조회 route는 읽기 scope를, 제안·적용 route는 쓰기 scope를 요구한다.
+- 이미 저장된 읽기 전용 로그인으로 수정하면 403이 난다. MCP는 "로그아웃 후 다시 로그인해 수정 권한을 허용하라"고 안내한다.
+
+#### 변경 기록 테이블
+
+```prisma
+model McpAuditLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorClerkId String
+  clientId     String
+  action       String   // "main_visual.update"
+  entityId     String   @db.Uuid
+  before       Json     // 바뀐 필드의 이전 값만
+  after        Json     // 바뀐 필드의 새 값만
+  createdAt    DateTime @default(now())
+
+  @@index([entityId, createdAt])
+}
+```
+
+- 적용 응답에 기록 id와 이전 값을 돌려준다. 되돌리기는 이전 값으로 새 제안을 만드는 방식으로 한다. 기록 조회 도구는 다음 버전에서 검토한다.
+
+#### MCP 오류 안내
+
+- 409: 미리보기 뒤에 배너가 바뀌었으니 다시 제안하라.
+- 400: 서버의 검증 메시지를 그대로 보여 준다.
+- 403(쓰기 scope 없음): 로그아웃 후 다시 로그인하라.
+- 토큰 만료: 다시 제안하라.
+
+#### 구현 순서와 확인
+
+1. Clerk 쓰기 scope 생성과 앱 할당(사용자 승인 후).
+2. Prisma 모델과 마이그레이션.
+3. 서버: 검증 모듈, 변경 확인·미리보기 토큰, 제안·적용 route, 토큰 교환 scope 처리. 단위·route 테스트(401/403/400/409/200, 기록 생성).
+4. 미리보기 페이지: 배너 → 슬라이드 변환 분리, 미리보기 페이지, 토큰 만료·서명 오류·배너 변경 표시. 홈 화면 렌더링이 그대로인지 기존 테스트와 화면으로 확인.
+5. MCP: 로그인 scope, API 메서드, 도구 2개(미리보기 링크 포함), 오류 안내. 단위 테스트.
+6. 실제 확인: 관리자 로그인 → 제목 변경 제안 → 미리보기 링크로 실제 배너 모양 확인 → 적용 → 로컬 홈 화면 반영 확인 → 이전 값으로 되돌리기 → 기록 2건 확인. 확인 후 테스트 데이터는 원래 값으로 돌려 둔다.
+
+다음 버전 후보: MCP Apps로 대화창 안 미리보기, 순서 변경(여러 배너를 한 번에 바꾸는 별도 도구), 노출 기간(시간대 규칙 포함), 이미지, 추가·삭제, 변경 기록 조회 도구, production rate limit.
+
+### 2026-11-08 메인 배너 수정 기능 구현과 확인
+
+#### 구현
+
+- DB: `McpAuditLog` 모델과 마이그레이션 `20261108000000_add_mcp_audit_log`. 로컬 DB에는 `prisma migrate deploy`로 적용했다.
+- 서버
+  - `src/lib/mcp-main-visual-change.ts`: 입력 검증, 변경 비교, 변경 확인·미리보기 토큰.
+  - `src/lib/mcp-main-visual-store.ts`: 조회 필드, 미리보기 origin.
+  - `src/lib/mcp-scope-error.ts`: scope 부족을 401과 구분해 `403 insufficient_scope`로 답한다.
+  - route: `POST /api/mcp/main-visual/[id]/proposals`, `POST /api/mcp/main-visual/apply`.
+  - `/api/mcp/token`은 Clerk 토큰에 부여된 읽기·쓰기 scope만 API JWT에 담는다.
+- 미리보기: `/admin/main-visual/preview/[token]`. 홈 화면의 배너 변환과 노출 필터를 `src/lib/main-visual-slides.ts`로 옮겨 홈 화면과 함께 쓴다. `src/middleware.ts`는 로그인하지 않은 미리보기 요청만 `/sign-in?redirect_url=<미리보기 경로>`로 보낸다. 기존 `/admin` 레이아웃은 로그인 후 `/admin`으로 보내기 때문이다.
+- MCP
+  - 로그인 시 쓰기 scope도 요청한다.
+  - 도구 `propose_main_visual_update`(읽기 전용 표시), `apply_main_visual_update`(`destructiveHint`)를 추가했다.
+  - 변경 확인 토큰은 MCP 프로세스 메모리에 두고, 적용 도구는 8자리 `proposalId`를 받는다. 각 제안은 한 번만 쓸 수 있다.
+  - 미리보기 링크는 origin이 설정된 API origin과 같을 때만 보여 준다.
+- Clerk 개발 인스턴스
+  - 사용자가 대시보드 OAuth applications → Scopes에서 custom scope `mcp:main-visual:write`를 만들었다. Backend API로는 instance에 없는 scope를 앱에 붙일 수 없어 422가 났다.
+  - 그 뒤 Backend API로 MCP OAuth 앱의 scope에 추가했다. 지금 scope는 `mcp:main-visual:read mcp:main-visual:write offline_access openid`이다.
+
+#### 확인
+
+- 루트 테스트 422개 통과(4개 skip). typecheck, lint(기존 무관 경고 2개), build 통과. `mcp/` typecheck, 테스트 52개, build 통과.
+- 로컬 키로 만든 API 토큰으로 HTTP 경계 24개 항목을 확인했다.
+  - 읽기 전용 로그인과 일반 사용자는 403이었다. 외부 링크, 알 수 없는 필드, 같은 값 제안은 400이었다.
+  - 제안만으로는 DB가 바뀌지 않았다.
+  - 미리보기 토큰으로 적용하면 400이었다. 다른 사용자나 읽기 전용 로그인으로 적용하면 403이었다.
+  - 적용하면 DB와 홈 화면이 바뀌었다. 같은 토큰을 재사용하거나 먼저 만든 제안을 적용하면 409였다.
+  - 되돌리기와 변경 기록 3건을 확인했다.
+- 실제 관리자 로그인(쓰기 scope 동의)으로 MCP 도구를 확인했다.
+  - 제안 → 적용 → 같은 제안 재적용 거부 → 원래 값으로 되돌리기 → 변경 기록 2건 → `sign_out` 순서로 모두 기대대로 동작했다.
+- 미리보기 링크
+  - 로그인하지 않은 상태에서는 미리보기 경로를 `redirect_url`에 담아 로그인 화면으로 보냈다.
+  - 관리자 브라우저에서는 지금·바꾼 뒤 배너가 홈 화면 디자인 그대로 보였다(사용자 확인).
+- 확인 뒤 배너 3건은 원래 값으로 되돌렸다(`updatedAt`은 바뀜). 로컬 `McpAuditLog`에는 확인 기록이 남아 있다.
+
+#### 남은 일
+
+- Claude Desktop·Codex 실제 등록, Windows 확인.
+- production 적용 전: production Clerk custom scope, 서명 키, issuer/audience 분리, rate limit.
