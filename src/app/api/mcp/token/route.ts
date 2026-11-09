@@ -3,8 +3,10 @@ import { auth } from '@clerk/nextjs/server';
 import { getAdminAccessForClerkUserId } from '@/lib/admin-auth';
 import {
   MCP_MAIN_VISUAL_READ_SCOPE,
+  MCP_MAIN_VISUAL_WRITE_SCOPE,
   signMcpApiAccessToken
 } from '@/lib/mcp-api-token';
+import { getMcpOAuthClientId } from '@/lib/mcp-settings';
 
 const NO_STORE_HEADERS = {
   'Cache-Control': 'no-store',
@@ -16,7 +18,7 @@ function errorResponse(error: string, status: number) {
 }
 
 export async function POST() {
-  const expectedClientId = process.env.MCP_OAUTH_CLIENT_ID?.trim();
+  const expectedClientId = getMcpOAuthClientId();
   if (!expectedClientId) {
     return errorResponse('MCP OAuth client is not configured.', 503);
   }
@@ -39,6 +41,12 @@ export async function POST() {
     return errorResponse('Required OAuth scope is missing.', 403);
   }
 
+  // The API token carries only the MCP scopes the admin actually granted.
+  const scopes = [
+    MCP_MAIN_VISUAL_READ_SCOPE,
+    MCP_MAIN_VISUAL_WRITE_SCOPE
+  ].filter((scope) => authState.scopes.includes(scope));
+
   const adminAccess = await getAdminAccessForClerkUserId(authState.userId);
   if (!adminAccess.ok) {
     return errorResponse(adminAccess.error, adminAccess.status);
@@ -48,7 +56,7 @@ export async function POST() {
     const accessToken = await signMcpApiAccessToken({
       subject: authState.userId,
       clientId: authState.clientId,
-      scopes: [MCP_MAIN_VISUAL_READ_SCOPE]
+      scopes
     });
 
     return NextResponse.json(
@@ -56,7 +64,7 @@ export async function POST() {
         access_token: accessToken,
         token_type: 'Bearer',
         expires_in: 300,
-        scope: MCP_MAIN_VISUAL_READ_SCOPE
+        scope: scopes.join(' ')
       },
       { status: 200, headers: NO_STORE_HEADERS }
     );

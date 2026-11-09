@@ -12,6 +12,7 @@ vi.mock('@/lib/admin-auth', () => ({
 }));
 vi.mock('@/lib/mcp-api-token', () => ({
   MCP_MAIN_VISUAL_READ_SCOPE: 'mcp:main-visual:read',
+  MCP_MAIN_VISUAL_WRITE_SCOPE: 'mcp:main-visual:write',
   signMcpApiAccessToken: mocks.signMcpApiAccessToken
 }));
 
@@ -84,6 +85,33 @@ describe('POST /api/mcp/token', () => {
 
     expect(response.status).toBe(403);
     expect(mocks.signMcpApiAccessToken).not.toHaveBeenCalled();
+  });
+
+  it('passes the granted write scope into the API token', async () => {
+    mocks.auth.mockResolvedValue({
+      isAuthenticated: true,
+      tokenType: 'oauth_token',
+      userId: 'user_admin',
+      clientId: 'approved-client',
+      scopes: [
+        'openid',
+        'mcp:main-visual:write',
+        'mcp:main-visual:read',
+        'mcp:other:write'
+      ]
+    });
+
+    const response = await POST();
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).scope).toBe(
+      'mcp:main-visual:read mcp:main-visual:write'
+    );
+    expect(mocks.signMcpApiAccessToken).toHaveBeenCalledWith({
+      subject: 'user_admin',
+      clientId: 'approved-client',
+      scopes: ['mcp:main-visual:read', 'mcp:main-visual:write']
+    });
   });
 
   it('rejects a token without the MainVisual read scope', async () => {
