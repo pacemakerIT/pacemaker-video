@@ -46,17 +46,20 @@ vi.mock('@wistia/wistia-player-react', () => ({
 
 vi.mock('../../common/detail-hero-section', () => ({
   default: ({
+    visualTitle2,
     buttonText,
     onAddToCart,
     onToggleLike,
     isLiked
   }: {
+    visualTitle2?: string;
     buttonText: string;
     onAddToCart?: () => void;
     onToggleLike?: (next: boolean) => void;
     isLiked?: boolean;
   }) => (
     <div>
+      {visualTitle2 && <h1 data-testid="hero-visual-title2">{visualTitle2}</h1>}
       <button onClick={onAddToCart}>{buttonText}</button>
       <button
         aria-label="Save"
@@ -97,7 +100,9 @@ vi.mock('../../common/section-header', () => ({
 }));
 
 vi.mock('../../common/expandable-cards', () => ({
-  default: () => <div data-testid="expandable-cards" />
+  default: ({ className }: { className?: string }) => (
+    <div data-testid="expandable-cards" className={className} />
+  )
 }));
 
 vi.mock('../../common/detail-reviews-section', () => ({
@@ -261,5 +266,29 @@ describe('VideoDetailContainer', () => {
     expect(
       screen.getByRole('button', { name: 'Open Table of Contents' })
     ).toBeInTheDocument();
+  });
+
+  it('falls back visualTitle2 and processTitle to course title and spans expandable-cards full width when processContent is empty', async () => {
+    const responseData = makeCourseResponse(false);
+    responseData.data.course.visualTitle2 = '';
+    responseData.data.course.processTitle = '';
+    responseData.data.course.processContent = '   ';
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => responseData
+    } as Response);
+
+    render(<VideoDetailContainer id="course-1" />);
+
+    expect(await screen.findByTestId('hero-visual-title2')).toHaveTextContent(
+      'Resume and Interview Prep'
+    );
+    expect(
+      screen.getByText('Resume and Interview Prep', { selector: 'div' })
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('expandable-cards').className).toContain(
+      'lg:w-full'
+    );
   });
 });

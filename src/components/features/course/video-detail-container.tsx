@@ -438,7 +438,7 @@ export default function VideoDetailContainer({
         /* UNPURCHASED STATE: DetailHeroSection matching course_detail.html */
         <DetailHeroSection
           visualTitle={data.course.visualTitle || undefined}
-          visualTitle2={data.course.visualTitle2}
+          visualTitle2={data.course.visualTitle2 || data.course.title || ''}
           title={data.course.title || ''}
           description={data.course.description || ''}
           price={data.course.price || ''}
@@ -467,18 +467,24 @@ export default function VideoDetailContainer({
             subtitle="How the Course Works"
             title={
               data.course.processTitle ||
-              'Step by Step: From a Strong Developer Resume to Interviews'
+              data.course.title ||
+              'What You Will Learn'
             }
             className="mb-6 sm:mb-12"
           />
           <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-16">
-            <div className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-wrap">
-              {data.course.processContent ||
-                'Detailed course description not available.'}
-            </div>
+            {Boolean(data.course.processContent?.trim()) && (
+              <div className="w-full lg:w-[680px] text-pace-stone-500 leading-relaxed whitespace-pre-wrap">
+                {data.course.processContent}
+              </div>
+            )}
             <ExpandableCards
               items={contentItems}
-              className="w-full lg:w-[480px] max-w-none mx-0"
+              className={`w-full max-w-none mx-0 ${
+                data.course.processContent?.trim()
+                  ? 'lg:w-[480px]'
+                  : 'lg:w-full'
+              }`}
             />
           </div>
         </section>
