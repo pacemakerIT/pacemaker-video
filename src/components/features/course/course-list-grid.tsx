@@ -38,11 +38,40 @@ export default function CourseList() {
   }, [fetchCourses]);
 
   const currentCards = useMemo(() => {
-    if (currentCategory === 'TOTAL') {
-      return allCards;
+    const filtered =
+      currentCategory === 'TOTAL'
+        ? allCards
+        : allCards.filter((card) => card.category === currentCategory);
+
+    const normalizedSort = sortBy.trim().toLowerCase();
+
+    if (normalizedSort === 'date') {
+      return [...filtered].sort((a, b) => {
+        const dateA = a.uploadDate ?? a.createdAt ?? a.startDate;
+        const dateB = b.uploadDate ?? b.createdAt ?? b.startDate;
+        const timeA = dateA ? new Date(dateA).getTime() : 0;
+        const timeB = dateB ? new Date(dateB).getTime() : 0;
+        const safeTimeA = Number.isNaN(timeA) ? 0 : timeA;
+        const safeTimeB = Number.isNaN(timeB) ? 0 : timeB;
+        return safeTimeB - safeTimeA;
+      });
     }
-    return allCards.filter((card) => card.category === currentCategory);
-  }, [currentCategory, allCards]);
+
+    if (normalizedSort === 'review') {
+      return [...filtered].sort((a, b) => {
+        const ratingDiff = Number(b.rating ?? 0) - Number(a.rating ?? 0);
+        if (ratingDiff !== 0) return ratingDiff;
+
+        const reviewCountDiff =
+          Number(b.reviewCount ?? 0) - Number(a.reviewCount ?? 0);
+        if (reviewCountDiff !== 0) return reviewCountDiff;
+
+        return Number(b.likes ?? 0) - Number(a.likes ?? 0);
+      });
+    }
+
+    return filtered;
+  }, [currentCategory, allCards, sortBy]);
 
   return (
     <section id="course-list" className="w-full bg-white py-[80px]">

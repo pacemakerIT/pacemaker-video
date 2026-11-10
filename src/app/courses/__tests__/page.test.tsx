@@ -34,11 +34,15 @@ vi.mock('@/components/features/course/course-header', () => ({
   default: ({
     category,
     currentCategory,
-    setCurrentCategory
+    setCurrentCategory,
+    sortBy,
+    setSortBy
   }: {
     category: string[];
     currentCategory: string;
     setCurrentCategory: (category: string) => void;
+    sortBy: string;
+    setSortBy: (sort: string) => void;
   }) => (
     <div>
       <h5 className="text-pace-orange-600 text-lg">
@@ -61,6 +65,16 @@ vi.mock('@/components/features/course/course-header', () => ({
           {cat}
         </div>
       ))}
+      <select
+        id="courseSortSelect"
+        data-testid="course-sort-select"
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+      >
+        <option value="Total">Total</option>
+        <option value="Date">Date</option>
+        <option value="Review">Review</option>
+      </select>
     </div>
   )
 }));
@@ -138,6 +152,8 @@ const mockCourses = [
     category: 'INTERVIEW',
     videoId: 'video1',
     uploadDate: new Date('2024-03-20'),
+    rating: 4.9,
+    reviewCount: 12,
     watchedVideos: [],
     purchasedVideos: []
   },
@@ -149,6 +165,8 @@ const mockCourses = [
     category: 'RESUME',
     videoId: 'video2',
     uploadDate: new Date('2024-03-21'),
+    rating: 4.2,
+    reviewCount: 5,
     watchedVideos: [],
     purchasedVideos: []
   }
@@ -267,23 +285,43 @@ describe('CoursesPage', () => {
     );
   });
 
-  it.skip('changes sort value when select option is clicked', async () => {
+  it('sorts cards when sort option is changed to Date, Review, and Total', async () => {
     render(<CoursesPage />);
-
-    const selectButton = await screen.findByTestId(
-      'select-button',
-      {},
-      { timeout: 5000 }
-    );
-    fireEvent.click(selectButton);
 
     await waitFor(
       () => {
-        expect(screen.getByTestId('select-item-Total')).toBeDefined();
-        expect(screen.getByTestId('select-item-Date')).toBeDefined();
-        expect(screen.getByTestId('select-item-Review')).toBeDefined();
+        const cards = screen.getAllByTestId('card');
+        expect(cards).toHaveLength(2);
+        expect(cards[0]).toHaveTextContent('Test Course 1');
+        expect(cards[1]).toHaveTextContent('Test Course 2');
       },
       { timeout: 5000 }
     );
+
+    const sortSelect = screen.getByTestId('course-sort-select');
+
+    // Date: newest first (Test Course 2: 2024-03-21 -> Test Course 1: 2024-03-20)
+    fireEvent.change(sortSelect, { target: { value: 'Date' } });
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards[0]).toHaveTextContent('Test Course 2');
+      expect(cards[1]).toHaveTextContent('Test Course 1');
+    });
+
+    // Review: highest rating first (Test Course 1: 4.9 -> Test Course 2: 4.2)
+    fireEvent.change(sortSelect, { target: { value: 'Review' } });
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards[0]).toHaveTextContent('Test Course 1');
+      expect(cards[1]).toHaveTextContent('Test Course 2');
+    });
+
+    // Total: original order restored
+    fireEvent.change(sortSelect, { target: { value: 'Total' } });
+    await waitFor(() => {
+      const cards = screen.getAllByTestId('card');
+      expect(cards[0]).toHaveTextContent('Test Course 1');
+      expect(cards[1]).toHaveTextContent('Test Course 2');
+    });
   });
 });

@@ -10,6 +10,7 @@ import { useUserContext } from '@/app/context/user-context';
 import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
 import { getCategoryColors } from '@/lib/category-colors';
+import { toast } from 'sonner';
 
 interface CardProps extends OnlineCards {
   itemType?: ItemType;
@@ -39,7 +40,7 @@ export default function Card({
   const handleToggleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user?.id) {
-      alert('로그인이 필요한 서비스입니다.');
+      toast.error('Please log in to save this course.');
       router.push('/sign-in');
       return;
     }

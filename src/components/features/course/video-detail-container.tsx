@@ -118,46 +118,60 @@ export default function VideoDetailContainer({
     description: string;
     onConfirm: () => void;
     showCancel: boolean;
+    confirmText?: string;
+    cancelText?: string;
   }>({
     isOpen: false,
     title: '',
     description: '',
     onConfirm: () => {},
-    showCancel: true
+    showCancel: true,
+    confirmText: 'Confirm',
+    cancelText: 'Cancel'
   });
 
-  const showAlert = (title: string, description: string) => {
+  const showAlert = (
+    title: string,
+    description: string,
+    confirmText = 'OK'
+  ) => {
     setModalConfig({
       isOpen: true,
       title,
       description,
       onConfirm: () => {},
-      showCancel: false
+      showCancel: false,
+      confirmText,
+      cancelText: 'Cancel'
     });
   };
 
   const showConfirm = (
     title: string,
     description: string,
-    onConfirm: () => void
+    onConfirm: () => void,
+    confirmText = 'Confirm'
   ) => {
     setModalConfig({
       isOpen: true,
       title,
       description,
       onConfirm,
-      showCancel: true
+      showCancel: true,
+      confirmText,
+      cancelText: 'Cancel'
     });
   };
 
   const handleToggleLike = async (nextState: boolean) => {
     if (!isSignedIn) {
       showConfirm(
-        '로그인 필요',
-        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        'Log in required',
+        'Please log in to save this course. Would you like to log in now?',
         () => {
           router.push('/sign-in');
-        }
+        },
+        'Log in'
       );
       return;
     }
@@ -169,24 +183,28 @@ export default function VideoDetailContainer({
         await removeFavorite(id, ItemType.COURSE);
       }
     } catch {
-      showAlert('오류 발생', '오류가 발생했습니다. 다시 시도해주세요.');
+      showAlert('Something went wrong', 'Please try again.');
     }
   };
 
   const handleAddToCart = async () => {
     if (!isSignedIn) {
       showConfirm(
-        '로그인 필요',
-        '로그인이 필요한 서비스입니다. 로그인 하시겠습니까?',
+        'Log in required',
+        'Please log in to add this course to your cart. Would you like to log in now?',
         () => {
           router.push('/sign-in');
-        }
+        },
+        'Log in'
       );
       return;
     }
 
     if (data?.entitlements?.canAccessCourse) {
-      showAlert('이미 구매한 콘텐츠', '구매내역에서 바로 수강할 수 있습니다.');
+      showAlert(
+        'Already purchased',
+        'You already own this course. You can watch it right away.'
+      );
       return;
     }
 
@@ -199,14 +217,18 @@ export default function VideoDetailContainer({
       await addToCart(id, ItemType.COURSE);
 
       showConfirm(
-        '장바구니 담기 완료',
-        '장바구니에 담았습니다. 장바구니로 이동하시겠습니까?',
+        'Added to cart',
+        'This course is in your cart. Would you like to go to your cart?',
         () => {
           router.push('/mypage/cart');
-        }
+        },
+        'Go to cart'
       );
     } catch {
-      showAlert('오류 발생', '장바구니 담기에 실패했습니다.');
+      showAlert(
+        'Could not add to cart',
+        'Something went wrong. Please try again.'
+      );
     }
   };
 
@@ -239,10 +261,10 @@ export default function VideoDetailContainer({
             firstSectionId ? new Set([firstSectionId]) : new Set()
           );
         } else {
-          setError(result.message || '데이터를 불러오는데 실패했습니다.');
+          setError(result.message || 'Could not load course details.');
         }
       } catch {
-        setError('네트워크 오류가 발생했습니다.');
+        setError('Network error. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -256,7 +278,7 @@ export default function VideoDetailContainer({
   if (loading) {
     return (
       <div className="w-full flex justify-center items-center min-h-[400px]">
-        <div className="text-pace-stone-500">로딩 중...</div>
+        <div className="text-pace-stone-500">Loading course...</div>
       </div>
     );
   }
@@ -264,7 +286,7 @@ export default function VideoDetailContainer({
   if (error) {
     return (
       <div className="w-full flex justify-center items-center min-h-[400px]">
-        <div className="text-red-500">오류: {error}</div>
+        <div className="text-red-500">Error: {error}</div>
       </div>
     );
   }
@@ -272,7 +294,7 @@ export default function VideoDetailContainer({
   if (!data) {
     return (
       <div className="w-full flex justify-center items-center min-h-[400px]">
-        <div className="text-pace-stone-500">데이터를 찾을 수 없습니다.</div>
+        <div className="text-pace-stone-500">Course not found.</div>
       </div>
     );
   }
@@ -381,10 +403,10 @@ export default function VideoDetailContainer({
                       <div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-white/80">
                         <VideoOff className="w-8 h-8 text-white/60 mb-1" />
                         <p className="text-base font-semibold font-heading">
-                          영상이 준비 중입니다
+                          Video coming soon
                         </p>
                         <p className="text-xs text-white/60 font-body">
-                          올바른 동영상 ID가 등록되지 않았습니다.
+                          This video is not available yet.
                         </p>
                       </div>
                     );
@@ -561,7 +583,7 @@ export default function VideoDetailContainer({
             data.course.reviews?.map((review) => ({
               id: review.id,
               profileImage: review.user?.image || '/img/user1.png',
-              profileName: review.user?.name || '익명',
+              profileName: review.user?.name || 'Anonymous',
               rating: review.rating,
               reviewDate: new Date(review.createdAt)
                 .toISOString()
@@ -693,8 +715,8 @@ export default function VideoDetailContainer({
                               onClick={() => {
                                 if (!canAccessVideo) {
                                   showAlert(
-                                    '구매가 필요한 영상',
-                                    '구매 완료 후 수강할 수 있습니다.'
+                                    'Purchase required',
+                                    'Buy this course to watch this lesson.'
                                   );
                                   return;
                                 }
@@ -747,6 +769,8 @@ export default function VideoDetailContainer({
         title={modalConfig.title}
         description={modalConfig.description}
         onConfirm={modalConfig.onConfirm}
+        confirmText={modalConfig.confirmText}
+        cancelText={modalConfig.cancelText}
         showCancel={modalConfig.showCancel}
       />
     </div>

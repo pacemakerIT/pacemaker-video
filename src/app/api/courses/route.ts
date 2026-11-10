@@ -65,6 +65,21 @@ export async function GET(request: Request) {
       }
     });
 
+    // Fetch reviews average rating and count
+    const reviewsGroups =
+      (await prisma.review?.groupBy({
+        by: ['courseId'],
+        where: {
+          courseId: { in: courseIds }
+        },
+        _avg: {
+          rating: true
+        },
+        _count: {
+          rating: true
+        }
+      })) || [];
+
     // Create Maps for O(1) lookup
     const favoritesMap = new Map<string, number>();
     favoritesGroups.forEach((group) => {
@@ -76,6 +91,14 @@ export async function GET(request: Request) {
       purchasesMap.set(group.itemId, group._sum.quantity || 0);
     });
 
+    const reviewsMap = new Map<string, { rating: number; count: number }>();
+    reviewsGroups.forEach((group) => {
+      reviewsMap.set(group.courseId, {
+        rating: group._avg.rating || 0,
+        count: group._count.rating || 0
+      });
+    });
+
     const rows = courses.map((course) => ({
       id: course.id,
       title: course.title || '',
@@ -84,6 +107,10 @@ export async function GET(request: Request) {
       price: course.price ? `${course.price}` : 'Free',
       likes: favoritesMap.get(course.id) || 0,
       purchases: purchasesMap.get(course.id) || 0,
+      rating: reviewsMap.get(course.id)?.rating || 0,
+      reviewCount: reviewsMap.get(course.id)?.count || 0,
+      uploadDate: course.createdAt,
+      createdAt: course.createdAt,
       status: course.isPublic ? '공개중' : '비공개',
       thumbnail: course.thumbnailUrl || '',
       selected: false,
