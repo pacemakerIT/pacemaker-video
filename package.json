@@ -33,7 +33,7 @@
     "precommit-tasks": "npm run precommit-generate && npm run validate-branch-name && npm run typecheck && npm run lint-staged"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1152.0",
+    "@aws-sdk/client-s3": "^3.1164.0",
     "@aws-sdk/s3-request-presigner": "^3.1149.0",
     "@clerk/backend": "^3.26.5",
     "@clerk/nextjs": "^7.9.23",
