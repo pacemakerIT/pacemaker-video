@@ -136,7 +136,7 @@ export function registerTools(
     {
       title: 'Get main visual',
       description:
-        'Get one Pacemaker home page main visual by id. Returns id, title, description, isPublic and orderIndex. Read-only.',
+        'Get one Pacemaker home page main visual by id. Returns id, title, description, linkName (button text), link, isPublic and orderIndex. Read-only.',
       inputSchema: {
         id: z.uuid().describe('Main visual id from list_main_visuals')
       },

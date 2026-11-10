@@ -10,7 +10,7 @@ import {
 } from '@/lib/main-visual-slides';
 import {
   type EditableMainVisualField,
-  type MainVisualChangeClaims,
+  type MainVisualPreviewClaims,
   verifyMainVisualChangeToken
 } from '@/lib/mcp-main-visual-change';
 
@@ -73,7 +73,7 @@ export default async function MainVisualChangePreviewPage({
 }) {
   const { token } = await params;
 
-  let claims: MainVisualChangeClaims;
+  let claims: MainVisualPreviewClaims;
   try {
     claims = await verifyMainVisualChangeToken(token, 'preview');
   } catch {

@@ -35,6 +35,8 @@ export async function GET(
         id: true,
         title: true,
         description: true,
+        linkName: true,
+        link: true,
         isPublic: true,
         orderIndex: true
       }

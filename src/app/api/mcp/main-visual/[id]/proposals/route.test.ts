@@ -153,6 +153,10 @@ describe('POST /api/mcp/main-visual/[id]/proposals', () => {
     );
     await expect(
       verifyMainVisualChangeToken(previewToken, 'preview')
-    ).resolves.toEqual(expectedClaims);
+    ).resolves.toEqual({
+      mainVisualId: VISUAL_ID,
+      changes: { title: 'New title' },
+      baseUpdatedAt: UPDATED_AT.toISOString()
+    });
   });
 });

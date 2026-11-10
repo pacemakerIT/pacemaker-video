@@ -56,7 +56,13 @@ describe('main visual change validation', () => {
     [{ title: '' }, 'Title is required.'],
     [{ title: 'a'.repeat(121) }, '120 characters'],
     [{ title: 'one\ntwo\nthree\nfour' }, '3 lines'],
-    [{ title: 'tab\there' }, 'control characters'],
+    [{ title: 'tab\there' }, 'control or invisible characters'],
+    [{ title: 'C1\u0085control' }, 'control or invisible characters'],
+    [{ title: 'bidi\u202Eoverride' }, 'control or invisible characters'],
+    [{ title: 'zero\u200Bwidth' }, 'control or invisible characters'],
+    [{ title: 'one\u2028two\u2028three\u2028four' }, 'control or invisible'],
+    [{ description: 'soft\u00ADhyphen' }, 'control or invisible characters'],
+    [{ linkName: 'b\uFEFFom' }, 'control or invisible characters'],
     [{ description: 'two\nlines' }, 'single line'],
     [{ linkName: 'a'.repeat(41) }, '40 characters']
   ])('rejects invalid text %j', (input, message) => {
@@ -74,9 +80,32 @@ describe('main visual change validation', () => {
     'courses',
     '/\\example.com',
     '/with space',
-    'javascript:alert(1)'
+    'javascript:alert(1)',
+    '/courses"><script>alert(1)</script>',
+    '/courses<x>',
+    '/courses`x`',
+    '/courses{x}',
+    '/courses|x',
+    '/강의',
+    '/bad%zzescape',
+    '/trailing%'
   ])('rejects link %s', (link) => {
     expect(parse({ link }).success).toBe(false);
+  });
+
+  it.each([
+    '/',
+    '/courses?level=1&sort=new#top',
+    '/%EA%B0%95%EC%9D%98',
+    "/a-b_c.d~e!$'()*+,;=:@"
+  ])('accepts site path %s', (link) => {
+    expect(parse({ link }).success).toBe(true);
+  });
+
+  it('keeps joined emoji in the title', () => {
+    expect(parse({ title: 'Family 👨\u200D👩\u200D👧 night' }).success).toBe(
+      true
+    );
   });
 
   it('rejects unknown fields and empty changes', () => {
@@ -160,6 +189,23 @@ describe('main visual change tokens', () => {
     await expect(
       verifyMcpApiAccessToken(apply.token, MCP_MAIN_VISUAL_READ_SCOPE)
     ).rejects.toThrow();
+  });
+
+  it('leaves the proposer out of the preview token', async () => {
+    const { token } = await signMainVisualChangeToken('preview', CLAIMS);
+    const payload = JSON.parse(
+      Buffer.from(token.split('.')[1], 'base64url').toString()
+    );
+
+    expect(payload).not.toHaveProperty('sub');
+    expect(payload).not.toHaveProperty('client_id');
+    await expect(
+      verifyMainVisualChangeToken(token, 'preview')
+    ).resolves.toEqual({
+      mainVisualId: CLAIMS.mainVisualId,
+      changes: CLAIMS.changes,
+      baseUpdatedAt: CLAIMS.baseUpdatedAt
+    });
   });
 
   it('rejects an expired change token', async () => {

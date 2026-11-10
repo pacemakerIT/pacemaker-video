@@ -50,6 +50,8 @@ describe('PacemakerApi', () => {
         id: VISUAL_ID,
         title: 'Spring',
         description: null,
+        linkName: 'Apply now',
+        link: '/courses',
         isPublic: false,
         orderIndex: 2
       }
@@ -63,6 +65,8 @@ describe('PacemakerApi', () => {
     const visual = await api.getMainVisual(VISUAL_ID);
 
     assert.equal(visual.description, null);
+    assert.equal(visual.linkName, 'Apply now');
+    assert.equal(visual.link, '/courses');
     assert.equal(
       http.requests[0].url,
       `http://localhost:3000/api/mcp/main-visual/${VISUAL_ID}`

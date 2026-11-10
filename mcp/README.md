@@ -13,7 +13,7 @@ Background and decisions: `docs/admin-local-db-mcp-poc-decisions.md`.
 | Tool                         | What it does                                                                                  |
 | ---------------------------- | --------------------------------------------------------------------------------------------- |
 | `list_main_visuals`          | Lists main visuals in display order (`id`, `title`, `isPublic`, `orderIndex`)                 |
-| `get_main_visual`            | Gets one main visual by UUID (adds `description`)                                             |
+| `get_main_visual`            | Gets one main visual by UUID (adds `description`, `linkName` and `link`)                      |
 | `propose_main_visual_update` | Previews a change to `title`, `description`, `linkName`, `link` or `isPublic`; writes nothing |
 | `apply_main_visual_update`   | Applies a previewed change after the user confirms                                            |
 | `sign_in`                    | Starts a browser sign-in, or reports that the admin is signed in                              |
@@ -32,7 +32,8 @@ Background and decisions: `docs/admin-local-db-mcp-poc-decisions.md`.
    home page. The tool is marked destructive, so hosts ask before running it.
 3. To undo, propose the previous values that the apply result lists.
 
-`link` accepts only paths on the site, such as `/courses`. Editing needs the
+`link` accepts only paths on the site, such as `/courses`; percent-encode
+spaces, quotes and non-ASCII characters. Editing needs the
 `mcp:main-visual:write` scope; a sign-in made before it was added must sign out
 and sign in again.
 

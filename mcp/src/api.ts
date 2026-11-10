@@ -13,7 +13,9 @@ const mainVisualSummarySchema = z.object({
 });
 
 const mainVisualDetailSchema = mainVisualSummarySchema.extend({
-  description: z.string().nullable()
+  description: z.string().nullable(),
+  linkName: z.string().nullable(),
+  link: z.string().nullable()
 });
 
 const editableValuesSchema = z
@@ -36,10 +38,7 @@ const proposalSchema = z.object({
 });
 
 const appliedChangeSchema = z.object({
-  mainVisual: mainVisualDetailSchema.extend({
-    linkName: z.string().nullable(),
-    link: z.string().nullable()
-  }),
+  mainVisual: mainVisualDetailSchema,
   before: editableValuesSchema,
   after: editableValuesSchema,
   auditLogId: z.string()

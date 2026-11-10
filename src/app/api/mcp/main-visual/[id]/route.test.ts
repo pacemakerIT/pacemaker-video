@@ -44,6 +44,8 @@ describe('GET /api/mcp/main-visual/[id]', () => {
       id: VISUAL_ID,
       title: 'Spring',
       description: 'Spring cohort',
+      linkName: 'Apply now',
+      link: '/courses',
       isPublic: true,
       orderIndex: 0
     });
@@ -121,6 +123,8 @@ describe('GET /api/mcp/main-visual/[id]', () => {
       id: VISUAL_ID,
       title: 'Spring',
       description: 'Spring cohort',
+      linkName: 'Apply now',
+      link: '/courses',
       isPublic: true,
       orderIndex: 0
     });
@@ -130,6 +134,8 @@ describe('GET /api/mcp/main-visual/[id]', () => {
         id: true,
         title: true,
         description: true,
+        linkName: true,
+        link: true,
         isPublic: true,
         orderIndex: true
       }

@@ -26,9 +26,15 @@ export type EditableMainVisual = {
 
 export type MainVisualChanges = Partial<EditableMainVisual>;
 
-// Newlines are allowed only in the title (the home page breaks it there).
-const CONTROL_CHARACTERS = /[\u0000-\u0009\u000B-\u001F\u007F]/;
-const LINE_BREAK = /[\r\n]/;
+// Control characters, line/paragraph separators and invisible formatting
+// characters such as bidi overrides and zero-width spaces. The zero-width
+// joiner stays allowed because joined emoji need it. Newlines are allowed only
+// in the title (the home page breaks it there).
+const HIDDEN_CHARACTERS = /[\p{Cc}\p{Zl}\p{Zp}]|(?!\u200D)\p{Cf}/u;
+// Characters RFC 3986 allows in a path, query and fragment. Anything else,
+// such as quotes, angle brackets or non-ASCII text, must be percent-encoded.
+const SITE_PATH = /^\/(?!\/)[A-Za-z0-9\-._~!$&'()*+,;=:@\/?#[\]%]*$/;
+const INVALID_PERCENT_ESCAPE = /%(?![0-9A-Fa-f]{2})/;
 const LINK_BASE = 'https://pacemaker.invalid';
 
 function optionalSingleLine(label: string, max: number) {
@@ -37,8 +43,8 @@ function optionalSingleLine(label: string, max: number) {
     .trim()
     .max(max, `${label} must be ${max} characters or fewer.`)
     .refine(
-      (value) => !CONTROL_CHARACTERS.test(value) && !LINE_BREAK.test(value),
-      `${label} must be a single line without control characters.`
+      (value) => !HIDDEN_CHARACTERS.test(value),
+      `${label} must be a single line without control or invisible characters.`
     )
     .transform((value) => (value === '' ? null : value))
     .nullable();
@@ -53,8 +59,8 @@ const titleSchema = z
       .min(1, 'Title is required.')
       .max(120, 'Title must be 120 characters or fewer.')
       .refine(
-        (value) => !CONTROL_CHARACTERS.test(value),
-        'Title must not contain control characters.'
+        (value) => !HIDDEN_CHARACTERS.test(value.replaceAll('\n', '')),
+        'Title must not contain control or invisible characters.'
       )
       .refine(
         (value) => value.split('\n').length <= 3,
@@ -65,7 +71,7 @@ const titleSchema = z
 // Only paths on this site, so a change cannot send home page visitors to
 // another origin.
 function isSitePath(value: string) {
-  if (!/^\/(?!\/)[^\s\\]*$/.test(value) || CONTROL_CHARACTERS.test(value)) {
+  if (!SITE_PATH.test(value) || INVALID_PERCENT_ESCAPE.test(value)) {
     return false;
   }
   try {
@@ -81,7 +87,7 @@ const linkSchema = z
   .max(200, 'Link must be 200 characters or fewer.')
   .refine(
     (value) => value === '' || isSitePath(value),
-    'Link must be a path on this site that starts with "/", for example /courses.'
+    'Link must be a path on this site that starts with "/", for example /courses. Percent-encode spaces, quotes and non-ASCII characters.'
   )
   .transform((value) => (value === '' ? null : value))
   .nullable();
@@ -154,25 +160,33 @@ const TOKEN_TYPES: Record<MainVisualChangeTokenKind, string> = {
   preview: 'mcp-preview+jwt'
 };
 
-export type MainVisualChangeClaims = {
-  subject: string;
-  clientId: string;
+export type MainVisualPreviewClaims = {
   mainVisualId: string;
   changes: MainVisualChanges;
   baseUpdatedAt: string;
 };
 
-const changeTokenPayloadSchema = z.object({
-  sub: z.string().min(1),
-  client_id: z.string().min(1),
+export type MainVisualChangeClaims = MainVisualPreviewClaims & {
+  subject: string;
+  clientId: string;
+};
+
+const previewTokenPayloadSchema = z.object({
   mvid: z.uuid(),
   changes: mainVisualChangesSchema,
   base: z.iso.datetime(),
   jti: z.string().min(1)
 });
 
+const changeTokenPayloadSchema = previewTokenPayloadSchema.extend({
+  sub: z.string().min(1),
+  client_id: z.string().min(1)
+});
+
 // Signed with the MCP API key but a different `typ`, so a change token is
 // never accepted as an API access token, and a preview token never applies.
+// The preview token travels in a browser URL (history, sign-in redirect), so
+// it leaves out who proposed the change.
 export async function signMainVisualChangeToken(
   kind: MainVisualChangeTokenKind,
   claims: MainVisualChangeClaims
@@ -182,8 +196,8 @@ export async function signMainVisualChangeToken(
   const issuedAt = Math.floor(Date.now() / 1000);
   const expiresAt = issuedAt + MAIN_VISUAL_CHANGE_TTL_SECONDS;
 
-  const token = await new SignJWT({
-    client_id: claims.clientId,
+  const jwt = new SignJWT({
+    ...(kind === 'apply' ? { client_id: claims.clientId } : {}),
     mvid: claims.mainVisualId,
     changes: claims.changes,
     base: claims.baseUpdatedAt
@@ -194,20 +208,30 @@ export async function signMainVisualChangeToken(
       kid: settings.keyId
     })
     .setIssuer(settings.issuer)
-    .setSubject(claims.subject)
     .setAudience(settings.audience)
     .setIssuedAt(issuedAt)
     .setExpirationTime(expiresAt)
-    .setJti(randomUUID())
-    .sign(privateKey);
+    .setJti(randomUUID());
+  if (kind === 'apply') {
+    jwt.setSubject(claims.subject);
+  }
+  const token = await jwt.sign(privateKey);
 
   return { token, expiresAt: new Date(expiresAt * 1000) };
 }
 
 export async function verifyMainVisualChangeToken(
   token: string,
+  kind: 'apply'
+): Promise<MainVisualChangeClaims>;
+export async function verifyMainVisualChangeToken(
+  token: string,
+  kind: 'preview'
+): Promise<MainVisualPreviewClaims>;
+export async function verifyMainVisualChangeToken(
+  token: string,
   kind: MainVisualChangeTokenKind
-): Promise<MainVisualChangeClaims> {
+): Promise<MainVisualChangeClaims | MainVisualPreviewClaims> {
   const settings = getMcpTokenSettings();
   const publicKey = await importSPKI(settings.publicKeyPem, 'RS256');
   const { payload, protectedHeader } = await jwtVerify(token, publicKey, {
@@ -221,6 +245,15 @@ export async function verifyMainVisualChangeToken(
 
   if (protectedHeader.kid !== settings.keyId) {
     throw new Error('Invalid change token signing key identifier.');
+  }
+
+  if (kind === 'preview') {
+    const parsed = previewTokenPayloadSchema.parse(payload);
+    return {
+      mainVisualId: parsed.mvid,
+      changes: parsed.changes,
+      baseUpdatedAt: parsed.base
+    };
   }
 
   const parsed = changeTokenPayloadSchema.parse(payload);
