@@ -1,0 +1,28 @@
+{
+  "name": "pacemaker-admin-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local stdio MCP server for Pacemaker admin content (PACE-333 POC)",
+  "type": "module",
+  "bin": {
+    "pacemaker-admin-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@napi-rs/keyring": "^2.1.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "typescript": "^5.9.3"
+  }
+}
