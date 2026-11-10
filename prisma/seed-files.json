@@ -1,0 +1,28 @@
+{
+  "description": "Storage files the seed points at, under the same keys as production (2026-11-03). The seed only builds URLs to these keys in the -dev buckets; scripts/prepare-dev-seed-files.mjs copies them there once.",
+  "images": [
+    "home/online-course-1.png",
+    "home/online-course-2.png",
+    "home/online-course-3.png",
+    "home/workshop-1.png",
+    "home/workshop-image.jpg",
+    "home/workshop-3.jpg",
+    "home/workshop-4.jpg",
+    "630537c5-de75-47c0-87ba-0d830730e9cb.jpeg",
+    "e0098cd6-403d-4e77-a577-982a84f347e9.png",
+    "101f331c-527d-4b32-bd1e-6d57093a6ae6.png",
+    "546166d5-a9ec-4cf1-8a77-f70575c97f12.png",
+    "5c07e0b3-ebda-4471-bbf4-5bf4511e6c52.png",
+    "4a8f42e2-bf43-421e-8b9d-461bd2c28791.jpg",
+    "ebd0ba18-00f0-41e3-ae4e-f72d104a1349.png",
+    "3bb482cb-e904-4e3d-b287-b264aa8a3999.png"
+  ],
+  "documents": [
+    "ebook-1",
+    "ebook-2",
+    "ebooks/70ae8c6c-8159-464d-a02e-0dfe959a7af2.pdf",
+    "b16eceb6-8fc2-485d-ae1c-aa58cef31e0a.pdf",
+    "TEST_2025052603 - 254926 16:49:24",
+    "Celpip_template.pdf"
+  ]
+}
