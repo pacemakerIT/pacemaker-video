@@ -321,6 +321,34 @@ async function seedMyPage(
     select: { id: true }
   });
 
+  // Refund fixtures use e-books outside the active purchases above.
+  const refundEbooks = EBOOKS.filter(
+    (ebook) => !mainEbooks.slice(0, 4).some((owned) => owned.id === ebook.id)
+  ).slice(0, 2);
+  if (refundEbooks.length < 2) {
+    throw new Error('Seed content must include 2 unpurchased refund e-books.');
+  }
+  for (const [index, status] of [
+    OrderStatus.REFUND_PROCESSING,
+    OrderStatus.REFUNDED
+  ].entries()) {
+    const ebook = refundEbooks[index];
+    const items = [orderItem(ItemType.EBOOK, ebook.id, ebook.price)];
+    await tx.order.create({
+      data: {
+        userId,
+        status,
+        subtotalAmountCents: orderTotal(items),
+        totalAmountCents: orderTotal(items),
+        discountAmountCents: 0,
+        taxAmountCents: 0,
+        currency: 'cad',
+        orderedAt: daysAgo(now, 31 + index),
+        items: { create: items }
+      }
+    });
+  }
+
   // Each registration points at the order that bought the workshop.
   await tx.userWorkshop.createMany({
     data: [

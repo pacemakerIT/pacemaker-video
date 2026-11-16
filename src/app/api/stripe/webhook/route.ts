@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { fulfillCheckoutSession } from '@/lib/stripe-fulfillment';
-import { refundOrderForCharge } from '@/lib/stripe-refunds';
 import { getStripeClient } from '@/lib/stripe';
 
 export const runtime = 'nodejs';
@@ -77,34 +76,15 @@ export async function POST(req: Request) {
       });
     }
 
-    if (event.type === 'charge.refunded') {
-      const charge = event.data.object as Stripe.Charge;
-      const refund = await refundOrderForCharge(stripe, charge);
-
-      return NextResponse.json({
-        received: true,
-        refund
-      });
-    }
-
     return NextResponse.json({ received: true });
   } catch (error) {
-    const isRefund = event.type === 'charge.refunded';
     const message =
-      error instanceof Error
-        ? error.message
-        : isRefund
-          ? 'Failed to process refund'
-          : 'Failed to fulfill checkout';
+      error instanceof Error ? error.message : 'Failed to fulfill checkout';
 
-    logStripeWebhookError(
-      isRefund ? 'refund failed' : 'fulfillment failed',
-      error,
-      {
-        eventId: event.id,
-        eventType: event.type
-      }
-    );
+    logStripeWebhookError('fulfillment failed', error, {
+      eventId: event.id,
+      eventType: event.type
+    });
 
     return NextResponse.json({ error: message }, { status: 500 });
   }

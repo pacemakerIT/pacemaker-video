@@ -43,7 +43,7 @@ type CartRow = {
 
 type PrismaTx = Prisma.TransactionClient;
 
-export function isUuid(value: string) {
+function isUuid(value: string) {
   return UUID_PATTERN.test(value);
 }
 

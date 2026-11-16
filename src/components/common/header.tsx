@@ -127,7 +127,7 @@ export function Header() {
 
       {/* Mobile Navigation Panel - Positioned absolutely below the header */}
       <div
-        className={`absolute left-0 right-0 z-[90] md:hidden bg-white border-b border-gray-100 shadow-2xl transition-all duration-300 ease-in-out origin-top ${
+        className={`absolute top-full left-0 right-0 z-[90] md:hidden bg-white border-b border-gray-100 shadow-2xl transition-all duration-300 ease-in-out origin-top ${
           isMobileMenuOpen
             ? 'opacity-100 translate-y-0 scale-y-100'
             : 'opacity-0 -translate-y-2 scale-y-95 pointer-events-none'

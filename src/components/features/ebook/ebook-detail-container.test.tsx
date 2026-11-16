@@ -3,6 +3,24 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemType } from '@prisma/client';
 import EbookDetailContainer from './ebook-detail-container';
 
+vi.mock('./ebook-pdf-modal', () => ({
+  default: ({
+    isOpen,
+    ebookId,
+    onOpenChange
+  }: {
+    isOpen: boolean;
+    ebookId: string;
+    onOpenChange: (open: boolean) => void;
+  }) =>
+    isOpen ? (
+      <div data-testid="pdf-reader">
+        {ebookId}
+        <button onClick={() => onOpenChange(false)}>Close reader</button>
+      </div>
+    ) : null
+}));
+
 const mocks = vi.hoisted(() => ({
   addToCart: vi.fn(),
   cart: [] as Array<{ itemId: string; itemType: unknown }>,
@@ -61,21 +79,6 @@ vi.mock('../../common/detail-hero-section', () => ({
       </button>
     </>
   )
-}));
-
-vi.mock('./ebook-purchased-hero', () => ({
-  default: ({
-    ctaText = 'Continue reading',
-    onContinueReading
-  }: {
-    ctaText?: string;
-    onContinueReading?: () => void;
-  }) => <button onClick={onContinueReading}>{ctaText}</button>
-}));
-
-vi.mock('./ebook-pdf-modal', () => ({
-  default: ({ isOpen, ebookId }: { isOpen: boolean; ebookId: string }) =>
-    isOpen ? <div data-testid="pdf-reader">{ebookId}</div> : null
 }));
 
 vi.mock('@/components/common/confirm-modal', () => ({
@@ -181,26 +184,58 @@ describe('EbookDetailContainer', () => {
     expect(mocks.addToCart).not.toHaveBeenCalled();
   });
 
-  it('shows the reading hero instead of the purchase card when the user can access the ebook', () => {
+  it('opens and closes the PDF modal for an owned ebook without adding it to the cart', () => {
     render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
-
-    expect(
-      screen.getByRole('button', { name: 'Continue reading' })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Purchased' })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Purchased' }));
+    expect(screen.getByTestId('pdf-reader')).toHaveTextContent('ebook-1');
     expect(mocks.addToCart).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Close reader' }));
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
   });
 
-  it('opens the pdf reader when a reader continues an owned ebook', () => {
-    render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
+  it('adds the ebook to favorites for signed-in users', async () => {
+    render(<EbookDetailContainer id="ebook-1" />);
 
-    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
+    const likeButton = screen.getByRole('button', { name: 'like' });
+    expect(likeButton).toHaveAttribute('aria-pressed', 'false');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Continue reading' }));
+    fireEvent.click(likeButton);
 
-    expect(screen.getByTestId('pdf-reader')).toHaveTextContent('ebook-1');
+    await waitFor(() => {
+      expect(mocks.addFavorite).toHaveBeenCalledWith('ebook-1', ItemType.EBOOK);
+    });
+    expect(mocks.removeFavorite).not.toHaveBeenCalled();
+  });
+
+  it('removes the ebook from favorites when it is already favorited', async () => {
+    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.EBOOK });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    const likeButton = screen.getByRole('button', { name: 'like' });
+    expect(likeButton).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(likeButton);
+
+    await waitFor(() => {
+      expect(mocks.removeFavorite).toHaveBeenCalledWith(
+        'ebook-1',
+        ItemType.EBOOK
+      );
+    });
+    expect(mocks.addFavorite).not.toHaveBeenCalled();
+  });
+
+  it('ignores favorites of other item types with the same id', () => {
+    mocks.favorites.push({ itemId: 'ebook-1', itemType: ItemType.COURSE });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    expect(screen.getByRole('button', { name: 'like' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
   });
 
   it('renders the sub description and keeps the toc in the side column', () => {
@@ -223,5 +258,20 @@ describe('EbookDetailContainer', () => {
     expect(screen.getByTestId('expandable-cards').className).toContain(
       'lg:w-full'
     );
+  });
+
+  it('asks signed-out users to log in before favoriting', () => {
+    mocks.useUser.mockReturnValue({ isSignedIn: false });
+
+    render(<EbookDetailContainer id="ebook-1" />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'like' }));
+
+    expect(screen.getByText('Login Required')).toBeInTheDocument();
+    expect(mocks.addFavorite).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: '확인' }));
+
+    expect(mocks.push).toHaveBeenCalledWith('/sign-in');
   });
 });
