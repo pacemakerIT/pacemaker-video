@@ -1629,8 +1629,8 @@
           Order Details
         </h2>
 
-        <!-- Content sections with space-y-[23px] to match grid gaps -->
-        <div class="space-y-[23px]">
+        <!-- Scrollable Modal Body -->
+        <div class="overflow-y-auto px-6 sm:px-10 py-6 space-y-[23px] overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-navy/15 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-navy/30">
           <!-- Order info -->
           <div class="space-y-1">
             <div class="flex justify-between items-baseline">
@@ -1895,6 +1895,7 @@
 
       function closeOrderDetailModal() {
         document.getElementById('order-detail-modal').classList.add('hidden');
+        document.body.style.overflow = '';
       }
 
       function showOrderDetailInlineAlert(type) {
