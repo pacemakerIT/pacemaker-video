@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useReverification, useUser } from '@clerk/nextjs';
+import { useClerk, useReverification, useUser } from '@clerk/nextjs';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { accountErrorMessage } from '@/lib/account-errors';
 
 export default function UpdatePasswordForm() {
   const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const currentRef = useRef<HTMLInputElement | null>(null);
   const newRef = useRef<HTMLInputElement | null>(null);
   const confirmRef = useRef<HTMLInputElement | null>(null);
@@ -54,10 +55,11 @@ export default function UpdatePasswordForm() {
       });
       if (!updated) return;
       setStatus('');
-      toast.success('Password updated successfully.');
+      toast.success('Password updated successfully. Please sign in again.');
       if (currentRef.current) currentRef.current.value = '';
       if (newRef.current) newRef.current.value = '';
       if (confirmRef.current) confirmRef.current.value = '';
+      await signOut();
     } catch (err) {
       setStatus(accountErrorMessage(err, 'Failed to update password.'));
     } finally {

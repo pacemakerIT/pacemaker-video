@@ -16,9 +16,11 @@ const mocks = vi.hoisted(() => ({
     setProfileImage: vi.fn()
   },
   reverify: vi.fn(),
+  signOut: vi.fn(),
   success: vi.fn()
 }));
 vi.mock('@clerk/nextjs', () => ({
+  useClerk: () => ({ signOut: mocks.signOut }),
   useUser: () => ({ user: mocks.user, isLoaded: true }),
   useReverification: (action: (...args: never[]) => unknown) => {
     mocks.reverify(action);
@@ -32,6 +34,7 @@ beforeEach(() => {
   mocks.user.passwordEnabled = true;
   mocks.user.updatePassword.mockResolvedValue(mocks.user);
   mocks.user.setProfileImage.mockResolvedValue({});
+  mocks.signOut.mockResolvedValue(undefined);
 });
 afterEach(cleanup);
 
@@ -55,6 +58,10 @@ describe('Account password settings', () => {
       newPassword: ' new password ',
       signOutOfOtherSessions: true
     });
+    await waitFor(() => expect(mocks.signOut).toHaveBeenCalledTimes(1));
+    expect(mocks.success).toHaveBeenCalledWith(
+      'Password updated successfully. Please sign in again.'
+    );
   });
 
   it('allows social accounts to set a password without a current password', async () => {
@@ -90,6 +97,7 @@ describe('Account password settings', () => {
       'new password'
     );
     expect(mocks.success).not.toHaveBeenCalled();
+    expect(mocks.signOut).not.toHaveBeenCalled();
   });
 });
 
