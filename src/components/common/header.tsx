@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -87,11 +87,11 @@ export function Header() {
           </div>
 
           <div className="nav-right ml-4">
-            <SignedOut>
+            <Show when="signed-out">
               <SignInModalButton className="btn-auth btn-login" />
               <SignUpModalButton className="btn-auth btn-signup" />
-            </SignedOut>
-            <SignedIn>
+            </Show>
+            <Show when="signed-in">
               <Link
                 href="/mypage/cart"
                 aria-label="Open cart"
@@ -105,7 +105,7 @@ export function Header() {
                 )}
               </Link>
               <UserDropdown />
-            </SignedIn>
+            </Show>
           </div>
         </div>
 
@@ -286,11 +286,11 @@ export function Header() {
           </div>
 
           <div className="mt-4 flex flex-col gap-3">
-            <SignedOut>
+            <Show when="signed-out">
               <SignInModalButton className="w-full h-12 rounded-xl border border-gray-200 text-base font-bold text-navy hover:bg-gray-50" />
               <SignUpModalButton className="w-full h-12 rounded-xl text-base font-bold text-white bg-navy hover:bg-navy/90" />
-            </SignedOut>
-            <SignedIn>
+            </Show>
+            <Show when="signed-in">
               <Link
                 href="/mypage/cart"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -303,7 +303,7 @@ export function Header() {
               <div className="p-4 border-t border-gray-100">
                 <UserDropdown />
               </div>
-            </SignedIn>
+            </Show>
           </div>
         </div>
       </div>

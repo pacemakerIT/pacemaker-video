@@ -1013,7 +1013,10 @@
                   <span class="text-[16px] font-bold text-navy font-headline"
                     >$2800</span
                   >
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Paid</span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    >Paid</span
+                  >
                 </div>
               </div>
 
@@ -1073,7 +1076,10 @@
                   <span class="text-[16px] font-bold text-navy font-headline"
                     >$2800</span
                   >
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Paid</span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    >Paid</span
+                  >
                 </div>
               </div>
 
@@ -1133,7 +1139,10 @@
                   <span class="text-[16px] font-bold text-navy font-headline"
                     >$2800</span
                   >
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Paid</span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    >Paid</span
+                  >
                 </div>
               </div>
 
@@ -1193,7 +1202,10 @@
                   <span class="text-[16px] font-bold text-navy font-headline"
                     >$2800</span
                   >
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-100">Refund processing</span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-100"
+                    >Refund processing</span
+                  >
                 </div>
               </div>
 
@@ -1254,7 +1266,10 @@
                   <span class="text-[16px] font-bold text-navy font-headline"
                     >$2800</span
                   >
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-100">Refunded</span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-100"
+                    >Refunded</span
+                  >
                 </div>
               </div>
 
@@ -1582,16 +1597,25 @@
     </script>
 
     <!-- ================= INLINE ORDER DETAIL MODAL ================= -->
-    <div id="order-detail-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden">
+    <div
+      id="order-detail-modal"
+      class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden"
+    >
       <!-- Backdrop -->
-      <button onclick="closeOrderDetailModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close modal"></button>
-      
+      <button
+        onclick="closeOrderDetailModal()"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0"
+        aria-label="Close modal"
+      ></button>
+
       <!-- Modal Box (Elevated above backdrop) -->
-      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[600px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy">
+      <div
+        class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[600px] relative z-10 px-6 sm:px-10 pt-[80px] pb-[48px] sm:py-[80px] text-navy"
+      >
         <!-- Close Button -->
-        <button 
+        <button
           type="button"
-          onclick="closeOrderDetailModal()" 
+          onclick="closeOrderDetailModal()"
           class="absolute right-6 top-6 w-11 h-11 rounded-full flex items-center justify-center text-gray-400 hover:text-navy hover:bg-gray-soft transition-colors cursor-pointer border-0 bg-transparent"
           aria-label="Close details"
         >
@@ -1599,7 +1623,9 @@
         </button>
 
         <!-- Modal Title -->
-        <h2 class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy mb-8 whitespace-nowrap">
+        <h2
+          class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy mb-8 whitespace-nowrap"
+        >
           Order Details
         </h2>
 
@@ -1609,7 +1635,9 @@
           <div class="space-y-1">
             <div class="flex justify-between items-baseline">
               <span class="text-base font-bold text-navy">Order number</span>
-              <span class="text-base font-bold text-navy font-heading">No.ABCD123456</span>
+              <span class="text-base font-bold text-navy font-heading"
+                >No.ABCD123456</span
+              >
             </div>
             <div class="flex justify-between items-baseline text-sm text-body">
               <span>Purchase date</span>
@@ -1625,26 +1653,40 @@
             <div class="space-y-2 text-sm">
               <!-- Item 1 -->
               <div class="flex justify-between items-start gap-4">
-                <span class="text-body shrink-0 w-[64px] sm:w-24">Online course</span>
-                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-body shrink-0 w-[64px] sm:w-24"
+                  >Online course</span
+                >
+                <span class="text-navy flex-1"
+                  >Resume + Interview Prep (All-in-One)</span
+                >
                 <span class="text-navy font-bold font-heading">$99.99</span>
               </div>
               <!-- Item 2 -->
               <div class="flex justify-between items-start gap-4">
                 <span class="text-body shrink-0 w-[64px] sm:w-24">E-book</span>
-                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-navy flex-1"
+                  >Resume + Interview Prep (All-in-One)</span
+                >
                 <span class="text-navy font-bold font-heading">$99.99</span>
               </div>
               <!-- Item 3 -->
               <div class="flex justify-between items-start gap-4">
-                <span class="text-body shrink-0 w-[64px] sm:w-24">Workshop</span>
-                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-body shrink-0 w-[64px] sm:w-24"
+                  >Workshop</span
+                >
+                <span class="text-navy flex-1"
+                  >Resume + Interview Prep (All-in-One)</span
+                >
                 <span class="text-navy font-bold font-heading">$99.99</span>
               </div>
               <!-- Item 4 -->
               <div class="flex justify-between items-start gap-4">
-                <span class="text-body shrink-0 w-[64px] sm:w-24">Online course</span>
-                <span class="text-navy flex-1">Resume + Interview Prep (All-in-One)</span>
+                <span class="text-body shrink-0 w-[64px] sm:w-24"
+                  >Online course</span
+                >
+                <span class="text-navy flex-1"
+                  >Resume + Interview Prep (All-in-One)</span
+                >
                 <span class="text-navy font-bold font-heading">$99.99</span>
               </div>
             </div>
@@ -1669,7 +1711,7 @@
                 <span class="font-heading">$99.99</span>
               </div>
             </div>
-            
+
             <hr class="border-gray-200" />
 
             <!-- Payment Card Metadata -->
@@ -1694,7 +1736,9 @@
           <!-- Total Price Row (40px spacing above the buttons) -->
           <div class="flex justify-between items-baseline pb-4">
             <span class="text-lg font-bold text-navy">Total paid</span>
-            <span class="text-2xl font-bold text-navy font-heading">$999.99</span>
+            <span class="text-2xl font-bold text-navy font-heading"
+              >$999.99</span
+            >
           </div>
 
           <!-- Action Buttons -->
@@ -1722,17 +1766,36 @@
 
     <!-- ================= INLINE ALERTS IN ORDER DETAIL ================= -->
     <!-- 1. REQUEST REFUND ALERT -->
-    <div id="inline-alert-refund" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+    <div
+      id="inline-alert-refund"
+      class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden"
+    >
       <!-- Backdrop -->
-      <button onclick="closeOrderDetailInlineAlert('refund')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <button
+        onclick="closeOrderDetailInlineAlert('refund')"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0"
+        aria-label="Close alert"
+      ></button>
       <!-- Card -->
-      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+      <div
+        class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy"
+      >
         <div class="space-y-6">
           <div class="space-y-3">
-            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Request refund</h3>
-            <p class="text-sm text-body leading-relaxed">To request a refund, please send an email to pacemaker@gmail.com</p>
+            <h3
+              class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+            >
+              Request refund
+            </h3>
+            <p class="text-sm text-body leading-relaxed">
+              To request a refund, please send an email to pacemaker@gmail.com
+            </p>
           </div>
-          <button type="button" onclick="closeOrderDetailInlineAlert('refund')" class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+          <button
+            type="button"
+            onclick="closeOrderDetailInlineAlert('refund')"
+            class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0"
+          >
             Confirm
           </button>
         </div>
@@ -1740,21 +1803,44 @@
     </div>
 
     <!-- 2. SAVE RECEIPT ALERT -->
-    <div id="inline-alert-save" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+    <div
+      id="inline-alert-save"
+      class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden"
+    >
       <!-- Backdrop -->
-      <button onclick="closeOrderDetailInlineAlert('save')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <button
+        onclick="closeOrderDetailInlineAlert('save')"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0"
+        aria-label="Close alert"
+      ></button>
       <!-- Card -->
-      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+      <div
+        class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy"
+      >
         <div class="space-y-6">
           <div class="space-y-3">
-            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Save receipt</h3>
-            <p class="text-sm text-body leading-relaxed">Would you like to save the receipt?</p>
+            <h3
+              class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+            >
+              Save receipt
+            </h3>
+            <p class="text-sm text-body leading-relaxed">
+              Would you like to save the receipt?
+            </p>
           </div>
           <div class="grid grid-cols-2 gap-3">
-            <button type="button" onclick="confirmSaveReceiptInline()" class="min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+            <button
+              type="button"
+              onclick="confirmSaveReceiptInline()"
+              class="min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0"
+            >
               Confirm
             </button>
-            <button type="button" onclick="closeOrderDetailInlineAlert('save')" class="min-h-[44px] border border-gray-300 hover:bg-gray-50 text-gray-500 font-semibold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer bg-white">
+            <button
+              type="button"
+              onclick="closeOrderDetailInlineAlert('save')"
+              class="min-h-[44px] border border-gray-300 hover:bg-gray-50 text-gray-500 font-semibold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer bg-white"
+            >
               Cancel
             </button>
           </div>
@@ -1763,17 +1849,36 @@
     </div>
 
     <!-- 3. RECEIPT SAVED ALERT -->
-    <div id="inline-alert-saved" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden">
+    <div
+      id="inline-alert-saved"
+      class="fixed inset-0 z-[10000] flex items-center justify-center p-4 hidden"
+    >
       <!-- Backdrop -->
-      <button onclick="closeOrderDetailInlineAlert('saved')" class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0" aria-label="Close alert"></button>
+      <button
+        onclick="closeOrderDetailInlineAlert('saved')"
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-default w-full h-full border-0"
+        aria-label="Close alert"
+      ></button>
       <!-- Card -->
-      <div class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy">
+      <div
+        class="bg-white rounded-none border border-gray-100 shadow-card w-full max-w-[360px] relative z-50 p-8 text-center text-navy"
+      >
         <div class="space-y-6">
           <div class="space-y-3">
-            <h3 class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy">Receipt saved</h3>
-            <p class="text-sm text-body leading-relaxed">Your receipt has been saved successfully.</p>
+            <h3
+              class="text-[22px] font-bold tracking-tight font-heading leading-tight text-navy"
+            >
+              Receipt saved
+            </h3>
+            <p class="text-sm text-body leading-relaxed">
+              Your receipt has been saved successfully.
+            </p>
           </div>
-          <button type="button" onclick="closeOrderDetailInlineAlert('saved')" class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0">
+          <button
+            type="button"
+            onclick="closeOrderDetailInlineAlert('saved')"
+            class="w-full min-h-[44px] bg-orange hover:bg-orange-hover text-white font-bold py-3.5 rounded-2xl text-base font-[family-name:var(--font-heading)] transition-all hover:scale-[1.02] cursor-pointer border-0"
+          >
             OK
           </button>
         </div>
@@ -1783,7 +1888,9 @@
     <!-- Toggle & Inline Order Detail JS -->
     <script>
       function openOrderDetailModal() {
-        document.getElementById('order-detail-modal').classList.remove('hidden');
+        document
+          .getElementById('order-detail-modal')
+          .classList.remove('hidden');
       }
 
       function closeOrderDetailModal() {
@@ -1791,7 +1898,9 @@
       }
 
       function showOrderDetailInlineAlert(type) {
-        document.getElementById('inline-alert-' + type).classList.remove('hidden');
+        document
+          .getElementById('inline-alert-' + type)
+          .classList.remove('hidden');
       }
 
       function closeOrderDetailInlineAlert(type) {
