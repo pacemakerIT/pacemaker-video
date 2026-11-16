@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_SEED_IMAGE_BYTES,
-  createCyclicPicker,
   getDatabaseHost,
   isLocalSeedDatabase,
   maskConnectionString,
   publicObjectUrl,
-  selectSeedEbookKeys,
-  selectSeedImageKeys
+  resolveSeedStorage,
+  seedFileUrl,
+  seededWorkshopStatus,
+  shiftDays,
+  workshopDayShift
 } from './seed-helpers';
 
 // Connection strings are assembled at runtime so secret scanners do not read
@@ -81,35 +82,6 @@ describe('getDatabaseHost and maskConnectionString', () => {
   });
 });
 
-describe('selectSeedImageKeys', () => {
-  it('keeps images up to 4MB, sorted, and drops everything else', () => {
-    expect(
-      selectSeedImageKeys([
-        { key: 'b.png', size: 1000 },
-        { key: 'a.jpeg', size: MAX_SEED_IMAGE_BYTES },
-        { key: 'huge.png', size: MAX_SEED_IMAGE_BYTES + 1 },
-        { key: 'empty.png', size: 0 },
-        { key: 'doc.pdf', size: 1000 },
-        { key: 'c.webp', size: 10 }
-      ])
-    ).toEqual(['a.jpeg', 'b.png', 'c.webp']);
-  });
-});
-
-describe('selectSeedEbookKeys', () => {
-  it('keeps ebook files, including keys without an extension', () => {
-    expect(
-      selectSeedEbookKeys([
-        { key: 'ebook-2', size: 72067 },
-        { key: 'ebook-1', size: 71351 },
-        { key: 'folder/', size: 0 },
-        { key: 'folder/.emptyFolderPlaceholder', size: 0 },
-        { key: '.hidden', size: 10 }
-      ])
-    ).toEqual(['ebook-1', 'ebook-2']);
-  });
-});
-
 describe('publicObjectUrl', () => {
   it('builds a Supabase public object URL', () => {
     expect(
@@ -120,11 +92,91 @@ describe('publicObjectUrl', () => {
   });
 });
 
-describe('createCyclicPicker', () => {
-  it('hands out items in order and wraps around', () => {
-    const next = createCyclicPicker(['a', 'b']);
+const SUPABASE_URL = 'https://project.supabase.co';
+const devEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: SUPABASE_URL,
+  SUPABASE_S3_IMG_BUCKET: 'image-dev',
+  SUPABASE_S3_EBOOK_BUCKET: 'document-dev'
+};
 
-    expect([next(), next(), next()]).toEqual(['a', 'b', 'a']);
-    expect(createCyclicPicker([])()).toBeUndefined();
+describe('resolveSeedStorage', () => {
+  it('uses the -dev buckets when both are configured', () => {
+    expect(resolveSeedStorage(devEnv)).toEqual({
+      mode: 'dev',
+      supabaseUrl: SUPABASE_URL,
+      imageBucket: 'image-dev',
+      ebookBucket: 'document-dev'
+    });
+  });
+
+  it('falls back to local mode for production or missing buckets', () => {
+    for (const env of [
+      { ...devEnv, SUPABASE_S3_IMG_BUCKET: 'image' },
+      { ...devEnv, SUPABASE_S3_EBOOK_BUCKET: undefined },
+      { ...devEnv, SUPABASE_S3_EBOOK_BUCKET: 'image-dev' },
+      { ...devEnv, NEXT_PUBLIC_SUPABASE_URL: '' }
+    ]) {
+      expect(resolveSeedStorage(env).mode).toBe('local');
+    }
+  });
+
+  it('accepts quoted values like the app does', () => {
+    expect(
+      resolveSeedStorage({ ...devEnv, SUPABASE_S3_IMG_BUCKET: '"image-dev"' })
+        .mode
+    ).toBe('dev');
+  });
+});
+
+describe('seedFileUrl', () => {
+  it('builds -dev bucket URLs by role and encodes the key', () => {
+    const storage = resolveSeedStorage(devEnv);
+
+    expect(seedFileUrl(storage, 'image', 'home/a.png')).toBe(
+      `${SUPABASE_URL}/storage/v1/object/public/image-dev/home/a.png`
+    );
+    expect(seedFileUrl(storage, 'ebook', 'TEST - 1 16:49:24')).toBe(
+      `${SUPABASE_URL}/storage/v1/object/public/document-dev/TEST%20-%201%2016%3A49%3A24`
+    );
+  });
+
+  it('returns null in local mode', () => {
+    expect(
+      seedFileUrl({ mode: 'local', reason: 'x' }, 'image', 'home/a.png')
+    ).toBeNull();
+  });
+});
+
+describe('workshopDayShift', () => {
+  const now = new Date('2026-12-01T12:00:00Z');
+
+  it('moves the latest workshop to a week after now in whole days', () => {
+    const dates = [
+      new Date('2026-03-16T19:00:00Z'),
+      new Date('2026-11-05T19:00:00Z')
+    ];
+    const shift = workshopDayShift(dates, now);
+    const latest = shiftDays(dates[1], shift);
+
+    expect(Number.isInteger(shift)).toBe(true);
+    expect(latest.toISOString()).toBe('2026-12-08T19:00:00.000Z');
+    expect(shiftDays(dates[0], shift) < now).toBe(true);
+  });
+
+  it('returns 0 without workshops', () => {
+    expect(workshopDayShift([], now)).toBe(0);
+  });
+});
+
+describe('seededWorkshopStatus', () => {
+  it('completes ended workshops and opens upcoming ones', () => {
+    const now = new Date('2026-12-01T12:00:00Z');
+
+    expect(seededWorkshopStatus(new Date('2026-11-30T00:00:00Z'), now)).toBe(
+      'COMPLETED'
+    );
+    expect(seededWorkshopStatus(new Date('2026-12-02T00:00:00Z'), now)).toBe(
+      'OPEN'
+    );
   });
 });

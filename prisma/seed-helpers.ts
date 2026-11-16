@@ -28,40 +28,6 @@ export function maskConnectionString(connectionString: string) {
   return connectionString.replace(/:\/\/([^:/@]+):([^@]+)@/, '://$1:****@');
 }
 
-// Same limit as MAX_IMAGE_UPLOAD_BYTES in src/lib/image-upload-limits.ts.
-export const MAX_SEED_IMAGE_BYTES = 4 * 1024 * 1024;
-
-export type StorageObject = {
-  key: string;
-  size: number;
-};
-
-// Thumbnails must be images the image proxy and Vercel image optimization
-// can serve, so oversized files are skipped. Sorted for repeatable seeds.
-export function selectSeedImageKeys(objects: StorageObject[]) {
-  return objects
-    .filter(
-      ({ key, size }) =>
-        /\.(png|jpe?g|webp)$/i.test(key) &&
-        size > 0 &&
-        size <= MAX_SEED_IMAGE_BYTES
-    )
-    .map(({ key }) => key)
-    .sort();
-}
-
-// Ebook files in the ebook bucket; existing keys have no extension, so only
-// folder markers and empty or hidden objects are skipped.
-export function selectSeedEbookKeys(objects: StorageObject[]) {
-  return objects
-    .filter(({ key, size }) => {
-      const name = key.split('/').pop() ?? '';
-      return size > 0 && name.length > 0 && !name.startsWith('.');
-    })
-    .map(({ key }) => key)
-    .sort();
-}
-
 export function publicObjectUrl(
   supabaseUrl: string,
   bucket: string,
@@ -72,14 +38,73 @@ export function publicObjectUrl(
   return `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/${bucket}/${encodedKey}`;
 }
 
-// Hands out items in order, wrapping around.
-export function createCyclicPicker<T>(items: T[]) {
-  let index = 0;
+// The seed never talks to storage. In dev mode it stores URLs of files that
+// scripts/prepare-dev-seed-files.mjs copied into the -dev buckets; in local
+// mode it falls back to /img paths and empty ebook files.
+export type SeedStorage =
+  | {
+      mode: 'dev';
+      supabaseUrl: string;
+      imageBucket: string;
+      ebookBucket: string;
+    }
+  | { mode: 'local'; reason: string };
 
-  return (): T | undefined => {
-    if (items.length === 0) return undefined;
-    const item = items[index % items.length];
-    index += 1;
-    return item;
-  };
+const isDevBucket = (name: string) => name.endsWith('-dev');
+
+export function resolveSeedStorage(
+  env: Record<string, string | undefined>
+): SeedStorage {
+  const clean = (key: string) =>
+    (env[key]?.trim() ?? '').replace(/^['"](.*)['"]$/, '$1');
+  const supabaseUrl = clean('NEXT_PUBLIC_SUPABASE_URL');
+  const imageBucket = clean('SUPABASE_S3_IMG_BUCKET');
+  const ebookBucket = clean('SUPABASE_S3_EBOOK_BUCKET');
+
+  if (!supabaseUrl) {
+    return { mode: 'local', reason: 'NEXT_PUBLIC_SUPABASE_URL is not set' };
+  }
+  if (!isDevBucket(imageBucket) || !isDevBucket(ebookBucket)) {
+    return {
+      mode: 'local',
+      reason: `SUPABASE_S3_IMG_BUCKET and SUPABASE_S3_EBOOK_BUCKET must both end with -dev (got "${imageBucket}", "${ebookBucket}")`
+    };
+  }
+  if (imageBucket === ebookBucket) {
+    return {
+      mode: 'local',
+      reason: 'the image and ebook buckets must differ'
+    };
+  }
+  return { mode: 'dev', supabaseUrl, imageBucket, ebookBucket };
+}
+
+// Public URL of a seed file in its -dev bucket, or null in local mode.
+export function seedFileUrl(
+  storage: SeedStorage,
+  role: 'image' | 'ebook',
+  key: string
+) {
+  if (storage.mode !== 'dev') return null;
+  const bucket = role === 'image' ? storage.imageBucket : storage.ebookBucket;
+  return publicObjectUrl(storage.supabaseUrl, bucket, key);
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Whole days to add to every workshop so the latest one starts
+// `leadDays` after `now`, keeping the gaps and times of day between them.
+export function workshopDayShift(startDates: Date[], now: Date, leadDays = 7) {
+  if (startDates.length === 0) return 0;
+  const latest = Math.max(...startDates.map((date) => date.getTime()));
+  return Math.ceil((now.getTime() + leadDays * DAY_MS - latest) / DAY_MS);
+}
+
+export function shiftDays(date: Date, days: number) {
+  return new Date(date.getTime() + days * DAY_MS);
+}
+
+// Status shown for a seeded workshop: ended ones are completed.
+export function seededWorkshopStatus(endDate: Date, now: Date) {
+  return endDate < now ? 'COMPLETED' : 'OPEN';
 }
