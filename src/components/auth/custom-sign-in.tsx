@@ -42,12 +42,12 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
 
   const finishSignIn = async (sessionId: string | null) => {
     if (!sessionId) {
-      setError('로그인 세션을 생성하지 못했어요. 다시 시도해주세요.');
+      setError('Could not create login session. Please try again.');
       return;
     }
 
     if (!setActive) {
-      setError('로그인 세션을 활성화하지 못했어요. 다시 시도해주세요.');
+      setError('Could not activate login session. Please try again.');
       return;
     }
 
@@ -65,7 +65,7 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
     );
 
     if (!emailCodeFactor) {
-      setError('지원되는 이메일 인증 수단을 찾지 못했어요.');
+      setError('No supported email verification method found.');
       return;
     }
 
@@ -81,7 +81,7 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
     setCode('');
     setIsVerifyingCode(true);
     setError('');
-    setNotice('인증 코드를 이메일로 보냈어요.');
+    setNotice('A verification code has been sent to your email.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,13 +104,16 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
       } else if (result.status === 'needs_second_factor') {
         await prepareEmailSecondFactor(signIn, result);
       } else if (result.status === 'needs_new_password') {
-        setError('새 비밀번호 설정이 필요합니다.');
+        setError('Please set a new password.');
       } else {
-        setError('로그인을 완료하려면 추가 인증 단계가 필요합니다.');
+        setError('Additional verification required to finish signing in.');
       }
     } catch (err: unknown) {
       const e = err as { errors?: { code?: string; message?: string }[] };
-      setError(e.errors?.[0]?.message || '로그인 실패');
+      setError(
+        e.errors?.[0]?.message ||
+          'Sign in failed. Please check your credentials.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -133,11 +136,13 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
       if (result.status === 'complete') {
         await finishSignIn(result.createdSessionId);
       } else {
-        setError('인증을 완료하지 못했어요. 코드를 다시 확인해주세요.');
+        setError('Could not complete verification. Please check the code.');
       }
     } catch (err: unknown) {
       const e = err as { errors?: { message?: string }[] };
-      setError(e.errors?.[0]?.message || '인증 코드 확인에 실패했어요.');
+      setError(
+        e.errors?.[0]?.message || 'Failed to verify code. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -155,10 +160,13 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
         strategy: 'email_code',
         ...(secondFactorEmailId ? { emailAddressId: secondFactorEmailId } : {})
       });
-      setNotice('인증 코드를 다시 보냈어요.');
+      setNotice('A new verification code has been sent.');
     } catch (err: unknown) {
       const e = err as { errors?: { message?: string }[] };
-      setError(e.errors?.[0]?.message || '인증 코드 재전송에 실패했어요.');
+      setError(
+        e.errors?.[0]?.message ||
+          'Failed to resend verification code. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -166,110 +174,121 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
 
   if (isVerifyingCode) {
     return (
-      <div className="w-full flex flex-col items-center text-pace-base">
-        <form
-          onSubmit={handleVerifySecondFactor}
-          className="w-full flex flex-col items-center"
-        >
-          <p className="w-[400px] text-sm text-center text-pace-black-500 mb-6">
-            {secondFactorEmail || email}로 전송된 인증 코드를 입력해주세요.
-          </p>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="인증 코드"
-            className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 mb-0"
-            required
-          />
+      <div className="space-y-[23px]">
+        <h2 className="text-[24px] font-bold text-center tracking-tight font-heading leading-tight text-navy">
+          Two-step verification
+        </h2>
+        <p className="text-sm text-center text-body">
+          Please enter the code sent to {secondFactorEmail || email}.
+        </p>
+        <form onSubmit={handleVerifySecondFactor}>
+          <div className="space-y-[23px]">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Verification code"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              required
+            />
+          </div>
           {notice && (
-            <p className="text-pace-stone-500 text-sm text-center">{notice}</p>
+            <p className="text-sm text-center text-gray-500 mt-2">{notice}</p>
           )}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-pace-orange-800 hover:bg-pace-orange-600 text-white rounded-full py-3 mt-6 mb-4 disabled:opacity-60"
+            className="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-heading rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
           >
-            인증하고 로그인
+            VERIFY &amp; SIGN IN
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={handleResendSecondFactor}
-          disabled={isSubmitting}
-          className="text-pace-gray-500 underline hover:text-pace-orange-800 disabled:opacity-60"
-        >
-          인증 코드 다시 보내기
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setIsVerifyingCode(false);
-            setCode('');
-            setNotice('');
-            setError('');
-          }}
-          className="mt-4 text-pace-stone-500 underline hover:text-pace-orange-800"
-        >
-          이메일로 다시 로그인하기
-        </button>
+        <div className="flex flex-col items-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={handleResendSecondFactor}
+            disabled={isSubmitting}
+            className="text-sm font-semibold text-body underline hover:text-orange transition-colors"
+          >
+            Resend verification code
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsVerifyingCode(false);
+              setCode('');
+              setNotice('');
+              setError('');
+            }}
+            className="text-sm text-gray-400 hover:text-navy transition-colors"
+          >
+            Back to email sign in
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex flex-col items-center text-pace-base">
-      <SignInWithGoogleButton />
-      <p className="w-[400px] text-pace-base font-bold text-pace-black-500 text-center mb-6">
-        혹은
-      </p>
+    <div id="login-flow" className="space-y-[23px]">
+      <h2 className="text-[24px] font-bold text-center tracking-tight font-heading leading-tight text-navy whitespace-nowrap">
+        Sign in to Pacemaker
+      </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="w-full flex flex-col items-center"
-      >
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="이메일 주소"
-          className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 mb-6"
-          required
-        />
-        <input
-          type="password"
-          value={pw}
-          onChange={(e) => setPw(e.target.value)}
-          placeholder="비밀번호"
-          className="w-[400px] rounded-full border border-pace-stone-700 px-4 py-3 mb-0"
-          required
-        />
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+      <SignInWithGoogleButton />
+
+      <div className="text-center font-bold text-sm tracking-[0.18em] font-heading text-navy">
+        OR
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-[23px]">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            required
+          />
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="Password"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+            required
+          />
+        </div>
+
+        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-pace-orange-800 hover:bg-pace-orange-600 text-white rounded-full py-3 mt-6 mb-6 disabled:opacity-60"
+          className="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-heading rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
         >
-          로그인 하기
+          CONTINUE
         </button>
       </form>
 
-      <p className="text-pace-base font-normal text-pace-stone-500 text-center">
-        회원이 아니신가요?{' '}
+      <div className="text-center text-sm text-body mt-[40px]">
+        Don&apos;t have an account?
         <button
+          type="button"
           onClick={() => {
-            // eslint-disable-next-line no-console
-            console.log('switchToSignUp clicked');
-            switchToSignUp?.(); // ← 여기서 Wrapper의 setMode('signup') 호출
+            switchToSignUp?.();
           }}
-          className="text-pace-gray-500 underline hover:text-pace-orange-800"
+          className="font-semibold text-navy underline ml-1 hover:text-orange transition-colors cursor-pointer"
         >
-          회원가입 하기
+          Sign up
         </button>
-      </p>
+      </div>
     </div>
   );
 }

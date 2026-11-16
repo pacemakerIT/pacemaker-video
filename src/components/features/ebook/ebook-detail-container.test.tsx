@@ -3,12 +3,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemType } from '@prisma/client';
 import EbookDetailContainer from './ebook-detail-container';
 
-vi.mock('next/dynamic', () => ({
-  default:
-    () =>
-    ({ ebookId }: { ebookId: string }) => (
-      <div data-testid="pdf-viewer">{ebookId}</div>
-    )
+vi.mock('./ebook-pdf-modal', () => ({
+  default: ({
+    isOpen,
+    ebookId,
+    onOpenChange
+  }: {
+    isOpen: boolean;
+    ebookId: string;
+    onOpenChange: (open: boolean) => void;
+  }) =>
+    isOpen ? (
+      <div data-testid="pdf-reader">
+        {ebookId}
+        <button onClick={() => onOpenChange(false)}>Close reader</button>
+      </div>
+    ) : null
 }));
 
 const mocks = vi.hoisted(() => ({
@@ -174,17 +184,14 @@ describe('EbookDetailContainer', () => {
     expect(mocks.addToCart).not.toHaveBeenCalled();
   });
 
-  it('shows already-purchased behavior when the user can access the ebook', () => {
+  it('opens and closes the PDF modal for an owned ebook without adding it to the cart', () => {
     render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
-
-    expect(
-      screen.getByRole('region', { name: '전자책 PDF 뷰어' })
-    ).toContainElement(screen.getByTestId('pdf-viewer'));
-
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Purchased' }));
-
-    expect(screen.getByText('이미 구매한 콘텐츠')).toBeInTheDocument();
+    expect(screen.getByTestId('pdf-reader')).toHaveTextContent('ebook-1');
     expect(mocks.addToCart).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Close reader' }));
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
   });
 
   it('adds the ebook to favorites for signed-in users', async () => {
