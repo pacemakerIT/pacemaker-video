@@ -86,7 +86,7 @@
     "@next/env": "^15.5.20",
     "@next/eslint-plugin-next": "^15.5.20",
     "@testing-library/dom": "^10.4.2",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^26.1.1",
     "@types/pg": "^8.21.0",
