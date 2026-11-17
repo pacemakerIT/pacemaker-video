@@ -470,7 +470,7 @@ export default function VideoDetailContainer({
               data.course.title ||
               'What You Will Learn'
             }
-            className="mb-6 sm:mb-12"
+            className="mb-12"
           />
           <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-16">
             {Boolean(data.course.processContent?.trim()) && (
@@ -491,15 +491,12 @@ export default function VideoDetailContainer({
 
         <DetailRecommendationSection
           items={recommendationItems}
-          headerClassName="mb-2 sm:mb-4"
+          headerClassName="mb-12"
         />
 
         {data.instructors && data.instructors.length > 0 && (
           <section className="flex flex-col w-full">
-            <SectionHeader
-              title="Instructor Profile"
-              className="mb-6 sm:mb-12"
-            />
+            <SectionHeader title="Instructor Profile" className="mb-12" />
             <Carousel setApi={setApi} className="w-full">
               <CarouselContent>
                 {data.instructors.map((instructor, idx) => (
@@ -513,31 +510,29 @@ export default function VideoDetailContainer({
                           {instructor.description}
                         </p>
                         <div className="mt-6">
-                          <h4 className="text-pace-base font-regular mb-4">
-                            Career
-                          </h4>
-                          <table className="w-full">
-                            <tbody className="text-pace-stone-500">
-                              {formatCourseCareers(instructor.careers).map(
-                                ({ period, position }, index) => (
-                                  <tr key={index}>
-                                    <td className="py-1 pr-4">{period}</td>
-                                    <td className="py-1">{position}</td>
-                                  </tr>
-                                )
-                              )}
-                            </tbody>
-                          </table>
+                          <h4 className="font-bold mb-4">Experience</h4>
+                          <ul className="text-pace-stone-500 space-y-4 text-sm">
+                            {formatCourseCareers(instructor.careers).map(
+                              ({ period, position }, index) => (
+                                <li key={index} className="flex gap-4 sm:gap-8">
+                                  <span className="w-24 shrink-0">
+                                    {period}
+                                  </span>
+                                  <span>{position}</span>
+                                </li>
+                              )
+                            )}
+                          </ul>
                         </div>
                       </div>
-                      <div className="w-full lg:w-[480px]">
+                      <div className="w-full lg:w-[480px] flex flex-col">
                         {(() => {
                           const profileImage =
                             resolveImageSrc({
                               thumbnail: instructor.profileImage
                             }) || '/img/instructor-image.png';
                           return (
-                            <div className="relative aspect-square overflow-hidden bg-gray-50 border border-gray-100">
+                            <div className="relative flex-1 min-h-[400px] overflow-hidden bg-gray-50">
                               <Image
                                 src={profileImage}
                                 alt={
@@ -559,14 +554,14 @@ export default function VideoDetailContainer({
             </Carousel>
 
             {count > 1 && (
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex justify-center gap-3 mt-16">
                 {Array.from({ length: count }).map((_, i) => (
                   <button
                     key={i}
-                    className={`w-4 h-4 rounded-full transition-all ${
+                    className={`w-[18px] h-[18px] rounded-full transition-all ${
                       current === i
                         ? 'bg-pace-orange-600'
-                        : 'bg-pace-gray-100 hover:bg-pace-orange-600'
+                        : 'bg-[#cccccc] hover:bg-pace-orange-600'
                     }`}
                     onClick={() => api?.scrollTo(i)}
                     aria-label={`Go to slide ${i + 1}`}
@@ -580,22 +575,33 @@ export default function VideoDetailContainer({
         <DetailRelatedContentSection
           title="You May Also Like"
           items={relatedContentItems}
-          headerClassName="mb-2 sm:mb-4"
+          headerClassName="mb-12"
         />
 
         <DetailReviewsSection
           title="Student Reviews"
           reviewCount={data.course.reviews?.length ?? 0}
+          rating={
+            data.course.reviews && data.course.reviews.length > 0
+              ? Math.round(
+                  data.course.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                    data.course.reviews.length
+                )
+              : 5
+          }
           reviews={
             data.course.reviews?.map((review) => ({
               id: review.id,
               profileImage: review.user?.image || '/img/user1.png',
               profileName: review.user?.name || 'Anonymous',
               rating: review.rating,
-              reviewDate: new Date(review.createdAt)
-                .toISOString()
-                .split('T')[0]
-                .replace(/-/g, '.'),
+              reviewDate: (() => {
+                const d = new Date(review.createdAt);
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return `${mm}.${dd}.${yyyy}`;
+              })(),
               reviewContent: review.content
             })) || []
           }

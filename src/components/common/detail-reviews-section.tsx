@@ -30,8 +30,8 @@ export default function DetailReviewsSection({
   reviews = [],
   rating = 5,
   reviewCount = 0,
-  initialVisibleCount = 5,
-  loadMoreCount = 5,
+  initialVisibleCount = 3,
+  loadMoreCount = 3,
   loadMoreButtonText = 'View more reviews',
   headerClassName,
   cardClassName
@@ -43,7 +43,7 @@ export default function DetailReviewsSection({
   };
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <section className="flex w-full flex-col gap-6">
       <div
         className={`flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-4 mb-8 ${
           headerClassName ?? ''
@@ -98,6 +98,6 @@ export default function DetailReviewsSection({
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

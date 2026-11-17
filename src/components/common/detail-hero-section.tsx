@@ -62,7 +62,7 @@ export default function DetailHeroSection({
                 minHeight: '100%'
               }}
             ></div>
-            <div className="absolute inset-0 bg-black/40"></div>
+            {/* overlay removed to match HTML prototype */}
           </>
         ) : (
           <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
@@ -74,7 +74,7 @@ export default function DetailHeroSection({
       )}
       <div className="w-full max-w-[1200px] px-4 md:px-8 xl:w-[62.5%] xl:min-w-[1200px] xl:max-w-none xl:px-0 items-center mx-auto justify-center flex flex-col lg:flex-row gap-10 lg:gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
-        <div className="w-full lg:w-[60%] flex flex-col justify-center items-start relative z-10">
+        <div className="w-full lg:w-[60%] flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative z-10">
           <div
             className={`text-[20px] md:text-[24px] lg:text-[28px] font-heading tracking-wide mb-3 md:mb-4 whitespace-pre-line ${
               isCourse ? 'text-white/80 font-medium' : 'text-orange font-bold'

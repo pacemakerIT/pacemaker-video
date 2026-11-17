@@ -62,7 +62,7 @@ export default function ExpandableCards({
           <div
             key={item.id}
             className={cn(
-              'bg-gray-50 rounded-none border border-gray-200 overflow-hidden',
+              'bg-[#F9F6F3] rounded-none border border-gray-200 overflow-hidden',
               itemClassName
             )}
           >
