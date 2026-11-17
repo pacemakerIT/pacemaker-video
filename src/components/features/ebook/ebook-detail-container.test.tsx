@@ -3,14 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ItemType } from '@prisma/client';
 import EbookDetailContainer from './ebook-detail-container';
 
-vi.mock('next/dynamic', () => ({
-  default:
-    () =>
-    ({ ebookId }: { ebookId: string }) => (
-      <div data-testid="pdf-viewer">{ebookId}</div>
-    )
-}));
-
 const mocks = vi.hoisted(() => ({
   addToCart: vi.fn(),
   cart: [] as Array<{ itemId: string; itemType: unknown }>,
@@ -79,6 +71,11 @@ vi.mock('./ebook-purchased-hero', () => ({
     ctaText?: string;
     onContinueReading?: () => void;
   }) => <button onClick={onContinueReading}>{ctaText}</button>
+}));
+
+vi.mock('./ebook-pdf-modal', () => ({
+  default: ({ isOpen, ebookId }: { isOpen: boolean; ebookId: string }) =>
+    isOpen ? <div data-testid="pdf-reader">{ebookId}</div> : null
 }));
 
 vi.mock('@/components/common/confirm-modal', () => ({
@@ -190,18 +187,21 @@ describe('EbookDetailContainer', () => {
     expect(
       screen.getByRole('button', { name: 'Continue reading' })
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('region', { name: 'E-book reader' })
-    ).toContainElement(screen.getByTestId('pdf-viewer'));
-    const scrollIntoView = vi.fn();
-    screen.getByRole('region', { name: 'E-book reader' }).scrollIntoView =
-      scrollIntoView;
-    fireEvent.click(screen.getByRole('button', { name: 'Continue reading' }));
-    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Purchased' })
     ).not.toBeInTheDocument();
     expect(mocks.addToCart).not.toHaveBeenCalled();
+  });
+
+  it('opens the pdf reader when a reader continues an owned ebook', () => {
+    render(<EbookDetailContainer id="ebook-1" canAccessEbook />);
+
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue reading' }));
+
+    expect(screen.getByTestId('pdf-reader')).toHaveTextContent('ebook-1');
   });
 
   it('renders the sub description and keeps the toc in the side column', () => {
