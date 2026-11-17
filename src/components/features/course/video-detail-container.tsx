@@ -532,21 +532,22 @@ export default function VideoDetailContainer({
                       </div>
                       <div className="w-full lg:w-[480px]">
                         {(() => {
-                          const profileImage = resolveImageSrc({
-                            thumbnail: instructor.profileImage
-                          });
-                          return profileImage ? (
-                            <div className="relative aspect-square">
+                          const profileImage =
+                            resolveImageSrc({
+                              thumbnail: instructor.profileImage
+                            }) || '/img/instructor-image.png';
+                          return (
+                            <div className="relative aspect-square overflow-hidden bg-gray-50 border border-gray-100">
                               <Image
                                 src={profileImage}
-                                alt="instructor"
+                                alt={
+                                  instructor.name
+                                    ? `${instructor.name} profile`
+                                    : 'Instructor profile'
+                                }
                                 fill
                                 className="object-cover"
                               />
-                            </div>
-                          ) : (
-                            <div className="w-full aspect-square bg-gray-200 flex items-center justify-center text-xs text-gray-500 rounded">
-                              No Image
                             </div>
                           );
                         })()}

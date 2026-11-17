@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@aws-sdk/client-s3', () => ({ GetObjectCommand: vi.fn() }));
 vi.mock('@aws-sdk/s3-request-presigner', () => ({ getSignedUrl: vi.fn() }));
-vi.mock('@/lib/prisma', () => ({ default: { image: { findFirst: vi.fn() } } }));
+vi.mock('@/lib/prisma', () => ({
+  default: {
+    image: { findFirst: vi.fn() },
+    instructor: { findFirst: vi.fn() }
+  }
+}));
 vi.mock('@/lib/supabase', () => ({
   ebookBucketName: 'document',
   imgBucketName: 'image',
@@ -82,7 +87,7 @@ describe('GET /api/images/proxy', () => {
     expect(getSignedUrl).not.toHaveBeenCalled();
   });
 
-  it('requires file names to match a known image record', async () => {
+  it('requires file names to match a known image or instructor record', async () => {
     const response = await GET(
       new Request('http://localhost/api/images/proxy?fileName=guessed.png')
     );
@@ -92,6 +97,41 @@ describe('GET /api/images/proxy', () => {
     expect(prisma.image.findFirst).toHaveBeenCalledWith({
       where: { fileName: 'guessed.png' }
     });
+    expect(prisma.instructor.findFirst).toHaveBeenCalledWith({
+      where: { profileImage: 'guessed.png' }
+    });
+  });
+
+  it('allows fileName matching an instructor profileImage when not in image table', async () => {
+    vi.mocked(prisma.image.findFirst).mockResolvedValueOnce(null);
+    vi.mocked(prisma.instructor.findFirst).mockResolvedValueOnce({
+      id: 'inst-1',
+      profileImage: 'ebd0ba18-00f0-41e3-ae4e-f72d104a1349.png'
+    } as unknown as Awaited<ReturnType<typeof prisma.instructor.findFirst>>);
+    vi.mocked(getSignedUrl).mockResolvedValueOnce(
+      'https://signed-url.example.com/image.png'
+    );
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response('image-data', {
+        headers: { 'Content-Type': 'image/png' }
+      })
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await GET(
+      new Request(
+        'http://localhost/api/images/proxy?fileName=ebd0ba18-00f0-41e3-ae4e-f72d104a1349.png'
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(prisma.image.findFirst).toHaveBeenCalledWith({
+      where: { fileName: 'ebd0ba18-00f0-41e3-ae4e-f72d104a1349.png' }
+    });
+    expect(prisma.instructor.findFirst).toHaveBeenCalledWith({
+      where: { profileImage: 'ebd0ba18-00f0-41e3-ae4e-f72d104a1349.png' }
+    });
+    expect(getSignedUrl).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -170,7 +170,7 @@ function makeCourseResponse(canAccessCourse = false) {
           }
         ]
       },
-      instructors: [],
+      instructors: [] as Array<Record<string, unknown>>,
       entitlements: {
         isFreeCourse: false,
         hasPurchasedCourse: canAccessCourse,
@@ -290,5 +290,29 @@ describe('VideoDetailContainer', () => {
     expect(screen.getByTestId('expandable-cards').className).toContain(
       'lg:w-full'
     );
+  });
+
+  it('falls back instructor image to /img/instructor-image.png when instructor profileImage is missing', async () => {
+    const responseData = makeCourseResponse(false);
+    responseData.data.instructors = [
+      {
+        id: 'inst-1',
+        name: 'Raphael Lee',
+        description: 'Lead instructor',
+        careers: [],
+        profileImage: null
+      }
+    ];
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => responseData
+    } as Response);
+
+    render(<VideoDetailContainer id="course-1" />);
+
+    const instructorImg = await screen.findByAltText('Raphael Lee profile');
+    expect(instructorImg).toBeInTheDocument();
+    expect(instructorImg.getAttribute('src')).toContain('instructor-image.png');
   });
 });
