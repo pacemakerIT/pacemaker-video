@@ -23,15 +23,15 @@ interface DetailHeroSectionProps {
 export default function DetailHeroSection({
   backgroundImage,
   visualTitle,
-  visualTitle2 = '북미 취업의 정석: 차별화된 이력서부터 잡오퍼를 부르는 인터뷰까지',
-  title = '자기소개서 작성 및 면접 준비까지 하나로!',
-  instructor = 'Heilee, Linda, Raphael. Lee',
-  description = '실제 캐나다 기업 합격 이력서를 바탕으로, 북미 인사 담당자들이 개발자 이력서에서 주목하는 구조와 표현을 분석해보세요!',
-  price = '$999.99',
+  visualTitle2 = '',
+  title = '',
+  instructor = 'Pacemaker',
+  description = '',
+  price = '',
   onAddToCart,
   onToggleLike,
   isLiked = false,
-  buttonText = '장바구니 담기',
+  buttonText = 'Add to Cart',
   instructorLabel = 'Instructors',
   priceLabel = 'Price',
   itemType
@@ -62,7 +62,7 @@ export default function DetailHeroSection({
                 minHeight: '100%'
               }}
             ></div>
-            <div className="absolute inset-0 bg-black/40"></div>
+            {/* overlay removed to match HTML prototype */}
           </>
         ) : (
           <div className="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
@@ -74,7 +74,7 @@ export default function DetailHeroSection({
       )}
       <div className="w-full max-w-[1200px] px-4 md:px-8 xl:w-[62.5%] xl:min-w-[1200px] xl:max-w-none xl:px-0 items-center mx-auto justify-center flex flex-col lg:flex-row gap-10 lg:gap-8">
         {/* 왼쪽 60% - 부제목과 제목 */}
-        <div className="w-full lg:w-[60%] flex flex-col justify-center items-start relative z-10">
+        <div className="w-full lg:w-[60%] flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative z-10">
           <div
             className={`text-[20px] md:text-[24px] lg:text-[28px] font-heading tracking-wide mb-3 md:mb-4 whitespace-pre-line ${
               isCourse ? 'text-white/80 font-medium' : 'text-orange font-bold'

@@ -55,7 +55,8 @@ export default function CourseList() {
               <span>{'View all courses'}</span>
               <Image
                 src="/icons/arrow_right.svg"
-                alt="오른쪽 화살표 아이콘"
+                alt=""
+                aria-hidden="true"
                 width={16}
                 height={16}
                 className="align-middle"

@@ -15,7 +15,7 @@ interface DetailRelatedContentSectionProps {
 }
 
 export default function DetailRelatedContentSection({
-  title = '이 컨텐츠와 함께 보면 좋아요!',
+  title = 'You May Also Like',
   items = [],
   gridCols = '3',
   headerClassName,
@@ -37,7 +37,7 @@ export default function DetailRelatedContentSection({
   return (
     <div className="flex w-full flex-col gap-4 sm:gap-6">
       <SectionHeader title={title} className={headerClassName} />
-      <div className={`grid ${getGridClass()} gap-6`}>
+      <div className={`grid ${getGridClass()} gap-8`}>
         {items.map((item, index) => (
           <RelatedContentCard
             key={index}

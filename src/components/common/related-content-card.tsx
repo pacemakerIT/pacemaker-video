@@ -199,7 +199,7 @@ export default function RelatedContentCard({
           />
         </button>
 
-        <div className="w-full aspect-[3/2] relative overflow-hidden">
+        <div className="w-full h-[256px] relative overflow-hidden">
           {imageSrc ? (
             <Image
               src={imageSrc}

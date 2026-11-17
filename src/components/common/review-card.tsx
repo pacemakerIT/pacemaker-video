@@ -53,7 +53,7 @@ export default function ReviewCard({
               />
             ))}
           </div>
-          <span className="text-xs text-gray-500 mt-2">{reviewDate}</span>
+          <span className="text-xs text-gray-500">{reviewDate}</span>
         </div>
       </div>
       <p className="text-gray-500 text-sm leading-relaxed">{reviewContent}</p>
