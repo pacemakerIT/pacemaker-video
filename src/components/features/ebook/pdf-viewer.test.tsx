@@ -84,6 +84,9 @@ it('tiles the authenticated viewer email over every PDF page', async () => {
     (pattern) => pattern.id
   );
   expect(new Set(patterns).size).toBe(1);
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Next page' })).toBeEnabled()
+  );
   fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
   expect(await screen.findByText('PDF page 2')).toBeInTheDocument();
   expect(container.querySelector('svg pattern text')).toHaveTextContent(
