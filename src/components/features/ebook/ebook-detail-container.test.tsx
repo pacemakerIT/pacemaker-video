@@ -187,6 +187,7 @@ describe('EbookDetailContainer', () => {
     expect(
       screen.getByRole('button', { name: 'Continue reading' })
     ).toBeInTheDocument();
+    expect(screen.queryByTestId('pdf-reader')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Purchased' })
     ).not.toBeInTheDocument();
