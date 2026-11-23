@@ -14,6 +14,7 @@ import { MyCard } from '@/types/my-card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CustomBadge } from '@/components/common/custom-badge';
+import { formatPrice } from '@/lib/money';
 import ReviewForm from './review-form';
 
 export default function MyPageCard({
@@ -130,7 +131,9 @@ export default function MyPageCard({
                 <h3 className="">{title}</h3>
 
                 {!purchased ? (
-                  <span className="text-pace-xl font-bold">{`$${price ?? 0}`}</span>
+                  <span className="text-pace-xl font-bold">
+                    {formatPrice(price ?? 0)}
+                  </span>
                 ) : null}
               </div>
               {purchased ? (

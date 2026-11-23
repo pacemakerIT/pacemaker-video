@@ -42,10 +42,10 @@ function itemTypeLabel(type: ItemType) {
 
 function categoryColor(category: string | null) {
   const colors: Record<string, string> = {
-    INTERVIEW: 'bg-[#36a6f7]',
+    INTERVIEW: 'bg-category-interview-badge',
     MARKETING: 'bg-[#ff7e54]',
-    RESUME: 'bg-pace-purple-500',
-    NETWORKING: 'bg-amber-500',
+    RESUME: 'bg-category-resume-badge',
+    NETWORKING: 'bg-category-networking-badge',
     DESIGN: 'bg-pace-pink-500',
     IT: 'bg-pace-blue-700'
   };

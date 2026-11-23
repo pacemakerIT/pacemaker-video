@@ -7,7 +7,7 @@ describe('CustomBadge', () => {
   it('renders with default variant (Interview)', () => {
     render(<CustomBadge variant="Interview">Interview</CustomBadge>);
     const badge = screen.getByText('Interview');
-    expect(badge).toHaveClass('bg-pace-blue-500');
+    expect(badge).toHaveClass('bg-category-interview-badge');
     expect(badge).toHaveClass('text-pace-white-500');
     expect(badge).toHaveClass('font-light');
   });
@@ -15,7 +15,7 @@ describe('CustomBadge', () => {
   it('renders with Resume variant', () => {
     render(<CustomBadge variant="Resume">Resume</CustomBadge>);
     const badge = screen.getByText('Resume');
-    expect(badge).toHaveClass('bg-pace-purple-500');
+    expect(badge).toHaveClass('bg-category-resume-badge');
     expect(badge).toHaveClass('text-pace-white-500');
     expect(badge).toHaveClass('font-light');
   });
@@ -23,7 +23,7 @@ describe('CustomBadge', () => {
   it('renders with Networking variant', () => {
     render(<CustomBadge variant="Networking">Networking</CustomBadge>);
     const badge = screen.getByText('Networking');
-    expect(badge).toHaveClass('bg-pace-yellow-500');
+    expect(badge).toHaveClass('bg-category-networking-badge');
     expect(badge).toHaveClass('text-pace-white-500');
     expect(badge).toHaveClass('font-light');
   });
@@ -46,7 +46,7 @@ describe('CustomBadge', () => {
 
     // Check all expected classes
     expect(badge).toHaveClass('border-transparent');
-    expect(badge).toHaveClass('bg-pace-blue-500');
+    expect(badge).toHaveClass('bg-category-interview-badge');
     expect(badge).toHaveClass('text-pace-white-500');
     expect(badge).toHaveClass('font-light');
   });

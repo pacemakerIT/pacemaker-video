@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { getCalendarStyle } from '@/components/ui/calendar-style-map';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { WorkshopStatus } from '@/types/workshops';
+import { formatPrice } from '@/lib/money';
 
 const locales = { 'en-US': enUS };
 
@@ -157,7 +158,7 @@ export default function WorkshopCalendar({
       start: new Date(w.startDate),
       end: new Date(w.endDate),
       speaker: w.instructors[0]?.instructor?.name ?? 'Unknown',
-      fee: w.price ? `$${w.price.toLocaleString()}` : 'Free',
+      fee: w.price ? formatPrice(w.price) : 'Free',
       status: w.status as WorkshopStatus
     }));
 

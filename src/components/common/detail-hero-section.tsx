@@ -2,6 +2,7 @@
 import { Heart } from 'lucide-react';
 import { Button } from '../ui/button';
 import { ItemType } from '@prisma/client';
+import { formatPrice } from '@/lib/money';
 
 interface DetailHeroSectionProps {
   backgroundImage?: string;
@@ -118,12 +119,7 @@ export default function DetailHeroSection({
                   {priceLabel}
                 </span>
                 <span className="text-2xl font-heading font-bold text-navy">
-                  $
-                  {typeof price === 'number'
-                    ? (price as number).toLocaleString()
-                    : Number(
-                        String(price).replace(/[^0-9.]/g, '')
-                      ).toLocaleString()}
+                  {formatPrice(price)}
                 </span>
               </div>
               <div className="flex gap-3 items-center">

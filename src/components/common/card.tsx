@@ -10,6 +10,7 @@ import { useUserContext } from '@/app/context/user-context';
 import { useRouter } from 'next/navigation';
 import { resolveImageSrc } from '@/lib/utils';
 import { getCategoryColors } from '@/lib/category-colors';
+import { formatPrice } from '@/lib/money';
 import { toast } from 'sonner';
 
 interface CardProps extends OnlineCards {
@@ -132,13 +133,7 @@ export default function Card({
                 {displayTitle}
               </h3>
               <span className="whitespace-nowrap text-xl font-extrabold text-navy">
-                {`$${
-                  typeof price === 'number'
-                    ? price.toLocaleString()
-                    : Number(
-                        String(price).replace(/[^0-9.]/g, '')
-                      ).toLocaleString()
-                }`}
+                {formatPrice(price)}
               </span>
             </div>
 

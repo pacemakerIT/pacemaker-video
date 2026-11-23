@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import {
   ChevronRight,
   ChevronUp,
@@ -285,8 +286,14 @@ export default function VideoDetailContainer({
 
   if (error) {
     return (
-      <div className="w-full flex justify-center items-center min-h-[400px]">
-        <div className="text-red-500">Error: {error}</div>
+      <div className="w-full flex flex-col justify-center items-center gap-4 min-h-[400px] px-4 text-center">
+        <p className="text-navy font-heading text-xl font-bold">{error}</p>
+        <Link
+          href="/courses"
+          className="rounded-2xl bg-orange px-8 py-3 font-heading font-bold text-white transition-colors hover:bg-orange-hover"
+        >
+          Browse courses
+        </Link>
       </div>
     );
   }

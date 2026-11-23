@@ -117,7 +117,7 @@ export async function GET(
           {
             success: false,
             error: adminAccess.error,
-            message: '관리자 권한이 필요합니다.'
+            message: 'Admin access is required.'
           },
           { status: adminAccess.status }
         );
@@ -160,7 +160,7 @@ export async function GET(
         {
           success: false,
           error: 'Course not found',
-          message: '코스를 찾을 수 없습니다.'
+          message: "We couldn't find this course."
         },
         { status: 404 }
       );
@@ -253,7 +253,7 @@ export async function GET(
               return {
                 id: resolved.id,
                 itemId: resolved.id,
-                title: resolved.visualTitle2 || resolved.title || link.name,
+                title: resolved.title || link.name,
                 price: Number(resolved.price) || 0,
                 category: resolved.category || 'GENERAL',
                 type: 'course',
@@ -311,7 +311,7 @@ export async function GET(
       relatedCourses: relatedCoursesData.map((relatedCourse) => ({
         id: relatedCourse.id,
         itemId: relatedCourse.id,
-        title: relatedCourse.visualTitle2,
+        title: relatedCourse.title,
         price: Number(relatedCourse.price) || 0,
         category: relatedCourse.category || 'GENERAL',
         type: 'course',
@@ -340,7 +340,7 @@ export async function GET(
       {
         success: false,
         error: `Failed to fetch course: ${error}`,
-        message: '코스 정보를 가져오는데 실패했습니다.'
+        message: "We couldn't load this course. Please try again."
       },
       { status: 500 }
     );
@@ -359,7 +359,7 @@ export async function PUT(
         {
           success: false,
           error: adminAccess.error,
-          message: '관리자 권한이 필요합니다.'
+          message: 'Admin access is required.'
         },
         { status: adminAccess.status }
       );
@@ -372,7 +372,7 @@ export async function PUT(
         {
           success: false,
           error: 'Invalid course id',
-          message: '유효하지 않은 강의 ID입니다.'
+          message: 'This course ID is not valid.'
         },
         { status: 400 }
       );
@@ -386,7 +386,7 @@ export async function PUT(
           {
             success: false,
             error: 'Invalid course data',
-            message: '유효하지 않은 강의 데이터입니다.'
+            message: 'This course data is not valid.'
           },
           { status: 400 }
         );
@@ -397,7 +397,7 @@ export async function PUT(
         {
           success: false,
           error: 'Invalid course data',
-          message: '유효하지 않은 강의 데이터입니다.'
+          message: 'This course data is not valid.'
         },
         { status: 400 }
       );
@@ -427,7 +427,7 @@ export async function PUT(
         {
           success: false,
           error: 'Title is required',
-          message: '제목은 필수입니다.'
+          message: 'Title is required.'
         },
         { status: 400 }
       );
@@ -519,7 +519,7 @@ export async function PUT(
       {
         success: false,
         error: `Failed to update course: ${error}`,
-        message: '코스 수정에 실패했습니다.'
+        message: "We couldn't update this course. Please try again."
       },
       { status: 500 }
     );

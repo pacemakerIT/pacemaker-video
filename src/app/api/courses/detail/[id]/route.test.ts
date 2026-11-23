@@ -216,7 +216,7 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data).toEqual({
       success: false,
       error: 'Course not found',
-      message: '코스를 찾을 수 없습니다.'
+      message: "We couldn't find this course."
     });
     expect(prismaMock.course.findMany).not.toHaveBeenCalled();
     expect(prismaMock.orderItem.findFirst).not.toHaveBeenCalled();
@@ -264,7 +264,7 @@ describe('GET /api/courses/detail/[id]', () => {
     expect(data).toEqual({
       success: false,
       error: 'Forbidden',
-      message: '관리자 권한이 필요합니다.'
+      message: 'Admin access is required.'
     });
     expect(prismaMock.course.findUnique).not.toHaveBeenCalled();
   });
@@ -324,7 +324,7 @@ describe('PUT /api/courses/detail/[id]', () => {
     expect(await response.json()).toEqual({
       success: false,
       error: 'Unauthorized',
-      message: '관리자 권한이 필요합니다.'
+      message: 'Admin access is required.'
     });
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -346,7 +346,7 @@ describe('PUT /api/courses/detail/[id]', () => {
     expect(await response.json()).toEqual({
       success: false,
       error: 'Forbidden',
-      message: '관리자 권한이 필요합니다.'
+      message: 'Admin access is required.'
     });
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -368,7 +368,7 @@ describe('PUT /api/courses/detail/[id]', () => {
     expect(await response.json()).toEqual({
       success: false,
       error: 'Title is required',
-      message: '제목은 필수입니다.'
+      message: 'Title is required.'
     });
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -390,7 +390,7 @@ describe('PUT /api/courses/detail/[id]', () => {
     expect(await response.json()).toEqual({
       success: false,
       error: 'Invalid course data',
-      message: '유효하지 않은 강의 데이터입니다.'
+      message: 'This course data is not valid.'
     });
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });
@@ -412,7 +412,7 @@ describe('PUT /api/courses/detail/[id]', () => {
     expect(await response.json()).toEqual({
       success: false,
       error: 'Invalid course id',
-      message: '유효하지 않은 강의 ID입니다.'
+      message: 'This course ID is not valid.'
     });
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
   });

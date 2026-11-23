@@ -19,6 +19,7 @@ import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useCartContext } from '@/app/context/cart-context';
 import { useUserContext } from '@/app/context/user-context';
 import { resolveImageSrc } from '@/lib/utils';
+import { formatPrice } from '@/lib/money';
 
 type Instructor = {
   id: string;
@@ -263,7 +264,7 @@ export default function WorkshopDetail({
                 </h2>
                 <div className="shrink-0 text-left sm:text-right">
                   <strong className="font-headline text-2xl text-[#00263B] sm:block">
-                    {workshop.price ? `$${workshop.price.toFixed(2)}` : 'Free'}
+                    {workshop.price ? formatPrice(workshop.price) : 'Free'}
                   </strong>
                   <span className="ml-2 text-xs font-semibold sm:ml-0 sm:block">
                     CAD / per person
@@ -428,7 +429,7 @@ export default function WorkshopDetail({
 
                 <div className="mb-6 inline-block border border-white/10 bg-[#00263B]/40 p-6 backdrop-blur-sm md:p-8">
                   <p className="font-headline text-5xl font-bold tracking-tight text-[#00ADBD] md:text-6xl">
-                    {workshop.price ? `$${workshop.price}` : 'Free'}
+                    {workshop.price ? formatPrice(workshop.price) : 'Free'}
                     <span className="ml-2 text-xl font-normal italic text-white/50">
                       CAD
                     </span>
@@ -473,7 +474,7 @@ export default function WorkshopDetail({
             {workshop.title}
           </p>
           <p className="mt-1 whitespace-nowrap font-headline text-lg font-extrabold leading-none text-[#00263B]">
-            {workshop.price ? `$${workshop.price.toFixed(2)}` : 'Free'}
+            {workshop.price ? formatPrice(workshop.price) : 'Free'}
             {workshop.price != null && workshop.price > 0 && (
               <span className="ml-1 text-xs font-normal text-[#475467]">
                 CAD

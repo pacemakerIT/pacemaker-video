@@ -1,8 +1,12 @@
-export default function PlaceholderPage() {
+import NotFoundView from '@/components/common/not-found-view';
+
+export default function NotFound() {
   return (
-    <div className="p-4 text-gray-500">
-      <h1 className="text-lg font-semibold">🚧 Page Under Construction</h1>
-      <p>This page is currently being set up.</p>
-    </div>
+    <NotFoundView
+      title="Page not found"
+      description="The link may be broken, or the page may have moved."
+      href="/"
+      label="Go to home"
+    />
   );
 }
