@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 type Props = {
@@ -18,6 +18,30 @@ export default function EventPopup({
   children,
   onClose
 }: Props) {
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (
+        popupRef.current?.contains(target) ||
+        target.closest('.rbc-event-content')
+      )
+        return;
+      onClose();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    document.addEventListener('click', handleClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return createPortal(
     <>
       <button
@@ -27,6 +51,7 @@ export default function EventPopup({
         onClick={onClose}
       />
       <div
+        ref={popupRef}
         style={{
           position: 'absolute',
           top,

@@ -15,14 +15,16 @@ interface Props {
   workshops: WorkshopCard[];
   filter: 'All' | WorkshopStatus;
   selectedMonth: Date;
-  selectedTitle?: string | null; // 외부에서 전달된 title로 스크롤 및 열기
+  selectedWorkshop?: { title: string } | null;
+  isLoading?: boolean;
 }
 
 export default function WorkshopCardList({
   workshops,
   filter,
   selectedMonth,
-  selectedTitle
+  selectedWorkshop,
+  isLoading = false
 }: Props) {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const router = useRouter();
@@ -96,8 +98,8 @@ export default function WorkshopCardList({
   };
 
   useEffect(() => {
-    if (selectedTitle) {
-      const matched = workshops.find((w) => w.title === selectedTitle); // 전체에서 찾기
+    if (selectedWorkshop) {
+      const matched = workshops.find((w) => w.title === selectedWorkshop.title);
       if (matched) {
         const target = cardRefs.current[matched.id];
         if (target) {
@@ -105,10 +107,19 @@ export default function WorkshopCardList({
         }
       }
     }
-  }, [selectedTitle, workshops]);
+  }, [selectedWorkshop, workshops]);
 
   return (
     <div className="flex w-full flex-col space-y-6">
+      {isLoading ? (
+        <p role="status" className="py-12 text-center text-body-text">
+          Loading workshops...
+        </p>
+      ) : filtered.length === 0 ? (
+        <p role="status" className="py-12 text-center text-body-text">
+          No workshops found for this month and filter.
+        </p>
+      ) : null}
       {filtered.map((w) => {
         const thumbnailSrc =
           resolveImageSrc({ thumbnail: w.thumbnail }) ??
@@ -126,6 +137,7 @@ export default function WorkshopCardList({
             aria-label={`View details for ${w.title}`}
             onClick={() => router.push(`/workshops/${w.id}`)}
             onKeyDown={(event) => {
+              if (event.target !== event.currentTarget) return;
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 router.push(`/workshops/${w.id}`);
@@ -145,7 +157,10 @@ export default function WorkshopCardList({
                 className="object-cover"
               />
               <button
-                onClick={() => toggleLike(w.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleLike(w.id);
+                }}
                 aria-label={isLiked(w.id) ? 'Saved' : 'Save'}
                 className={`favorite-heart absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-gray-50 bg-white shadow-md transition-transform duration-500 ease-out hover:scale-110 ${
                   isLiked(w.id) ? 'favorite-heart--liked' : ''
