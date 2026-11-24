@@ -1,8 +1,8 @@
 'use client';
 
 import '@/lib/polyfills';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 
@@ -25,8 +25,47 @@ interface PdfViewerProps {
   onPageChange?: (page: number, totalPages: number) => void;
 }
 
+function EmailWatermark({ email }: { email: string }) {
+  const patternId = useId().replace(/:/g, '');
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-10 h-full w-full select-none"
+    >
+      <defs>
+        <pattern
+          id={patternId}
+          width="360"
+          height="180"
+          patternUnits="userSpaceOnUse"
+        >
+          <text
+            x="180"
+            y="90"
+            textAnchor="middle"
+            transform="rotate(-25 180 90)"
+            fill="#00263B"
+            fillOpacity="0.16"
+            fontSize="16"
+            fontFamily="Arial, sans-serif"
+            textLength={email.length > 34 ? 300 : undefined}
+            lengthAdjust="spacingAndGlyphs"
+          >
+            {email}
+          </text>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+    </svg>
+  );
+}
+
 export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
-  const { isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn, user } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
+  const documentKey =
+    isSignedIn && email ? `${user.id}:${ebookId}:${email}` : null;
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,50 +107,61 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
   }, []);
 
   useEffect(() => {
-    if (!isSignedIn) {
-      setError('로그인이 필요합니다.');
+    if (!isLoaded) return;
+    const controller = new AbortController();
+    let objectUrl: string | undefined;
+    setPdfUrl(null);
+    setLoadedKey(null);
+    setNumPages(0);
+    setPageNumber(1);
+    if (!documentKey) {
+      setError(
+        isSignedIn
+          ? '사용자 이메일을 확인할 수 없습니다.'
+          : '로그인이 필요합니다.'
+      );
       setLoading(false);
       return;
     }
 
-    const controller = new AbortController();
-
-    // The API checks entitlement and answers with a short lived signed URL, so
-    // the file itself travels from storage to the browser directly.
     const fetchSignedUrl = async () => {
       try {
         setLoading(true);
         setError(null);
-        setPdfUrl(null);
-
         const response = await fetch(`/api/ebooks/${ebookId}`, {
-          signal: controller.signal
+          signal: controller.signal,
+          cache: 'no-store'
         });
-
         if (!response.ok) {
           const data = await response.json().catch(() => null);
           throw new Error(
             data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
           );
         }
-
         const contentType = response.headers.get('content-type') || '';
+        let url: string;
         if (contentType.includes('application/json')) {
           const data = await response.json().catch(() => null);
-          if (!data?.url) {
+          if (typeof data?.url !== 'string' || !data.url) {
             throw new Error(
               data?.error || 'PDF를 불러올 권한을 확인하지 못했습니다.'
             );
           }
-          setPdfUrl(data.url as string);
+          url = data.url;
         } else if (
           contentType.includes('application/pdf') ||
           contentType.includes('application/octet-stream')
         ) {
-          setPdfUrl(URL.createObjectURL(await response.blob()));
+          const blob = await response.blob();
+          if (controller.signal.aborted) return;
+          objectUrl = URL.createObjectURL(blob);
+          url = objectUrl;
         } else {
           throw new Error('PDF 응답 형식을 확인할 수 없습니다.');
         }
+        if (controller.signal.aborted) return;
+        setPdfUrl(url);
+        setLoadedKey(documentKey);
       } catch (err) {
         if (controller.signal.aborted) return;
         setError(
@@ -121,16 +171,12 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
         if (!controller.signal.aborted) setLoading(false);
       }
     };
-
-    fetchSignedUrl();
-
-    return () => controller.abort();
-  }, [ebookId, isSignedIn, retryCount]);
-
-  useEffect(() => {
-    if (!pdfUrl?.startsWith('blob:')) return;
-    return () => URL.revokeObjectURL(pdfUrl);
-  }, [pdfUrl]);
+    void fetchSignedUrl();
+    return () => {
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [ebookId, documentKey, isLoaded, isSignedIn, retryCount]);
 
   useEffect(() => {
     if (numPages > 0) onPageChange?.(pageNumber, numPages);
@@ -190,72 +236,82 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
     ? Math.max(Math.floor((containerWidth - PAGE_GUTTER) * zoom), 240)
     : undefined;
 
-  const isReady = !loading && !error && Boolean(pdfUrl);
+  const isReady =
+    isLoaded &&
+    !loading &&
+    !error &&
+    Boolean(pdfUrl) &&
+    Boolean(email) &&
+    loadedKey === documentKey;
 
   // The scroll container stays mounted through every state so its width is
   // measured before the first page renders.
-  const content = loading ? (
-    <div className="flex min-h-full items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <span
-          className="h-8 w-8 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
-          aria-hidden
-        />
-        <p className="font-body text-pace-sm text-[#475467]">Loading pages</p>
-      </div>
-    </div>
-  ) : !isReady ? (
-    <div className="flex min-h-full items-center justify-center px-3">
-      <div className="flex flex-col items-center gap-4 text-center">
-        <p className="font-body text-pace-base text-[#475467]">
-          {error ?? 'PDF를 표시할 수 없습니다.'}
-        </p>
-        <button
-          type="button"
-          onClick={() => setRetryCount((count) => count + 1)}
-          className="min-h-11 rounded-full bg-orange px-6 font-heading text-pace-sm font-bold text-white transition-colors hover:bg-orange-hover"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  ) : (
-    <Document
-      file={pdfUrl}
-      onLoadSuccess={({ numPages: total }) => setNumPages(total)}
-      onLoadError={() => setError('PDF 파일을 여는 중 문제가 발생했습니다.')}
-      loading={
-        <div className="flex h-40 items-center justify-center">
+  const content =
+    !isLoaded || loading ? (
+      <div className="flex min-h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
           <span
-            className="h-6 w-6 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
+            className="h-8 w-8 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
             aria-hidden
           />
+          <p className="font-body text-pace-sm text-[#475467]">Loading pages</p>
         </div>
-      }
-      error={
-        <p className="py-10 text-center font-body text-pace-sm text-[#475467]">
-          PDF 파일을 여는 중 문제가 발생했습니다.
-        </p>
-      }
-      className="flex w-fit min-w-full justify-center"
-    >
-      {pageWidth ? (
-        <Page
-          pageNumber={pageNumber}
-          width={pageWidth}
-          renderTextLayer={false}
-          renderAnnotationLayer={false}
-          className="overflow-hidden rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
-          loading={
-            <div
-              className="rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
-              style={{ width: pageWidth, height: pageWidth * 1.414 }}
+      </div>
+    ) : !isReady ? (
+      <div className="flex min-h-full items-center justify-center px-3">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="font-body text-pace-base text-[#475467]">
+            {error ?? 'PDF를 표시할 수 없습니다.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => setRetryCount((count) => count + 1)}
+            className="min-h-11 rounded-full bg-orange px-6 font-heading text-pace-sm font-bold text-white transition-colors hover:bg-orange-hover"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    ) : (
+      <Document
+        file={pdfUrl}
+        onLoadSuccess={({ numPages: total }) => setNumPages(total)}
+        onLoadError={() => setError('PDF 파일을 여는 중 문제가 발생했습니다.')}
+        loading={
+          <div className="flex h-40 items-center justify-center">
+            <span
+              className="h-6 w-6 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
+              aria-hidden
             />
-          }
-        />
-      ) : null}
-    </Document>
-  );
+          </div>
+        }
+        error={
+          <p className="py-10 text-center font-body text-pace-sm text-[#475467]">
+            PDF 파일을 여는 중 문제가 발생했습니다.
+          </p>
+        }
+        className="flex w-fit min-w-full justify-center"
+      >
+        {pageWidth ? (
+          <div className="relative w-fit overflow-hidden rounded-lg">
+            <Page
+              pageNumber={pageNumber}
+              width={pageWidth}
+              renderTextLayer={false}
+              renderAnnotationLayer={false}
+              className="overflow-hidden rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+              loading={
+                <div
+                  className="rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+                  style={{ width: pageWidth, height: pageWidth * 1.414 }}
+                />
+              }
+            />
+            {email && <EmailWatermark email={email} />}
+          </div>
+        ) : null}
+      </Document>
+    );
 
   return (
     <div
