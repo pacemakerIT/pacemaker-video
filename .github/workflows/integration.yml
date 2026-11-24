@@ -65,3 +65,37 @@ jobs:
 
       - name: Run Tests
         run: npm run test
+
+  # The MCP package (mcp/) has its own lockfile and is excluded from the root
+  # type check and test run, so it needs its own job.
+  mcp:
+    name: mcp
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.22'
+          cache: 'npm'
+          cache-dependency-path: mcp/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Type Check
+        run: npm run typecheck
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Build Claude Desktop Extension
+        run: npm run build:mcpb

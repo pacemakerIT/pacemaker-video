@@ -193,6 +193,12 @@ adds the `@napi-rs/keyring` binaries for macOS (Apple silicon and Intel) and
 Windows (x64 and ARM), checked against the hashes in `package-lock.json`, so one
 file installs on all of them. `mcpb validate` and `mcpb pack` run as part of it.
 
+Build on macOS or Linux. The build script has not been run on Windows: it starts
+`npm`, the MCPB CLI and `tar` directly, which is likely to fail there. The
+extension itself is meant to install on Windows (see "Checked so far" below).
+The `mcp` job in `.github/workflows/integration.yml` runs the type check, the
+tests, the build and this extension build on every pull request.
+
 Release a new version:
 
 1. Bump `version` in `mcp/package.json` (the file name and the extension version
@@ -212,6 +218,12 @@ Install Extension), review the prompt and install. Start a new chat, ask for the
 main visuals and sign in with an admin account in the browser window. The sign-in
 is stored in the credential store under `production:<host>`; for this extension
 the host name is `local-agent-mode-pacemaker-admin`.
+
+If sign-in fails with "Sign-in callback port 53134 is already in use", another
+program is using that port, often a second host that is also waiting to sign
+in. Close it and try again. The extension has no setting for another port, and
+only port 53134 is registered on the production OAuth app, so
+`PACEMAKER_MCP_REDIRECT_PORT` cannot be used here.
 
 Checked so far: building, installing and listing the main visuals on macOS. Not
 checked yet: installing on Windows, installing a newer file over an older one,
