@@ -1,6 +1,19 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-export default clerkMiddleware();
+const isMcpChangePreview = createRouteMatcher([
+  '/admin/main-visual/preview/(.*)'
+]);
+
+export default clerkMiddleware(async (auth, request) => {
+  // The admin layout sends signed-out visitors to /admin after sign-in. A
+  // preview link from the admin MCP should come back to the preview instead.
+  if (isMcpChangePreview(request) && !(await auth()).userId) {
+    const signIn = new URL('/sign-in', request.url);
+    signIn.searchParams.set('redirect_url', request.nextUrl.pathname);
+    return NextResponse.redirect(signIn);
+  }
+});
 
 export const config = {
   matcher: [

@@ -7,6 +7,10 @@ import EbookList from '@/components/features/ebook/ebook-list-horz';
 import LoginOrListenButton from '@/components/auth/login-or-listen-button';
 import CourseList from '@/components/features/course/course-list-horz';
 import prisma from '@/lib/prisma';
+import {
+  isMainVisualOnHomePage,
+  toMainVisualSlide
+} from '@/lib/main-visual-slides';
 import Link from 'next/link';
 
 import { MainVisual } from '@prisma/client';
@@ -26,51 +30,15 @@ export default async function Home() {
   });
 
   const now = new Date();
-  const mainVisuals = allMainVisuals.filter((visual: MainVisual) => {
-    let isWithinRange = true;
-
-    // Check Start Boundary
-    if (visual.startDate && visual.startTime) {
-      const start = new Date(visual.startDate);
-      const [startH, startM] = visual.startTime.split(':').map(Number);
-      start.setHours(startH, startM, 0, 0);
-      if (now < start) isWithinRange = false;
-    }
-
-    // Check End Boundary
-    if (visual.endDate && visual.endTime) {
-      const end = new Date(visual.endDate);
-      const [endH, endM] = visual.endTime.split(':').map(Number);
-      end.setHours(endH, endM, 59, 999);
-      if (now > end) isWithinRange = false;
-    }
-
-    return isWithinRange;
-  });
+  const mainVisuals = allMainVisuals.filter((visual: MainVisual) =>
+    isMainVisualOnHomePage(visual, now)
+  );
 
   const slides =
     mainVisuals.length > 0
-      ? mainVisuals.map((visual: MainVisual, index: number) => {
-          const title = visual.title || '';
-          const colorIndex = index % 2;
-          const colors = [
-            { tag: 'rgba(0, 173, 189, 0.85)', highlight: 'text-teal' },
-            { tag: '#FF4F02', highlight: 'text-orange' }
-          ];
-
-          return {
-            tag: 'Announcement',
-            tagColor: colors[colorIndex].tag,
-            title: title,
-            highlight: '',
-            highlightColor: colors[colorIndex].highlight,
-            description: visual.description || '',
-            buttonText: visual.linkName || '',
-            link: visual.link || '',
-            titleSizeClass:
-              title.length >= 35 ? 'text-[clamp(1.2rem,3vw,1.8rem)]' : undefined
-          };
-        })
+      ? mainVisuals.map((visual: MainVisual, index: number) =>
+          toMainVisualSlide(visual, index)
+        )
       : [
           {
             tag: 'Career Success',

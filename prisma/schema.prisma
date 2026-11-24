@@ -54,6 +54,20 @@ model MainVisual {
   updatedAt   DateTime  @updatedAt
 }
 
+// Changes made through the admin MCP API, one row per applied change.
+model McpAuditLog {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorClerkId String
+  clientId     String
+  action       String
+  entityId     String   @db.Uuid
+  before       Json
+  after        Json
+  createdAt    DateTime @default(now())
+
+  @@index([entityId, createdAt])
+}
+
 model Course {
   id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title               String?

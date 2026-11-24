@@ -73,6 +73,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 | Buckets             | `SUPABASE_S3_IMG_BUCKET`, `SUPABASE_S3_EBOOK_BUCKET`                                             | Image bucket and ebook PDF bucket                                  |
 | Stripe              | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_APP_URL`                              | Checkout and the `/api/stripe/webhook` endpoint                    |
 | Tooling             | `JIRA_*`, `OPENROUTER_API_KEY`                                                                   | [Jira CLI](#jira-cli) and [git-cm](#git-ai-auto-commit-cli-git-cm) |
+| Admin MCP           | `MCP_OAUTH_CLIENT_ID`, `MCP_API_JWT_*`                                                           | [Admin MCP](#admin-mcp-local-poc); optional in `npm run dev`       |
 
 Local development uses the development buckets `image-dev` and
 `document-dev`. Production uses `image` and `document`; do not point a local
@@ -374,8 +375,49 @@ This repository includes an automated commit message generator using AI (Llama 3
   git cm -y
   ```
 
+## Admin MCP (local POC)
+
+`mcp/` holds a local MCP server that lets an admin read and edit the home page
+main visuals from Claude Code, Claude Desktop or Codex. Edits are previewed
+first, including a preview drawn with the real banner design, and applied only
+after the admin confirms. It signs in with Clerk and
+calls only the `/api/mcp/*` routes; it never connects to the database.
+
+`npm run dev` needs no `MCP_*` variables: when they are missing it uses
+development defaults and a signing key generated in memory. Deployed
+environments must set every `MCP_*` variable.
+
+1. Run the app as usual (`npm run dev` with a seeded local database).
+2. Build the MCP server (again after pulling changes to `mcp/`):
+
+   ```bash
+   cd mcp && npm ci && npm run build
+   ```
+
+3. Register it with Claude Code, using the absolute path to this repository:
+
+   ```bash
+   claude mcp add pacemaker-admin -- node /absolute/path/to/pacemaker-video/mcp/dist/index.js
+   ```
+
+   For Claude Desktop and Codex, see [`mcp/README.md`](mcp/README.md).
+
+4. Ask "List the main visuals". A browser window opens; sign in with the seeded
+   admin account (`admin@paceupcareer.com`), then ask again. Later requests
+   reuse the sign-in stored in the OS credential store.
+
+Notes:
+
+- Only one MCP host can wait for a browser sign-in at a time.
+- If the app is not on port 3000, add
+  `-e PACEMAKER_MCP_API_ORIGIN=http://localhost:<port>` before `--` in
+  `claude mcp add`.
+- Ask for the `sign_out` tool to remove the stored sign-in.
+
 ## Project Docs
 
 - `.agent/` - Working notes: testing routine, design system, English copy guide,
   seed plan, production cleanup record
-- `docs/` - QA onboarding and the Stripe payment implementation plan
+- `docs/` - QA onboarding, the Stripe payment implementation plan and the
+  admin MCP decision record (`admin-local-db-mcp-poc-decisions.md`)
+- `mcp/README.md` - Admin MCP tools, sign-in and host configuration

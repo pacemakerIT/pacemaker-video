@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -16,6 +16,7 @@ export default defineConfig({
     environment: 'happy-dom',
     setupFiles: ['./vitest.setup.tsx'],
     pool: 'forks',
+    exclude: [...configDefaults.exclude, 'mcp/**'],
     server: {
       deps: {
         inline: ['parse5', 'jsdom']
