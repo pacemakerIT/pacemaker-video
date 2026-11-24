@@ -246,55 +246,27 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
 
   // The scroll container stays mounted through every state so its width is
   // measured before the first page renders.
-  const content = loading ? (
-    <div className="flex min-h-full items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <span
-          className="h-8 w-8 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
-          aria-hidden
-        />
-        <p className="font-body text-sm text-body">Loading pages</p>
-      </div>
-    </div>
-  ) : !isReady ? (
-    <div className="flex min-h-full items-center justify-center px-4">
-      <div className="flex flex-col items-center gap-4 text-center">
-        <p className="font-body text-base text-body">
-          {error ?? 'PDF를 표시할 수 없습니다.'}
-        </p>
-        <button
-          type="button"
-          onClick={() => setRetryCount((count) => count + 1)}
-          className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-orange px-8 py-3.5 font-[family-name:var(--font-heading)] text-base font-bold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:bg-orange-hover hover:scale-[1.02] active:scale-95"
-        >
-          Try again
-        </button>
-      </div>
-    </div>
-  ) : (
-    <Document
-      file={pdfUrl}
-      onLoadSuccess={({ numPages: total }) => setNumPages(total)}
-      onLoadError={() => setError('PDF 파일을 여는 중 문제가 발생했습니다.')}
-      loading={
-        <div className="flex h-40 items-center justify-center">
+  const content =
+    !isLoaded || loading ? (
+      <div className="flex min-h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
           <span
             className="h-8 w-8 animate-spin rounded-full border-2 border-navy/15 border-t-orange"
             aria-hidden
           />
-          <p className="font-body text-pace-sm text-[#475467]">Loading pages</p>
+          <p className="font-body text-sm text-body">Loading pages</p>
         </div>
       </div>
     ) : !isReady ? (
-      <div className="flex min-h-full items-center justify-center px-3">
+      <div className="flex min-h-full items-center justify-center px-4">
         <div className="flex flex-col items-center gap-4 text-center">
-          <p className="font-body text-pace-base text-[#475467]">
+          <p className="font-body text-base text-body">
             {error ?? 'PDF를 표시할 수 없습니다.'}
           </p>
           <button
             type="button"
             onClick={() => setRetryCount((count) => count + 1)}
-            className="min-h-11 rounded-full bg-orange px-6 font-heading text-pace-sm font-bold text-white transition-colors hover:bg-orange-hover"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-orange px-8 py-3.5 font-[family-name:var(--font-heading)] text-base font-bold text-white shadow-[0_10px_25px_-5px_rgba(255,79,2,0.3)] transition-all hover:bg-orange-hover hover:scale-[1.02] active:scale-95"
           >
             Try again
           </button>
@@ -314,23 +286,23 @@ export default function PdfViewer({ ebookId, onPageChange }: PdfViewerProps) {
           </div>
         }
         error={
-          <p className="py-10 text-center font-body text-pace-sm text-[#475467]">
+          <p className="py-10 text-center font-body text-sm text-body">
             PDF 파일을 여는 중 문제가 발생했습니다.
           </p>
         }
         className="flex w-fit min-w-full justify-center"
       >
         {pageWidth ? (
-          <div className="relative w-fit overflow-hidden rounded-lg">
+          <div className="relative w-fit overflow-hidden">
             <Page
               pageNumber={pageNumber}
               width={pageWidth}
               renderTextLayer={false}
               renderAnnotationLayer={false}
-              className="overflow-hidden rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+              className="overflow-hidden bg-white shadow-card"
               loading={
                 <div
-                  className="rounded-lg bg-white shadow-[0_10px_30px_rgba(0,38,59,0.12)]"
+                  className="bg-white shadow-card"
                   style={{ width: pageWidth, height: pageWidth * 1.414 }}
                 />
               }
