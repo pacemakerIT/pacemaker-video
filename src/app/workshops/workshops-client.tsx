@@ -13,9 +13,10 @@ export default function WorkshopsClient() {
   const [filterStatus, setFilterStatus] = useState<FilterKey>('All');
   const [workshops, setWorkshops] = useState<WorkshopCard[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedWorkshopTitle, setSelectedWorkshopTitle] = useState<
-    string | null
-  >(null); // 선택된 워크숍 title 상태
+  const [selectedWorkshop, setSelectedWorkshop] = useState<{
+    title: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -28,6 +29,8 @@ export default function WorkshopsClient() {
         }
       } catch (err) {
         toast.error('Failed to load workshops: ' + err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -51,7 +54,8 @@ export default function WorkshopsClient() {
         <WorkshopCalendar
           onMonthChange={setCurrentMonth}
           onSelectWorkshop={(title) => {
-            setSelectedWorkshopTitle(title); // 상세 버튼 클릭 시 워크숍 타이틀 설정
+            setFilterStatus('All');
+            setSelectedWorkshop({ title });
           }}
         />
 
@@ -63,7 +67,8 @@ export default function WorkshopsClient() {
           filter={filterStatus}
           workshops={workshops}
           selectedMonth={currentMonth}
-          selectedTitle={selectedWorkshopTitle} // 선택된 워크숍 title 전달
+          selectedWorkshop={selectedWorkshop}
+          isLoading={isLoading}
         />
       </div>
     </main>
