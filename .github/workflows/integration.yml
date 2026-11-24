@@ -124,5 +124,8 @@ jobs:
           path: |
             mcp/.mcpb-build/pacemaker-admin-*.mcpb
             mcp/.mcpb-build/pacemaker-admin.sha256
+          # The build folder is .mcpb-build, a hidden folder that the upload
+          # action skips by default. The paths above name exactly two files.
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
