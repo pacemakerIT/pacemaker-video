@@ -18,27 +18,27 @@ type DetailPopupProps = {
 export default function RefundPopup({ open, onOpenChange }: DetailPopupProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger className="flex-1 bg-orange-500 text-white rounded-full px-10 py-4 hover:bg-orange-600">
-        환불요청
+      <DialogTrigger className="min-h-11 flex-1 rounded-2xl border border-orange bg-white py-4 font-headline text-base font-bold text-orange transition-all hover:scale-[1.02] hover:bg-orange/5">
+        Request refund
       </DialogTrigger>
       <DialogContent
         showCloseButton={false}
-        className="w-auto flex flex-col items-center gap-6 p-8"
+        className="flex w-full max-w-[360px] flex-col items-center gap-6 rounded-none border border-gray-100 p-8 text-navy shadow-card"
       >
         <DialogHeader className="flex flex-col items-center gap-2">
-          <DialogTitle className="text-[20px] font-medium text-pace-gray-500">
-            환불 요청
+          <DialogTitle className="font-headline text-[22px] font-bold tracking-tight text-navy">
+            Request refund
           </DialogTitle>
-          <DialogDescription className="text-center font-light !text-pace-base text-pace-gray-700">
-            환불요청은 이메일로 문의바랍니다. <br /> pacemaker@gmail.com
+          <DialogDescription className="text-center text-sm leading-relaxed text-body-text">
+            To request a refund, please send an email to pacemaker@gmail.com
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <DialogClose asChild>
             <div className="flex w-full mt-2">
-              <button className="w-full px-10 py-4 rounded-full bg-pace-orange-800 text-white">
-                확인
+              <button className="min-h-11 w-full rounded-2xl bg-orange px-10 py-3.5 font-headline font-bold text-white hover:bg-orange-hover">
+                Confirm
               </button>
             </div>
           </DialogClose>

@@ -21,7 +21,7 @@ The Pacemaker storefront for courses, ebooks and workshops
 ### Prerequisites
 
 - [nvm](https://github.com/nvm-sh/nvm) (Node Version Manager)
-- Node.js v24.22 (set from `.nvmrc` by nvm)
+- Node.js v22.22 (will be automatically set using nvm)
 - npm
 - Docker (for the local PostgreSQL database)
 

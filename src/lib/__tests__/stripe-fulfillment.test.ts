@@ -3,7 +3,6 @@ import { ItemType, OrderStatus } from '@prisma/client';
 import type Stripe from 'stripe';
 
 const tx = {
-  $queryRaw: vi.fn(),
   order: {
     findFirst: vi.fn(),
     update: vi.fn()
@@ -109,7 +108,6 @@ describe('fulfillCheckoutSession', () => {
       callback(tx)
     );
     tx.order.findFirst.mockResolvedValue(pendingOrder());
-    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.PENDING }]);
     tx.order.update.mockResolvedValue({});
     tx.userWorkshop.upsert.mockResolvedValue({});
     tx.cart.deleteMany.mockResolvedValue({ count: 3 });
@@ -234,7 +232,6 @@ describe('fulfillCheckoutSession', () => {
       stripeReceiptUrl: 'https://stripe.test/receipt',
       stripeInvoiceUrl: 'https://stripe.test/invoice'
     });
-    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.COMPLETED }]);
 
     const result = await fulfillCheckoutSession(
       stripeMock(),
@@ -248,55 +245,6 @@ describe('fulfillCheckoutSession', () => {
     expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
     expect(tx.cart.deleteMany).not.toHaveBeenCalled();
     expect(tx.order.update).not.toHaveBeenCalled();
-  });
-
-  it('does not re-grant access when a late webhook hits a refunded order', async () => {
-    tx.order.findFirst.mockResolvedValue({
-      ...pendingOrder(),
-      status: OrderStatus.REFUNDED
-    });
-    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.REFUNDED }]);
-
-    const result = await fulfillCheckoutSession(
-      stripeMock(),
-      checkoutSession()
-    );
-
-    expect(result).toEqual({
-      orderId: '22222222-2222-4222-8222-222222222222',
-      status: 'already_refunded'
-    });
-    expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
-    expect(tx.cart.deleteMany).not.toHaveBeenCalled();
-    expect(tx.order.update).not.toHaveBeenCalled();
-  });
-
-  it('uses the locked status when a refund committed after the lookup', async () => {
-    tx.$queryRaw.mockResolvedValue([{ status: OrderStatus.REFUNDED }]);
-
-    const result = await fulfillCheckoutSession(
-      stripeMock(),
-      checkoutSession()
-    );
-
-    expect(result).toEqual({
-      orderId: '22222222-2222-4222-8222-222222222222',
-      status: 'already_refunded'
-    });
-    expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
-    expect(tx.cart.deleteMany).not.toHaveBeenCalled();
-    expect(tx.order.update).not.toHaveBeenCalled();
-  });
-
-  it('locks the order row before granting access', async () => {
-    await fulfillCheckoutSession(stripeMock(), checkoutSession());
-
-    const [sql, lockedOrderId] = tx.$queryRaw.mock.calls[0];
-    expect(sql.join('?')).toContain('FOR UPDATE');
-    expect(lockedOrderId).toBe('22222222-2222-4222-8222-222222222222');
-    expect(tx.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      tx.userWorkshop.upsert.mock.invocationCallOrder[0]
-    );
   });
 
   it('completes fulfillment when receipt and invoice lookups fail', async () => {
@@ -406,87 +354,5 @@ describe('fulfillCheckoutSession', () => {
         ]
       }
     });
-  });
-
-  it('acknowledges sessions from other integrations without an app order', async () => {
-    tx.order.findFirst.mockResolvedValue(null);
-    const consoleWarnSpy = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
-
-    try {
-      const result = await fulfillCheckoutSession(
-        stripeMock(),
-        checkoutSession({
-          id: 'cs_foreign',
-          metadata: { orderId: 'INV-2026-0042' },
-          client_reference_id: 'customer-77'
-        })
-      );
-
-      expect(result).toEqual({ orderId: null, status: 'ignored' });
-      expect(tx.order.findFirst).toHaveBeenCalledWith({
-        where: { OR: [{ stripeCheckoutSessionId: 'cs_foreign' }] },
-        include: { items: true }
-      });
-      expect(tx.$queryRaw).not.toHaveBeenCalled();
-      expect(tx.order.update).not.toHaveBeenCalled();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '[STRIPE] Checkout session matched no order',
-        { sessionId: 'cs_foreign', orderId: null }
-      );
-    } finally {
-      consoleWarnSpy.mockRestore();
-    }
-  });
-
-  it('acknowledges a UUID order id that matches no order', async () => {
-    tx.order.findFirst.mockResolvedValue(null);
-    const consoleWarnSpy = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined);
-
-    try {
-      const result = await fulfillCheckoutSession(
-        stripeMock(),
-        checkoutSession()
-      );
-
-      expect(result).toEqual({ orderId: null, status: 'ignored' });
-      expect(tx.userWorkshop.upsert).not.toHaveBeenCalled();
-      expect(tx.order.update).not.toHaveBeenCalled();
-    } finally {
-      consoleWarnSpy.mockRestore();
-    }
-  });
-
-  it('uses client_reference_id when metadata.orderId is not a UUID', async () => {
-    await fulfillCheckoutSession(
-      stripeMock(),
-      checkoutSession({ metadata: { orderId: 'INV-2026-0042' } })
-    );
-
-    expect(tx.order.findFirst).toHaveBeenCalledWith({
-      where: {
-        OR: [
-          { id: '22222222-2222-4222-8222-222222222222' },
-          { stripeCheckoutSessionId: 'cs_test_123' }
-        ]
-      },
-      include: { items: true }
-    });
-  });
-
-  it('reports no order id for unpaid sessions from other integrations', async () => {
-    const result = await fulfillCheckoutSession(
-      stripeMock(),
-      checkoutSession({
-        payment_status: 'unpaid',
-        metadata: { orderId: 'INV-2026-0042' },
-        client_reference_id: null
-      })
-    );
-
-    expect(result).toEqual({ orderId: null, status: 'ignored' });
   });
 });

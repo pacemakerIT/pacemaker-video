@@ -1,5 +1,6 @@
 'use client';
 
+import type { OrderStatus } from '@prisma/client';
 import { useState } from 'react';
 import {
   Dialog,
@@ -15,6 +16,8 @@ import type { PurchaseListItem, PurchasePaymentInfo } from './purchases-list';
 
 type DetailPopupProps = {
   orderNumber: string;
+  status: OrderStatus;
+  statusLabel: string;
   date: string;
   items: PurchaseListItem[];
   payment: PurchasePaymentInfo;
@@ -23,6 +26,8 @@ type DetailPopupProps = {
 
 export default function PurchaseDetailsPopup({
   orderNumber,
+  status,
+  statusLabel,
   date,
   items,
   payment,
@@ -33,38 +38,66 @@ export default function PurchaseDetailsPopup({
 
   return (
     <Dialog>
-      <DialogTrigger className="p-4 bg-pace-orange-500 text-pace-white-500 rounded-full">
-        View detail
+      <DialogTrigger className="inline-flex w-full items-center justify-center rounded-2xl bg-orange px-6 py-2.5 font-headline text-[13px] font-bold text-white transition-colors hover:bg-orange-hover md:w-auto">
+        View details
       </DialogTrigger>
-      <DialogContent className="max-w-lg p-10 gap-0 rounded-xl overflow-hidden font-light text-pace-base text-pace-gray-700">
-        <DialogHeader className="mb-10 justify-between items-center">
-          <DialogTitle className="text-[28px] font-bold text-pace-black-500">
-            구매상세내역
+      <DialogContent
+        aria-describedby={undefined}
+        className="w-[calc(100%_-_2rem)] max-w-3xl max-h-[calc(100dvh_-_2rem)] overflow-y-auto overscroll-contain gap-0 rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16"
+      >
+        <DialogHeader className="mb-8 pr-12">
+          <DialogTitle className="font-headline text-2xl font-bold tracking-tight text-navy">
+            Order Details
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6 justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-pace-gray-500 font-medium text-[20px]">
-              <span>주문번호</span>
-              <span>{orderNumber}</span>
+        <div className="space-y-[23px]">
+          <div className="space-y-1">
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="font-bold">Order number</span>
+              <span className="text-right font-headline font-bold">
+                {orderNumber}
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>구매일</span>
-              <span>{date}</span>
+            <div className="flex justify-between text-sm text-body-text">
+              <span>Purchase date</span>
+              <span className="font-headline">{date}</span>
             </div>
           </div>
 
-          <div>
-            <h3 className="font-medium text-[20px] text-pace-gray-500 mb-4">
-              구매강의 리스트
-            </h3>
-            <ul className="space-y-2 pb-6 border-b border-pace-gray-700">
+          <div className="flex justify-between gap-4 text-sm">
+            <span className="font-bold">Order status</span>
+            <span>{statusLabel}</span>
+          </div>
+          {(status === 'REFUNDED' || status === 'REFUND_PROCESSING') && (
+            <section
+              className="space-y-2 rounded-xl bg-gray-50 p-4 text-sm"
+              aria-label="Refund details"
+            >
+              <h3 className="font-bold">Refund details</h3>
+              <p className="text-body-text">
+                {status === 'REFUNDED'
+                  ? 'This order has been refunded. No further refund request is needed.'
+                  : 'A refund for this order is being processed. No additional refund request is needed.'}
+              </p>
+            </section>
+          )}
+
+          <hr className="border-gray-200" />
+
+          <div className="space-y-3">
+            <h3 className="font-bold text-navy">Purchased items</h3>
+            <ul className="space-y-2 text-sm">
               {items.map((item) => (
-                <li key={item.id} className="grid grid-cols-[80px_1fr_auto]">
-                  <span>{item.type}</span>
-                  <span>{item.title}</span>
-                  <span className="text-right">
+                <li
+                  key={item.id}
+                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 sm:grid-cols-[96px_minmax(0,1fr)_auto]"
+                >
+                  <span className="col-span-2 text-body-text sm:col-span-1">
+                    {item.type}
+                  </span>
+                  <span className="min-w-0 break-words">{item.title}</span>
+                  <span className="text-right font-headline font-bold">
                     {formatMoneyFromCents(item.priceCents, payment.currency)}
                   </span>
                 </li>
@@ -72,13 +105,13 @@ export default function PurchaseDetailsPopup({
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-medium text-[20px] text-pace-gray-500 mb-4">
-              결제정보
-            </h3>
-            <div className="space-y-2 pb-6 mb-6 border-b border-pace-gray-200">
+          <hr className="border-gray-200" />
+
+          <div className="space-y-4">
+            <h3 className="font-bold text-navy">Payment details</h3>
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span>소계</span>
+                <span className="text-body-text">Subtotal</span>
                 <span>
                   {formatMoneyFromCents(
                     payment.subtotalCents,
@@ -87,55 +120,60 @@ export default function PurchaseDetailsPopup({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span>할인금액</span>
-                <span>
+                <span className="text-body-text">Discount</span>
+                <span className="text-red-600">
+                  {payment.discountCents > 0 ? '- ' : ''}
                   {formatMoneyFromCents(
                     payment.discountCents,
                     payment.currency
                   )}
                 </span>
               </div>
-              <div className="flex justify-between mb-4">
-                <span>세금</span>
+              <div className="flex justify-between">
+                <span className="text-body-text">Tax</span>
                 <span>
                   {formatMoneyFromCents(payment.taxCents, payment.currency)}
                 </span>
               </div>
             </div>
-            <div>
+            <hr className="border-gray-200" />
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span>결제 구분</span>
+                <span className="text-body-text">Payment method</span>
                 <span>{payment.method}</span>
               </div>
               <div className="flex justify-between">
-                <span>할부</span>
+                <span className="text-body-text">Payment type</span>
                 <span>{payment.installment}</span>
               </div>
               <div className="flex justify-between">
-                <span>결제카드</span>
+                <span className="text-body-text">Card</span>
                 <span>{payment.card}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between items-center font-medium text-[20px] text-pace-gray-500">
-            <span>총 결제 금액</span>
-            <span>
+          <hr className="border-gray-200" />
+
+          <div className="flex items-baseline justify-between pb-4">
+            <span className="text-lg font-bold">Total paid</span>
+            <span className="font-headline text-2xl font-bold">
               {formatMoneyFromCents(payment.totalCents, payment.currency)}
             </span>
           </div>
-        </div>
-
-        <div className="flex justify-center gap-4 mt-10 px-10">
-          <SaveReceiptPopup
-            open={isReceiptPopupOpen}
-            onOpenChange={setIsReceiptPopupOpen}
-            receiptUrl={receiptUrl}
-          />
-          <RefundPopup
-            open={isRefundPopupOpen}
-            onOpenChange={setIsRefundPopupOpen}
-          />
+          <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4">
+            <SaveReceiptPopup
+              open={isReceiptPopupOpen}
+              onOpenChange={setIsReceiptPopupOpen}
+              receiptUrl={receiptUrl}
+            />
+            {status === 'COMPLETED' && (
+              <RefundPopup
+                open={isRefundPopupOpen}
+                onOpenChange={setIsRefundPopupOpen}
+              />
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
