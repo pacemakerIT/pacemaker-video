@@ -28,6 +28,45 @@ export function maskConnectionString(connectionString: string) {
   return connectionString.replace(/:\/\/([^:/@]+):([^@]+)@/, '://$1:****@');
 }
 
+// Same limit as MAX_IMAGE_UPLOAD_BYTES in src/lib/image-upload-limits.ts.
+export const MAX_SEED_IMAGE_BYTES = 4 * 1024 * 1024;
+
+export type StorageObject = {
+  key: string;
+  size: number;
+};
+
+// Thumbnails must be images the image proxy and Vercel image optimization
+// can serve, so oversized files are skipped. Sorted for repeatable seeds.
+export function selectSeedImageKeys(objects: StorageObject[]) {
+  return objects
+    .filter(
+      ({ key, size }) =>
+        /\.(png|jpe?g|webp)$/i.test(key) &&
+        size > 0 &&
+        size <= MAX_SEED_IMAGE_BYTES
+    )
+    .map(({ key }) => key)
+    .sort();
+}
+
+// Keep PDFs and legacy keys without an extension. The document bucket also
+// contains images and other uploads, which must never become ebook files.
+export function selectSeedEbookKeys(objects: StorageObject[]) {
+  return objects
+    .filter(({ key, size }) => {
+      const name = key.split('/').pop() ?? '';
+      return (
+        size > 0 &&
+        name.length > 0 &&
+        !name.startsWith('.') &&
+        (!/\.[a-z0-9]+$/i.test(name) || /\.pdf$/i.test(name))
+      );
+    })
+    .map(({ key }) => key)
+    .sort();
+}
+
 export function publicObjectUrl(
   supabaseUrl: string,
   bucket: string,

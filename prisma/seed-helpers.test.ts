@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MAX_SEED_IMAGE_BYTES,
+  selectSeedImageKeys,
+  selectSeedEbookKeys,
   getDatabaseHost,
   isLocalSeedDatabase,
   maskConnectionString,
@@ -79,6 +82,47 @@ describe('getDatabaseHost and maskConnectionString', () => {
     expect(maskConnectionString(url)).toBe(
       'postgresql://postgres:****@db.abc.supabase.co:5432/postgres'
     );
+  });
+});
+
+describe('selectSeedImageKeys', () => {
+  it('keeps images up to 4MB, sorted, and drops everything else', () => {
+    expect(
+      selectSeedImageKeys([
+        { key: 'b.png', size: 1000 },
+        { key: 'a.jpeg', size: MAX_SEED_IMAGE_BYTES },
+        { key: 'huge.png', size: MAX_SEED_IMAGE_BYTES + 1 },
+        { key: 'empty.png', size: 0 },
+        { key: 'doc.pdf', size: 1000 },
+        { key: 'c.webp', size: 10 }
+      ])
+    ).toEqual(['a.jpeg', 'b.png', 'c.webp']);
+  });
+});
+
+describe('selectSeedEbookKeys', () => {
+  it('keeps ebook files, including keys without an extension', () => {
+    expect(
+      selectSeedEbookKeys([
+        { key: 'ebook-2', size: 72067 },
+        { key: 'ebook-1', size: 71351 },
+        { key: 'folder/', size: 0 },
+        { key: 'folder/.emptyFolderPlaceholder', size: 0 },
+        { key: '.hidden', size: 10 }
+      ])
+    ).toEqual(['ebook-1', 'ebook-2']);
+  });
+  it('excludes images and unrelated documents from ebook file candidates', () => {
+    expect(
+      selectSeedEbookKeys([
+        { key: 'cover.png', size: 100 },
+        { key: 'cover.jpeg', size: 100 },
+        { key: 'slides.pptx', size: 100 },
+        { key: 'docker-compose.yml', size: 100 },
+        { key: 'ebooks/guide.PDF', size: 100 },
+        { key: 'ebook-1', size: 100 }
+      ])
+    ).toEqual(['ebook-1', 'ebooks/guide.PDF']);
   });
 });
 
