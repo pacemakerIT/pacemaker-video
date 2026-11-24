@@ -1,5 +1,6 @@
 'use client';
 
+import type { OrderStatus } from '@prisma/client';
 import { useState } from 'react';
 import {
   Dialog,
@@ -12,10 +13,11 @@ import { formatMoneyFromCents } from '@/lib/money';
 import RefundPopup from './refund-popup';
 import SaveReceiptPopup from './save-receipt-popup';
 import type { PurchaseListItem, PurchasePaymentInfo } from './purchases-list';
-import styles from './purchase-details-popup.module.css';
 
 type DetailPopupProps = {
   orderNumber: string;
+  status: OrderStatus;
+  statusLabel: string;
   date: string;
   items: PurchaseListItem[];
   payment: PurchasePaymentInfo;
@@ -24,6 +26,8 @@ type DetailPopupProps = {
 
 export default function PurchaseDetailsPopup({
   orderNumber,
+  status,
+  statusLabel,
   date,
   items,
   payment,
@@ -38,7 +42,8 @@ export default function PurchaseDetailsPopup({
         View details
       </DialogTrigger>
       <DialogContent
-        className={`${styles.content} gap-0 rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16`}
+        aria-describedby={undefined}
+        className="w-[calc(100%_-_2rem)] max-w-3xl max-h-[calc(100dvh_-_2rem)] overflow-y-auto overscroll-contain gap-0 rounded-none border border-gray-100 px-6 pb-12 pt-16 font-body text-navy shadow-card sm:px-10 sm:py-16"
       >
         <DialogHeader className="mb-8 pr-12">
           <DialogTitle className="font-headline text-2xl font-bold tracking-tight text-navy">
@@ -59,6 +64,24 @@ export default function PurchaseDetailsPopup({
               <span className="font-headline">{date}</span>
             </div>
           </div>
+
+          <div className="flex justify-between gap-4 text-sm">
+            <span className="font-bold">Order status</span>
+            <span>{statusLabel}</span>
+          </div>
+          {(status === 'REFUNDED' || status === 'REFUND_PROCESSING') && (
+            <section
+              className="space-y-2 rounded-xl bg-gray-50 p-4 text-sm"
+              aria-label="Refund details"
+            >
+              <h3 className="font-bold">Refund details</h3>
+              <p className="text-body-text">
+                {status === 'REFUNDED'
+                  ? 'This order has been refunded. No further refund request is needed.'
+                  : 'A refund for this order is being processed. No additional refund request is needed.'}
+              </p>
+            </section>
+          )}
 
           <hr className="border-gray-200" />
 
@@ -144,10 +167,12 @@ export default function PurchaseDetailsPopup({
               onOpenChange={setIsReceiptPopupOpen}
               receiptUrl={receiptUrl}
             />
-            <RefundPopup
-              open={isRefundPopupOpen}
-              onOpenChange={setIsRefundPopupOpen}
-            />
+            {status === 'COMPLETED' && (
+              <RefundPopup
+                open={isRefundPopupOpen}
+                onOpenChange={setIsRefundPopupOpen}
+              />
+            )}
           </div>
         </div>
       </DialogContent>

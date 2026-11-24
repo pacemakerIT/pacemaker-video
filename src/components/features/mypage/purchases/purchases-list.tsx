@@ -50,6 +50,7 @@ export default function PurchasesList({
 }: PurchasesListProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isRefunded = status === 'REFUNDED';
+  const additionalItems = items.slice(1);
   const firstTitle = items[0]?.title ?? 'Purchased item';
   const statusClass =
     status === 'REFUND_PROCESSING'
@@ -72,24 +73,27 @@ export default function PurchasesList({
           {firstTitle}
         </h2>
 
-        <button
-          type="button"
-          aria-expanded={isExpanded}
-          className="mb-2.5 inline-flex items-center gap-1 text-[13px] font-semibold text-gray-400 transition-colors hover:text-navy"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <span>
-            {items.length} {items.length === 1 ? 'item' : 'items'}
-          </span>
-          <span>{isExpanded ? 'Close' : 'More'}</span>
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-          />
-        </button>
+        {additionalItems.length > 0 && (
+          <button
+            type="button"
+            aria-expanded={isExpanded}
+            className="mb-2.5 inline-flex items-center gap-1 text-[13px] font-semibold text-gray-400 transition-colors hover:text-navy"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <span>
+              {additionalItems.length}{' '}
+              {additionalItems.length === 1 ? 'item' : 'items'}
+            </span>
+            <span>{isExpanded ? 'Close' : 'More'}</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            />
+          </button>
+        )}
 
         {isExpanded && (
           <ul className="mb-2.5 flex flex-col gap-1 border-l border-gray-200 pl-3 text-[13px] text-gray-500">
-            {items.map((item) => (
+            {additionalItems.map((item) => (
               <li key={item.id}>
                 {item.type} · {item.title}
               </li>
@@ -113,6 +117,8 @@ export default function PurchasesList({
         <PurchaseDetailsPopup
           orderNumber={orderNumber}
           date={date}
+          status={status}
+          statusLabel={statusLabel}
           items={items}
           payment={payment}
           receiptUrl={receiptUrl}
