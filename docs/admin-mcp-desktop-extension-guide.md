@@ -55,6 +55,6 @@ Claude에게 말로 시켜서 홈 화면 메인 배너를 확인하고 수정하
 
 ## 담당자용
 
-- 확장 파일은 `mcp/`에서 `npm run build:mcpb`로 만듭니다. 방법과 배포 절차는 `mcp/README.md`의 "Claude Desktop extension" 절을 보세요.
-- 파일을 전달할 때는 빌드 출력의 sha256 값과 변경 내용을 함께 보내세요.
+- 확장 파일은 GitHub의 Integration 실행 결과(Artifacts)에서 내려받을 수 있습니다. **main에서 실행된 것**(이름이 `pacemaker-admin-extension-push-...`)만 공유하세요. 직접 만들려면 `mcp/`에서 `npm run build:mcpb`를 실행합니다. 자세한 방법은 `mcp/README.md`의 "Claude Desktop extension" 절을 보세요.
+- 파일을 전달할 때는 sha256 값(실행 요약이나 `.sha256` 파일에 있음)과 변경 내용을 함께 보내세요.
 - Windows에서의 설치와, 새 파일을 이전 것 위에 설치할 때의 동작은 아직 확인하지 못했습니다.

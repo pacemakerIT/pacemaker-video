@@ -99,3 +99,30 @@ jobs:
 
       - name: Build Claude Desktop Extension
         run: npm run build:mcpb
+
+      # Admins install the .mcpb from this artifact. Only share a file from a
+      # run on main (artifact name starts with "push"); pull request builds are
+      # for testing.
+      - name: Checksum Extension
+        run: |
+          cd .mcpb-build
+          sha256sum pacemaker-admin-*.mcpb | tee pacemaker-admin.sha256
+          {
+            echo '### Claude Desktop extension'
+            echo
+            echo 'Download the artifact below. Share only files built by a run on main.'
+            echo
+            echo '```'
+            cat pacemaker-admin.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Extension
+        uses: actions/upload-artifact@v7
+        with:
+          name: pacemaker-admin-extension-${{ github.event_name }}-${{ github.sha }}
+          path: |
+            mcp/.mcpb-build/pacemaker-admin-*.mcpb
+            mcp/.mcpb-build/pacemaker-admin.sha256
+          if-no-files-found: error
+          retention-days: 30

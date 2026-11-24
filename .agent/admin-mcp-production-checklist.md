@@ -50,6 +50,7 @@ PACE-333 관리자 MCP(PR #1194와 #1215, 2026-11-24 병합)의 운영 적용 �
 ### 3. 확장 파일 배포
 
 - [x] `mcp/`에서 `npm run build:mcpb`로 `.mcpb`를 만든다 (esbuild로 서버를 파일 하나로 묶고, 로그인 저장용 `@napi-rs/keyring` 네이티브 파일을 macOS 2종·Windows 2종 넣는다. 잠금 파일의 해시로 검증).
+- [x] CI(`mcp` 작업)가 매 PR과 main 푸시마다 확장 파일을 빌드해 Artifacts로 올린다 (30일 보관, sha256 포함). 공유는 main 실행분(`push-`)만 한다.
 - [x] macOS에서 설치하고 Claude 새 채팅에서 로그인·조회를 확인했다. 확장은 Claude 내장 Node.js로 실행되고, 로그인은 키체인에 `production:local-agent-mode-pacemaker-admin`으로 저장된다.
 - [ ] Windows에서 설치와 로그인·조회를 확인한다 (파일에는 Windows용 바이너리가 들어 있지만 시험하지 못했다).
 - [ ] 새 `.mcpb`를 이전 버전 위에 설치할 때 덮어쓰는지, 먼저 지워야 하는지 확인한다.

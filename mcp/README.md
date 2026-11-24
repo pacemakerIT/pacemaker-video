@@ -197,14 +197,24 @@ Build on macOS or Linux. The build script has not been run on Windows: it starts
 `npm`, the MCPB CLI and `tar` directly, which is likely to fail there. The
 extension itself is meant to install on Windows (see "Checked so far" below).
 The `mcp` job in `.github/workflows/integration.yml` runs the type check, the
-tests, the build and this extension build on every pull request.
+tests, the build and this extension build on every pull request and every push
+to `main`.
+
+Download it from CI instead of building it yourself: open the Integration run,
+then "Artifacts" at the bottom of the run page, and download
+`pacemaker-admin-extension-push-<commit>` (unzip it to get the `.mcpb` and
+`pacemaker-admin.sha256`; check it with `shasum -a 256 -c pacemaker-admin.sha256`
+on macOS or `sha256sum -c pacemaker-admin.sha256` on Linux). The sha256 is also
+in the run summary. Artifacts are kept for 30 days. Share only files from a run
+on `main` (`push-` in the name). `pull_request-` artifacts are built from
+unmerged code and are for testing only.
 
 Release a new version:
 
 1. Bump `version` in `mcp/package.json` (the file name and the extension version
-   come from it).
-2. `npm run build:mcpb`, then share the `.mcpb` file together with its sha256 and
-   a short change note.
+   come from it) and merge it to `main`.
+2. Download the `.mcpb` from the `main` run as above (or run `npm run build:mcpb`),
+   then share it together with its sha256 and a short change note.
 3. Admins install the new file the same way as the first one.
 
 A new `.mcpb` is needed only when the MCP program itself changes: a new or changed
