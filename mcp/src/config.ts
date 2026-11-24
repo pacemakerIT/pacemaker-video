@@ -12,6 +12,11 @@ const DEFAULT_DEVELOPMENT_API_ORIGIN = 'http://localhost:3000';
 // OAuth app, so developers need no settings to try the MCP.
 const DEVELOPMENT_CLERK_ISSUER = 'https://flowing-imp-24.clerk.accounts.dev';
 const DEVELOPMENT_OAUTH_CLIENT_ID = 'fJkMj3Mil3vjq9So';
+// Public identifiers of the production site, its Clerk instance and the
+// production MCP OAuth app (public client, PKCE, no secret).
+const PRODUCTION_API_ORIGIN = 'https://www.paceupcareer.com';
+const PRODUCTION_CLERK_ISSUER = 'https://clerk.paceupcareer.com';
+const PRODUCTION_OAUTH_CLIENT_ID = 'v919d0TaD1AGZ3np';
 const DEFAULT_REDIRECT_PORT = 53134;
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
 
@@ -127,28 +132,100 @@ function resolveHostId(value: string | undefined): string | undefined {
   return hostId;
 }
 
+// The production API origin, Clerk issuer and OAuth client are fixed in code, so
+// a config edit cannot send the admin's token to another host or sign in
+// through another Clerk instance. Setting one of them to anything else fails.
+// An origin written as "https://HOST/" is the same origin; anything with a
+// path, query, user info or another host or scheme is not.
+function isSameOrigin(value: string, fixed: string): boolean {
+  try {
+    return parseOriginOnlyUrl(value, 'origin').origin === fixed;
+  } catch {
+    return false;
+  }
+}
+
+function requireProductionValue(
+  env: NodeJS.ProcessEnv,
+  name: string,
+  fixed: string,
+  matches: (value: string, fixed: string) => boolean = (value, expected) =>
+    value === expected
+): string {
+  const value = env[name]?.trim();
+  if (value && !matches(value, fixed)) {
+    throw new ConfigError(
+      `${name} cannot be changed in the production profile.`
+    );
+  }
+
+  return fixed;
+}
+
+function loadProductionConfig(env: NodeJS.ProcessEnv): McpConfig {
+  return {
+    profile: 'production',
+    apiOrigin: requireProductionValue(
+      env,
+      'PACEMAKER_MCP_API_ORIGIN',
+      PRODUCTION_API_ORIGIN,
+      isSameOrigin
+    ),
+    clerkIssuer: requireProductionValue(
+      env,
+      'PACEMAKER_MCP_CLERK_ISSUER',
+      PRODUCTION_CLERK_ISSUER,
+      isSameOrigin
+    ),
+    oauthClientId: requireProductionValue(
+      env,
+      'PACEMAKER_MCP_OAUTH_CLIENT_ID',
+      PRODUCTION_OAUTH_CLIENT_ID
+    ),
+    redirectPort: resolveRedirectPort(env.PACEMAKER_MCP_REDIRECT_PORT),
+    hostId: resolveHostId(env.PACEMAKER_MCP_HOST)
+  };
+}
+
+// Development is the default, so nobody reaches production without asking for
+// it with PACEMAKER_MCP_PROFILE=production.
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): McpConfig {
   const profile = env.PACEMAKER_MCP_PROFILE?.trim() || 'development';
 
   if (profile === 'production') {
-    throw new ConfigError(
-      'The production profile is not enabled in this POC. Use PACEMAKER_MCP_PROFILE=development.'
-    );
+    return loadProductionConfig(env);
   }
 
   if (profile !== 'development') {
-    throw new ConfigError('PACEMAKER_MCP_PROFILE must be "development".');
+    throw new ConfigError(
+      'PACEMAKER_MCP_PROFILE must be "development" or "production".'
+    );
+  }
+
+  const clerkIssuer = resolveClerkIssuer(
+    env.PACEMAKER_MCP_CLERK_ISSUER || DEVELOPMENT_CLERK_ISSUER
+  );
+  const oauthClientId = resolveOAuthClientId(
+    env.PACEMAKER_MCP_OAUTH_CLIENT_ID || DEVELOPMENT_OAUTH_CLIENT_ID
+  );
+
+  // The development profile sends the Clerk token to a loopback server. It must
+  // never use the production Clerk instance or OAuth app, or a program
+  // listening on localhost could receive a production admin token.
+  if (
+    clerkIssuer === PRODUCTION_CLERK_ISSUER ||
+    oauthClientId === PRODUCTION_OAUTH_CLIENT_ID
+  ) {
+    throw new ConfigError(
+      'The production Clerk issuer and OAuth client can only be used with PACEMAKER_MCP_PROFILE=production.'
+    );
   }
 
   return {
     profile,
     apiOrigin: resolveDevelopmentApiOrigin(env.PACEMAKER_MCP_API_ORIGIN),
-    clerkIssuer: resolveClerkIssuer(
-      env.PACEMAKER_MCP_CLERK_ISSUER || DEVELOPMENT_CLERK_ISSUER
-    ),
-    oauthClientId: resolveOAuthClientId(
-      env.PACEMAKER_MCP_OAUTH_CLIENT_ID || DEVELOPMENT_OAUTH_CLIENT_ID
-    ),
+    clerkIssuer,
+    oauthClientId,
     redirectPort: resolveRedirectPort(env.PACEMAKER_MCP_REDIRECT_PORT),
     hostId: resolveHostId(env.PACEMAKER_MCP_HOST)
   };
