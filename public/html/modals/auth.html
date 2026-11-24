@@ -195,18 +195,30 @@
               class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
             />
 
-            <input
-              type="password"
-              required
-              placeholder="Password"
-              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
-            />
+            <div>
+              <input
+                type="password"
+                required
+                placeholder="Password"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              />
+              <!-- Forgot password entry point: opens the reset flow inside this modal -->
+              <div class="mt-2 flex justify-end">
+                <button
+                  type="button"
+                  onclick="toggleFlow('forgot')"
+                  class="min-h-[44px] text-sm font-semibold text-navy underline hover:text-orange transition-colors cursor-pointer"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Submit Button. Rounded-2xl, py-4, text-lg font-bold, font-heading -->
           <button
             type="submit"
-            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[24px]"
           >
             CONTINUE
           </button>
@@ -224,24 +236,336 @@
           </button>
         </div>
       </div>
+
+      <!-- ================= FORGOT PASSWORD: STEP 1 (email) ================= -->
+      <!-- React: Clerk signIn.create({ strategy: 'reset_password_email_code', identifier }) -->
+      <div id="forgot-flow" class="space-y-[23px] hidden">
+        <div class="space-y-3 text-center">
+          <h2
+            class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Reset your password
+          </h2>
+          <p class="text-base text-body leading-relaxed">
+            Enter your email. We'll send you a 6-digit code.
+          </p>
+        </div>
+
+        <form onsubmit="handleForgotSubmit(event)">
+          <input
+            id="forgot-email"
+            type="email"
+            required
+            placeholder="Email address"
+            aria-describedby="forgot-error"
+            class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+          />
+          <!-- Field error (hidden by default) -->
+          <p
+            id="forgot-error"
+            role="alert"
+            class="field-error mt-2 text-sm text-orange hidden"
+          ></p>
+
+          <button
+            type="submit"
+            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+          >
+            SEND CODE
+          </button>
+        </form>
+
+        <div class="text-center text-sm text-body mt-[40px]">
+          Remember your password?
+          <button
+            type="button"
+            onclick="toggleFlow('login')"
+            class="font-semibold text-navy underline ml-1 hover:text-orange transition-colors cursor-pointer"
+          >
+            Log in
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= FORGOT PASSWORD: STEP 2 (code + new password) ================= -->
+      <!-- React: Clerk signIn.attemptFirstFactor({ strategy: 'reset_password_email_code', code, password }) -->
+      <div id="reset-flow" class="space-y-[23px] hidden">
+        <div class="space-y-3 text-center">
+          <h2
+            class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Check your email
+          </h2>
+          <p class="text-base text-body leading-relaxed">
+            We sent a code to
+            <span id="reset-email" class="font-semibold text-navy"
+              >you@example.com</span
+            >.
+          </p>
+        </div>
+
+        <form onsubmit="handleResetSubmit(event)">
+          <div class="space-y-[23px]">
+            <!-- 6-digit code: one box per digit. Typing moves forward, Backspace moves back, paste fills all boxes. -->
+            <div>
+              <div
+                id="code-boxes"
+                role="group"
+                aria-label="6-digit code"
+                class="flex justify-between gap-2"
+              >
+                <input type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" aria-label="Digit 1" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+                <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6" class="code-box h-14 w-full min-w-0 max-w-[56px] rounded-xl border border-gray-300 text-center font-heading text-2xl font-bold text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange" />
+              </div>
+              <p id="code-error" role="alert" class="field-error mt-2 text-sm text-orange hidden"></p>
+              <!-- Info notice after Resend (teal = neutral/success, not an error) -->
+              <p id="code-notice" role="status" class="mt-2 text-sm text-teal hidden">
+                We sent a new code.
+              </p>
+            </div>
+
+            <div>
+              <input
+                id="new-password"
+                type="password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+                placeholder="New password"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              />
+              <p id="password-hint" class="mt-2 text-sm text-body">At least 8 characters.</p>
+              <p id="password-error" role="alert" class="field-error mt-2 text-sm text-orange hidden"></p>
+            </div>
+
+            <div>
+              <input
+                id="confirm-password"
+                type="password"
+                autocomplete="new-password"
+                required
+                placeholder="Confirm new password"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              />
+              <p id="confirm-error" role="alert" class="field-error mt-2 text-sm text-orange hidden"></p>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+          >
+            RESET PASSWORD
+          </button>
+        </form>
+
+        <div class="space-y-2 text-center text-sm text-body mt-[40px]">
+          <div>
+            Didn't get a code?
+            <button
+              type="button"
+              onclick="handleResend()"
+              class="font-semibold text-navy underline ml-1 hover:text-orange transition-colors cursor-pointer"
+            >
+              Resend
+            </button>
+          </div>
+          <button
+            type="button"
+            onclick="toggleFlow('login')"
+            class="font-semibold text-navy underline hover:text-orange transition-colors cursor-pointer"
+          >
+            Back to log in
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= FORGOT PASSWORD: STEP 3 (done) ================= -->
+      <!-- React: setActive({ session }) logs the user in right away -->
+      <div id="done-flow" class="space-y-[23px] hidden">
+        <div class="flex justify-center">
+          <span
+            class="flex h-16 w-16 items-center justify-center rounded-full bg-teal/10 text-teal"
+            aria-hidden="true"
+          >
+            <span class="material-symbols-outlined text-[32px]">check</span>
+          </span>
+        </div>
+        <div class="space-y-3 text-center">
+          <h2
+            class="text-[24px] font-bold tracking-tight font-heading leading-tight text-navy"
+          >
+            Password updated
+          </h2>
+          <p class="text-base text-body leading-relaxed">
+            You're logged in with your new password.
+          </p>
+        </div>
+
+        <a
+          href="../main.html"
+          class="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-[family-name:var(--font-heading)] rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] mt-[40px]"
+        >
+          CONTINUE
+        </a>
+      </div>
+    </div>
+
+    <!-- Reviewer-only state switcher (not part of the product UI) -->
+    <div
+      class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-1 rounded-full border border-gray-200 bg-white/95 px-2 py-1.5 text-xs shadow-md backdrop-blur-md"
+    >
+      <button type="button" onclick="toggleFlow('signup')" data-tab="signup" class="state-tab whitespace-nowrap rounded-full px-3 py-2 font-bold">Sign up</button>
+      <button type="button" onclick="toggleFlow('login')" data-tab="login" class="state-tab whitespace-nowrap rounded-full px-3 py-2 font-bold">Log in</button>
+      <button type="button" onclick="toggleFlow('forgot')" data-tab="forgot" class="state-tab whitespace-nowrap rounded-full px-3 py-2 font-bold">Forgot</button>
+      <button type="button" onclick="toggleFlow('reset')" data-tab="reset" class="state-tab whitespace-nowrap rounded-full px-3 py-2 font-bold">Reset</button>
+      <button type="button" onclick="toggleFlow('done')" data-tab="done" class="state-tab whitespace-nowrap rounded-full px-3 py-2 font-bold">Done</button>
+    </div>
+
+    <!-- Reviewer-only error examples (not part of the product UI) -->
+    <div
+      class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex max-w-[95vw] flex-wrap justify-center gap-1 rounded-2xl border border-gray-200 bg-white/95 px-2 py-1.5 text-xs shadow-md backdrop-blur-md"
+    >
+      <span class="self-center px-2 font-bold text-body">Errors:</span>
+      <button type="button" onclick="demoError('invalidEmail')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Email format</button>
+      <button type="button" onclick="demoError('googleOnly')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Google account</button>
+      <button type="button" onclick="demoError('tooMany')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Too many tries</button>
+      <button type="button" onclick="demoError('wrongCode')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Wrong code</button>
+      <button type="button" onclick="demoError('expiredCode')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Expired code</button>
+      <button type="button" onclick="demoError('shortPassword')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Short password</button>
+      <button type="button" onclick="demoError('breached')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Unsafe password</button>
+      <button type="button" onclick="demoError('mismatch')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">No match</button>
+      <button type="button" onclick="demoError('resent')" class="whitespace-nowrap rounded-full px-3 py-2 font-bold text-navy hover:bg-gray-soft">Code resent</button>
     </div>
 
     <!-- Inline Script for Flow Switcher (Completely Offline Safe) -->
     <script>
-      function toggleFlow(flow) {
-        const signupFlow = document.getElementById('signup-flow');
-        const loginFlow = document.getElementById('login-flow');
+      const FLOWS = {
+        signup: 'Pacemaker | Create your account',
+        login: 'Pacemaker | Sign In',
+        forgot: 'Pacemaker | Reset your password',
+        reset: 'Pacemaker | Check your email',
+        done: 'Pacemaker | Password updated'
+      };
 
-        if (flow === 'signup') {
-          signupFlow.classList.remove('hidden');
-          loginFlow.classList.add('hidden');
-          document.title = 'Pacemaker | Create your account';
-        } else {
-          signupFlow.classList.add('hidden');
-          loginFlow.classList.remove('hidden');
-          document.title = 'Pacemaker | Sign In';
+      function toggleFlow(flow) {
+        Object.keys(FLOWS).forEach((key) => {
+          document
+            .getElementById(`${key}-flow`)
+            .classList.toggle('hidden', key !== flow);
+        });
+        document.querySelectorAll('.state-tab').forEach((tab) => {
+          const active = tab.dataset.tab === flow;
+          tab.classList.toggle('bg-orange', active);
+          tab.classList.toggle('text-white', active);
+          tab.classList.toggle('text-navy', !active);
+        });
+        document.title = FLOWS[flow];
+      }
+
+      // ---------- Error copy (follows .agent/english-copy-guide.md) ----------
+      // flow: which screen shows it, field: input(s) to outline, slot: <p> that shows the text
+      const ERRORS = {
+        invalidEmail: { flow: 'forgot', field: '#forgot-email', slot: 'forgot-error', text: 'Enter a valid email address.' },
+        googleOnly: { flow: 'forgot', field: '#forgot-email', slot: 'forgot-error', text: 'This account uses Google sign-in. Log in with Google instead.' },
+        tooMany: { flow: 'forgot', field: '#forgot-email', slot: 'forgot-error', text: 'Too many attempts. Try again in a few minutes.' },
+        wrongCode: { flow: 'reset', field: '.code-box', slot: 'code-error', text: "That code isn't right. Check your email and try again." },
+        expiredCode: { flow: 'reset', field: '.code-box', slot: 'code-error', text: 'This code has expired. Request a new one below.' },
+        shortPassword: { flow: 'reset', field: '#new-password', slot: 'password-error', text: 'Use at least 8 characters.' },
+        breached: { flow: 'reset', field: '#new-password', slot: 'password-error', text: 'This password showed up in a data breach. Choose a different one.' },
+        mismatch: { flow: 'reset', field: '#confirm-password', slot: 'confirm-error', text: "Passwords don't match." }
+      };
+
+      function clearErrors() {
+        document.querySelectorAll('.field-error').forEach((el) => el.classList.add('hidden'));
+        document.querySelectorAll('.border-orange').forEach((el) => {
+          if (el.tagName === 'INPUT') {
+            el.classList.remove('border-orange');
+            el.classList.add('border-gray-300');
+          }
+        });
+        document.getElementById('code-notice').classList.add('hidden');
+        document.getElementById('password-hint').classList.remove('hidden');
+      }
+
+      function showError(key) {
+        const err = ERRORS[key];
+        clearErrors();
+        document.querySelectorAll(err.field).forEach((el) => {
+          el.classList.remove('border-gray-300');
+          el.classList.add('border-orange');
+        });
+        const slot = document.getElementById(err.slot);
+        slot.textContent = err.text;
+        slot.classList.remove('hidden');
+        if (err.slot === 'password-error') {
+          document.getElementById('password-hint').classList.add('hidden');
         }
       }
+
+      function demoError(key) {
+        if (key === 'resent') {
+          toggleFlow('reset');
+          handleResend();
+          return;
+        }
+        toggleFlow(ERRORS[key].flow);
+        showError(key);
+      }
+
+      // ---------- 6-digit code boxes ----------
+      const codeBoxes = [...document.querySelectorAll('.code-box')];
+      codeBoxes.forEach((box, i) => {
+        box.addEventListener('input', () => {
+          box.value = box.value.replace(/\D/g, '').slice(-1);
+          if (box.value && i < codeBoxes.length - 1) codeBoxes[i + 1].focus();
+        });
+        box.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !box.value && i > 0) codeBoxes[i - 1].focus();
+          if (e.key === 'ArrowLeft' && i > 0) codeBoxes[i - 1].focus();
+          if (e.key === 'ArrowRight' && i < codeBoxes.length - 1) codeBoxes[i + 1].focus();
+        });
+        box.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+          digits.split('').forEach((d, j) => (codeBoxes[j].value = d));
+          codeBoxes[Math.min(digits.length, 5)].focus();
+        });
+      });
+
+      function handleForgotSubmit(event) {
+        event.preventDefault();
+        clearErrors();
+        const email = document.getElementById('forgot-email').value;
+        document.getElementById('reset-email').textContent = email;
+        toggleFlow('reset');
+        codeBoxes[0].focus();
+      }
+
+      function handleResetSubmit(event) {
+        event.preventDefault();
+        clearErrors();
+        const code = codeBoxes.map((b) => b.value).join('');
+        const pw = document.getElementById('new-password').value;
+        const confirm = document.getElementById('confirm-password').value;
+        if (code.length < 6) return showError('wrongCode');
+        if (pw.length < 8) return showError('shortPassword');
+        if (pw !== confirm) return showError('mismatch');
+        toggleFlow('done');
+      }
+
+      function handleResend() {
+        clearErrors();
+        codeBoxes.forEach((b) => (b.value = ''));
+        document.getElementById('code-notice').classList.remove('hidden');
+      }
+
+      // Open a specific state directly, e.g. auth.html#forgot
+      toggleFlow(FLOWS[location.hash.slice(1)] ? location.hash.slice(1) : 'signup');
 
       function handleAuthSubmit(event, type) {
         event.preventDefault();
