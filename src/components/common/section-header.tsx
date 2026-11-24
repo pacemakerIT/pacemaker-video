@@ -10,13 +10,15 @@ export default function SectionHeader({
   className = ''
 }: SectionHeaderProps) {
   return (
-    <div className={`flex flex-col justify-start min-w-0 ${className}`}>
+    <div
+      className={`flex min-w-0 flex-col items-start justify-start text-left ${className}`}
+    >
       {subtitle && (
-        <p className="text-orange font-bold text-xs sm:text-sm tracking-wide mb-2">
+        <p className="mb-2 text-left text-xs font-bold tracking-wide text-orange sm:text-sm">
           {subtitle}
         </p>
       )}
-      <h2 className="text-[32px] font-extrabold font-headline text-navy tracking-tight break-words">
+      <h2 className="break-words text-left text-[32px] font-extrabold tracking-tight text-navy font-headline">
         {title}
       </h2>
     </div>

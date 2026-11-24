@@ -31,7 +31,8 @@ const FILTER_HOVER_CLASSES: Record<string, string> = {
   DESIGN: 'hover:border-[#FF6666] hover:text-[#FF6666]',
   PUBLIC: 'hover:border-[#34D399] hover:text-[#34D399]',
   IT: 'hover:border-[#36A6F7] hover:text-[#36A6F7]',
-  ACCOUNTING: 'hover:border-[#37446C] hover:text-[#37446C]'
+  ACCOUNTING: 'hover:border-[#37446C] hover:text-[#37446C]',
+  SERVICE: 'hover:border-[rgb(245_166_35)] hover:text-[rgb(245_166_35)]'
 };
 
 const FILTER_ACTIVE_CLASSES: Record<string, string> = {
@@ -43,7 +44,9 @@ const FILTER_ACTIVE_CLASSES: Record<string, string> = {
     'border-[#34D399] text-[#34D399] bg-[#34D399]/[0.04] shadow-[0_10px_25px_-5px_rgba(52,211,153,0.2)]',
   IT: 'border-[#36A6F7] text-[#36A6F7] bg-[#36A6F7]/[0.04] shadow-[0_10px_25px_-5px_rgba(54,166,247,0.2)]',
   ACCOUNTING:
-    'border-[#37446C] text-[#37446C] bg-[#37446C]/[0.04] shadow-[0_10px_25px_-5px_rgba(55,68,108,0.2)]'
+    'border-[#37446C] text-[#37446C] bg-[#37446C]/[0.04] shadow-[0_10px_25px_-5px_rgba(55,68,108,0.2)]',
+  SERVICE:
+    'border-[rgb(245_166_35)] text-[rgb(245_166_35)] bg-[rgb(245_166_35/0.04)] shadow-[0_10px_25px_-5px_rgba(245,166,35,0.2)]'
 };
 
 const DEFAULT_HOVER = 'hover:border-orange hover:text-orange';
