@@ -172,6 +172,52 @@ env = { PACEMAKER_MCP_PROFILE = "production" }
   maintainer to register `http://127.0.0.1:<port>/callback` on the production
   OAuth app.
 
+## Claude Desktop extension (no terminal needed)
+
+For admins who do not use a terminal, the MCP ships as a Claude Desktop
+extension: one `.mcpb` file that admins double-click to install. The extension
+runs the production profile and needs no settings. A Korean step-by-step guide
+for admins is in `docs/admin-mcp-desktop-extension-guide.md`.
+
+Build it (maintainers only):
+
+```bash
+cd mcp
+npm ci
+npm run build:mcpb
+```
+
+This writes `mcp/.mcpb-build/pacemaker-admin-<version>.mcpb` (not committed) and
+prints its sha256. The build bundles the server into one file with esbuild and
+adds the `@napi-rs/keyring` binaries for macOS (Apple silicon and Intel) and
+Windows (x64 and ARM), checked against the hashes in `package-lock.json`, so one
+file installs on all of them. `mcpb validate` and `mcpb pack` run as part of it.
+
+Release a new version:
+
+1. Bump `version` in `mcp/package.json` (the file name and the extension version
+   come from it).
+2. `npm run build:mcpb`, then share the `.mcpb` file together with its sha256 and
+   a short change note.
+3. Admins install the new file the same way as the first one.
+
+A new `.mcpb` is needed only when the MCP program itself changes: a new or changed
+tool, the sign-in flow, or a changed response shape. Changes that only touch the
+server routes reach every admin with the normal website deploy. Keep the tool
+list in `mcpb/manifest.json` in step with `src/tools.ts`; `src/manifest.test.ts`
+fails when they differ.
+
+Install: open the file (or Claude Desktop → Settings → Extensions → Advanced →
+Install Extension), review the prompt and install. Start a new chat, ask for the
+main visuals and sign in with an admin account in the browser window. The sign-in
+is stored in the credential store under `production:<host>`; for this extension
+the host name is `local-agent-mode-pacemaker-admin`.
+
+Checked so far: building, installing and listing the main visuals on macOS. Not
+checked yet: installing on Windows, installing a newer file over an older one,
+and whether a locally installed extension updates itself. Claude Desktop runs
+the extension with its built-in Node.js, so admins do not install Node.
+
 ## Development
 
 ```bash
