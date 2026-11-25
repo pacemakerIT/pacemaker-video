@@ -143,6 +143,9 @@ it('supports signed PDF URLs and page progress callbacks', async () => {
   const onPageChange = vi.fn();
   render(<PdfViewer ebookId="ebook-1" onPageChange={onPageChange} />);
   await screen.findByText('PDF page 1');
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'Next page' })).toBeEnabled()
+  );
   fireEvent.click(screen.getByRole('button', { name: 'Next page' }));
   await waitFor(() => expect(onPageChange).toHaveBeenLastCalledWith(2, 2));
   expect(mocks.createUrl).not.toHaveBeenCalled();
