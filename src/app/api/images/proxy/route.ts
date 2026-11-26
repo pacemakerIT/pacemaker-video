@@ -23,13 +23,26 @@ export async function GET(req: Request) {
         where: { fileName }
       });
 
-      if (!image) {
-        return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-      }
+      if (image) {
+        // Image records created by older uploads may contain either a public URL
+        // or only the storage object key. Keep both formats working for known rows.
+        rawUrl = image.url || fileName;
+      } else {
+        // Instructors seeded from production store the bare storage key directly
+        // on Instructor.profileImage without a corresponding Image table row.
+        const instructor = await prisma.instructor?.findFirst({
+          where: { profileImage: fileName }
+        });
 
-      // Image records created by older uploads may contain either a public URL
-      // or only the storage object key. Keep both formats working for known rows.
-      rawUrl = image.url || fileName;
+        if (instructor) {
+          rawUrl = fileName;
+        } else {
+          return NextResponse.json(
+            { error: 'Image not found' },
+            { status: 404 }
+          );
+        }
+      }
     }
 
     if (!rawUrl) {

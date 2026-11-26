@@ -1011,7 +1011,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-[16px] font-bold text-navy font-headline"
-                    >$2800</span
+                    >$2,800</span
                   >
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
@@ -1074,7 +1074,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-[16px] font-bold text-navy font-headline"
-                    >$2800</span
+                    >$2,800</span
                   >
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
@@ -1137,7 +1137,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-[16px] font-bold text-navy font-headline"
-                    >$2800</span
+                    >$2,800</span
                   >
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
@@ -1200,7 +1200,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-[16px] font-bold text-navy font-headline"
-                    >$2800</span
+                    >$2,800</span
                   >
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-100"
@@ -1264,7 +1264,7 @@
 
                 <div class="flex items-center gap-2">
                   <span class="text-[16px] font-bold text-navy font-headline"
-                    >$2800</span
+                    >$2,800</span
                   >
                   <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-100"
@@ -1629,8 +1629,8 @@
           Order Details
         </h2>
 
-        <!-- Content sections with space-y-[23px] to match grid gaps -->
-        <div class="space-y-[23px]">
+        <!-- Scrollable Modal Body -->
+        <div class="overflow-y-auto px-6 sm:px-10 py-6 space-y-[23px] overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-navy/15 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-navy/30">
           <!-- Order info -->
           <div class="space-y-1">
             <div class="flex justify-between items-baseline">
@@ -1895,6 +1895,7 @@
 
       function closeOrderDetailModal() {
         document.getElementById('order-detail-modal').classList.add('hidden');
+        document.body.style.overflow = '';
       }
 
       function showOrderDetailInlineAlert(type) {

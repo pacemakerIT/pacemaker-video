@@ -4,19 +4,8 @@ import { Heart, ArrowRight } from 'lucide-react';
 import { resolveImageSrc, cn } from '@/lib/utils';
 import { ItemType } from '@prisma/client';
 import { getCategoryColors } from '@/lib/category-colors';
+import { formatPrice } from '@/lib/money';
 
-const categoryBg: Record<string, string> = {
-  INTERVIEW: 'bg-pace-blue-500',
-  RESUME: 'bg-pace-purple-500',
-  NETWORKING: 'bg-pace-yellow-500',
-  MARKETING: 'bg-pace-orange-700',
-  DESIGN: 'bg-pace-pink-500',
-  PUBLIC: 'bg-pace-mint-600',
-  IT: 'bg-pace-blue-700',
-  ACCOUNTING: 'bg-pace-navy-500',
-  SERVICE: 'bg-pace-teal-500',
-  RECOMMENDED: 'bg-pace-orange-500'
-};
 import { useFavoriteContext } from '@/app/context/favorite-context';
 import { useUserContext } from '@/app/context/user-context';
 import { toast } from 'sonner';
@@ -157,7 +146,9 @@ export default function RelatedContentCard({
                 {title}
               </h3>
               {price > 0 && (
-                <span className="text-xl font-extrabold text-navy shrink-0">{`$${price}`}</span>
+                <span className="text-xl font-extrabold text-navy shrink-0">
+                  {formatPrice(price)}
+                </span>
               )}
             </div>
             <div className="inline-flex items-center gap-1 text-orange font-bold text-sm hover:translate-x-1 transition-transform duration-300 ease-out mt-2 w-fit">
@@ -199,7 +190,7 @@ export default function RelatedContentCard({
           />
         </button>
 
-        <div className="w-full aspect-[3/2] relative overflow-hidden">
+        <div className="w-full h-[256px] relative overflow-hidden">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -218,7 +209,7 @@ export default function RelatedContentCard({
               <span
                 className={cn(
                   'text-white text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider',
-                  categoryBg[category.toUpperCase()] ?? 'bg-pace-blue-500'
+                  getCategoryColors(category).badge
                 )}
               >
                 {category}
@@ -234,7 +225,9 @@ export default function RelatedContentCard({
                 {title}
               </h3>
               {price > 0 && (
-                <span className="text-xl font-extrabold text-navy shrink-0">{`$${price}`}</span>
+                <span className="text-xl font-extrabold text-navy shrink-0">
+                  {formatPrice(price)}
+                </span>
               )}
             </div>
           </div>

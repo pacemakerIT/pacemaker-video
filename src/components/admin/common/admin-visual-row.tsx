@@ -5,6 +5,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Checkbox } from '@/components/ui/checkbox';
 import { resolveImageSrc } from '@/lib/utils';
+import { formatPrice } from '@/lib/money';
 
 export type RowLike = {
   id: string;
@@ -118,8 +119,10 @@ export default function AdminVisualRow({
           <span>
             금액
             <span className="font-semibold">
-              {row.price?.toLocaleString
-                ? ` $${row.price.toLocaleString()}`
+              {row.price !== undefined &&
+              row.price !== '' &&
+              !Number.isNaN(Number(row.price))
+                ? ` ${formatPrice(row.price)}`
                 : row.price}
             </span>
           </span>

@@ -15,10 +15,10 @@ const ebookThemes: Record<string, { background: string; foreground: string }> =
   };
 
 const badgeColors: Record<string, string> = {
-  Interview: '#36A6F6',
+  Interview: '#36A6F7',
   Resume: '#FF9631',
   Career: '#00ADBD',
-  Networking: '#FF4F02',
+  Networking: '#9F5BE7',
   Marketing: '#FF7E54',
   Finance: '#3B82F6',
   Design: '#12B76A'

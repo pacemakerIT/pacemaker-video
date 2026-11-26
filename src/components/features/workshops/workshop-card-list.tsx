@@ -9,6 +9,7 @@ import { useFavoriteContext } from '@/app/context/favorite-context';
 import { ItemType } from '@prisma/client';
 import { toast } from 'sonner';
 import { resolveImageSrc } from '@/lib/utils';
+import { formatPrice } from '@/lib/money';
 import { getCalendarStyle } from '@/components/ui/calendar-style-map';
 
 interface Props {
@@ -196,7 +197,7 @@ export default function WorkshopCardList({
                     {w.title}
                   </h2>
                   <p className="shrink-0 font-headline text-[22px] font-bold leading-[24px] text-[#00263B] md:text-[28px] md:leading-[30px]">
-                    {w.price ? `$${w.price}` : 'Free'}
+                    {w.price ? formatPrice(w.price) : 'Free'}
                   </p>
                 </div>
 

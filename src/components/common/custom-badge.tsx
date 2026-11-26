@@ -6,11 +6,11 @@ const customBadgeVariants = cva(badgeVariants(), {
   variants: {
     variant: {
       INTERVIEW:
-        'border-transparent bg-pace-blue-500 !text-pace-sm text-pace-white-500 font-light',
+        'border-transparent bg-category-interview-badge !text-pace-sm text-pace-white-500 font-light',
       RESUME:
-        'border-transparent bg-pace-purple-500 !text-pace-sm text-pace-white-500 font-light',
+        'border-transparent bg-category-resume-badge !text-pace-sm text-pace-white-500 font-light',
       NETWORKING:
-        'border-transparent bg-pace-yellow-500 !text-pace-sm text-pace-white-500 font-light',
+        'border-transparent bg-category-networking-badge !text-pace-sm text-pace-white-500 font-light',
       MARKETING:
         'border-transparent bg-pace-orange-700 !text-pace-sm text-pace-white-500 font-light',
       DESIGN:

@@ -139,9 +139,9 @@ export const MAIN_VISUALS: SeedMainVisual[] = [
 export const INSTRUCTORS: SeedInstructor[] = [
   {
     id: 'cd0bf417-d5ff-4ab7-8dd2-6e6682189f77',
-    name: 'Raphael. Lee',
+    name: 'Raphael Lee',
     description:
-      'I’ve been managing multicultural teams for ever 19 years. And blesses to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
+      'I’ve been managing multicultural teams for over 19 years. I have been blessed to lead and be part of the opening teams in global projects in various countries. Growing personal & professional goals by sharing visions with teammates became a part of my passion and a long-term goal in my life.',
     careers: [
       {
         period: '2019 ~',
