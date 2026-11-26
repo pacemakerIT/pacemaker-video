@@ -4,6 +4,8 @@ import { useSignIn } from '@clerk/nextjs/legacy';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SignInWithGoogleButton from '@/components/auth/sign-in-google-button';
+import CodeInput from '@/components/auth/code-input';
+import ForgotPassword from '@/components/auth/forgot-password';
 
 type Props = {
   closeModal?: () => void;
@@ -41,6 +43,12 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+
+  const leaveSignIn = () => {
+    closeModal?.();
+    router.push('/');
+  };
 
   const finishSignIn = async (sessionId: string | null) => {
     if (!sessionId) {
@@ -54,8 +62,7 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
     }
 
     await setActive({ session: sessionId });
-    closeModal?.();
-    router.push('/');
+    leaveSignIn();
   };
 
   const prepareEmailSecondFactor = async (
@@ -110,7 +117,8 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
         // needs_client_trust: Device Trust asks for an email code on a new device
         await prepareEmailSecondFactor(signIn, result);
       } else if (result.status === 'needs_new_password') {
-        setError('Please set a new password.');
+        // The account must set a new password first: send them through reset.
+        setIsResettingPassword(true);
       } else {
         setError('Additional verification required to finish signing in.');
       }
@@ -178,6 +186,24 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
     }
   };
 
+  if (isResettingPassword && !isVerifyingCode) {
+    return (
+      <ForgotPassword
+        initialEmail={email}
+        onBack={() => {
+          setIsResettingPassword(false);
+          setError('');
+          setNotice('');
+        }}
+        onNeedsSecondFactor={async (result) => {
+          setIsResettingPassword(false);
+          await prepareEmailSecondFactor(result, result);
+        }}
+        onFinish={leaveSignIn}
+      />
+    );
+  }
+
   if (isVerifyingCode) {
     return (
       <div className="space-y-[23px]">
@@ -188,22 +214,27 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
           Please enter the code sent to {secondFactorEmail || email}.
         </p>
         <form onSubmit={handleVerifySecondFactor}>
-          <div className="space-y-[23px]">
-            <input
-              type="text"
-              inputMode="numeric"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Verification code"
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
-              required
-            />
-          </div>
+          <CodeInput
+            value={code}
+            onChange={setCode}
+            hasError={Boolean(error)}
+            disabled={isSubmitting}
+            describedBy="second-factor-error"
+            autoFocus
+          />
           {notice && (
-            <p className="text-sm text-center text-gray-500 mt-2">{notice}</p>
+            <p role="status" className="text-sm text-center text-teal mt-2">
+              {notice}
+            </p>
           )}
           {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+            <p
+              id="second-factor-error"
+              role="alert"
+              className="text-orange text-sm text-center mt-2"
+            >
+              {error}
+            </p>
           )}
           <button
             type="submit"
@@ -262,22 +293,40 @@ export default function CustomSignIn({ closeModal, switchToSignUp }: Props) {
             className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
             required
           />
-          <input
-            type="password"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            placeholder="Password"
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
-            required
-          />
+          <div>
+            <input
+              type="password"
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              placeholder="Password"
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-base text-navy focus:outline-none focus:border-orange focus:ring-1 focus:ring-orange placeholder-gray-400"
+              required
+            />
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setError('');
+                  setIsResettingPassword(true);
+                }}
+                className="min-h-[44px] text-sm font-semibold text-navy underline hover:text-orange transition-colors cursor-pointer"
+              >
+                Forgot password?
+              </button>
+            </div>
+          </div>
         </div>
 
-        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+        {error && (
+          <p role="alert" className="text-orange text-sm mt-3">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-heading rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[40px]"
+          className="flex w-full min-h-[44px] items-center justify-center gap-2 bg-orange hover:bg-orange-hover text-white font-bold text-base font-heading rounded-2xl py-4 shadow-[0_4px_12px_rgba(255,79,2,0.3)] transition-all hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-70 mt-[24px]"
         >
           CONTINUE
         </button>
