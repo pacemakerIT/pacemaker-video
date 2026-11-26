@@ -115,14 +115,62 @@ port is shared.
 
 Set these in the host's `env` block only when you need to change a default.
 
-| Variable                        | Default                                       |
-| ------------------------------- | --------------------------------------------- |
-| `PACEMAKER_MCP_API_ORIGIN`      | `http://localhost:3000` (loopback http only)  |
-| `PACEMAKER_MCP_HOST`            | Name the MCP host sends when it connects      |
-| `PACEMAKER_MCP_CLERK_ISSUER`    | Clerk development instance                    |
-| `PACEMAKER_MCP_OAUTH_CLIENT_ID` | Development MCP OAuth app (public, no secret) |
-| `PACEMAKER_MCP_REDIRECT_PORT`   | `53134`; must match a registered redirect URI |
-| `PACEMAKER_MCP_PROFILE`         | `development`, the only enabled profile       |
+| Variable                        | Default                                           |
+| ------------------------------- | ------------------------------------------------- |
+| `PACEMAKER_MCP_API_ORIGIN`      | `http://localhost:3000` (loopback http only)      |
+| `PACEMAKER_MCP_HOST`            | Name the MCP host sends when it connects          |
+| `PACEMAKER_MCP_CLERK_ISSUER`    | Clerk development instance                        |
+| `PACEMAKER_MCP_OAUTH_CLIENT_ID` | Development MCP OAuth app (public, no secret)     |
+| `PACEMAKER_MCP_REDIRECT_PORT`   | `53134`; must match a registered redirect URI     |
+| `PACEMAKER_MCP_PROFILE`         | `development`; set `production` for the live site |
+
+## Use it with production
+
+Production is never the default. Set `PACEMAKER_MCP_PROFILE=production` in the
+host's `env` block, and nothing else is needed. The profile fixes these values
+in code, and any other value for them is rejected at start:
+
+| Setting      | Production value                       |
+| ------------ | -------------------------------------- |
+| API origin   | `https://www.paceupcareer.com`         |
+| Clerk issuer | `https://clerk.paceupcareer.com`       |
+| OAuth client | `v919d0TaD1AGZ3np` (public, no secret) |
+
+Claude Desktop example:
+
+```json
+{
+  "mcpServers": {
+    "pacemaker-admin-production": {
+      "command": "node",
+      "args": ["/absolute/path/to/pacemaker-video/mcp/dist/index.js"],
+      "env": { "PACEMAKER_MCP_PROFILE": "production" }
+    }
+  }
+}
+```
+
+Codex:
+
+```toml
+[mcp_servers.pacemaker-admin-production]
+command = "node"
+args = ["/absolute/path/to/pacemaker-video/mcp/dist/index.js"]
+env = { PACEMAKER_MCP_PROFILE = "production" }
+```
+
+- Sign in with a Pacemaker **admin** account. Other accounts get 403.
+- Production and development sign-ins are stored separately in the credential
+  store (`production:<host>` and `development:<host>`), so you sign in once for
+  each.
+- Editing changes the live home page. Use `propose_main_visual_update` first and
+  check the preview before applying; the change is recorded in `McpAuditLog`.
+- Keep a separate server entry for production, as above, so a development entry
+  can never point at the live site by accident.
+- If the sign-in browser page never returns, another program may be using the
+  callback port. Set `PACEMAKER_MCP_REDIRECT_PORT` to a free port, and ask a
+  maintainer to register `http://127.0.0.1:<port>/callback` on the production
+  OAuth app.
 
 ## Development
 
@@ -144,7 +192,14 @@ directly. Diagnostics go to stderr, because stdout carries the MCP protocol.
   an `https` URL on that issuer.
 - The callback server listens on `127.0.0.1` only and ignores requests whose
   `state` does not match.
-- The production profile is disabled until production keys, issuer and
-  cross-environment rejection are verified.
+- The production profile fixes the API origin, Clerk issuer and OAuth client in
+  code and rejects any other value, so a config edit cannot send the Pacemaker
+  token elsewhere. It starts only with `PACEMAKER_MCP_PROFILE=production`.
+- The `development` profile refuses the production Clerk issuer and OAuth
+  client. It sends the Clerk token to a loopback server, and a program
+  listening on localhost must never receive a production admin token.
+- Production still has no rate limit, and the end-to-end admin flow (sign-in,
+  edit, audit log, revoke) has not been run against the live site yet; see
+  `.agent/admin-mcp-production-checklist.md`.
 - The server's development MCP defaults apply only when `NODE_ENV` is
   `development`; deployed environments must set every `MCP_*` variable.
