@@ -172,6 +172,74 @@ env = { PACEMAKER_MCP_PROFILE = "production" }
   maintainer to register `http://127.0.0.1:<port>/callback` on the production
   OAuth app.
 
+## Claude Desktop extension (no terminal needed)
+
+For admins who do not use a terminal, the MCP ships as a Claude Desktop
+extension: one `.mcpb` file that admins double-click to install. The extension
+runs the production profile and needs no settings. A Korean step-by-step guide
+for admins is in `docs/admin-mcp-desktop-extension-guide.md`.
+
+Build it (maintainers only):
+
+```bash
+cd mcp
+npm ci
+npm run build:mcpb
+```
+
+This writes `mcp/.mcpb-build/pacemaker-admin-<version>.mcpb` (not committed) and
+prints its sha256. The build bundles the server into one file with esbuild and
+adds the `@napi-rs/keyring` binaries for macOS (Apple silicon and Intel) and
+Windows (x64 and ARM), checked against the hashes in `package-lock.json`, so one
+file installs on all of them. `mcpb validate` and `mcpb pack` run as part of it.
+
+Build on macOS or Linux. The build script has not been run on Windows: it starts
+`npm`, the MCPB CLI and `tar` directly, which is likely to fail there. The
+extension itself is meant to install on Windows (see "Checked so far" below).
+The `mcp` job in `.github/workflows/integration.yml` runs the type check, the
+tests, the build and this extension build on every pull request and every push
+to `main`.
+
+Download it from CI instead of building it yourself: open the Integration run,
+then "Artifacts" at the bottom of the run page, and download
+`pacemaker-admin-extension-push-<commit>` (unzip it to get the `.mcpb` and
+`pacemaker-admin.sha256`; check it with `shasum -a 256 -c pacemaker-admin.sha256`
+on macOS or `sha256sum -c pacemaker-admin.sha256` on Linux). The sha256 is also
+in the run summary. Artifacts are kept for 30 days. Share only files from a run
+on `main` (`push-` in the name). `pull_request-` artifacts are built from
+unmerged code and are for testing only.
+
+Release a new version:
+
+1. Bump `version` in `mcp/package.json` (the file name and the extension version
+   come from it) and merge it to `main`.
+2. Download the `.mcpb` from the `main` run as above (or run `npm run build:mcpb`),
+   then share it together with its sha256 and a short change note.
+3. Admins install the new file the same way as the first one.
+
+A new `.mcpb` is needed only when the MCP program itself changes: a new or changed
+tool, the sign-in flow, or a changed response shape. Changes that only touch the
+server routes reach every admin with the normal website deploy. Keep the tool
+list in `mcpb/manifest.json` in step with `src/tools.ts`; `src/manifest.test.ts`
+fails when they differ.
+
+Install: open the file (or Claude Desktop → Settings → Extensions → Advanced →
+Install Extension), review the prompt and install. Start a new chat, ask for the
+main visuals and sign in with an admin account in the browser window. The sign-in
+is stored in the credential store under `production:<host>`; for this extension
+the host name is `local-agent-mode-pacemaker-admin`.
+
+If sign-in fails with "Sign-in callback port 53134 is already in use", another
+program is using that port, often a second host that is also waiting to sign
+in. Close it and try again. The extension has no setting for another port, and
+only port 53134 is registered on the production OAuth app, so
+`PACEMAKER_MCP_REDIRECT_PORT` cannot be used here.
+
+Checked so far: building, installing and listing the main visuals on macOS. Not
+checked yet: installing on Windows, installing a newer file over an older one,
+and whether a locally installed extension updates itself. Claude Desktop runs
+the extension with its built-in Node.js, so admins do not install Node.
+
 ## Development
 
 ```bash

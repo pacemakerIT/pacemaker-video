@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.3",
+  "name": "pacemaker-admin",
+  "display_name": "Pacemaker Admin",
+  "version": "0.0.0",
+  "description": "Read and edit the Pacemaker home page main visuals from Claude, with a preview before every change.",
+  "long_description": "Lets a Pacemaker admin list and edit the main visuals (hero banners) on the home page of https://www.paceupcareer.com from Claude.\n\nEvery edit is proposed first and shown as a before/after list with a preview link. Nothing changes until you confirm, and each applied change is recorded in an audit log.\n\nYou sign in once in your browser with your Pacemaker admin account. The sign-in is stored in your computer's secure credential store (macOS Keychain or Windows Credential Manager). Accounts that are not admins are refused by the server.\n\nPacemaker 관리자가 Claude에서 홈 화면 메인 배너를 조회하고 수정할 수 있게 합니다. 수정은 항상 변경 전후와 미리보기를 먼저 보여 주고, 승인해야 적용됩니다.",
+  "author": {
+    "name": "Pacemaker",
+    "url": "https://www.paceupcareer.com"
+  },
+  "homepage": "https://www.paceupcareer.com",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "PACEMAKER_MCP_PROFILE": "production"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "list_main_visuals",
+      "description": "List the home page main visuals in display order."
+    },
+    {
+      "name": "get_main_visual",
+      "description": "Get one main visual with its description, button text and link."
+    },
+    {
+      "name": "propose_main_visual_update",
+      "description": "Preview a change to a main visual. Writes nothing."
+    },
+    {
+      "name": "apply_main_visual_update",
+      "description": "Apply a previewed change after you confirm. Changes the live home page."
+    },
+    {
+      "name": "sign_in",
+      "description": "Sign in to Pacemaker in your browser, or check that you are signed in."
+    },
+    {
+      "name": "sign_out",
+      "description": "Remove the stored sign-in from this computer."
+    }
+  ],
+  "keywords": ["pacemaker", "admin", "main visual", "banner"],
+  "compatibility": {
+    "platforms": ["darwin", "win32"],
+    "runtimes": {
+      "node": ">=22.0.0"
+    }
+  }
+}
